@@ -7,3 +7,9 @@ This repository contains data and code for analyses supporting the NSF EAGER Awa
 Sarah R. Supp, PI, supps@denison.edu; Denison University
 
 ## Collaborators
+
+## Data
+The data will be downloaded from the Konza Prairie Long-term ecological Research (LTER) site.
+
+## Code
+The main code for data processing and analysis will be developed in .R and .Rmd files.
