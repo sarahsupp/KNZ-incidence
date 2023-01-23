@@ -4,5 +4,6 @@ This repository contains data and code for analyses supporting the NSF EAGER Awa
 *Note* This repository is under development (c) 2023-2024.
 
 ## Code Authors
+Sarah R. Supp, PI, supps@denison.edu; Denison University
 
 ## Collaborators
