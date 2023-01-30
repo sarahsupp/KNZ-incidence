@@ -5,6 +5,7 @@ This repository contains data and code for analyses supporting the NSF EAGER Awa
 
 ## Code Authors
 Sarah R. Supp, PI, supps@denison.edu; Denison University
+Maya J. Parker-Smith, Data Analyst, parkersmithm@denison.edu; Denison University (remote from Columbia, Missouri)
 
 ## Collaborators
 
