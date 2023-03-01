@@ -1,0 +1,1314 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eml:eml packageId="knb-lter-knz.84.8"
+  system="https://pasta.edirepository.org"
+  xmlns:eml="https://eml.ecoinformatics.org/eml-2.2.0"
+  xmlns:stmml="http://www.xml-cml.org/schema/stmml-1.1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="https://eml.ecoinformatics.org/eml-2.2.0      https://lter.kbs.msu.edu/docs/eml-2.2.0/eml.xsd">
+    <access
+    authSystem="https://pasta.edirepository.org/authentication"
+    order="allowFirst" scope="document"
+      system="https://pasta.edirepository.org">
+        <allow>
+            <principal>uid=KNZ,o=LTER,dc=ecoinformatics,dc=org</principal>
+            <permission>all</permission>
+        </allow>
+        <allow>
+            <principal>public</principal>
+            <permission>read</permission>
+        </allow>
+    </access>
+    <dataset>
+        <alternateIdentifier
+        system="https://doi.org">doi:10.6073/pasta/1cdd4786d89d6c4a0cc282b5bfb959ae</alternateIdentifier><shortName>CSM05</shortName>
+        <title> CSM05 Seasonal summary of numbers of small mammals on the six LTER traplines in
+            prairie habitats on which fire regime has been reversed at Konza Prairie </title>
+        <creator>
+            <individualName>
+                <givenName>Donald</givenName>
+                <surName>Kaufman</surName>
+            </individualName>
+            <address>
+                <deliveryPoint> 116 Ackert Hall, Division of Biology, Kansas State University </deliveryPoint>
+                <city>Manhattan</city>
+                <administrativeArea>KS</administrativeArea>
+                <postalCode>66506</postalCode>
+                <country>US</country>
+            </address>
+            <phone
+        phonetype="voice">785-539-6622</phone>
+            <phone
+          phonetype="facsimile">785-532-6653</phone>
+            <electronicMailAddress>dwkaufma@ksu.edu</electronicMailAddress>
+        </creator>
+        <metadataProvider>
+            <organizationName>Konza LTER</organizationName>
+            <onlineUrl>http://www.konza.ksu.edu/</onlineUrl>
+        </metadataProvider>
+        <pubDate>2023-01-16</pubDate>
+        <abstract>
+            <section>
+                <para>
+                    <literalLayout> Data set contains seasonal summaries (spring and autumn) of the
+                        number of individuals of each species of small mammal captured (relative
+                        abundance) on each grassland trapline. Each record contains year, season,
+                        trapline and number of individuals captured of each species. These live trap
+                        records are based on daily captures during a single 4-day trapping period in
+                        spring (mid-March to early April) and autumn (late October to early
+                        December) for each of six permanent traplines established on two fire
+                        treatments (three traplines per treatment). These two fire treatments
+                        include one treatment that was changed from a 20-year burn to an annual burn
+                        and one that was changed from an annual burn to 20 years between fires.
+                        Bison do not graze these two habitat types. </literalLayout>
+                </para>
+            </section>
+        </abstract>
+        <keywordSet>
+            <keyword>Disturbance</keyword>
+            <keyword>Populations</keyword>
+            <keywordThesaurus>Core Areas</keywordThesaurus>
+        </keywordSet>
+        <keywordSet>
+            <keyword>Consumers</keyword>
+            <keywordThesaurus>Section</keywordThesaurus>
+        </keywordSet>
+        <keywordSet>
+            <keyword>Consumers</keyword>
+            <keyword>Kansas</keyword>
+            <keyword>LTER-KNZ</keyword>
+            <keyword>Konza Prairie</keyword>
+            <keyword>Konza Prairie Biological Station</keyword>
+            <keyword>mammals</keyword>
+            <keyword>species composition</keyword>
+            <keyword>spring fire</keyword>
+            <keyword>relative abundance</keyword>
+            <keyword>prairie</keyword>
+            <keyword>reversal trapline</keyword>
+            <keyword>shrews</keyword>
+            <keyword>small mammals</keyword>
+            <keyword>rodents</keyword>
+            <keywordThesaurus>Station Keywords</keywordThesaurus>
+        </keywordSet>
+        <intellectualRights>
+            <section>
+                <title>Data Policies</title>
+                <para>
+                    <literalLayout> Data Use Agreements: The Intellectual Rights within the metadata
+                        associated with each KNZ data set determines the exact data and metadata use
+                        agreement between the data user and the KNZ LTER site. KNZ LTER data and
+                        metadata may be released under the license: CC BY - Attribution
+                        (https://creativecommons.org/licenses/by/4.0/). This license lets others
+                        distribute, remix, tweak, and build upon KNZ work (even commercially), as
+                        long as the KNZ program is credited for the original creation.
+                        Alternatively, some KNZ LTER data and metadata may be released into the
+                        public domain: CC0 - No Rights Reserved
+                        (https://creativecommons.org/share-your-work/public-domain/cc0/). CC0 states
+                        that data are placed in the public domain, so that others may freely build
+                        upon, enhance and reuse the works for any purposes without restriction under
+                        copyright or database law. In either case, users of KNZ data are referred to
+                        the following guidelines: "The consumer of these data ("Data User" herein)
+                        has an ethical obligation to cite it appropriately in any publication that
+                        results from its use. The Data User should realize that these data may be
+                        actively used by others for ongoing research and that coordination may be
+                        necessary to prevent duplicate publication. The Data User is urged to
+                        contact the authors of these data if any questions about methodology or
+                        results occur. Where appropriate, the Data User is encouraged to consider
+                        collaboration or coauthorship with the authors. The Data User should realize
+                        that misinterpretation of data may occur if used out of context of the
+                        original study. While substantial efforts are made to ensure the accuracy of
+                        data and associated documentation, complete accuracy of data sets cannot be
+                        guaranteed. All data are made available "as is." The Data User should be
+                        aware, however, that data are updated periodically and it is the
+                        responsibility of the Data User to check for new versions of the data. The
+                        data authors and the repository where these data were obtained shall not be
+                        liable for damages resulting from any use or misinterpretation of the data.
+                        Thank you". </literalLayout>
+                </para>
+            </section>
+        </intellectualRights>
+        <distribution>
+            <online>
+                <url
+      function="information">
+                    http://lter.konza.ksu.edu/content/csm05-seasonal-summary-numbers-small-mammals-six-lter-traplines-prairie-habitats-which-fire
+                </url>
+            </online>
+        </distribution>
+        <distribution
+      id="10.6073/pasta/1cdd4786d89d6c4a0cc282b5bfb959ae" scope="system"
+          system="https://pasta.edirepository.org"><online><url
+        function="information">https://doi.org/10.6073/pasta/1cdd4786d89d6c4a0cc282b5bfb959ae</url></online></distribution><coverage>
+            <geographicCoverage>
+                <geographicDescription> R20A: Ungrazed and scheduled prescribed burned annually
+                    through 2000, scheduled prescribed burned every 20 years in the spring
+                    thereafter. </geographicDescription>
+                <boundingCoordinates>
+                    <westBoundingCoordinate>-96.6145</westBoundingCoordinate>
+                    <eastBoundingCoordinate>-96.6055</eastBoundingCoordinate>
+                    <northBoundingCoordinate>39.0731</northBoundingCoordinate>
+                    <southBoundingCoordinate>39.0664</southBoundingCoordinate>
+                </boundingCoordinates>
+            </geographicCoverage>
+            <geographicCoverage>
+                <geographicDescription> R1A: Ungrazed and scheduled unburned through 2000, scheduled
+                    prescribed burned annually in the spring beginning 2001. </geographicDescription>
+                <boundingCoordinates>
+                    <westBoundingCoordinate>-96.6147</westBoundingCoordinate>
+                    <eastBoundingCoordinate>-96.6066</eastBoundingCoordinate>
+                    <northBoundingCoordinate>39.077</northBoundingCoordinate>
+                    <southBoundingCoordinate>39.067</southBoundingCoordinate>
+                </boundingCoordinates>
+            </geographicCoverage>
+            <temporalCoverage>
+                <rangeOfDates>
+                    <beginDate>
+                        <calendarDate>1999-12-07</calendarDate>
+                    </beginDate>
+                    <endDate>
+                        <calendarDate>2010-10-25</calendarDate>
+                    </endDate>
+                </rangeOfDates>
+            </temporalCoverage>
+        </coverage>
+        <purpose>
+            <para>
+                <literalLayout> Determine temporal and spatial patterns of relative abundance of
+                    rodent and shrew populations and composition of assemblages of small mammals in
+                    tallgrass prairie as well as assess the effects of reversing fire regimes (from
+                    long-term unburned to annually burned and vice versa) on populations and
+                    communities of small mammals in contiguous fire treatments. </literalLayout>
+            </para>
+        </purpose>
+        <maintenance>
+            <description>
+                <para>
+                    <literalLayout>complete</literalLayout>
+                </para>
+            </description>
+        </maintenance>
+        <contact>
+            <individualName>
+                <givenName>Konza</givenName>
+                <surName>LTER</surName>
+            </individualName>
+            <address>
+                <deliveryPoint>Division of Biology</deliveryPoint>
+                <city>Manhattan</city>
+                <administrativeArea>KS</administrativeArea>
+                <postalCode>66506</postalCode>
+                <country>US</country>
+            </address>
+            <phone
+        phonetype="voice">785-532-6729</phone>
+            <electronicMailAddress>knzlter@ksu.edu</electronicMailAddress>
+            <onlineUrl>http://lter.konza.ksu.edu</onlineUrl>
+        </contact>
+        
+        <publisher><organizationName>Environmental Data Initiative</organizationName><electronicMailAddress>info@edirepository.org</electronicMailAddress><onlineUrl>https://edirepository.org</onlineUrl><userId
+      directory="https://ror.org">0330j0z60</userId></publisher><pubPlace>Environmental Data Initiative</pubPlace>
+        <methods>
+            <methodStep>
+                <description>
+                    <section>
+                        <para>
+                            <literalLayout> Location of Sampling Stations: Ungrazed, unburned: R20A;
+                                Ungrazed, annual burn: R01A Frequency of Sampling: Both sites are
+                                sampled in autumn (late October to early December) and in spring
+                                (mid-March to early April). Variable Measured: Numbers of
+                                individuals for each species of small mammal captured are recorded
+                                on each trapline. Sex, reproductive condition and capture location
+                                of each individual are recorded at each capture. Age, based on
+                                pelage characteristics, is recorded for the two species of
+                                Peromyscus at each capture. Body mass of an individual is recorded
+                                only at the first capture in each trapping period. Methods,
+                                Traplines: Small mammals are trapped on three permanent traplines in
+                                both treatment units. Traplines A and B on each treatment consist of
+                                20 stations with an inter-station distance of 15 m. Trapline C on
+                                each treatment has 10 stations with the same inter-station distance
+                                as traplines A and B. Because of the limitations of size of
+                                treatments and topography, our goal in this study was to have 100
+                                trapnights within a treatment each night that we trapped. Stations
+                                1, 5, 10, 15 and 20 on trapline A and B and stations 1, 5 and 10 on
+                                trapline C are marked with stakes of galvanized conduit. All
+                                stations are marked with fluorescent orange plastic surveyor flags
+                                at least once per year. Trapping Procedures: Small mammals are
+                                trapped for 4 consecutive nights per trapline during each trapping
+                                period. Two large Sherman live traps (7.6 by 8.9 by 22.9 cm) are
+                                placed within 1 m of the surveyor flag or conduit at each station.
+                                Traps are baited with a mixture of high-quality creamy peanut butter
+                                (e.g., Jif) and oatmeal (Quaker old-fashioned oatmeal). The mixture
+                                is rolled into a small ball (1.5-2.0 cm in diameter) and wrapped in
+                                a 10-cm square of weighing paper. The bait is suspended in the trap
+                                by closing the back door of the trap on the twisted end of the
+                                weighing paper. Polyester fiberfill (5 g) is compressed by a #8
+                                rubber band and used as nesting material in each trap in spring and
+                                autumn sampling periods. This nesting material reduces trap
+                                mortality in inclement weather. With the nest material and a large
+                                amount of bait in each trap, mammals typically are in good condition
+                                at the time that trap are checked in all types of weather. In the
+                                event that more than 50% of the traps are closed overnight without
+                                an individual captured (e.g., due to strong winds or other weather
+                                events such as heavy rain or deer licking traps), traps are set for
+                                additional nights until less than 50% of traps per night are closed
+                                without captures on that trapline. All traps are checked early each
+                                morning, but after the end of the nocturnal activity period. All six
+                                traplines are run during the same 4-day trapping period. Generally,
+                                the reversal traplines are run after LTER core traplines and
+                                seasonal fire traplines in both seasons. Thus the amount of
+                                moonlight present during the trapping period is variable across
+                                seasons and years due to cloud cover and moon phase for the reversal
+                                traplines. A battery-powered mustache clipper is used to clip a line
+                                of fur on each captured animals to indicate that that individuals
+                                has been captured in the current trapping period. The position
+                                clipped is dependent upon the trapline and occurs as follows: on the
+                                right shoulder (on R01A-A trapline in a spring sampling period),
+                                left shoulder (on R20A-A trapline in a spring sampling period),
+                                right rump (on R01A-A trapline in an autumn sampling period) and
+                                left rump (on R20A-A trapline in an autumn sampling period). For
+                                traplines B and C on each treatment area, the upper back is marked
+                                in an autumn sampling period and upper back in a spring sampling
+                                period. The reason for this difference in marking position is that
+                                the two A traplines are very close to each other and by marking the
+                                animals captured differently, we can determine if an individual has
+                                crossed the firebreak within a trapping period. Likewise, this
+                                method of marking allows an investigator to count an individual only
+                                once within a trapline during a trapping period. Further, three
+                                species of rodents (Peromyscus maniculatus, P. leucopus and Neotoma
+                                floridana) are marked with an ear tag (#1 monel fingerling tags) in
+                                each ear in addition to fur clipping to track movements of
+                                individuals among treatment units that are related to fire or to
+                                invasion of woody vegetation. Species, sex and reproductive
+                                condition of individual small mammals, trap station and any unusual
+                                features (e.g., the presence of ticks, fleas or bot fly larvae,
+                                variation in color pattern such as stars or blazes) are recorded at
+                                each capture of an individual in each trapping period. Body mass is
+                                recorded during the first capture of an individual on a trapline.
+                                Reproductive information recorded for males is the presence or
+                                absence of scrotal testes. Pregnancy is determined by palpation of
+                                the abdomen of females; no effort is made to assess the number of
+                                embryos. Presence or absence of conspicuous mammae also is recorded.
+                                Conspicuous mammae indicate that the female has been reproductively
+                                active and is nursing or has nursed offspring. Individuals are
+                                weighed to nearest 0.5 g for those weighing less than or equal to 50
+                                g and nearest 1 g for those weighing greater than 50 g by using
+                                Pesola balances of an appropriate size. Form of Data Output: The
+                                total number of mammals captured by species by trapline forms the
+                                database CSM05. Summary of All Changes: We began trapping small
+                                mammals along the permanent traplines in December 1999 before the
+                                fire treatments were reversed. The treatment unit 001A (which was to
+                                become R20A) was burned annually from 1972 through 2000. In spring
+                                2001, it became a long-term unburned site except for an accidental
+                                wildfire that occurred in spring 2008 after we had completed our
+                                small mammal surveys. The treatment unit 020A (which was to become
+                                R01A) was unburned except by wildfires in 1980 and 1991 before
+                                annual spring burning began in spring 2001. Note that the traplines
+                                on R20A are not the same as those used previously in 001A (CSM06).
+                                At the beginning of the reversal of the fire regimes on these two
+                                treatment units, we intensively trapped small mammals. From December
+                                1999 through December 2001, we used two methods of individually
+                                marking small mammals. On each small mammal, we both toe-clipped and
+                                applied an ear tag to the right ear of an individual (except for
+                                shrews). To uniquely identify an individual by toe clipping, we
+                                removed at most 1 digit per foot. Ear tags (each with a unique
+                                number) also were used, but ear tags are often lost, especially if
+                                only one ear is tagged and, subsequently, the history of that
+                                individual also is lost. These methods of marking allowed us to both
+                                identify individuals across traplines on the two treatment units and
+                                among trapping periods. Generally, both treatment units were trapped
+                                before the spring fire in March or April and then after the spring
+                                fire in May, June and then November-December from 2000 to 2002. We
+                                continued the general trapping plan in 2003, but used hair-clipping
+                                on different positions of the body to track small mammals among
+                                different trapping periods. After 2003, hair clipping was solely
+                                used as described above in the Methods and sampling occurred only in
+                                the spring and autumn of each year. Hair clipping allowed
+                                enumeration of the number of different individuals per species
+                                captured along each trapline, but not individual recognition. In
+                                spring 2008, we started ear-tagging deer mice, white-footed mice and
+                                eastern woodrats in addition to hair clipping to gain more
+                                information about how these different fire regimes are affecting
+                                movements of these three species given the change in vegetation
+                                since the beginning of the study. Small mammals were not trapped on
+                                these traplines in autumn 2003 and spring 2009. For additional
+                                metadata information see:
+                                http://lter.konza.ksu.edu/sites/default/files/DC.pdf For additional
+                                methods information see:
+                                http://lter.konza.ksu.edu/sites/default/files/MM.pdf
+                            </literalLayout>
+                        </para>
+                    </section>
+                </description>
+            </methodStep>
+        </methods>
+        <project>    
+                <title>Konza Prairie LTER VI: Grassland Dynamics and Long-Term Trajectories of Change</title>
+                <personnel>
+                    <individualName>
+                        <givenName>John</givenName>
+                        <surName>Blair</surName>
+                    </individualName>
+                    <role>Principal Investigator</role>
+                </personnel>
+                <funding>NSF: DEB-0823341</funding>
+            <relatedProject>
+                <title>Konza Prairie LTER V: Long-Term Research on Grassland Dynamics and Global Change</title>
+                <personnel>
+                    <individualName>
+                        <givenName>John</givenName>
+                        <surName>Blair</surName>
+                    </individualName>
+                    <role>Principal Investigator</role>
+                </personnel>
+                <funding>NSF: DEB-0218210</funding>
+            </relatedProject>   
+            <relatedProject>
+                <title>Long-Term Ecological Research in Tallgrass Prairie: The Konza Prairie LTER Program</title>
+                <personnel>
+                    <individualName>
+                        <givenName>Alan</givenName>
+                        <surName>Knapp</surName>
+                    </individualName>
+                    <role>Principal Investigator</role>
+                </personnel>
+                <funding>NSF: DEB-9632851</funding>
+            </relatedProject>  
+            <relatedProject>
+                <title>Fire, Grazing, and Climatic Interactions in Tallgrass Prairie</title>
+                <personnel>
+                    <individualName>
+                        <givenName>Alan</givenName>
+                        <surName>Knapp</surName>
+                    </individualName>
+                    <role>Principal Investigator</role>
+                </personnel>
+                <funding>NSF: DEB-9011662</funding>
+            </relatedProject>
+            <relatedProject>
+                <title>The Role of Fire and Other Disturbances in Determining Ecosystem Processes and Patterns in the Konza Prairie, Kansas</title>
+                <personnel>
+                    <individualName>
+                        <givenName>Donald</givenName>
+                        <surName>Kaufman</surName>
+                    </individualName>
+                    <role>Principal Investigator</role>
+                </personnel>
+                <funding>NSF: DEB-8514327</funding>
+            </relatedProject>
+            <relatedProject>
+                <title>Long-Term Ecological Research in Tallgrass Prairie</title>
+                <personnel>
+                    <individualName>
+                        <givenName>Richard</givenName>
+                        <surName>Marzolf</surName>
+                    </individualName>
+                    <role>Principal Investigator</role>
+                </personnel>
+                <funding>NSF: DEB-8012166</funding>
+            </relatedProject>   
+        </project>
+        <dataTable
+      id="ac109166ae7b4f4fa3f8a01c9020207e" scope="document"
+          system="https://pasta.edirepository.org">
+            <entityName>CSM051</entityName>
+            <entityDescription> Seasonal summary of numbers of small mammals on the six LTER
+                traplines in prairie habitats on which fire regime has been reversed </entityDescription>
+            <physical>
+                <objectName>CSM051.csv</objectName>
+                <size>6408</size>
+                <authentication
+          method="MD5">ef4146f3503e6e4894998cc2a6723029</authentication>
+                <authentication
+              method="SHA-1">d297cf217d6cb786576e3e6e2c60bf29bb1bf346</authentication>
+                <dataFormat>
+                    <textFormat>
+                        <numHeaderLines>1</numHeaderLines>
+                        <recordDelimiter>\r\n</recordDelimiter>
+                        <attributeOrientation>column</attributeOrientation>
+                        <simpleDelimited>
+                            <fieldDelimiter>,</fieldDelimiter>
+                            <quoteCharacter>"</quoteCharacter>
+                        </simpleDelimited>
+                    </textFormat>
+                </dataFormat>
+                <distribution>
+                    <online>
+                        <url
+      function="download">https://pasta.lternet.edu/package/data/eml/knb-lter-knz/84/8/ac109166ae7b4f4fa3f8a01c9020207e</url>
+                    </online>
+                </distribution>
+            </physical>
+            <attributeList>
+                <attribute>
+                    <attributeName>DataCode</attributeName>
+                    <attributeLabel>DataCode</attributeLabel>
+                    <attributeDefinition>Dataset code</attributeDefinition>
+                    <storageType>string</storageType>
+                    <measurementScale>
+                        <nominal>
+                            <nonNumericDomain>
+                                <textDomain>
+                                    <definition>Dataset code</definition>
+                                </textDomain>
+                            </nonNumericDomain>
+                        </nominal>
+                    </measurementScale>
+                </attribute>
+                <attribute>
+                    <attributeName>RecType</attributeName>
+                    <attributeLabel>RecType</attributeLabel>
+                    <attributeDefinition>Record type</attributeDefinition>
+                    <storageType>string</storageType>
+                    <measurementScale>
+                        <nominal>
+                            <nonNumericDomain>
+                                <textDomain>
+                                    <definition>Record type</definition>
+                                </textDomain>
+                            </nonNumericDomain>
+                        </nominal>
+                    </measurementScale>
+                </attribute>
+                <attribute>
+                    <attributeName>RecYear</attributeName>
+                    <attributeLabel>RecYear</attributeLabel>
+                    <attributeDefinition>Year of sample</attributeDefinition>
+                    <measurementScale>
+                        <ratio>
+                            <unit>
+                                <customUnit>Year (YYYY)</customUnit>
+                            </unit>
+                            <numericDomain>
+                                <numberType>real</numberType>
+                            </numericDomain>
+                        </ratio>
+                    </measurementScale>
+                </attribute>
+                <attribute>
+                    <attributeName>Season</attributeName>
+                    <attributeLabel>Season</attributeLabel>
+                    <attributeDefinition>Season of capture</attributeDefinition>
+                    <storageType>string</storageType>
+                    <measurementScale>
+                        <nominal>
+                            <nonNumericDomain>
+                                <enumeratedDomain>
+                                    <codeDefinition>
+                                        <code>AU</code>
+                                        <definition>Autumn</definition>
+                                    </codeDefinition>
+                                    <codeDefinition>
+                                        <code>SP</code>
+                                        <definition>Spring</definition>
+                                    </codeDefinition>
+                                </enumeratedDomain>
+                            </nonNumericDomain>
+                        </nominal>
+                    </measurementScale>
+                </attribute>
+                <attribute>
+                    <attributeName>Trapline</attributeName>
+                    <attributeLabel>Trapline</attributeLabel>
+                    <attributeDefinition>Trapline of capture</attributeDefinition>
+                    <storageType>string</storageType>
+                    <measurementScale>
+                        <nominal>
+                            <nonNumericDomain>
+                                <enumeratedDomain>
+                                    <codeDefinition>
+                                        <code>E</code>
+                                        <definition>East</definition>
+                                    </codeDefinition>
+                                    <codeDefinition>
+                                        <code>W</code>
+                                        <definition>West</definition>
+                                    </codeDefinition>
+                                    <codeDefinition>
+                                        <code>N</code>
+                                        <definition>North</definition>
+                                    </codeDefinition>
+                                    <codeDefinition>
+                                        <code>S</code>
+                                        <definition>South</definition>
+                                    </codeDefinition>
+                                </enumeratedDomain>
+                            </nonNumericDomain>
+                        </nominal>
+                    </measurementScale>
+                </attribute>
+                <attribute>
+                    <attributeName>Pm</attributeName>
+                    <attributeLabel>Pm</attributeLabel>
+                    <attributeDefinition>Relative abundance of Peromyscus
+                        maniculatus</attributeDefinition>
+                    <measurementScale>
+                        <ratio>
+                            <unit>
+                                <standardUnit>number</standardUnit>
+                            </unit>
+                            <numericDomain>
+                                <numberType>real</numberType>
+                            </numericDomain>
+                        </ratio>
+                    </measurementScale>
+                </attribute>
+                <attribute>
+                    <attributeName>Rmeg</attributeName>
+                    <attributeLabel>Rmeg</attributeLabel>
+                    <attributeDefinition>Relative abundance of Reithrodontomys
+                        megalotis</attributeDefinition>
+                    <measurementScale>
+                        <ratio>
+                            <unit>
+                                <standardUnit>number</standardUnit>
+                            </unit>
+                            <numericDomain>
+                                <numberType>real</numberType>
+                            </numericDomain>
+                        </ratio>
+                    </measurementScale>
+                </attribute>
+                <attribute>
+                    <attributeName>Sh</attributeName>
+                    <attributeLabel>Sh</attributeLabel>
+                    <attributeDefinition>Relative abundance of Sigmodon
+                        hispidus</attributeDefinition>
+                    <measurementScale>
+                        <ratio>
+                            <unit>
+                                <standardUnit>number</standardUnit>
+                            </unit>
+                            <numericDomain>
+                                <numberType>real</numberType>
+                            </numericDomain>
+                        </ratio>
+                    </measurementScale>
+                </attribute>
+                <attribute>
+                    <attributeName>Bh</attributeName>
+                    <attributeLabel>Bh</attributeLabel>
+                    <attributeDefinition>Relative abundance of Blarina
+                        hylophaga</attributeDefinition>
+                    <measurementScale>
+                        <ratio>
+                            <unit>
+                                <standardUnit>number</standardUnit>
+                            </unit>
+                            <numericDomain>
+                                <numberType>real</numberType>
+                            </numericDomain>
+                        </ratio>
+                    </measurementScale>
+                </attribute>
+                <attribute>
+                    <attributeName>Rmon</attributeName>
+                    <attributeLabel>Rmon</attributeLabel>
+                    <attributeDefinition>Relative abundance of Reithrodontomys
+                        montanus</attributeDefinition>
+                    <measurementScale>
+                        <ratio>
+                            <unit>
+                                <standardUnit>number</standardUnit>
+                            </unit>
+                            <numericDomain>
+                                <numberType>real</numberType>
+                            </numericDomain>
+                        </ratio>
+                    </measurementScale>
+                </attribute>
+                <attribute>
+                    <attributeName>St</attributeName>
+                    <attributeLabel>St</attributeLabel>
+                    <attributeDefinition> Relative abundance of Spermophilus tridecemlineatus </attributeDefinition>
+                    <measurementScale>
+                        <ratio>
+                            <unit>
+                                <standardUnit>number</standardUnit>
+                            </unit>
+                            <numericDomain>
+                                <numberType>real</numberType>
+                            </numericDomain>
+                        </ratio>
+                    </measurementScale>
+                </attribute>
+                <attribute>
+                    <attributeName>Mo</attributeName>
+                    <attributeLabel>Mo</attributeLabel>
+                    <attributeDefinition>Relative abundance of Microtus
+                        ochrogaster</attributeDefinition>
+                    <measurementScale>
+                        <ratio>
+                            <unit>
+                                <standardUnit>number</standardUnit>
+                            </unit>
+                            <numericDomain>
+                                <numberType>real</numberType>
+                            </numericDomain>
+                        </ratio>
+                    </measurementScale>
+                </attribute>
+                <attribute>
+                    <attributeName>Pl</attributeName>
+                    <attributeLabel>Pl</attributeLabel>
+                    <attributeDefinition>Relative abundance of Peromyscus
+                        leucopus</attributeDefinition>
+                    <measurementScale>
+                        <ratio>
+                            <unit>
+                                <standardUnit>number</standardUnit>
+                            </unit>
+                            <numericDomain>
+                                <numberType>real</numberType>
+                            </numericDomain>
+                        </ratio>
+                    </measurementScale>
+                </attribute>
+                <attribute>
+                    <attributeName>Ch</attributeName>
+                    <attributeLabel>Ch</attributeLabel>
+                    <attributeDefinition>Relative abundance of Chaetodipus
+                        hispidus</attributeDefinition>
+                    <measurementScale>
+                        <ratio>
+                            <unit>
+                                <standardUnit>number</standardUnit>
+                            </unit>
+                            <numericDomain>
+                                <numberType>real</numberType>
+                            </numericDomain>
+                        </ratio>
+                    </measurementScale>
+                </attribute>
+                <attribute>
+                    <attributeName>Mm</attributeName>
+                    <attributeLabel>Mm</attributeLabel>
+                    <attributeDefinition>Relative abundance of Mus musculus</attributeDefinition>
+                    <measurementScale>
+                        <ratio>
+                            <unit>
+                                <standardUnit>number</standardUnit>
+                            </unit>
+                            <numericDomain>
+                                <numberType>real</numberType>
+                            </numericDomain>
+                        </ratio>
+                    </measurementScale>
+                </attribute>
+                <attribute>
+                    <attributeName>Nf</attributeName>
+                    <attributeLabel>Nf</attributeLabel>
+                    <attributeDefinition>Relative abundance of Neotoma
+                        floridana</attributeDefinition>
+                    <measurementScale>
+                        <ratio>
+                            <unit>
+                                <standardUnit>number</standardUnit>
+                            </unit>
+                            <numericDomain>
+                                <numberType>real</numberType>
+                            </numericDomain>
+                        </ratio>
+                    </measurementScale>
+                </attribute>
+                <attribute>
+                    <attributeName>Sc</attributeName>
+                    <attributeLabel>Sc</attributeLabel>
+                    <attributeDefinition>Relative abundance of Synaptomys
+                        cooperi</attributeDefinition>
+                    <measurementScale>
+                        <ratio>
+                            <unit>
+                                <standardUnit>number</standardUnit>
+                            </unit>
+                            <numericDomain>
+                                <numberType>real</numberType>
+                            </numericDomain>
+                        </ratio>
+                    </measurementScale>
+                </attribute>
+                <attribute>
+                    <attributeName>Zh</attributeName>
+                    <attributeLabel>Zh</attributeLabel>
+                    <attributeDefinition>Relative abundance of Zapus hudsonius</attributeDefinition>
+                    <measurementScale>
+                        <ratio>
+                            <unit>
+                                <standardUnit>number</standardUnit>
+                            </unit>
+                            <numericDomain>
+                                <numberType>real</numberType>
+                            </numericDomain>
+                        </ratio>
+                    </measurementScale>
+                </attribute>
+                <attribute>
+                    <attributeName>Cp</attributeName>
+                    <attributeLabel>Cp</attributeLabel>
+                    <attributeDefinition>Relative abundance of Cryptotis parva</attributeDefinition>
+                    <measurementScale>
+                        <ratio>
+                            <unit>
+                                <standardUnit>number</standardUnit>
+                            </unit>
+                            <numericDomain>
+                                <numberType>real</numberType>
+                            </numericDomain>
+                        </ratio>
+                    </measurementScale>
+                </attribute>
+            </attributeList>
+            <numberOfRecords>120</numberOfRecords>
+        </dataTable>
+        <dataTable
+      id="0726d8bf95aee4e9f90e23d774267dfe" scope="document"
+          system="https://pasta.edirepository.org">
+            <entityName>CSM052</entityName>
+            <entityDescription> csm052 Data is for small mammal individual records. </entityDescription>
+            <physical>
+                <objectName>CSM052.csv</objectName>
+                <size>494913</size>
+                <authentication
+          method="MD5">3f92d644216070475375f4db834fba72</authentication>
+                <authentication
+              method="SHA-1">cc06f1a394859526883a274d862e5ddbad984089</authentication>
+                <dataFormat>
+                    <textFormat>
+                        <numHeaderLines>1</numHeaderLines>
+                        <recordDelimiter>\r\n</recordDelimiter>
+                        <attributeOrientation>column</attributeOrientation>
+                        <simpleDelimited>
+                            <fieldDelimiter>,</fieldDelimiter>
+                            <quoteCharacter>"</quoteCharacter>
+                        </simpleDelimited>
+                    </textFormat>
+                </dataFormat>
+                <distribution>
+                    <online>
+                        <url
+        function="download">https://pasta.lternet.edu/package/data/eml/knb-lter-knz/84/8/0726d8bf95aee4e9f90e23d774267dfe</url>
+                    </online>
+                </distribution>
+            </physical>
+            <attributeList>
+                <attribute>
+                    <attributeName>DataCode</attributeName>
+                    <attributeLabel>DataCode</attributeLabel>
+                    <attributeDefinition>Dataset code</attributeDefinition>
+                    <storageType>string</storageType>
+                    <measurementScale>
+                        <nominal>
+                            <nonNumericDomain>
+                                <textDomain>
+                                    <definition>Dataset code</definition>
+                                </textDomain>
+                            </nonNumericDomain>
+                        </nominal>
+                    </measurementScale>
+                </attribute>
+                <attribute>
+                    <attributeName>RecType</attributeName>
+                    <attributeLabel>RecType</attributeLabel>
+                    <attributeDefinition>Record type</attributeDefinition>
+                    <storageType>string</storageType>
+                    <measurementScale>
+                        <nominal>
+                            <nonNumericDomain>
+                                <textDomain>
+                                    <definition>Record type</definition>
+                                </textDomain>
+                            </nonNumericDomain>
+                        </nominal>
+                    </measurementScale>
+                </attribute>
+                <attribute>
+                    <attributeName>Recyear</attributeName>
+                    <attributeLabel>Recyear</attributeLabel>
+                    <attributeDefinition>Year of sample</attributeDefinition>
+                    <measurementScale>
+                        <ratio>
+                            <unit>
+                                <customUnit>Year(YYYY)</customUnit>
+                            </unit>
+                            <numericDomain>
+                                <numberType>real</numberType>
+                            </numericDomain>
+                        </ratio>
+                    </measurementScale>
+                </attribute>
+                <attribute>
+                    <attributeName>Season</attributeName>
+                    <attributeLabel>Season</attributeLabel>
+                    <attributeDefinition>Season of capture</attributeDefinition>
+                    <storageType>string</storageType>
+                    <measurementScale>
+                        <nominal>
+                            <nonNumericDomain>
+                                <enumeratedDomain>
+                                    <codeDefinition>
+                                        <code>sp</code>
+                                        <definition>spring</definition>
+                                    </codeDefinition>
+                                    <codeDefinition>
+                                        <code>april</code>
+                                        <definition>month of april</definition>
+                                    </codeDefinition>
+                                    <codeDefinition>
+                                        <code>may</code>
+                                        <definition>month of May</definition>
+                                    </codeDefinition>
+                                    <codeDefinition>
+                                        <code>june</code>
+                                        <definition>month of june</definition>
+                                    </codeDefinition>
+                                    <codeDefinition>
+                                        <code>au</code>
+                                        <definition>autumn</definition>
+                                    </codeDefinition>
+                                </enumeratedDomain>
+                            </nonNumericDomain>
+                        </nominal>
+                    </measurementScale>
+                </attribute>
+                <attribute>
+                    <attributeName>RecMonth</attributeName>
+                    <attributeLabel>RecMonth</attributeLabel>
+                    <attributeDefinition>Month of data collected</attributeDefinition>
+                    <storageType>string</storageType>
+                    <measurementScale>
+                        <nominal>
+                            <nonNumericDomain>
+                                <textDomain>
+                                    <definition>Month of data collected</definition>
+                                </textDomain>
+                            </nonNumericDomain>
+                        </nominal>
+                    </measurementScale>
+                </attribute>
+                <attribute>
+                    <attributeName>Recday</attributeName>
+                    <attributeLabel>Recday</attributeLabel>
+                    <attributeDefinition>Day of data collected</attributeDefinition>
+                    <storageType>string</storageType>
+                    <measurementScale>
+                        <nominal>
+                            <nonNumericDomain>
+                                <textDomain>
+                                    <definition>Day of data collected</definition>
+                                </textDomain>
+                            </nonNumericDomain>
+                        </nominal>
+                    </measurementScale>
+                </attribute>
+                <attribute>
+                    <attributeName>TrapDay</attributeName>
+                    <attributeLabel>TrapDay</attributeLabel>
+                    <attributeDefinition>Trap Day</attributeDefinition>
+                    <measurementScale>
+                        <ratio>
+                            <unit>
+                                <standardUnit>number</standardUnit>
+                            </unit>
+                            <numericDomain>
+                                <numberType>real</numberType>
+                            </numericDomain>
+                        </ratio>
+                    </measurementScale>
+                </attribute>
+                <attribute>
+                    <attributeName>Watershed</attributeName>
+                    <attributeLabel>Watershed</attributeLabel>
+                    <attributeDefinition>Watershed</attributeDefinition>
+                    <storageType>string</storageType>
+                    <measurementScale>
+                        <nominal>
+                            <nonNumericDomain>
+                                <enumeratedDomain>
+                                    <codeDefinition>
+                                        <code>n04b</code>
+                                        <definition>xp</definition>
+                                    </codeDefinition>
+                                    <codeDefinition>
+                                        <code>n01a</code>
+                                        <definition>g</definition>
+                                    </codeDefinition>
+                                    <codeDefinition>
+                                        <code>n02b</code>
+                                        <definition>l1</definition>
+                                    </codeDefinition>
+                                </enumeratedDomain>
+                            </nonNumericDomain>
+                        </nominal>
+                    </measurementScale>
+                </attribute>
+                <attribute>
+                    <attributeName>Line</attributeName>
+                    <attributeLabel>Line</attributeLabel>
+                    <attributeDefinition> Line of data collected (E, W, N, S, except L1=L, L2=L,
+                        XP=X and G=G) </attributeDefinition>
+                    <storageType>string</storageType>
+                    <measurementScale>
+                        <nominal>
+                            <nonNumericDomain>
+                                <textDomain>
+                                    <definition> Line of data collected (E, W, N, S, except L1=L,
+                                        L2=L, XP=X and G=G) </definition>
+                                </textDomain>
+                            </nonNumericDomain>
+                        </nominal>
+                    </measurementScale>
+                </attribute>
+                <attribute>
+                    <attributeName>Sta</attributeName>
+                    <attributeLabel>Sta</attributeLabel>
+                    <attributeDefinition>The numbered tag on rebar adjacent to the
+                        trap</attributeDefinition>
+                    <measurementScale>
+                        <ratio>
+                            <unit>
+                                <standardUnit>number</standardUnit>
+                            </unit>
+                            <numericDomain>
+                                <numberType>real</numberType>
+                            </numericDomain>
+                        </ratio>
+                    </measurementScale>
+                </attribute>
+                <attribute>
+                    <attributeName>Species</attributeName>
+                    <attributeLabel>Species</attributeLabel>
+                    <attributeDefinition> The Two/four letter code used to identify species, please
+                        see csm021 for species name. code for 'X' means none of the animal was
+                        captured in the trap. </attributeDefinition>
+                    <storageType>string</storageType>
+                    <measurementScale>
+                        <nominal>
+                            <nonNumericDomain>
+                                <textDomain>
+                                    <definition> The Two/four letter code used to identify species,
+                                        please see csm021 for species name. code for 'X' means none
+                                        of the animal was captured in the trap. </definition>
+                                </textDomain>
+                            </nonNumericDomain>
+                        </nominal>
+                    </measurementScale>
+                </attribute>
+                <attribute>
+                    <attributeName>Sex</attributeName>
+                    <attributeLabel>Sex</attributeLabel>
+                    <attributeDefinition>Gender of animal (M or F)</attributeDefinition>
+                    <storageType>string</storageType>
+                    <measurementScale>
+                        <nominal>
+                            <nonNumericDomain>
+                                <textDomain>
+                                    <definition>Gender of animal (M or F)</definition>
+                                </textDomain>
+                            </nonNumericDomain>
+                        </nominal>
+                    </measurementScale>
+                </attribute>
+                <attribute>
+                    <attributeName>Age</attributeName>
+                    <attributeLabel>Age</attributeLabel>
+                    <attributeDefinition>Estimated animal's age</attributeDefinition>
+                    <storageType>string</storageType>
+                    <measurementScale>
+                        <nominal>
+                            <nonNumericDomain>
+                                <enumeratedDomain>
+                                    <codeDefinition>
+                                        <code>a</code>
+                                        <definition>adult</definition>
+                                    </codeDefinition>
+                                    <codeDefinition>
+                                        <code>j</code>
+                                        <definition>juvenile</definition>
+                                    </codeDefinition>
+                                    <codeDefinition>
+                                        <code>s</code>
+                                        <definition>senior</definition>
+                                    </codeDefinition>
+                                    <codeDefinition>
+                                        <code>sa</code>
+                                        <definition>senior adult</definition>
+                                    </codeDefinition>
+                                </enumeratedDomain>
+                            </nonNumericDomain>
+                        </nominal>
+                    </measurementScale>
+                    <missingValueCode>
+                        <code>blank</code>
+                        <codeExplanation>Missing or Not Measured</codeExplanation>
+                    </missingValueCode>
+                </attribute>
+                <attribute>
+                    <attributeName>Preg</attributeName>
+                    <attributeLabel>Preg</attributeLabel>
+                    <attributeDefinition>Pregnant status of the animal</attributeDefinition>
+                    <storageType>string</storageType>
+                    <measurementScale>
+                        <nominal>
+                            <nonNumericDomain>
+                                <enumeratedDomain>
+                                    <codeDefinition>
+                                        <code>0</code>
+                                        <definition>non-pregnant</definition>
+                                    </codeDefinition>
+                                    <codeDefinition>
+                                        <code>1</code>
+                                        <definition>pregnant</definition>
+                                    </codeDefinition>
+                                </enumeratedDomain>
+                            </nonNumericDomain>
+                        </nominal>
+                    </measurementScale>
+                    <missingValueCode>
+                        <code>blank</code>
+                        <codeExplanation>Missing or Not Measured</codeExplanation>
+                    </missingValueCode>
+                </attribute>
+                <attribute>
+                    <attributeName>Cond</attributeName>
+                    <attributeLabel>Cond</attributeLabel>
+                    <attributeDefinition>Scrotal status of the animal</attributeDefinition>
+                    <storageType>string</storageType>
+                    <measurementScale>
+                        <nominal>
+                            <nonNumericDomain>
+                                <enumeratedDomain>
+                                    <codeDefinition>
+                                        <code>1</code>
+                                        <definition>scrotal</definition>
+                                    </codeDefinition>
+                                    <codeDefinition>
+                                        <code>2</code>
+                                        <definition>was scrotal</definition>
+                                    </codeDefinition>
+                                    <codeDefinition>
+                                        <code>3</code>
+                                        <definition>non-scrotal</definition>
+                                    </codeDefinition>
+                                    <codeDefinition>
+                                        <code>4</code>
+                                        <definition>mammae conspicuous</definition>
+                                    </codeDefinition>
+                                    <codeDefinition>
+                                        <code>5</code>
+                                        <definition>was mammae conspicuous</definition>
+                                    </codeDefinition>
+                                    <codeDefinition>
+                                        <code>6</code>
+                                        <definition>mammae non-conspicious</definition>
+                                    </codeDefinition>
+                                </enumeratedDomain>
+                            </nonNumericDomain>
+                        </nominal>
+                    </measurementScale>
+                    <missingValueCode>
+                        <code>blank</code>
+                        <codeExplanation>Missing or Not Measured</codeExplanation>
+                    </missingValueCode>
+                </attribute>
+                <attribute>
+                    <attributeName>Mass</attributeName>
+                    <attributeLabel>Mass</attributeLabel>
+                    <attributeDefinition>Weight determined to nearest gram</attributeDefinition>
+                    <measurementScale>
+                        <ratio>
+                            <unit>
+                                <standardUnit>gram</standardUnit>
+                            </unit>
+                            <numericDomain>
+                                <numberType>real</numberType>
+                            </numericDomain>
+                        </ratio>
+                    </measurementScale>
+                    <missingValueCode>
+                        <code>blank</code>
+                        <codeExplanation>Missing or Not Measured</codeExplanation>
+                    </missingValueCode>
+                </attribute>
+                <attribute>
+                    <attributeName>Status</attributeName>
+                    <attributeLabel>Status</attributeLabel>
+                    <attributeDefinition>Animal alive or not.</attributeDefinition>
+                    <storageType>string</storageType>
+                    <measurementScale>
+                        <nominal>
+                            <nonNumericDomain>
+                                <enumeratedDomain>
+                                    <codeDefinition>
+                                        <code>a</code>
+                                        <definition>alive in trap</definition>
+                                    </codeDefinition>
+                                    <codeDefinition>
+                                        <code>d</code>
+                                        <definition>dead in trap</definition>
+                                    </codeDefinition>
+                                    <codeDefinition>
+                                        <code>e</code>
+                                        <definition>escaped before marked or before number was
+                                            read</definition>
+                                    </codeDefinition>
+                                    <codeDefinition>
+                                        <code>n</code>
+                                        <definition>indicates new animal</definition>
+                                    </codeDefinition>
+                                </enumeratedDomain>
+                            </nonNumericDomain>
+                        </nominal>
+                    </measurementScale>
+                    <missingValueCode>
+                        <code>blank</code>
+                        <codeExplanation>Missing or Not Measured</codeExplanation>
+                    </missingValueCode>
+                </attribute>
+                <attribute>
+                    <attributeName>ToeClip</attributeName>
+                    <attributeLabel>ToeClip</attributeLabel>
+                    <attributeDefinition>Position of Toe Clip</attributeDefinition>
+                    <storageType>string</storageType>
+                    <measurementScale>
+                        <nominal>
+                            <nonNumericDomain>
+                                <textDomain>
+                                    <definition>Position of Toe Clip</definition>
+                                </textDomain>
+                            </nonNumericDomain>
+                        </nominal>
+                    </measurementScale>
+                </attribute>
+                <attribute>
+                    <attributeName>HairClip</attributeName>
+                    <attributeLabel>HairClip</attributeLabel>
+                    <attributeDefinition>position of Hair Clip</attributeDefinition>
+                    <storageType>string</storageType>
+                    <measurementScale>
+                        <nominal>
+                            <nonNumericDomain>
+                                <textDomain>
+                                    <definition>position of Hair Clip</definition>
+                                </textDomain>
+                            </nonNumericDomain>
+                        </nominal>
+                    </measurementScale>
+                </attribute>
+                <attribute>
+                    <attributeName>REarTag</attributeName>
+                    <attributeLabel>REarTag</attributeLabel>
+                    <attributeDefinition>Right side of of Ear Tag located</attributeDefinition>
+                    <storageType>string</storageType>
+                    <measurementScale>
+                        <nominal>
+                            <nonNumericDomain>
+                                <textDomain>
+                                    <definition>Right side of of Ear Tag located</definition>
+                                </textDomain>
+                            </nonNumericDomain>
+                        </nominal>
+                    </measurementScale>
+                </attribute>
+                <attribute>
+                    <attributeName>LEarTag</attributeName>
+                    <attributeLabel>LEarTag</attributeLabel>
+                    <attributeDefinition>Left side of of Ear Tag located</attributeDefinition>
+                    <storageType>string</storageType>
+                    <measurementScale>
+                        <nominal>
+                            <nonNumericDomain>
+                                <textDomain>
+                                    <definition>Left side of of Ear Tag located</definition>
+                                </textDomain>
+                            </nonNumericDomain>
+                        </nominal>
+                    </measurementScale>
+                </attribute>
+                <attribute>
+                    <attributeName>TailLength</attributeName>
+                    <attributeLabel>TailLength</attributeLabel>
+                    <attributeDefinition> The length from the distal portion of the pelvis to the
+                        last vertebra of the tail </attributeDefinition>
+                    <measurementScale>
+                        <ratio>
+                            <unit>
+                                <standardUnit>millimeter</standardUnit>
+                            </unit>
+                            <numericDomain>
+                                <numberType>real</numberType>
+                            </numericDomain>
+                        </ratio>
+                    </measurementScale>
+                    <missingValueCode>
+                        <code>blank</code>
+                        <codeExplanation>Missing or Not Measured</codeExplanation>
+                    </missingValueCode>
+                </attribute>
+                <attribute>
+                    <attributeName>HindFoot</attributeName>
+                    <attributeLabel>HindFoot</attributeLabel>
+                    <attributeDefinition>Hind Foot length</attributeDefinition>
+                    <measurementScale>
+                        <ratio>
+                            <unit>
+                                <standardUnit>millimeter</standardUnit>
+                            </unit>
+                            <numericDomain>
+                                <numberType>real</numberType>
+                            </numericDomain>
+                        </ratio>
+                    </measurementScale>
+                    <missingValueCode>
+                        <code>blank</code>
+                        <codeExplanation>Missing or Not Measured</codeExplanation>
+                    </missingValueCode>
+                </attribute>
+                <attribute>
+                    <attributeName>comments</attributeName>
+                    <attributeLabel>comments</attributeLabel>
+                    <attributeDefinition>A special information related to an
+                        observation</attributeDefinition>
+                    <storageType>string</storageType>
+                    <measurementScale>
+                        <nominal>
+                            <nonNumericDomain>
+                                <textDomain>
+                                    <definition>A special information related to an
+                                        observation</definition>
+                                </textDomain>
+                            </nonNumericDomain>
+                        </nominal>
+                    </measurementScale>
+                </attribute>
+                <attribute>
+                    <attributeName>TakenBy</attributeName>
+                    <attributeLabel>TakenBy</attributeLabel>
+                    <attributeDefinition>Who was taken the observation</attributeDefinition>
+                    <storageType>string</storageType>
+                    <measurementScale>
+                        <nominal>
+                            <nonNumericDomain>
+                                <textDomain>
+                                    <definition>Who was taken the observation</definition>
+                                </textDomain>
+                            </nonNumericDomain>
+                        </nominal>
+                    </measurementScale>
+                </attribute>
+            </attributeList>
+            <numberOfRecords>6742</numberOfRecords>
+        </dataTable>
+    </dataset>
+    <additionalMetadata>
+        <metadata>
+            <stmml:unitList
+          xsi:schemaLocation="http://www.xml-cml.org/schema/stmml-1.1 http://nis.lternet.edu/schemas/EML/eml-2.1.0/stmml.xsd">
+                <stmml:unit
+          id="Year (YYYY)">
+                    <stmml:description/>
+                </stmml:unit>
+                <stmml:unit id="Year(YYYY)">
+                    <stmml:description/>
+                </stmml:unit>
+            </stmml:unitList>
+        </metadata>
+    </additionalMetadata>
+</eml:eml>

@@ -1,0 +1,5 @@
+Manifest file for knb-lter-knz.26.12-4c9184f37cff01bcdc32dc486ec36961.zip created on Fri Feb 17 15:49:21 MST 2023
+CBP011.csv (2727483 bytes)
+knb-lter-knz.26.12.xml (37310 bytes)
+knb-lter-knz.26.12.txt (22075 bytes)
+knb-lter-knz.26.12.report.xml (33529 bytes)

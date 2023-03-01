@@ -1,0 +1,1910 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eml:eml packageId="knb-lter-knz.29.20"
+  system="https://pasta.edirepository.org"
+  xmlns:eml="https://eml.ecoinformatics.org/eml-2.2.0"
+  xmlns:stmml="http://www.xml-cml.org/schema/stmml-1.1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="https://eml.ecoinformatics.org/eml-2.2.0    https://lter.kbs.msu.edu/docs/eml-2.2.0/eml.xsd">
+  <access
+    authSystem="https://pasta.edirepository.org/authentication"
+    order="allowFirst" scope="document"
+      system="https://pasta.edirepository.org">
+    <allow>
+      <principal>uid=KNZ,o=LTER,dc=ecoinformatics,dc=org</principal>
+      <permission>all</permission>
+    </allow>
+    <allow>
+      <principal>public</principal>
+      <permission>read</permission>
+    </allow>
+  </access>
+  <dataset>
+    <alternateIdentifier
+        system="https://doi.org">doi:10.6073/pasta/7b44d641e3a49e5251a468d0bfa90bd3</alternateIdentifier><shortName>CGR02</shortName>
+    <title>CGR02 Sweep sampling of Grasshoppers on Konza Prairie LTER watersheds</title>
+    <creator>
+      <individualName>
+        <givenName>Anthony</givenName>
+        <surName>Joern</surName>
+      </individualName>
+      <address>
+        <deliveryPoint>116 Ackert Hall, Division of Biology, Kansas State University</deliveryPoint>
+        <city>Manhattan</city>
+        <administrativeArea>KS</administrativeArea>
+        <postalCode>66506</postalCode>
+        <country>US</country>
+      </address>
+      <phone
+        phonetype="voice">402-472-2724</phone>
+      <phone
+          phonetype="facsimile">402-472-2083</phone>
+      <electronicMailAddress>ajoern@ksu.edu</electronicMailAddress>
+    </creator>
+    <metadataProvider>
+      <organizationName>Konza LTER</organizationName>
+      <onlineUrl>http://www.konza.ksu.edu/</onlineUrl>
+    </metadataProvider>
+    <pubDate>2023-01-16</pubDate>
+    <abstract>
+      <section>
+        <para>
+          <literalLayout>Sweep samples were taken for grasshoppers (Acrididae) at two sites for each of 14 Konza Prairie LTER watersheds. Samples are taken in late July to early August. At each site on each occasion, 10 sets of 20 sweeps (200 sweeps total) are taken. Stored data include for each site on each occasion: total number of each species (all instars combined) collected and total number for each instar for each species (200 sweeps combined).</literalLayout>
+        </para>
+      </section>
+    </abstract>
+    <keywordSet>
+      <keyword>Disturbance</keyword>
+      <keyword>Populations</keyword>
+      <keywordThesaurus>Core Areas</keywordThesaurus>
+    </keywordSet>
+    <keywordSet>
+      <keyword>Consumers</keyword>
+      <keywordThesaurus>Section</keywordThesaurus>
+    </keywordSet>
+    <keywordSet>
+      <keyword>Acrididae</keyword>
+      <keyword>Consumers</keyword>
+      <keyword>grasshoppers</keyword>
+      <keyword>insects</keyword>
+      <keyword>Kansas</keyword>
+      <keyword>LTER-KNZ</keyword>
+      <keyword>Konza Prairie</keyword>
+      <keyword>Konza Prairie Biological Station</keyword>
+      <keyword>species composition</keyword>
+      <keyword>species</keyword>
+      <keyword>sweep sampling</keyword>
+      <keyword>relative abundance</keyword>
+      <keyword>prairie</keyword>
+      <keywordThesaurus>Station Keywords</keywordThesaurus>
+    </keywordSet>
+    <intellectualRights>
+      <section>
+        <title>Data Policies</title>
+        <para>
+          <literalLayout>Data Use Agreements: The Intellectual Rights within the metadata associated with each KNZ data set determines the exact data and metadata use agreement between the data user and the KNZ LTER site. KNZ LTER data and metadata may be released under the license: CC BY - Attribution (https://creativecommons.org/licenses/by/4.0/). This license lets others distribute, remix, tweak, and build upon KNZ work (even commercially), as long as the KNZ program is credited for the original creation. Alternatively, some KNZ LTER data and metadata may be released into the public domain: CC0 - No Rights Reserved (https://creativecommons.org/share-your-work/public-domain/cc0/). CC0 states that data are placed in the public domain, so that others may freely build upon, enhance and reuse the works for any purposes without restriction under copyright or database law. In either case, users of KNZ data are referred to the following guidelines: "The consumer of these data ("Data User" herein) has an ethical obligation to cite it appropriately in any publication that results from its use. The Data User should realize that these data may be actively used by others for ongoing research and that coordination may be necessary to prevent duplicate publication. The Data User is urged to contact the authors of these data if any questions about methodology or results occur. Where appropriate, the Data User is encouraged to consider collaboration or coauthorship with the authors. The Data User should realize that misinterpretation of data may occur if used out of context of the original study. While substantial efforts are made to ensure the accuracy of data and associated documentation, complete accuracy of data sets cannot be guaranteed. All data are made available "as is." The Data User should be aware, however, that data are updated periodically and it is the responsibility of the Data User to check for new versions of the data. The data authors and the repository where these data were obtained shall not be liable for damages resulting from any use or misinterpretation of the data. Thank you".</literalLayout>
+        </para>
+      </section>
+    </intellectualRights>
+    <distribution>
+      <online>
+        <url
+      function="information">http://lter.konza.ksu.edu/content/cgr02-sweep-sampling-grasshoppers-konza-prairie-lter-watersheds</url>
+      </online>
+    </distribution>
+    <distribution
+      id="10.6073/pasta/7b44d641e3a49e5251a468d0bfa90bd3" scope="system"
+          system="https://pasta.edirepository.org"><online><url
+        function="information">https://doi.org/10.6073/pasta/7b44d641e3a49e5251a468d0bfa90bd3</url></online></distribution><coverage>
+      <geographicCoverage>
+        <geographicDescription>2D: Ungrazed and scheduled prescribed burned every 2 years in the spring</geographicDescription>
+        <boundingCoordinates>
+          <westBoundingCoordinate>-96.5606</westBoundingCoordinate>
+          <eastBoundingCoordinate>-96.5534</eastBoundingCoordinate>
+          <northBoundingCoordinate>39.0841</northBoundingCoordinate>
+          <southBoundingCoordinate>39.0731</southBoundingCoordinate>
+        </boundingCoordinates>
+      </geographicCoverage>
+      <geographicCoverage>
+        <geographicDescription>1D: Ungrazed and scheduled prescribed burned annually in the spring.</geographicDescription>
+        <boundingCoordinates>
+          <westBoundingCoordinate>-96.5658</westBoundingCoordinate>
+          <eastBoundingCoordinate>-96.5594</eastBoundingCoordinate>
+          <northBoundingCoordinate>39.0841</northBoundingCoordinate>
+          <southBoundingCoordinate>39.0732</southBoundingCoordinate>
+        </boundingCoordinates>
+      </geographicCoverage>
+      <geographicCoverage>
+        <geographicDescription>N20B: Year-long grazing by bison and scheduled prescribed burned every 20 years in the spring.</geographicDescription>
+        <boundingCoordinates>
+          <westBoundingCoordinate>-96.5801</westBoundingCoordinate>
+          <eastBoundingCoordinate>-96.561</eastBoundingCoordinate>
+          <northBoundingCoordinate>39.0922</northBoundingCoordinate>
+          <southBoundingCoordinate>39.0815</southBoundingCoordinate>
+        </boundingCoordinates>
+      </geographicCoverage>
+      <geographicCoverage>
+        <geographicDescription>N1B : Year-long grazing by bison and scheduled prescribed burned annually in the spring.</geographicDescription>
+        <boundingCoordinates>
+          <westBoundingCoordinate>-96.5793</westBoundingCoordinate>
+          <eastBoundingCoordinate>-96.5634</eastBoundingCoordinate>
+          <northBoundingCoordinate>39.088</northBoundingCoordinate>
+          <southBoundingCoordinate>39.0746</southBoundingCoordinate>
+        </boundingCoordinates>
+      </geographicCoverage>
+      <geographicCoverage>
+        <geographicDescription>SuB: Ungrazed and scheduled prescribed burned every 2 years in the summer</geographicDescription>
+        <boundingCoordinates>
+          <westBoundingCoordinate>-96.5694</westBoundingCoordinate>
+          <eastBoundingCoordinate>-96.565</eastBoundingCoordinate>
+          <northBoundingCoordinate>39.0768</northBoundingCoordinate>
+          <southBoundingCoordinate>39.0712</southBoundingCoordinate>
+        </boundingCoordinates>
+      </geographicCoverage>
+      <geographicCoverage>
+        <geographicDescription>4F: Ungrazed and scheduled prescribed burned every 4 years in the spring</geographicDescription>
+        <boundingCoordinates>
+          <westBoundingCoordinate>-96.5733</westBoundingCoordinate>
+          <eastBoundingCoordinate>-96.5691</eastBoundingCoordinate>
+          <northBoundingCoordinate>39.0766</northBoundingCoordinate>
+          <southBoundingCoordinate>39.0711</southBoundingCoordinate>
+        </boundingCoordinates>
+      </geographicCoverage>
+      <geographicCoverage>
+        <geographicDescription>20B: Ungrazed and scheduled prescribed burned every 20 years in the spring.</geographicDescription>
+        <boundingCoordinates>
+          <westBoundingCoordinate>-96.5808</westBoundingCoordinate>
+          <eastBoundingCoordinate>-96.5741</eastBoundingCoordinate>
+          <northBoundingCoordinate>39.0758</northBoundingCoordinate>
+          <southBoundingCoordinate>39.0693</southBoundingCoordinate>
+        </boundingCoordinates>
+      </geographicCoverage>
+      <geographicCoverage>
+        <geographicDescription>N4D : Year-long grazing by bison and scheduled prescribed burned every 4 years in the spring.</geographicDescription>
+        <boundingCoordinates>
+          <westBoundingCoordinate>-96.59</westBoundingCoordinate>
+          <eastBoundingCoordinate>-96.5768</eastBoundingCoordinate>
+          <northBoundingCoordinate>39.0896</northBoundingCoordinate>
+          <southBoundingCoordinate>39.0701</southBoundingCoordinate>
+        </boundingCoordinates>
+      </geographicCoverage>
+      <geographicCoverage>
+        <geographicDescription>2C: Ungrazed and scheduled prescribed burned every 2 years in the spring.</geographicDescription>
+        <boundingCoordinates>
+          <westBoundingCoordinate>-96.5846</westBoundingCoordinate>
+          <eastBoundingCoordinate>-96.5772</eastBoundingCoordinate>
+          <northBoundingCoordinate>39.0725</northBoundingCoordinate>
+          <southBoundingCoordinate>39.0667</southBoundingCoordinate>
+        </boundingCoordinates>
+      </geographicCoverage>
+      <geographicCoverage>
+        <geographicDescription>SpB: Ungrazed and scheduled prescribed burned annually in the spring.</geographicDescription>
+        <boundingCoordinates>
+          <westBoundingCoordinate>-96.5913</westBoundingCoordinate>
+          <eastBoundingCoordinate>-96.5838</eastBoundingCoordinate>
+          <northBoundingCoordinate>39.0756</northBoundingCoordinate>
+          <southBoundingCoordinate>39.0669</southBoundingCoordinate>
+        </boundingCoordinates>
+      </geographicCoverage>
+      <geographicCoverage>
+        <geographicDescription>4B: Ungrazed and scheduled prescribed burned every 4 years in the spring</geographicDescription>
+        <boundingCoordinates>
+          <westBoundingCoordinate>-96.6035</westBoundingCoordinate>
+          <eastBoundingCoordinate>-96.5924</eastBoundingCoordinate>
+          <northBoundingCoordinate>39.0802</northBoundingCoordinate>
+          <southBoundingCoordinate>39.0712</southBoundingCoordinate>
+        </boundingCoordinates>
+      </geographicCoverage>
+      <geographicCoverage>
+        <geographicDescription>4A: Ungrazed and scheduled prescribed burned every 4 years in the spring</geographicDescription>
+        <boundingCoordinates>
+          <westBoundingCoordinate>-96.6093</westBoundingCoordinate>
+          <eastBoundingCoordinate>-96.6017</eastBoundingCoordinate>
+          <northBoundingCoordinate>39.0773</northBoundingCoordinate>
+          <southBoundingCoordinate>39.0731</southBoundingCoordinate>
+        </boundingCoordinates>
+      </geographicCoverage>
+      <geographicCoverage>
+        <geographicDescription>N1A: Year-long grazing by bison and scheduled prescribed burned annually in the spring.</geographicDescription>
+        <boundingCoordinates>
+          <westBoundingCoordinate>-96.5969</westBoundingCoordinate>
+          <eastBoundingCoordinate>-96.5834</eastBoundingCoordinate>
+          <northBoundingCoordinate>39.0993</northBoundingCoordinate>
+          <southBoundingCoordinate>39.0879</southBoundingCoordinate>
+        </boundingCoordinates>
+      </geographicCoverage>
+      <geographicCoverage>
+        <geographicDescription>N20A: Year-long grazing by bison and scheduled prescribed burned every 20 years in the spring.</geographicDescription>
+        <boundingCoordinates>
+          <westBoundingCoordinate>-96.6044</westBoundingCoordinate>
+          <eastBoundingCoordinate>-96.5929</eastBoundingCoordinate>
+          <northBoundingCoordinate>39.1021</northBoundingCoordinate>
+          <southBoundingCoordinate>39.0885</southBoundingCoordinate>
+        </boundingCoordinates>
+      </geographicCoverage>
+      <temporalCoverage>
+        <rangeOfDates>
+          <beginDate>
+            <calendarDate>1982-04-01</calendarDate>
+          </beginDate>
+          <endDate>
+            <calendarDate>2020-12-31</calendarDate>
+          </endDate>
+        </rangeOfDates>
+      </temporalCoverage>
+    </coverage>
+    <purpose>
+      <para>
+        <literalLayout>Long-term monitoring of dynamics of species composition and abundances in grasshopper assemblages associated with varying frequency of fire.</literalLayout>
+      </para>
+    </purpose>
+    <maintenance>
+      <description>
+        <para>
+          <literalLayout>ongoing</literalLayout>
+        </para>
+      </description>
+    </maintenance>
+    <contact>
+      <individualName>
+        <givenName>Konza</givenName>
+        <surName>LTER</surName>
+      </individualName>
+      <address>
+        <deliveryPoint>Division of Biology</deliveryPoint>
+        <city>Manhattan</city>
+        <administrativeArea>KS</administrativeArea>
+        <postalCode>66506</postalCode>
+        <country>US</country>
+      </address>
+      <phone
+        phonetype="voice">785-532-6729</phone>
+      <electronicMailAddress>knzlter@ksu.edu</electronicMailAddress>
+      <onlineUrl>http://lter.konza.ksu.edu</onlineUrl>
+    </contact>
+    
+    <publisher><organizationName>Environmental Data Initiative</organizationName><electronicMailAddress>info@edirepository.org</electronicMailAddress><onlineUrl>https://edirepository.org</onlineUrl><userId
+      directory="https://ror.org">0330j0z60</userId></publisher><pubPlace>Environmental Data Initiative</pubPlace>
+    <methods>
+      <methodStep>
+        <description>
+          <section>
+            <para>
+              <literalLayout>Location of Sampling Stations:Two replicate sites per treatment. All sites are on upland (Florence) soils. In order from east to west: Ungrazed: 002D A:grid V-26, B:U-24; 001D A:T-24, B:R-27; 0SuB A: R-27, B:Q-28; 004F A:Q-28, B:P-28; 020B A:O-28, B:N-28; 002C A:L-29, B:L-31; 0SpB A:K-29, B:J-28; 004B A:H-28,B:F-27. Grazed: N20B A:S-24, B:P-2; N01B A:S-25, B:P-23; N04D A:L-28, B:K-28; N04A A:G-25, B:F-26; N01A A:G-19, B:G-21; N20A A:G-20, B:E-19 Frequency of Sampling: All sites are sampled twice (approximately 1 week apart) in late July to early August. Variable Measured: Number of individuals (categorized by instar) for individual grasshopper species. Methods: Sampling is done by sweeping with canvas beating nets 38 cm in diameter. A sample of 200 sweeps (ten sets of 20 sweeps each) is taken at each site on each occasion. A sweep is taken at each step by traversing an arc of 180o with the net through the top layer of vegetation. After 20 such sweeps, the contents of the net are emptied into plastic bags. Air is squeezed out and samples are kept on ice until they can be frozen. Samples will be sorted and identified to species and instar. At this time, all 'other' insects are also kept. All samples are taken between 1000 and 1500 hours on clear, calm warm days: cloud cover should be less than 50%, winds less than 24km/hr (15 mph), and ambient air temperature should be 25-40oC. Sweeping effectiveness varies with site and season on Konza Prairie (e.g. sweeping is less effective on unburned prairie than on burned prairie). However, sweeping does provide good estimates of relative abundances of individual species present at any one place and time on both burned and unburned prairie. For more information, consult: Evans, E.W., R.A. Rogers, and D.J. Opfermann. 1983. Sampling grasshoppers (Orthoptera: Acrididae) on burned and unburned tall grass prairie: night trapping vs. sweeping. Environmental Entomology 12: 1449-1454. Weather measurements are taken at each watershed before sweeps are completed. These measurements are recorded as CGR021. Time is recorded on a 24-hour scale, along with five wind speeds taken at 30 second intervals 5 feet above the ground. *Cloud coverage that is directly overhead is estimated by eye and recorded. Wind speed and temperature are collected in miles per hour and Fahrenheit using a WindMate 200 (occasionally temperature is taken from truck's thermometer). These numbers are then converted to metric units in excel when the data is being entered. For wind speed all five measurements are entered, then averaged, and finally converted to kilometers per hour. Temperatures is entered as Fahrenheit and converted to Celsius. All conversions are computed in excel using the existing formulas. The previous machine used to measure wind speed had a limit of detection of 5 mph. If the wind was blowing but could not register on the machine, then it was recorded as less than 5. However, in order to compute an average these measurements were entered as 2.5 mph. Also cloud coverage is sometimes recorded as less than 5% or as a range of percentages but when the data is entered the largest recorded number is used. (Ex. Recorded as less than 5%, Entered as 5; Recorded as 10-15%, Entered as 15) *For the years 1983 - 2011 wind speeds were not always collected in this manner, instead measurements were taken at 5 second intervals or only one speed was recorded. However, the purpose of the weather information is to determine whether or not samples could be collected within the weather parameters as described above. Once collection has begun, and due to variable conditions on the prairie, the judgment of the research tech is employed to determine adequate collection conditions. (Maps of all grasshopper sites available in Appendix M, contact site IM if needed). Summary of All Changes: 1982-1987: Sites were sampled at various earlier dates in addition to the late July-early August. 1985: Sweeping was restricted to all sites being sampled (twice, on different dates) in late July and early August. Additional watersheds (002D, 004D (now 0SpB), 004F AND 010D (now 0SuB) were added to the sampling regime for early August to provide more long-term data on the influence of fire frequency on grasshoppers. Sampling on watersheds to be grazed (N01B, N04D, and N20B) was discontinued. 1986: Watershed 004G (now 00WB) was temporarily added. Sampling in June and early July was reduced to watersheds 001D, 004D, 010D and 020B only; too few grasshoppers are collected by sweeping in the first half of the summer for all watersheds to merit sampling. 1987: Sampling in June and early July was restricted to sites 001D, 002C, 004B and 004F. 1994: Fire regime changed for 004D (became 0SpB) and 010D (became 0SuB). In the years when 0SuB is burned the sweeps are done 2 weeks earlier than normal. The summer burn is conducted on the first water appropriate day in late July to early August. 1996: Wildfire in February, burned 004F, 0SuB, 001D and 002D. 1998: 0SuB done earlier than other sites (mid-July) under the mistaken idea that the summer burns were to occur this year. 2002: Grazed (bison) transects were added in N01A, N01B, N04A, N04D, N20A and N02B. An older version of the methods manual indicates that 3 lowland (Tully) sites were once done. Locations were: 001D A: T-28; 004B A: G-28; B: S-28; B: F-28; 020B A: N-29; B: N-29 2011: WindMate 200 replaced previous machine used for checking wind speeds. The previous machine had limit of detection of 5mph. WindMate 200 specifications: Temperature -20 oC to 158 oF accuracy +1.8 oC to 89 mph accuracy +3%. 2013: Beginning with this year, Oecanthinae spp., Gryllidae spp., Tettigoniidae spp., are being added to our list. These are not new species to Konza. We are adding them to the official listing because they are related and ecologically similar. 2016: In years when SuB is burned, pre-burn and post-burn sweeps will be done. Timing for pre-burn will be mid-July and timing for post-burn will be mid-September. 2018: March 14. 004B – A was burned in a wildfire. A third sweep, “C”, will be done in the vicinity of pab011 FC until 2021 when 004b is scheduled to burn per “normal” schedule. For additional metadata information see: http://lter.konza.ksu.edu/sites/default/files/DC.pdf For additional methods information see: http://lter.konza.ksu.edu/sites/default/files/MM.pdf</literalLayout>
+            </para>
+          </section>
+        </description>
+      </methodStep>
+    </methods>
+    <project>
+      <title>LTER: Manipulating drivers to assess grassland resilience</title>
+      <personnel>
+        <individualName>
+          <givenName>Jesse</givenName>
+          <surName>Nippert</surName>
+        </individualName>
+        <role>Principal Investigator</role>
+      </personnel>
+      <funding>NSF: DEB-2025849</funding>      
+      <relatedProject>
+        <title>LTER: Long-Term Research on Grassland Dynamics- Assessing Mechanisms of Sensitivity and Resilience to Global Change</title>
+        <personnel>
+          <individualName>
+            <givenName>Jesse</givenName>
+            <surName>Nippert</surName>
+          </individualName>
+          <role>Principal Investigator</role>
+        </personnel>
+        <personnel>
+          <individualName>
+            <givenName>John</givenName>
+            <surName>Blair</surName>
+          </individualName>
+          <role>Principal Investigator</role>
+        </personnel>
+        <funding>NSF: DEB-1440484</funding>
+      </relatedProject>      
+      <relatedProject>
+        <title>Konza Prairie LTER VI: Grassland Dynamics and Long-Term Trajectories of Change</title>
+        <personnel>
+          <individualName>
+            <givenName>John</givenName>
+            <surName>Blair</surName>
+          </individualName>
+          <role>Principal Investigator</role>
+        </personnel>
+        <funding>NSF: DEB-0823341</funding>
+      </relatedProject>    
+      <relatedProject>
+        <title>Konza Prairie LTER V: Long-Term Research on Grassland Dynamics and Global Change</title>
+        <personnel>
+          <individualName>
+            <givenName>John</givenName>
+            <surName>Blair</surName>
+          </individualName>
+          <role>Principal Investigator</role>
+        </personnel>
+        <funding>NSF: DEB-0218210</funding>
+      </relatedProject>   
+      <relatedProject>
+        <title>Long-Term Ecological Research in Tallgrass Prairie: The Konza Prairie LTER Program</title>
+        <personnel>
+          <individualName>
+            <givenName>Alan</givenName>
+            <surName>Knapp</surName>
+          </individualName>
+          <role>Principal Investigator</role>
+        </personnel>
+        <funding>NSF: DEB-9632851</funding>
+      </relatedProject>  
+      <relatedProject>
+        <title>Fire, Grazing, and Climatic Interactions in Tallgrass Prairie</title>
+        <personnel>
+          <individualName>
+            <givenName>Alan</givenName>
+            <surName>Knapp</surName>
+          </individualName>
+          <role>Principal Investigator</role>
+        </personnel>
+        <funding>NSF: DEB-9011662</funding>
+      </relatedProject>
+      <relatedProject>
+        <title>The Role of Fire and Other Disturbances in Determining Ecosystem Processes and Patterns in the Konza Prairie, Kansas</title>
+        <personnel>
+          <individualName>
+            <givenName>Donald</givenName>
+            <surName>Kaufman</surName>
+          </individualName>
+          <role>Principal Investigator</role>
+        </personnel>
+        <funding>NSF: DEB-8514327</funding>
+      </relatedProject>
+      <relatedProject>
+        <title>Long-Term Ecological Research in Tallgrass Prairie</title>
+        <personnel>
+          <individualName>
+            <givenName>Richard</givenName>
+            <surName>Marzolf</surName>
+          </individualName>
+          <role>Principal Investigator</role>
+        </personnel>
+        <funding>NSF: DEB-8012166</funding>
+      </relatedProject>   
+    </project>
+    <dataTable
+      id="aaa7b3b477019f6bb96f47a9a6ae8943" scope="document"
+          system="https://pasta.edirepository.org">
+      <entityName>CGR021</entityName>
+      <entityDescription>Data was recorded on the environmental variables for grasshopper sampling at each site including soil type, windy speed, ground temperature, relative humidity, and cloudy cover.</entityDescription>
+      <physical>
+        <objectName>CGR021.csv</objectName>
+        <size>87765</size>
+        <authentication
+          method="MD5">7173eb6423d5b9cfc4d080466a4e36eb</authentication>
+        <authentication
+              method="SHA-1">052ff0c7637f7470e4cbe1fd680a4ec620b2e378</authentication>
+        <dataFormat>
+          <textFormat>
+            <numHeaderLines>1</numHeaderLines>
+            <recordDelimiter>\r\n</recordDelimiter>
+            <attributeOrientation>column</attributeOrientation>
+            <simpleDelimited>
+              <fieldDelimiter>,</fieldDelimiter>
+              <quoteCharacter>"</quoteCharacter>
+            </simpleDelimited>
+          </textFormat>
+        </dataFormat>
+        <distribution>
+          <online>
+            <url
+      function="download">https://pasta.lternet.edu/package/data/eml/knb-lter-knz/29/20/aaa7b3b477019f6bb96f47a9a6ae8943</url>
+          </online>
+        </distribution>
+      </physical>
+      <attributeList>
+        <attribute>
+          <attributeName>DataCode</attributeName>
+          <attributeLabel>DataCode</attributeLabel>
+          <attributeDefinition>Dataset code</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Dataset code</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>RecType</attributeName>
+          <attributeLabel>RecType</attributeLabel>
+          <attributeDefinition>Record type</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Record type</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>RecYear</attributeName>
+          <attributeLabel>RecYear</attributeLabel>
+          <attributeDefinition>Year of record</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <customUnit>Year (YYYY)</customUnit>
+              </unit>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>RecMonth</attributeName>
+          <attributeLabel>RecMonth</attributeLabel>
+          <attributeDefinition>Month of record</attributeDefinition>
+          <storageType>date</storageType>
+          <measurementScale>
+            <dateTime>
+              <formatString>MM</formatString>
+            </dateTime>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>RecDay</attributeName>
+          <attributeLabel>RecDay</attributeLabel>
+          <attributeDefinition>Day of record</attributeDefinition>
+          <storageType>date</storageType>
+          <measurementScale>
+            <dateTime>
+              <formatString>DD</formatString>
+            </dateTime>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Watershed</attributeName>
+          <attributeLabel>Watershed</attributeLabel>
+          <attributeDefinition>watershed</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>watershed</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Soiltype</attributeName>
+          <attributeLabel>Soiltype</attributeLabel>
+          <attributeDefinition>soil type</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>soil type</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Repsite</attributeName>
+          <attributeLabel>Repsite</attributeLabel>
+          <attributeDefinition>replicate site for a treatment</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <enumeratedDomain>
+                  <codeDefinition>
+                    <code>A</code>
+                    <definition>replicate site A for treatment</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>B</code>
+                    <definition>replicate site B for treatment</definition>
+                  </codeDefinition>
+                </enumeratedDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>RecTime</attributeName>
+          <attributeLabel>RecTime</attributeLabel>
+          <attributeDefinition>time sampling began</attributeDefinition>
+          <storageType>date</storageType>
+          <measurementScale>
+            <dateTime>
+              <formatString>hh:mm:ss</formatString>
+            </dateTime>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Wind</attributeName>
+          <attributeLabel>Wind</attributeLabel>
+          <attributeDefinition>wind speed at astart of sampling; mean of 5 measurements taken at 30 second intervals; 5' above ground</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>kilometersPerHour</standardUnit>
+              </unit>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+          <missingValueCode>
+            <code>.</code>
+            <codeExplanation>Missing or Not Measured</codeExplanation>
+          </missingValueCode>
+          <missingValueCode>
+            <code>blank</code>
+            <codeExplanation>Missing or Not Measured</codeExplanation>
+          </missingValueCode>
+        </attribute>
+        <attribute>
+          <attributeName>AirTemp</attributeName>
+          <attributeLabel>AirTemp</attributeLabel>
+          <attributeDefinition>aire temperature at start of sampling</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>celsius</standardUnit>
+              </unit>
+              <precision>1</precision>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+          <missingValueCode>
+            <code>.</code>
+            <codeExplanation>Missing or Not Measured</codeExplanation>
+          </missingValueCode>
+          <missingValueCode>
+            <code>Blank</code>
+            <codeExplanation>Missing or Not Measured</codeExplanation>
+          </missingValueCode>
+        </attribute>
+        <attribute>
+          <attributeName>Relhum</attributeName>
+          <attributeLabel>Relhum</attributeLabel>
+          <attributeDefinition>relative humidity at ground level in shade at outset of sampling determined by wet/dry bulb psychrometer</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <customUnit>percentage</customUnit>
+              </unit>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+          <missingValueCode>
+            <code>blank</code>
+            <codeExplanation>Missing or Not Measured</codeExplanation>
+          </missingValueCode>
+        </attribute>
+        <attribute>
+          <attributeName>Cloudcov</attributeName>
+          <attributeLabel>Cloudcov</attributeLabel>
+          <attributeDefinition>% cloud cover directly overhead at start of sampling -- estimated by eye</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <customUnit>percentage</customUnit>
+              </unit>
+              <precision>1</precision>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+          <missingValueCode>
+            <code>.</code>
+            <codeExplanation>Missing or Not Measured</codeExplanation>
+          </missingValueCode>
+          <missingValueCode>
+            <code>Blank</code>
+            <codeExplanation>Missing or Not Measured</codeExplanation>
+          </missingValueCode>
+        </attribute>
+      </attributeList>
+      <numberOfRecords>1932</numberOfRecords>
+    </dataTable>
+    <dataTable
+      id="3fb352e2478f776517f7e880fe31b808" scope="document"
+          system="https://pasta.edirepository.org">
+      <entityName>CGR022</entityName>
+      <entityDescription>Data on the individual number of each grasshopper species in each set. 10 sets were designed at each site and 20 sweeps were taken in each set.</entityDescription>
+      <physical>
+        <objectName>CGR022.csv</objectName>
+        <size>1088578</size>
+        <authentication
+          method="MD5">38c60621cb8512be2265a676abcae20a</authentication>
+        <authentication
+              method="SHA-1">ce332237f795971107066589985604f632172000</authentication>
+        <dataFormat>
+          <textFormat>
+            <numHeaderLines>1</numHeaderLines>
+            <recordDelimiter>\r\n</recordDelimiter>
+            <attributeOrientation>column</attributeOrientation>
+            <simpleDelimited>
+              <fieldDelimiter>,</fieldDelimiter>
+              <quoteCharacter>"</quoteCharacter>
+            </simpleDelimited>
+          </textFormat>
+        </dataFormat>
+        <distribution>
+          <online>
+            <url
+      function="download">https://pasta.lternet.edu/package/data/eml/knb-lter-knz/29/20/3fb352e2478f776517f7e880fe31b808</url>
+          </online>
+        </distribution>
+      </physical>
+      <attributeList>
+        <attribute>
+          <attributeName>DataCode</attributeName>
+          <attributeLabel>DataCode</attributeLabel>
+          <attributeDefinition>Dataset code</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Dataset code</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>RecType</attributeName>
+          <attributeLabel>RecType</attributeLabel>
+          <attributeDefinition>Record type</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Record type</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>RecYear</attributeName>
+          <attributeLabel>RecYear</attributeLabel>
+          <attributeDefinition>Year of record</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <customUnit>Year (YYYY)</customUnit>
+              </unit>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>RecMonth</attributeName>
+          <attributeLabel>RecMonth</attributeLabel>
+          <attributeDefinition>Month of record</attributeDefinition>
+          <storageType>date</storageType>
+          <measurementScale>
+            <dateTime>
+              <formatString>MM</formatString>
+            </dateTime>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>RecDay</attributeName>
+          <attributeLabel>RecDay</attributeLabel>
+          <attributeDefinition>Day of record</attributeDefinition>
+          <storageType>date</storageType>
+          <measurementScale>
+            <dateTime>
+              <formatString>DD</formatString>
+            </dateTime>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Watershed</attributeName>
+          <attributeLabel>Watershed</attributeLabel>
+          <attributeDefinition>watershed</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>watershed</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Soiltype</attributeName>
+          <attributeLabel>Soiltype</attributeLabel>
+          <attributeDefinition>soil type (tully or florence)</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>soil type (tully or florence)</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Repsite</attributeName>
+          <attributeLabel>Repsite</attributeLabel>
+          <attributeDefinition>replication site for a watershed/soil</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <enumeratedDomain>
+                  <codeDefinition>
+                    <code>A</code>
+                    <definition>replicate site A for treatment</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>B</code>
+                    <definition>replicate site B for treatment</definition>
+                  </codeDefinition>
+                </enumeratedDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Spcode</attributeName>
+          <attributeLabel>Spcode</attributeLabel>
+          <attributeDefinition>species code</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <enumeratedDomain>
+                  <codeDefinition>
+                    <code>1</code>
+                    <definition>brachystol magna</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>10</code>
+                    <definition>melanoplus scudderi</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>11</code>
+                    <definition>melanoplus sanguinip</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>12</code>
+                    <definition>melanoplus femurrubr</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>13</code>
+                    <definition>melanoplus packardii</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>14</code>
+                    <definition>melanoplus different</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>15</code>
+                    <definition>melanoplus keel luri</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>16</code>
+                    <definition>melanoplus bivittatu</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>17</code>
+                    <definition>melanoplus confusus</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>18</code>
+                    <definition>melanoplus species</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>2</code>
+                    <definition>schistocer lineata</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>25</code>
+                    <definition>eritettix simplex</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>26</code>
+                    <definition>syrbula admirabil</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>27</code>
+                    <definition>orphulella speciosa</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>28</code>
+                    <definition>mermiria picta</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>29</code>
+                    <definition>mermiria bivittata</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>3</code>
+                    <definition>paratylotr brunneri</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>30</code>
+                    <definition>opeia obscura</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>31</code>
+                    <definition>pseudopoma brachypte</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>32</code>
+                    <definition>boopedon auriventr</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>33</code>
+                    <definition>boopedon nubilum</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>34</code>
+                    <definition>boopedon gracile</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>35</code>
+                    <definition>ageneotett deorum</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>36</code>
+                    <definition>mermiria species</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>4</code>
+                    <definition>hypochlora alba</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>45</code>
+                    <definition>chortophag viridifas</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>46</code>
+                    <definition>dissosteir carolina</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>47</code>
+                    <definition>arphia xanthopte</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>48</code>
+                    <definition>arphia simplex</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>49</code>
+                    <definition>arphia conspersa</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>5</code>
+                    <definition>campylacan olivacea</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>50</code>
+                    <definition>hadrotetti trifascia</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>51</code>
+                    <definition>hippiscus rugosus</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>52</code>
+                    <definition>pardalopho apiculata</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>53</code>
+                    <definition>pardalopho haldemani</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>54</code>
+                    <definition>pardalopho species</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>55</code>
+                    <definition>arphia species</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>6</code>
+                    <definition>hesperotet speciosus</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>7</code>
+                    <definition>hesperotet viridis</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>8</code>
+                    <definition>hesperotet species</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>9</code>
+                    <definition>phoetaliot nebrascen</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>90</code>
+                    <definition>unknown</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>95</code>
+                    <definition>total</definition>
+                  </codeDefinition>
+                </enumeratedDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+          <missingValueCode>
+            <code>blank</code>
+            <codeExplanation>Missing or Not Measured</codeExplanation>
+          </missingValueCode>
+        </attribute>
+        <attribute>
+          <attributeName>Species</attributeName>
+          <attributeLabel>Species</attributeLabel>
+          <attributeDefinition>abbreviated name of species</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <enumeratedDomain>
+                  <codeDefinition>
+                    <code>1</code>
+                    <definition>brachystol magna</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>10</code>
+                    <definition>melanoplus scudderi</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>11</code>
+                    <definition>melanoplus sanguinip</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>12</code>
+                    <definition>melanoplus femurrubr</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>13</code>
+                    <definition>melanoplus packardii</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>14</code>
+                    <definition>melanoplus different</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>15</code>
+                    <definition>melanoplus keel luri</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>16</code>
+                    <definition>melanoplus bivittatu</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>17</code>
+                    <definition>melanoplus confusus</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>18</code>
+                    <definition>melanoplus species</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>2</code>
+                    <definition>schistocer lineata</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>25</code>
+                    <definition>eritettix simplex</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>26</code>
+                    <definition>syrbula admirabil</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>27</code>
+                    <definition>orphulella speciosa</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>28</code>
+                    <definition>mermiria picta</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>29</code>
+                    <definition>mermiria bivittata</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>3</code>
+                    <definition>paratylotr brunneri</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>30</code>
+                    <definition>opeia obscura</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>31</code>
+                    <definition>pseudopoma brachypte</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>32</code>
+                    <definition>boopedon auriventr</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>33</code>
+                    <definition>boopedon nubilum</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>34</code>
+                    <definition>boopedon gracile</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>35</code>
+                    <definition>ageneotett deorum</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>36</code>
+                    <definition>mermiria species</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>4</code>
+                    <definition>hypochlora alba</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>45</code>
+                    <definition>chortophag viridifas</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>46</code>
+                    <definition>dissosteir carolina</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>47</code>
+                    <definition>arphia xanthopte</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>48</code>
+                    <definition>arphia simplex</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>49</code>
+                    <definition>arphia conspersa</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>5</code>
+                    <definition>campylacan olivacea</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>50</code>
+                    <definition>hadrotetti trifascia</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>51</code>
+                    <definition>hippiscus rugosus</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>52</code>
+                    <definition>pardalopho apiculata</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>53</code>
+                    <definition>pardalopho haldemani</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>54</code>
+                    <definition>pardalopho species</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>55</code>
+                    <definition>arphia species</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>6</code>
+                    <definition>hesperotet speciosus</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>7</code>
+                    <definition>hesperotet viridis</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>8</code>
+                    <definition>hesperotet species</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>9</code>
+                    <definition>phoetaliot nebrascen</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>90</code>
+                    <definition>unknown</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>95</code>
+                    <definition>total</definition>
+                  </codeDefinition>
+                </enumeratedDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>S1</attributeName>
+          <attributeLabel>S1</attributeLabel>
+          <attributeDefinition>number of individuals in sample 1</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>number</standardUnit>
+              </unit>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+          <missingValueCode>
+            <code>Blank</code>
+            <codeExplanation>Missing or Not Measured</codeExplanation>
+          </missingValueCode>
+        </attribute>
+        <attribute>
+          <attributeName>S2</attributeName>
+          <attributeLabel>S2</attributeLabel>
+          <attributeDefinition>number of individuals in sample 2</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>number</standardUnit>
+              </unit>
+              <precision>1</precision>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+          <missingValueCode>
+            <code>Blank</code>
+            <codeExplanation>Missing or Not Measured</codeExplanation>
+          </missingValueCode>
+        </attribute>
+        <attribute>
+          <attributeName>S3</attributeName>
+          <attributeLabel>S3</attributeLabel>
+          <attributeDefinition>number of individuals in sample 3</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>number</standardUnit>
+              </unit>
+              <precision>1</precision>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+          <missingValueCode>
+            <code>Blank</code>
+            <codeExplanation>Missing or Not Measured</codeExplanation>
+          </missingValueCode>
+        </attribute>
+        <attribute>
+          <attributeName>S4</attributeName>
+          <attributeLabel>S4</attributeLabel>
+          <attributeDefinition>number of individuals in sample 4</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>number</standardUnit>
+              </unit>
+              <precision>1</precision>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+          <missingValueCode>
+            <code>Blank</code>
+            <codeExplanation>Missing or Not Measured</codeExplanation>
+          </missingValueCode>
+        </attribute>
+        <attribute>
+          <attributeName>S5</attributeName>
+          <attributeLabel>S5</attributeLabel>
+          <attributeDefinition>number of individuals in sample 5</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>number</standardUnit>
+              </unit>
+              <precision>1</precision>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+          <missingValueCode>
+            <code>1</code>
+            <codeExplanation>Missing or Not Measured</codeExplanation>
+          </missingValueCode>
+        </attribute>
+        <attribute>
+          <attributeName>S6</attributeName>
+          <attributeLabel>S6</attributeLabel>
+          <attributeDefinition>number of individuals in sample 6</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>number</standardUnit>
+              </unit>
+              <precision>1</precision>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+          <missingValueCode>
+            <code>Blank</code>
+            <codeExplanation>Missing or Not Measured</codeExplanation>
+          </missingValueCode>
+        </attribute>
+        <attribute>
+          <attributeName>S7</attributeName>
+          <attributeLabel>S7</attributeLabel>
+          <attributeDefinition>number of individuals in sample 7</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>number</standardUnit>
+              </unit>
+              <precision>1</precision>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+          <missingValueCode>
+            <code>Blank</code>
+            <codeExplanation>Missing or Not Measured</codeExplanation>
+          </missingValueCode>
+        </attribute>
+        <attribute>
+          <attributeName>S8</attributeName>
+          <attributeLabel>S8</attributeLabel>
+          <attributeDefinition>number of individuals in sample 8</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>number</standardUnit>
+              </unit>
+              <precision>1</precision>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+          <missingValueCode>
+            <code>blank</code>
+            <codeExplanation>Missing or Not Measured</codeExplanation>
+          </missingValueCode>
+        </attribute>
+        <attribute>
+          <attributeName>S9</attributeName>
+          <attributeLabel>S9</attributeLabel>
+          <attributeDefinition>number of individuals in sample 9</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>number</standardUnit>
+              </unit>
+              <precision>1</precision>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+          <missingValueCode>
+            <code>blank</code>
+            <codeExplanation>Missing or Not Measured</codeExplanation>
+          </missingValueCode>
+        </attribute>
+        <attribute>
+          <attributeName>S10</attributeName>
+          <attributeLabel>S10</attributeLabel>
+          <attributeDefinition>number of individuals in sample 10</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>number</standardUnit>
+              </unit>
+              <precision>1</precision>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+          <missingValueCode>
+            <code>Blank</code>
+            <codeExplanation>Missing or Not Measured</codeExplanation>
+          </missingValueCode>
+        </attribute>
+        <attribute>
+          <attributeName>Total</attributeName>
+          <attributeLabel>Total</attributeLabel>
+          <attributeDefinition>total number of individual/all samples</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>number</standardUnit>
+              </unit>
+              <precision>1</precision>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Comments</attributeName>
+          <attributeLabel>Comments</attributeLabel>
+          <attributeDefinition>Comments</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Comments</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+      </attributeList>
+      <numberOfRecords>16133</numberOfRecords>
+    </dataTable>
+    <dataTable
+      id="98a5bc89f50cee4ae3c173ffc2802fe8" scope="document"
+          system="https://pasta.edirepository.org">
+      <entityName>CGR023</entityName>
+      <entityDescription>Data was recorded on the individual number of instar and adult stage. Instars were classified into first, second, third, fourth, and fifth stage. Adult was identified with sex (male and female).</entityDescription>
+      <physical>
+        <objectName>CGR023.csv</objectName>
+        <size>952178</size>
+        <authentication
+          method="MD5">237caf07ac7d9b96ea39d9e8aa805708</authentication>
+        <authentication
+              method="SHA-1">79cdf01040ec9b8102fddb85ad71b57ab98e3565</authentication>
+        <dataFormat>
+          <textFormat>
+            <numHeaderLines>1</numHeaderLines>
+            <recordDelimiter>\r\n</recordDelimiter>
+            <attributeOrientation>column</attributeOrientation>
+            <simpleDelimited>
+              <fieldDelimiter>,</fieldDelimiter>
+              <quoteCharacter>"</quoteCharacter>
+            </simpleDelimited>
+          </textFormat>
+        </dataFormat>
+        <distribution>
+          <online>
+            <url
+        function="download">https://pasta.lternet.edu/package/data/eml/knb-lter-knz/29/20/98a5bc89f50cee4ae3c173ffc2802fe8</url>
+          </online>
+        </distribution>
+      </physical>
+      <attributeList>
+        <attribute>
+          <attributeName>DataCode</attributeName>
+          <attributeLabel>DataCode</attributeLabel>
+          <attributeDefinition>Dataset code</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Dataset code</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>RecType</attributeName>
+          <attributeLabel>RecType</attributeLabel>
+          <attributeDefinition>Record type</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Record type</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>RecYear</attributeName>
+          <attributeLabel>RecYear</attributeLabel>
+          <attributeDefinition>Year of record</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <customUnit>Year (YYYY)</customUnit>
+              </unit>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>RecMonth</attributeName>
+          <attributeLabel>RecMonth</attributeLabel>
+          <attributeDefinition>Month of record</attributeDefinition>
+          <storageType>date</storageType>
+          <measurementScale>
+            <dateTime>
+              <formatString>MM</formatString>
+            </dateTime>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>RecDay</attributeName>
+          <attributeLabel>RecDay</attributeLabel>
+          <attributeDefinition>Day of record</attributeDefinition>
+          <storageType>date</storageType>
+          <measurementScale>
+            <dateTime>
+              <formatString>DD</formatString>
+            </dateTime>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Watershed</attributeName>
+          <attributeLabel>Watershed</attributeLabel>
+          <attributeDefinition>watershed</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>watershed</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Soiltype</attributeName>
+          <attributeLabel>Soiltype</attributeLabel>
+          <attributeDefinition>soil type</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>soil type</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Repsite</attributeName>
+          <attributeLabel>Repsite</attributeLabel>
+          <attributeDefinition>replication site for a treatment</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <enumeratedDomain>
+                  <codeDefinition>
+                    <code>A</code>
+                    <definition>replicate site A for treatment</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>B</code>
+                    <definition>replicate site B for treatment</definition>
+                  </codeDefinition>
+                </enumeratedDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Spcode</attributeName>
+          <attributeLabel>Spcode</attributeLabel>
+          <attributeDefinition>species code</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <enumeratedDomain>
+                  <codeDefinition>
+                    <code>1</code>
+                    <definition>brachystol magna</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>10</code>
+                    <definition>melanoplus scudderi</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>11</code>
+                    <definition>melanoplus sanguinip</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>12</code>
+                    <definition>melanoplus femurrubr</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>13</code>
+                    <definition>melanoplus packardii</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>14</code>
+                    <definition>melanoplus different</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>15</code>
+                    <definition>melanoplus keel luri</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>16</code>
+                    <definition>melanoplus bivittatu</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>17</code>
+                    <definition>melanoplus confusus</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>18</code>
+                    <definition>melanoplus species</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>2</code>
+                    <definition>schistocer lineata</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>25</code>
+                    <definition>eritettix simplex</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>26</code>
+                    <definition>syrbula admirabil</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>27</code>
+                    <definition>orphulella speciosa</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>28</code>
+                    <definition>mermiria picta</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>29</code>
+                    <definition>mermiria bivittata</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>3</code>
+                    <definition>paratylotr brunneri</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>30</code>
+                    <definition>opeia obscura</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>31</code>
+                    <definition>pseudopoma brachypte</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>32</code>
+                    <definition>boopedon auriventr</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>33</code>
+                    <definition>boopedon nubilum</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>34</code>
+                    <definition>boopedon gracile</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>35</code>
+                    <definition>ageneotett deorum</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>36</code>
+                    <definition>mermiria species</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>4</code>
+                    <definition>hypochlora alba</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>45</code>
+                    <definition>chortophag viridifas</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>46</code>
+                    <definition>dissosteir carolina</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>47</code>
+                    <definition>arphia xanthopte</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>48</code>
+                    <definition>arphia simplex</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>49</code>
+                    <definition>arphia conspersa</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>5</code>
+                    <definition>campylacan olivacea</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>50</code>
+                    <definition>hadrotetti trifascia</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>51</code>
+                    <definition>hippiscus rugosus</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>52</code>
+                    <definition>pardalopho apiculata</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>53</code>
+                    <definition>pardalopho haldemani</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>54</code>
+                    <definition>pardalopho species</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>55</code>
+                    <definition>arphia species</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>6</code>
+                    <definition>hesperotet speciosus</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>7</code>
+                    <definition>hesperotet viridis</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>8</code>
+                    <definition>hesperotet species</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>9</code>
+                    <definition>phoetaliot nebrascen</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>90</code>
+                    <definition>unknown</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>95</code>
+                    <definition>total</definition>
+                  </codeDefinition>
+                </enumeratedDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Species</attributeName>
+          <attributeLabel>Species</attributeLabel>
+          <attributeDefinition>abbreviated species name</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>abbreviated species name</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>FirstInstar</attributeName>
+          <attributeLabel>FirstInstar</attributeLabel>
+          <attributeDefinition>number of individuals 1st instar</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>number</standardUnit>
+              </unit>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+          <missingValueCode>
+            <code>blank</code>
+            <codeExplanation>Missing or Not Measured</codeExplanation>
+          </missingValueCode>
+        </attribute>
+        <attribute>
+          <attributeName>SecThirdInstar</attributeName>
+          <attributeLabel>SecThirdInstar</attributeLabel>
+          <attributeDefinition>number of individual 2nd &amp; 3rd instars</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>number</standardUnit>
+              </unit>
+              <precision>1</precision>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+          <missingValueCode>
+            <code>Blank</code>
+            <codeExplanation>Missing or Not Measured</codeExplanation>
+          </missingValueCode>
+        </attribute>
+        <attribute>
+          <attributeName>ForthInstar</attributeName>
+          <attributeLabel>ForthInstar</attributeLabel>
+          <attributeDefinition>number of individuals 4th instar</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>number</standardUnit>
+              </unit>
+              <precision>1</precision>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+          <missingValueCode>
+            <code>Blank</code>
+            <codeExplanation>Missing or Not Measured</codeExplanation>
+          </missingValueCode>
+        </attribute>
+        <attribute>
+          <attributeName>FifthInstar</attributeName>
+          <attributeLabel>FifthInstar</attributeLabel>
+          <attributeDefinition>number of individuals 5th instar</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>number</standardUnit>
+              </unit>
+              <precision>1</precision>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+          <missingValueCode>
+            <code>Blank</code>
+            <codeExplanation>Missing or Not Measured</codeExplanation>
+          </missingValueCode>
+        </attribute>
+        <attribute>
+          <attributeName>Female</attributeName>
+          <attributeLabel>Female</attributeLabel>
+          <attributeDefinition>number of individuals of adult female</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>number</standardUnit>
+              </unit>
+              <precision>1</precision>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+          <missingValueCode>
+            <code>Blank</code>
+            <codeExplanation>Missing or Not Measured</codeExplanation>
+          </missingValueCode>
+        </attribute>
+        <attribute>
+          <attributeName>Male</attributeName>
+          <attributeLabel>Male</attributeLabel>
+          <attributeDefinition>number of individuals of adult male</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>number</standardUnit>
+              </unit>
+              <precision>1</precision>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+          <missingValueCode>
+            <code>blank</code>
+            <codeExplanation>Missing or Not Measured</codeExplanation>
+          </missingValueCode>
+        </attribute>
+        <attribute>
+          <attributeName>Total</attributeName>
+          <attributeLabel>Total</attributeLabel>
+          <attributeDefinition>total number of individuals/all samples</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>number</standardUnit>
+              </unit>
+              <precision>1</precision>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Comments</attributeName>
+          <attributeLabel>Comments</attributeLabel>
+          <attributeDefinition>Comments</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Comments</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+      </attributeList>
+      <numberOfRecords>15263</numberOfRecords>
+    </dataTable>
+  </dataset>
+  <additionalMetadata>
+    <metadata>
+      <stmml:unitList
+        xmlns="http://www.xml-cml.org/schema/stmml"
+        xmlns:sch="http://www.ascc.net/xml/schematron"
+        xmlns:stmml="http://www.xml-cml.org/schema/stmml-1.1"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.xml-cml.org/schema/stmml-1.1 http://nis.lternet.edu/schemas/EML/eml-2.1.0/stmml.xsd">
+        <stmml:unit
+          id="Year (YYYY)">
+          <stmml:description/>
+        </stmml:unit>
+        <stmml:unit
+          abbreviation="" id="percentage" name="percentage" unitType="">
+          <stmml:description/>
+        </stmml:unit>
+      </stmml:unitList>
+    </metadata>
+  </additionalMetadata>
+</eml:eml>

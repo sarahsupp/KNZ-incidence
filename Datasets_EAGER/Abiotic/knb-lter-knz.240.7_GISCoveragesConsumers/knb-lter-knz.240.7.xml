@@ -1,0 +1,556 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eml:eml packageId="knb-lter-knz.240.7"
+  system="https://pasta.edirepository.org"
+  xmlns:eml="https://eml.ecoinformatics.org/eml-2.2.0"
+  xmlns:stmml="http://www.xml-cml.org/schema/stmml-1.1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="https://eml.ecoinformatics.org/eml-2.2.0    https://lter.kbs.msu.edu/docs/eml-2.2.0/eml.xsd">
+  <access
+    authSystem="https://pasta.edirepository.org/authentication"
+    order="allowFirst" scope="document"
+      system="https://pasta.edirepository.org">
+    <allow>
+      <principal>uid=KNZ,o=LTER,dc=ecoinformatics,dc=org</principal>
+      <permission>all</permission>
+    </allow>
+    <allow>
+      <principal>public</principal>
+      <permission>read</permission>
+    </allow>
+  </access>
+  <dataset>
+    <alternateIdentifier
+        system="https://doi.org">doi:10.6073/pasta/e85c2d9b778a0b314cede31e6b829149</alternateIdentifier><shortName>GIS40</shortName>
+    <title>GIS40 GIS Coverages Defining the Sample Locations of Konza Consumer Data (1982-present)</title>
+    <creator>
+      <individualName>
+        <givenName>Zak</givenName>
+        <surName>Ratajczak</surName>
+      </individualName>
+      <address>
+        <deliveryPoint>116 Ackert Hall, Division of Biology, Kansas State University</deliveryPoint>
+        <city>Manhattan</city>
+        <administrativeArea>KS</administrativeArea>
+        <postalCode>66506</postalCode>
+        <country>US</country>
+      </address>
+      <phone
+        phonetype="voice">518-424-8354</phone>
+      <electronicMailAddress>zarata@ksu.edu</electronicMailAddress>
+      <onlineUrl>https://zaratajczak.wixsite.com/zak-ratajczak</onlineUrl>
+      <userId
+        directory="http://orcid.org">http://orcid.org/0000-0002-4675-5738</userId>
+    </creator>
+    <metadataProvider>
+      <individualName>
+        <givenName>Konza</givenName>
+        <surName>LTER</surName>
+      </individualName>
+      <address>
+        <deliveryPoint>Division of Biology</deliveryPoint>
+        <city>Manhattan</city>
+        <administrativeArea>KS</administrativeArea>
+        <postalCode>66506</postalCode>
+        <country>US</country>
+      </address>
+      <phone
+          phonetype="voice">785-532-6729</phone>
+      <electronicMailAddress>knzlter@ksu.edu</electronicMailAddress>
+      <onlineUrl>http://lter.konza.ksu.edu</onlineUrl>
+    </metadataProvider>
+    <pubDate>2023-01-20</pubDate>
+    <abstract>
+      <section>
+        <para>
+       These data show the sampling locations for the consumer datasets at Konza Prairie. GIS400 defines the starting points for sweep samples of grasshoppers across Konza Prairie. These data may be used in conjunction with the sweep sample datasets (CGR02). GIS401 defines the starting points for sweep samples of grasshoppers across Konza Prairie, focusing on grazing impact. These data may be used in conjunction with the sweep sample datasets (CGR02Z). GIS405 defines the trap locations for small mammal sampling across Konza Prairie. These data may be used in conjunction with CSM0X. GIS 406 defines the locations of small mammal host parasite sampling at Konza Prairie. These data may be used in conjunction with CSM08. GIS410 defines the stream stretches for fish sampling across Konza Prairie. These data may be used in conjunction with CFC01. These data are available to download as zipped shapefiles (.zip), compressed Google Earth KML layers (.kmz), and associated EML metadata (.xml).
+        </para>
+      </section>
+    </abstract>
+    <keywordSet>
+      <keyword>Disturbance</keyword>
+      <keyword>Populations</keyword>
+      <keywordThesaurus>Core Areas</keywordThesaurus>
+    </keywordSet>
+    <keywordSet>
+      <keyword>GIS</keyword>
+      <keywordThesaurus>Section</keywordThesaurus>
+    </keywordSet>
+    <keywordSet>
+      <keyword>LTER-KNZ</keyword>
+      <keywordThesaurus>Station Keywords</keywordThesaurus>
+    </keywordSet>
+    <keywordSet>
+      <keyword>biota</keyword>
+      <keyword>boundaries</keyword>
+      <keyword>communities</keyword>
+      <keyword>consumers</keyword>
+      <keyword>ecology</keyword>
+      <keyword>environment</keyword>
+      <keyword>fish</keyword>
+      <keyword>GIS</keyword>
+      <keyword>grasses</keyword>
+      <keyword>grasshoppers</keyword>
+      <keyword>grasslands</keyword>
+      <keyword>mammals</keyword>
+      <keyword>measurements</keyword>
+      <keyword>seasonality</keyword>
+      <keyword>trapping</keyword>
+      <keywordThesaurus>GIS Keywords</keywordThesaurus>
+    </keywordSet>
+    <intellectualRights>
+      <section>
+        <title>Data Policies</title>
+        <para>
+      Data Use Agreements: The Intellectual Rights within the metadata associated with each KNZ data set determines the exact data and metadata use agreement between the data user and the KNZ LTER site. KNZ LTER data and metadata may be released under the license: CC BY - Attribution (https://creativecommons.org/licenses/by/4.0/). This license lets others distribute, remix, tweak, and build upon KNZ work (even commercially), as long as the KNZ program is credited for the original creation. Alternatively, some KNZ LTER data and metadata may be released into the public domain: CC0 - No Rights Reserved (https://creativecommons.org/share-your-work/public-domain/cc0/). CC0 states that data are placed in the public domain, so that others may freely build upon, enhance and reuse the works for any purposes without restriction under copyright or database law. In either case, users of KNZ data are referred to the following guidelines: "The consumer of these data ("Data User" herein) has an ethical obligation to cite it appropriately in any publication that results from its use. The Data User should realize that these data may be actively used by others for ongoing research and that coordination may be necessary to prevent duplicate publication. The Data User is urged to contact the authors of these data if any questions about methodology or results occur. Where appropriate, the Data User is encouraged to consider collaboration or coauthorship with the authors. The Data User should realize that misinterpretation of data may occur if used out of context of the original study. While substantial efforts are made to ensure the accuracy of data and associated documentation, complete accuracy of data sets cannot be guaranteed. All data are made available "as is." The Data User should be aware, however, that data are updated periodically and it is the responsibility of the Data User to check for new versions of the data. The data authors and the repository where these data were obtained shall not be liable for damages resulting from any use or misinterpretation of the data. Thank you".
+        </para>
+      </section>
+    </intellectualRights>
+    <distribution>
+      <online>
+        <url
+      function="information">http://lter.konza.ksu.edu/content/gis40-gis-coverages-defining-sample-locations-konza-consumer-data-1982-present</url>
+      </online>
+    </distribution>
+    <distribution
+      id="10.6073/pasta/e85c2d9b778a0b314cede31e6b829149" scope="system"
+          system="https://pasta.edirepository.org"><online><url
+        function="information">https://doi.org/10.6073/pasta/e85c2d9b778a0b314cede31e6b829149</url></online></distribution><coverage>
+      <geographicCoverage>
+        <geographicDescription>Konza Prairie Biological Station (KPBS) is located on a 3,487 hectare native tallgrass prairie preserve jointly owned by The Nature Conservancy and Kansas State University. The KPBS is located in the Flint Hills of northeastern Kansas (39°05’ N, 96°35’ W), a grassland region of steep-slopes overlain by shallow limestone soils unsuitable for cultivation.</geographicDescription>
+        <boundingCoordinates>
+          <westBoundingCoordinate>-96.5833</westBoundingCoordinate>
+          <eastBoundingCoordinate>-96.5833</eastBoundingCoordinate>
+          <northBoundingCoordinate>39.0833</northBoundingCoordinate>
+          <southBoundingCoordinate>39.0833</southBoundingCoordinate>
+          <boundingAltitudes>
+            <altitudeMinimum>397</altitudeMinimum>
+            <altitudeMaximum>397</altitudeMaximum>
+            <altitudeUnits>meter</altitudeUnits>
+          </boundingAltitudes>
+        </boundingCoordinates>
+      </geographicCoverage>
+      <temporalCoverage>
+        <rangeOfDates>
+          <beginDate>
+            <calendarDate>1982-01-01</calendarDate>
+          </beginDate>
+          <endDate>
+            <calendarDate>2019-12-31</calendarDate>
+          </endDate>
+        </rangeOfDates>
+      </temporalCoverage>
+    </coverage>
+    <maintenance>
+      <description>
+        <para>
+       ongoing
+        </para>
+      </description>
+    </maintenance>
+    <contact>
+      <individualName>
+        <givenName>Konza</givenName>
+        <surName>LTER</surName>
+      </individualName>
+      <address>
+        <deliveryPoint>Division of Biology</deliveryPoint>
+        <city>Manhattan</city>
+        <administrativeArea>KS</administrativeArea>
+        <postalCode>66506</postalCode>
+        <country>US</country>
+      </address>
+      <phone
+        phonetype="voice">785-532-6729</phone>
+      <electronicMailAddress>knzlter@ksu.edu</electronicMailAddress>
+      <onlineUrl>http://lter.konza.ksu.edu</onlineUrl>
+    </contact>
+    <contact>
+      <individualName>
+        <givenName>Yang</givenName>
+        <surName>Xia</surName>
+      </individualName>
+      <address>
+        <deliveryPoint>116 Ackert Hall, Division of Biology, Kansas State University.</deliveryPoint>
+        <city>Manhattan</city>
+        <administrativeArea>KS</administrativeArea>
+        <postalCode>66506</postalCode>
+        <country>US</country>
+      </address>
+      <phone
+        phonetype="voice">785-532-6729</phone>
+      <phone
+        phonetype="facsimile">785-532-6615</phone>
+      <electronicMailAddress>yangx@ksu.edu</electronicMailAddress>
+      <userId
+        directory="http://orcid.org">http://orcid.org/0000-0002-7587-5835</userId>
+    </contact>
+    
+    <publisher><organizationName>Environmental Data Initiative</organizationName><electronicMailAddress>info@edirepository.org</electronicMailAddress><onlineUrl>https://edirepository.org</onlineUrl><userId
+      directory="https://ror.org">0330j0z60</userId></publisher><pubPlace>Environmental Data Initiative</pubPlace>
+    <methods>
+      <methodStep>
+        <description>
+          <section>
+            <para>
+           Information relevant to the GIS data encoding Sweep samples were taken for grasshoppers (Acrididae) at one site for each of the 12 Konza Prairie LTER treatments (3 fire treatments x 2 soils x 2 grazing treatments) in June, August, and September. This data may be used in conjunction with the Sweep samples for grasshoppers (CGRXX) datasets for spatially explicit analyses of these data.Horizontal Coordinate System Name:Transverse Mercator Datum: D North American 1983Reference Ellipsoid: Name: GRS 1980 Semi Axis: 6378137.0Meridian: GreenwichProjection Name : Transverse Mercator
+            </para>
+          </section>
+        </description>
+      </methodStep>
+    </methods>
+    <project>
+      <title>LTER: Manipulating drivers to assess grassland resilience</title>
+      <personnel>
+        <individualName>
+          <givenName>Jesse</givenName>
+          <surName>Nippert</surName>
+        </individualName>
+        <role>Principal Investigator</role>
+      </personnel>
+      <funding>NSF: DEB-2025849</funding>      
+      <relatedProject>
+        <title>LTER: Long-Term Research on Grassland Dynamics- Assessing Mechanisms of Sensitivity and Resilience to Global Change</title>
+        <personnel>
+          <individualName>
+            <givenName>Jesse</givenName>
+            <surName>Nippert</surName>
+          </individualName>
+          <role>Principal Investigator</role>
+        </personnel>
+        <personnel>
+          <individualName>
+            <givenName>John</givenName>
+            <surName>Blair</surName>
+          </individualName>
+          <role>Principal Investigator</role>
+        </personnel>
+        <funding>NSF: DEB-1440484</funding>
+      </relatedProject>      
+      <relatedProject>
+        <title>Konza Prairie LTER VI: Grassland Dynamics and Long-Term Trajectories of Change</title>
+        <personnel>
+          <individualName>
+            <givenName>John</givenName>
+            <surName>Blair</surName>
+          </individualName>
+          <role>Principal Investigator</role>
+        </personnel>
+        <funding>NSF: DEB-0823341</funding>
+      </relatedProject>    
+      <relatedProject>
+        <title>Konza Prairie LTER V: Long-Term Research on Grassland Dynamics and Global Change</title>
+        <personnel>
+          <individualName>
+            <givenName>John</givenName>
+            <surName>Blair</surName>
+          </individualName>
+          <role>Principal Investigator</role>
+        </personnel>
+        <funding>NSF: DEB-0218210</funding>
+      </relatedProject>   
+      <relatedProject>
+        <title>Long-Term Ecological Research in Tallgrass Prairie: The Konza Prairie LTER Program</title>
+        <personnel>
+          <individualName>
+            <givenName>Alan</givenName>
+            <surName>Knapp</surName>
+          </individualName>
+          <role>Principal Investigator</role>
+        </personnel>
+        <funding>NSF: DEB-9632851</funding>
+      </relatedProject>  
+      <relatedProject>
+        <title>Fire, Grazing, and Climatic Interactions in Tallgrass Prairie</title>
+        <personnel>
+          <individualName>
+            <givenName>Alan</givenName>
+            <surName>Knapp</surName>
+          </individualName>
+          <role>Principal Investigator</role>
+        </personnel>
+        <funding>NSF: DEB-9011662</funding>
+      </relatedProject>
+      <relatedProject>
+        <title>The Role of Fire and Other Disturbances in Determining Ecosystem Processes and Patterns in the Konza Prairie, Kansas</title>
+        <personnel>
+          <individualName>
+            <givenName>Donald</givenName>
+            <surName>Kaufman</surName>
+          </individualName>
+          <role>Principal Investigator</role>
+        </personnel>
+        <funding>NSF: DEB-8514327</funding>
+      </relatedProject>
+      <relatedProject>
+        <title>Long-Term Ecological Research in Tallgrass Prairie</title>
+        <personnel>
+          <individualName>
+            <givenName>Richard</givenName>
+            <surName>Marzolf</surName>
+          </individualName>
+          <role>Principal Investigator</role>
+        </personnel>
+        <funding>NSF: DEB-8012166</funding>
+      </relatedProject>   
+    </project>
+    <otherEntity
+      id="9f5c2f0cba639591f5b62136a7da6048" scope="document"
+          system="https://pasta.edirepository.org">
+      <entityName>GIS400</entityName>
+      <entityDescription>GIS400: Sweep Sample Locations for Konza Grasshoppers Datasets: Sweep samples were taken for grasshoppers (Acrididae) at one site for each of the 12 Konza Prairie LTER treatments (3 fire treatments x 2 soils x 2 grazing treatments) in June, August, and September. This data may be used in conjunction with the Sweep samples for grasshoppers (CGRXX) datasets for spatially explicit analyses of these data.</entityDescription>
+      <physical>
+        <objectName>GIS400.zip</objectName>
+        <size>11398</size>
+        <authentication
+          method="MD5">38450f14a4f74978e3430135e5cbd041</authentication>
+        <authentication
+              method="SHA-1">fc32e9e774eb420eec33f5469b192080f4a027e9</authentication>
+        <dataFormat>
+          <externallyDefinedFormat>
+            <formatName>application/zip</formatName>
+          </externallyDefinedFormat>
+        </dataFormat>
+        <distribution>
+          <online>
+            <url
+      function="download">https://pasta.lternet.edu/package/data/eml/knb-lter-knz/240/7/9f5c2f0cba639591f5b62136a7da6048</url>
+          </online>
+        </distribution>
+      </physical>
+      <entityType>document</entityType>
+    </otherEntity>
+    <otherEntity
+      id="9bcf25338dd3de12268c65865325f9d4" scope="document"
+          system="https://pasta.edirepository.org">
+      <entityName>KMZGIS400</entityName>
+      <entityDescription>Compressed Google Earth KML layers for GIS400</entityDescription>
+      <physical>
+        <objectName>GIS400.kmz</objectName>
+        <size>25507</size>
+        <authentication
+          method="MD5">b53b9345e4213219b75f2d4dbaa81342</authentication>
+        <authentication
+              method="SHA-1">ccbeaa20b2d608daf247a292b81d9cc72de725aa</authentication>
+        <dataFormat>
+          <externallyDefinedFormat>
+            <formatName>application/vnd.google-earth.kmz</formatName>
+          </externallyDefinedFormat>
+        </dataFormat>
+        <distribution>
+          <online>
+            <url
+      function="download">https://pasta.lternet.edu/package/data/eml/knb-lter-knz/240/7/9bcf25338dd3de12268c65865325f9d4</url>
+          </online>
+        </distribution>
+      </physical>
+      <entityType>document</entityType>
+    </otherEntity>
+    <otherEntity
+      id="a4f29f6514713d0e7e63fb5f01c88e38" scope="document"
+          system="https://pasta.edirepository.org">
+      <entityName>GIS401</entityName>
+      <entityDescription>GIS401: Sweep Sample Locations for Bison Grant Grasshoppers Datasets: These data show the sampling locations for the consumer datasets at Konza Prairie. Record type 1 defines the starting points for sweep samples of grasshoppers across Konza Prairie (GIS400). These data may be used in conjunction with the sweep sample datasets (CGR02). Record type 2 defines the starting points for sweep samples of grasshoppers across Konza Prairie (GIS401), focusing on grazing impact. These data may be used in conjunction with the sweep sample datasets (CGR02Z). Record type 6 defines the trap locations for small mammal sampling across Konza Prairie (GIS405). These data may be used in conjunction with CSM01.</entityDescription>
+      <physical>
+        <objectName>GIS401.zip</objectName>
+        <size>7254</size>
+        <authentication
+          method="MD5">bb6d94150ac8d1b51a343f04cd6e2137</authentication>
+        <authentication
+              method="SHA-1">0a5a96f5cb7f8ff7bef1e8aa1e9d9d809ca9878e</authentication>
+        <dataFormat>
+          <externallyDefinedFormat>
+            <formatName>application/zip</formatName>
+          </externallyDefinedFormat>
+        </dataFormat>
+        <distribution>
+          <online>
+            <url
+      function="download">https://pasta.lternet.edu/package/data/eml/knb-lter-knz/240/7/a4f29f6514713d0e7e63fb5f01c88e38</url>
+          </online>
+        </distribution>
+      </physical>
+      <entityType>document</entityType>
+    </otherEntity>
+    <otherEntity
+      id="a89c4b1ddef94dbceb0cde0052051a3f" scope="document"
+          system="https://pasta.edirepository.org">
+      <entityName>KMZGIS401</entityName>
+      <entityDescription>Compressed Google Earth KML layers for GIS401</entityDescription>
+      <physical>
+        <objectName>GIS401.kmz</objectName>
+        <size>29287</size>
+        <authentication
+          method="MD5">2f54f7b7b4eecb35c164f7b5ef9ec5a4</authentication>
+        <authentication
+              method="SHA-1">a2c988135d0d452ddc64ceb3de59f2017aab6324</authentication>
+        <dataFormat>
+          <externallyDefinedFormat>
+            <formatName>application/vnd.google-earth.kmz</formatName>
+          </externallyDefinedFormat>
+        </dataFormat>
+        <distribution>
+          <online>
+            <url
+      function="download">https://pasta.lternet.edu/package/data/eml/knb-lter-knz/240/7/a89c4b1ddef94dbceb0cde0052051a3f</url>
+          </online>
+        </distribution>
+      </physical>
+      <entityType>document</entityType>
+    </otherEntity>
+    <otherEntity
+      id="4d7b13d7c19f3a2b276c398913f8ca61" scope="document"
+          system="https://pasta.edirepository.org">
+      <entityName>GIS405</entityName>
+      <entityDescription>GIS405: Small Mammal Traplines in Prairie Habitats: These data show the sampling locations for the consumer datasets at Konza Prairie. Record type 1 defines the starting points for sweep samples of grasshoppers across Konza Prairie (GIS400). These data may be used in conjunction with the sweep sample datasets (CGR02). Record type 2 defines the starting points for sweep samples of grasshoppers across Konza Prairie (GIS401), focusing on grazing impact. These data may be used in conjunction with the sweep sample datasets (CGR02Z). Record type 6 defines the trap locations for small mammal sampling across Konza Prairie (GIS405). These data may be used in conjunction with CSM01.</entityDescription>
+      <physical>
+        <objectName>GIS405.zip</objectName>
+        <size>27115</size>
+        <authentication
+          method="MD5">4f49227879f4da49755a1fbfbb5f1c29</authentication>
+        <authentication
+              method="SHA-1">36ea8e97cfc1279e0fb4a274477e21450f65edee</authentication>
+        <dataFormat>
+          <externallyDefinedFormat>
+            <formatName>application/zip</formatName>
+          </externallyDefinedFormat>
+        </dataFormat>
+        <distribution>
+          <online>
+            <url
+      function="download">https://pasta.lternet.edu/package/data/eml/knb-lter-knz/240/7/4d7b13d7c19f3a2b276c398913f8ca61</url>
+          </online>
+        </distribution>
+      </physical>
+      <entityType>document</entityType>
+    </otherEntity>
+    <otherEntity
+      id="2b86376177a0ac6df6072ab7217d51fe" scope="document"
+          system="https://pasta.edirepository.org">
+      <entityName>KMZGIS405</entityName>
+      <entityDescription>Compressed Google Earth KML layers for GIS405</entityDescription>
+      <physical>
+        <objectName>GIS405.kmz</objectName>
+        <size>44041</size>
+        <authentication
+          method="MD5">3a6e63e4595bb5c477289dd45708be3e</authentication>
+        <authentication
+              method="SHA-1">cee2e51be0a75a8b123061ed38783f9186e777ee</authentication>
+        <dataFormat>
+          <externallyDefinedFormat>
+            <formatName>application/vnd.google-earth.kmz</formatName>
+          </externallyDefinedFormat>
+        </dataFormat>
+        <distribution>
+          <online>
+            <url
+      function="download">https://pasta.lternet.edu/package/data/eml/knb-lter-knz/240/7/2b86376177a0ac6df6072ab7217d51fe</url>
+          </online>
+        </distribution>
+      </physical>
+      <entityType>document</entityType>
+    </otherEntity>
+    <otherEntity
+      id="fcf8104725c0a52b16e5d7d129b6d5f7" scope="document"
+          system="https://pasta.edirepository.org">
+      <entityName>GIS406</entityName>
+      <entityDescription>GIS406: Small Mammal Host Parasite Sample Data for 16 Transects at Konza Prairie (2016 - present). GIS 406 defines the locations of small mammal host parasite sampling at Konza Prairie. These data may be used in conjunction with CSM08.</entityDescription>
+      <physical>
+        <objectName>GIS406.zip</objectName>
+        <size>24871</size>
+        <authentication
+          method="MD5">93ce189c166ff6725a6e8d07d417b12b</authentication>
+        <authentication
+              method="SHA-1">24be845b2807a5994f3b006766f7ab9dd13629c9</authentication>
+        <dataFormat>
+          <externallyDefinedFormat>
+            <formatName>application/zip</formatName>
+          </externallyDefinedFormat>
+        </dataFormat>
+        <distribution>
+          <online>
+            <url
+      function="download">https://pasta.lternet.edu/package/data/eml/knb-lter-knz/240/7/fcf8104725c0a52b16e5d7d129b6d5f7</url>
+          </online>
+        </distribution>
+      </physical>
+      <entityType>document</entityType>
+    </otherEntity>
+    <otherEntity
+      id="2aa0625d0b85755644a9c2bb66df6b02" scope="document"
+          system="https://pasta.edirepository.org">
+      <entityName>KMZGIS406</entityName>
+      <entityDescription>Compressed Google Earth KML layers for GIS406 </entityDescription>
+      <physical>
+        <objectName>GIS406.kmz</objectName>
+        <size>19051</size>
+        <authentication
+          method="MD5">eb572277ed9dae377bf08728aaa97f4d</authentication>
+        <authentication
+              method="SHA-1">ee5d68635c7ce850ab6b3cd0ba29686d38f79b80</authentication>
+        <dataFormat>
+          <externallyDefinedFormat>
+            <formatName>application/vnd.google-earth.kmz</formatName>
+          </externallyDefinedFormat>
+        </dataFormat>
+        <distribution>
+          <online>
+            <url
+      function="download">https://pasta.lternet.edu/package/data/eml/knb-lter-knz/240/7/2aa0625d0b85755644a9c2bb66df6b02</url>
+          </online>
+        </distribution>
+      </physical>
+      <entityType>document</entityType>
+    </otherEntity>
+    <otherEntity
+      id="7180c5ca9971bcf589fb5c9bb86bee9c" scope="document"
+          system="https://pasta.edirepository.org">
+      <entityName>GIS410</entityName>
+      <entityDescription>GIS410: Fish Communities in Konza Streams: These data show the sampling locations for the consumer datasets at Konza Prairie. Record type 1 defines the starting points for sweep samples of grasshoppers across Konza Prairie (GIS400). These data may be used in conjunction with the sweep sample datasets (CGR02). Record type 2 defines the starting points for sweep samples of grasshoppers across Konza Prairie (GIS401), focusing on grazing impact. These data may be used in conjunction with the sweep sample datasets (CGR02Z). Record type 6 defines the trap locations for small mammal sampling across Konza Prairie (GIS405). These data may be used in conjunction with CSM01. Record type 11 defines the stream stretches for fish sampling across Konza Prairie (GIS410). These data may be used in conjunction with CFP01.</entityDescription>
+      <physical>
+        <objectName>GIS410.zip</objectName>
+        <size>10633</size>
+        <authentication
+          method="MD5">bcdefc5a2c9dc5036a6a20cd720ec728</authentication>
+        <authentication
+              method="SHA-1">d8f55a25a77f209dfd382a6ab95c987e44a44eec</authentication>
+        <dataFormat>
+          <externallyDefinedFormat>
+            <formatName>application/zip</formatName>
+          </externallyDefinedFormat>
+        </dataFormat>
+        <distribution>
+          <online>
+            <url
+      function="download">https://pasta.lternet.edu/package/data/eml/knb-lter-knz/240/7/7180c5ca9971bcf589fb5c9bb86bee9c</url>
+          </online>
+        </distribution>
+      </physical>
+      <entityType>document</entityType>
+    </otherEntity>
+    <otherEntity
+      id="8d386931a1307a6b28f5b3900ac5f8c0" scope="document"
+          system="https://pasta.edirepository.org">
+      <entityName>KMZGIS410</entityName>
+      <entityDescription>Compressed Google Earth KML layers for GIS410</entityDescription>
+      <physical>
+        <objectName>GIS410.kmz</objectName>
+        <size>24556</size>
+        <authentication
+          method="MD5">891ae1f133282cda42c7ddf4412afbda</authentication>
+        <authentication
+              method="SHA-1">c8d4f1cffbc6402516bd190fef4ec52ae3963fa9</authentication>
+        <dataFormat>
+          <externallyDefinedFormat>
+            <formatName>application/vnd.google-earth.kmz</formatName>
+          </externallyDefinedFormat>
+        </dataFormat>
+        <distribution>
+          <online>
+            <url function="download">https://pasta.lternet.edu/package/data/eml/knb-lter-knz/240/7/8d386931a1307a6b28f5b3900ac5f8c0</url>
+          </online>
+        </distribution>
+      </physical>
+      <entityType>document</entityType>
+    </otherEntity>
+  </dataset>
+</eml:eml>

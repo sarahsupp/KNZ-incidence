@@ -1,0 +1,648 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eml:eml packageId="knb-lter-knz.26.12"
+  system="https://pasta.edirepository.org"
+  xmlns:eml="https://eml.ecoinformatics.org/eml-2.2.0"
+  xmlns:stmml="http://www.xml-cml.org/schema/stmml-1.1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="https://eml.ecoinformatics.org/eml-2.2.0    https://lter.kbs.msu.edu/docs/eml-2.2.0/eml.xsd">
+  <access
+    authSystem="https://pasta.edirepository.org/authentication"
+    order="allowFirst" scope="document"
+      system="https://pasta.edirepository.org">
+    <allow>
+      <principal>uid=KNZ,o=LTER,dc=ecoinformatics,dc=org</principal>
+      <permission>all</permission>
+    </allow>
+    <allow>
+      <principal>public</principal>
+      <permission>read</permission>
+    </allow>
+  </access>
+  <dataset>
+    <alternateIdentifier
+        system="https://doi.org">doi:10.6073/pasta/17b63f19967d13ba55acb5ed4d9601de</alternateIdentifier><shortName>CBP01</shortName>
+    <title>CBP01 Variable distance line-transect sampling of bird population numbers in different habitats on Konza Prairie</title>
+    <creator>
+      <individualName>
+        <givenName>Alice</givenName>
+        <surName>Boyle</surName>
+      </individualName>
+      <address>
+        <deliveryPoint>307 Ackert Hall, Division of Biology, Kansas State University.</deliveryPoint>
+        <city>Manhattan</city>
+        <administrativeArea>KS</administrativeArea>
+        <postalCode>66506</postalCode>
+        <country>US</country>
+      </address>
+      <phone
+        phonetype="voice">785-532-1701</phone>
+      <electronicMailAddress>aboyle@ksu.edu</electronicMailAddress>
+      <onlineUrl>http://www.aliceboyle.net</onlineUrl>
+      <userId
+          directory="http://orcid.org">http://orcid.org/0000-0002-2880-142X</userId>
+    </creator>
+    <metadataProvider>
+      <organizationName>Konza LTER</organizationName>
+      <onlineUrl>http://www.konza.ksu.edu/</onlineUrl>
+    </metadataProvider>
+    <pubDate>2023-01-16</pubDate>
+    <abstract>
+      <section>
+        <para>
+          <literalLayout>Records of bird species based on line transect sampling, giving perpendicular distance of sighting from the transect line on 16 separate transects. Bird surveys were conducted 2-4 times per year in January, April, June, and October for a 29-year period from 1981 to 2009. Transects were designed to determine bird communities and population numbers associated with tallgrass prairie habitats with different experimental treatments (fire frequency, grazed by bison vs. ungrazed), riparian habitats on forest edge, and gallery forests dominated by oak woodland.</literalLayout>
+        </para>
+      </section>
+    </abstract>
+    <keywordSet>
+      <keyword>Populations</keyword>
+      <keywordThesaurus>Core Areas</keywordThesaurus>
+    </keywordSet>
+    <keywordSet>
+      <keyword>Consumers</keyword>
+      <keywordThesaurus>Section</keywordThesaurus>
+    </keywordSet>
+    <keywordSet>
+      <keyword>birds</keyword>
+      <keyword>Consumers</keyword>
+      <keyword>LTER-KNZ</keyword>
+      <keyword>Konza Prairie</keyword>
+      <keyword>species diversity</keyword>
+      <keyword>relative abundance</keyword>
+      <keyword>Population</keyword>
+      <keywordThesaurus>Station Keywords</keywordThesaurus>
+    </keywordSet>
+    <intellectualRights>
+      <section>
+        <title>Data Policies</title>
+        <para>
+          <literalLayout>Data Use Agreements: The Intellectual Rights within the metadata associated with each KNZ data set determines the exact data and metadata use agreement between the data user and the KNZ LTER site. KNZ LTER data and metadata may be released under the license: CC BY - Attribution (https://creativecommons.org/licenses/by/4.0/). This license lets others distribute, remix, tweak, and build upon KNZ work (even commercially), as long as the KNZ program is credited for the original creation. Alternatively, some KNZ LTER data and metadata may be released into the public domain: CC0 - No Rights Reserved (https://creativecommons.org/share-your-work/public-domain/cc0/). CC0 states that data are placed in the public domain, so that others may freely build upon, enhance and reuse the works for any purposes without restriction under copyright or database law. In either case, users of KNZ data are referred to the following guidelines: "The consumer of these data ("Data User" herein) has an ethical obligation to cite it appropriately in any publication that results from its use. The Data User should realize that these data may be actively used by others for ongoing research and that coordination may be necessary to prevent duplicate publication. The Data User is urged to contact the authors of these data if any questions about methodology or results occur. Where appropriate, the Data User is encouraged to consider collaboration or coauthorship with the authors. The Data User should realize that misinterpretation of data may occur if used out of context of the original study. While substantial efforts are made to ensure the accuracy of data and associated documentation, complete accuracy of data sets cannot be guaranteed. All data are made available "as is." The Data User should be aware, however, that data are updated periodically and it is the responsibility of the Data User to check for new versions of the data. The data authors and the repository where these data were obtained shall not be liable for damages resulting from any use or misinterpretation of the data. Thank you".</literalLayout>
+        </para>
+      </section>
+    </intellectualRights>
+    <distribution>
+      <online>
+        <url
+      function="information">http://lter.konza.ksu.edu/content/cbp01-variable-distance-line-transect-sampling-bird-population-numbers-different-habitats</url>
+      </online>
+    </distribution>
+    <distribution
+      id="10.6073/pasta/17b63f19967d13ba55acb5ed4d9601de" scope="system"
+          system="https://pasta.edirepository.org"><online><url
+        function="information">https://doi.org/10.6073/pasta/17b63f19967d13ba55acb5ed4d9601de</url></online></distribution><coverage>
+      <geographicCoverage>
+        <geographicDescription>N4D : Year-long grazing by bison and scheduled prescribed burned every 4 years in the spring.</geographicDescription>
+        <boundingCoordinates>
+          <westBoundingCoordinate>-96.59</westBoundingCoordinate>
+          <eastBoundingCoordinate>-96.5768</eastBoundingCoordinate>
+          <northBoundingCoordinate>39.0896</northBoundingCoordinate>
+          <southBoundingCoordinate>39.0701</southBoundingCoordinate>
+        </boundingCoordinates>
+      </geographicCoverage>
+      <geographicCoverage>
+        <geographicDescription>N4B : Year-long grazing by bison and scheduled prescribed burned every 4 years in the spring.</geographicDescription>
+        <boundingCoordinates>
+          <westBoundingCoordinate>-96.5869</westBoundingCoordinate>
+          <eastBoundingCoordinate>-96.5738</eastBoundingCoordinate>
+          <northBoundingCoordinate>39.096</northBoundingCoordinate>
+          <southBoundingCoordinate>39.0891</southBoundingCoordinate>
+        </boundingCoordinates>
+      </geographicCoverage>
+      <geographicCoverage>
+        <geographicDescription>4A: Ungrazed and scheduled prescribed burned every 4 years in the spring</geographicDescription>
+        <boundingCoordinates>
+          <westBoundingCoordinate>-96.6093</westBoundingCoordinate>
+          <eastBoundingCoordinate>-96.6017</eastBoundingCoordinate>
+          <northBoundingCoordinate>39.0773</northBoundingCoordinate>
+          <southBoundingCoordinate>39.0731</southBoundingCoordinate>
+        </boundingCoordinates>
+      </geographicCoverage>
+      <geographicCoverage>
+        <geographicDescription>N1B : Year-long grazing by bison and scheduled prescribed burned annually in the spring.</geographicDescription>
+        <boundingCoordinates>
+          <westBoundingCoordinate>-96.5793</westBoundingCoordinate>
+          <eastBoundingCoordinate>-96.5634</eastBoundingCoordinate>
+          <northBoundingCoordinate>39.088</northBoundingCoordinate>
+          <southBoundingCoordinate>39.0746</southBoundingCoordinate>
+        </boundingCoordinates>
+      </geographicCoverage>
+      <geographicCoverage>
+        <geographicDescription>1D: Ungrazed and scheduled prescribed burned annually in the spring.</geographicDescription>
+        <boundingCoordinates>
+          <westBoundingCoordinate>-96.5658</westBoundingCoordinate>
+          <eastBoundingCoordinate>-96.5594</eastBoundingCoordinate>
+          <northBoundingCoordinate>39.0841</northBoundingCoordinate>
+          <southBoundingCoordinate>39.0732</southBoundingCoordinate>
+        </boundingCoordinates>
+      </geographicCoverage>
+      <geographicCoverage>
+        <geographicDescription>R20A: Ungrazed and scheduled prescribed burned annually through 2000, scheduled prescribed burned every 20 years in the spring thereafter.</geographicDescription>
+        <boundingCoordinates>
+          <westBoundingCoordinate>-96.6145</westBoundingCoordinate>
+          <eastBoundingCoordinate>-96.6055</eastBoundingCoordinate>
+          <northBoundingCoordinate>39.0731</northBoundingCoordinate>
+          <southBoundingCoordinate>39.0664</southBoundingCoordinate>
+        </boundingCoordinates>
+      </geographicCoverage>
+      <geographicCoverage>
+        <geographicDescription>R1B: Ungrazed and scheduled unburned through 2000, scheduled prescribed burned annually in the spring beginning 2001</geographicDescription>
+        <boundingCoordinates>
+          <westBoundingCoordinate>-96.5579</westBoundingCoordinate>
+          <eastBoundingCoordinate>-96.5481</eastBoundingCoordinate>
+          <northBoundingCoordinate>39.0792</northBoundingCoordinate>
+          <southBoundingCoordinate>39.0731</southBoundingCoordinate>
+        </boundingCoordinates>
+      </geographicCoverage>
+      <geographicCoverage>
+        <geographicDescription>20C: Ungrazed and scheduled prescribed burned every 20 years in the spring.</geographicDescription>
+        <boundingCoordinates>
+          <westBoundingCoordinate>-96.5655</westBoundingCoordinate>
+          <eastBoundingCoordinate>-96.5588</eastBoundingCoordinate>
+          <northBoundingCoordinate>39.0739</northBoundingCoordinate>
+          <southBoundingCoordinate>39.0659</southBoundingCoordinate>
+        </boundingCoordinates>
+      </geographicCoverage>
+      <geographicCoverage>
+        <geographicDescription>20B: Ungrazed and scheduled prescribed burned every 20 years in the spring.</geographicDescription>
+        <boundingCoordinates>
+          <westBoundingCoordinate>-96.5808</westBoundingCoordinate>
+          <eastBoundingCoordinate>-96.5741</eastBoundingCoordinate>
+          <northBoundingCoordinate>39.0758</northBoundingCoordinate>
+          <southBoundingCoordinate>39.0693</southBoundingCoordinate>
+        </boundingCoordinates>
+      </geographicCoverage>
+      <geographicCoverage>
+        <geographicDescription>N20B: Year-long grazing by bison and scheduled prescribed burned every 20 years in the spring.</geographicDescription>
+        <boundingCoordinates>
+          <westBoundingCoordinate>-96.5801</westBoundingCoordinate>
+          <eastBoundingCoordinate>-96.561</eastBoundingCoordinate>
+          <northBoundingCoordinate>39.0922</northBoundingCoordinate>
+          <southBoundingCoordinate>39.0815</southBoundingCoordinate>
+        </boundingCoordinates>
+      </geographicCoverage>
+      <temporalCoverage>
+        <rangeOfDates>
+          <beginDate>
+            <calendarDate>1981-05-27</calendarDate>
+          </beginDate>
+          <endDate>
+            <calendarDate>2009-06-17</calendarDate>
+          </endDate>
+        </rangeOfDates>
+      </temporalCoverage>
+    </coverage>
+    <purpose>
+      <para>
+        <literalLayout>Estimate bird populations in tallgrass prairie, gallery forest, and riparian edge habitats.</literalLayout>
+      </para>
+    </purpose>
+    <maintenance>
+      <description>
+        <para>
+          <literalLayout>complete</literalLayout>
+        </para>
+      </description>
+    </maintenance>
+    <contact>
+      <individualName>
+        <givenName>Konza</givenName>
+        <surName>LTER</surName>
+      </individualName>
+      <address>
+        <deliveryPoint>Division of Biology</deliveryPoint>
+        <city>Manhattan</city>
+        <administrativeArea>KS</administrativeArea>
+        <postalCode>66506</postalCode>
+        <country>US</country>
+      </address>
+      <phone
+        phonetype="voice">785-532-6729</phone>
+      <electronicMailAddress>knzlter@ksu.edu</electronicMailAddress>
+      <onlineUrl>http://lter.konza.ksu.edu</onlineUrl>
+    </contact>
+    
+    <publisher><organizationName>Environmental Data Initiative</organizationName><electronicMailAddress>info@edirepository.org</electronicMailAddress><onlineUrl>https://edirepository.org</onlineUrl><userId
+      directory="https://ror.org">0330j0z60</userId></publisher><pubPlace>Environmental Data Initiative</pubPlace>
+    <methods>
+      <methodStep>
+        <description>
+          <section>
+            <para>
+              <literalLayout>Location of Sampling Stations: 4 year burn, grazed: N04D (0.961 km) + N04B (0.778 km) = 1.74 km 4 year burn, ungrazed: 004A (0.343 km) + 004B (0.902 km) = 1.25 km 1 year burn, grazed: N0lB (L-6 = 0.546 km + L-10 = 1.091 km) = 1.63 km 1 year burn, ungrazed: 001D (0.914 km) + 001A (0.666 km) = 1.58 km unburned, grazed: N20B = 1.49 km unburned, ungrazed: 020B (0.545 km) + 020C (0.594 km) + 020D (0.636 km) = 1.78 km gallery forest: lower King's Creek (0.882 km) + north fork (0.742 km) = 1.62 km forest edge: upper Shane Creek = 1.30 km Frequency of Sampling: Censuses are conducted two times during the year: during the first two weeks of January as a measure of wintering populations, and during the first two weeks of June as a measure of breeding populations. Variable Measured: Individual birds by species (or by more general taxon if necessary, e.g. unidentified sparrow) seen or heard with an estimate of the perpendicular distance from the transect line. Methods: General methods: Bird populations are estimated using the variable distance transect method described by Burnham, Anderson and Laake (1980. Wildl. Monogr. 72). Censuses are conducted in each of the six LTER treatments (3 burn x 2 grazing) without regard to the two soil types since stratification of the sampling design according to soil type would limit transects to insufficient length and area of coverage. A single transect is composed of separate line segments from different plots of the same treatment that are simply added together. For example, if six dickcissels are counted in one transect in an annual burned, ungrazed plot, and 13 dickcissels are recorded on transect on another annual burned, ungrazed plot, the number of dickcissels recorded per transect in that treatment is 19. The only transect that is not segmented in this fashion is the forest edge transect.  All other transects are composed of two or three separate segments. Marking: Each transect segment is marked at the beginning and the end with a galvanized steel conduit post into which a large marker flag has been inserted. For the grassland transects, these beginning and ending markers are short (total length about 45 cm) and the transect line is designated by yellow plastic marker flags placed in 50.5 cm conduits buried upright in the ground at 100 m intervals. For the forest transects, including the forest edge transect, the conduit posts are longer (ca. 90 cm) and are placed not only at the beginning and the end, but every 100 m along the transect route. These are further supplemented with yellow plastic marker flags to designate the transect line through dense vegetation. Procedures: The selection of a transect segment to be run on a given day is determined from a table of random numbers. No transect can be started later than three hours after sunrise regardless of the season. Since weather conditions affect the activity of birds and especially the ability of the observer to detect the birds, transect counts are not initiated if temperatures are below -15 F or wind speeds over 10 mph, or in moderately heavy snow or rain. Light rain, mists, and snow showers that do not greatly restrict visibility or impair the observer's use of binoculars are acceptable conditions for completing a transect count. Transect counts will begin at the marker designated on the map as the start. The most critical factor to keep in mind is that the observer must be progressing down-sun for most of the transect. The following protocol is followed: 1). Equipment needed: data sheet (Fig.10), clipboard, pencils, and binoculars. 2). Proceed along the transect at a moderate rate, stopping every 20 meters or so to observe birds ahead and to either side of the transect line. Progress along the transect ought to be around 1 km / 45 minutes. 3). For all observations, estimate as exactly as possible (within 5 m) the perpendicular distance in meters of the birds from the transect line even though you will probably observe the bird at an acute angle relative to the transect line, and record this distance on the data sheet by species and by serially numbered observation. 4). It is essential that no bird directly on the transect line be missed. 5). If a bird is not seen until it flies, the observed perpendicular distance is from the point from which it flew. 6). Birds flying over the tract are not to be counted unless they land. Then the perpendicular distance to the transect line is that point. 7). An exception to the above rule applies to swallows, nighthawks, upland sandpipers, and harriers that are often observed over the plot but never come to rest. In these cases, estimate a distance from the transect line for each observation based on an 'average' distance during the period of observation. 8). No bird can be counted twice. Disregard all subsequent sightings of a known individual after the first. 9). It is not necessary to differentiate between right and left sides of the transects. All observations are simply in terms of perpendicular distance from the transect line. 10). It is also not necessary to note at which point along the linear reach of the transect a particular observation is made. 11). All birds within the treatment are to be counted. There is no fixed width. Birds beyond the boundaries of the treatment are not to be counted. There are regions of transects that come relatively close to a treatment boundary (e.g., the south end of the transect in D-1), so be alert for the location of mowed strips between treatments. 12). It would facilitate the estimation of distances from the transect if fixed objects, such as trees, shrubs and rock outcrops along the transect route are actually measured in terms of their perpendicular distance from the transect. Since some of these are used as perches, they give an exact measure of distance. They will also serve to reinforce the observer's ability to estimate perpendicular distance as he/she progresses along the transect. Form of Data Output: Estimates of absolute densities from this method require the enumeration of at least 40 observations per transect. Observations can be grouped by habitat type within each treatment (e.g., grassland, Cornus thickets, stream bottoms, etc.) or they could be grouped by guild to attain the 40 observations minimum and thus permit comparisons in terms of absolute densities between treatments, seasons, years, and with similar data in other locations. Since the method of data collection on transects is similar and since each transect is of similar length, relative density comparisons in terms of birds/kilometer or relative frequencies can be made between treatments, seasons, and years. Summary of All Changes Up to 1993: 1981: Transects were as presently located except no transect in N20B and there were transects in  N20C (now N01A), N20D (now part of N01B), N01C (now N02B), N01D (now part of N01B), and N04C (now N04B). 1982: Transects in N20C (N01A) and N01C (N02B) were dropped, N20D was maintained in what is now N01B. N01D became the second transect in what is now N01B, and N04C transect was maintained in what is now N04B. N20B was added. 1990: 004d became SA and transect was dropped. Comments: Miscellaneous notes on the natural history of the bird sighting Time: If obsnum=1, the start and end times for the bird survey transect. All surveys were conducted in morning hours in the Central Timezone (CT). Time could be either Central Standard Time (CST) or Central Daylight Time (CDT) depending on the month of survey. In some cases, the end time was not recorded for the survey (End=????), but duration was set to be the average survey time for that transect in a given season. Duration: If obsnum=1, the duration of the bird survey transect in minutes. Observer: If obsnum=1, the name of the observer conducting the bird survey. Bird survey transects were conducted by four different observers over the 29-year period from 1981 to 2009: Elmer J. Finck (ca. 1981-1989, n = 430 surveys), John L. Zimmerman (ca. 1990-1997, n = 293 surveys), Christopher C. Smith (1998-2001, n = 105 surveys), and Brett K. Sandercock (2002-2009, n = 240 surveys). Metadata revised: 06/26/2016 For additional metadata information see: http://lter.konza.ksu.edu/sites/default/files/DC.pdf For additional methods information see: http://lter.konza.ksu.edu/sites/default/files/MM.pdf</literalLayout>
+            </para>
+          </section>
+        </description>
+      </methodStep>
+    </methods>
+    <project>
+        <title>Konza Prairie LTER VI: Grassland Dynamics and Long-Term Trajectories of Change</title>
+        <personnel>
+          <individualName>
+            <givenName>John</givenName>
+            <surName>Blair</surName>
+          </individualName>
+          <role>Principal Investigator</role>
+        </personnel>
+        <funding>NSF: DEB-0823341</funding>   
+      <relatedProject>
+        <title>Konza Prairie LTER V: Long-Term Research on Grassland Dynamics and Global Change</title>
+        <personnel>
+          <individualName>
+            <givenName>John</givenName>
+            <surName>Blair</surName>
+          </individualName>
+          <role>Principal Investigator</role>
+        </personnel>
+        <funding>NSF: DEB-0218210</funding>
+      </relatedProject>   
+      <relatedProject>
+        <title>Long-Term Ecological Research in Tallgrass Prairie: The Konza Prairie LTER Program</title>
+        <personnel>
+          <individualName>
+            <givenName>Alan</givenName>
+            <surName>Knapp</surName>
+          </individualName>
+          <role>Principal Investigator</role>
+        </personnel>
+        <funding>NSF: DEB-9632851</funding>
+      </relatedProject>  
+      <relatedProject>
+        <title>Fire, Grazing, and Climatic Interactions in Tallgrass Prairie</title>
+        <personnel>
+          <individualName>
+            <givenName>Alan</givenName>
+            <surName>Knapp</surName>
+          </individualName>
+          <role>Principal Investigator</role>
+        </personnel>
+        <funding>NSF: DEB-9011662</funding>
+      </relatedProject>
+      <relatedProject>
+        <title>The Role of Fire and Other Disturbances in Determining Ecosystem Processes and Patterns in the Konza Prairie, Kansas</title>
+        <personnel>
+          <individualName>
+            <givenName>Donald</givenName>
+            <surName>Kaufman</surName>
+          </individualName>
+          <role>Principal Investigator</role>
+        </personnel>
+        <funding>NSF: DEB-8514327</funding>
+      </relatedProject>
+      <relatedProject>
+        <title>Long-Term Ecological Research in Tallgrass Prairie</title>
+        <personnel>
+          <individualName>
+            <givenName>Richard</givenName>
+            <surName>Marzolf</surName>
+          </individualName>
+          <role>Principal Investigator</role>
+        </personnel>
+        <funding>NSF: DEB-8012166</funding>
+      </relatedProject>   
+    </project>
+    <dataTable
+      id="2cb31d8bf5a96a038687d0986c3deb77" scope="document"
+          system="https://pasta.edirepository.org">
+      <entityName>CBP011</entityName>
+      <entityDescription>Bird populations</entityDescription>
+      <physical>
+        <objectName>CBP011.csv</objectName>
+        <size>2727483</size>
+        <authentication
+          method="MD5">be705f9449cba3b8c723d4b537674927</authentication>
+        <authentication
+              method="SHA-1">16500f5f48ea6782853758cbae23b98c0cfe9f53</authentication>
+        <dataFormat>
+          <textFormat>
+            <numHeaderLines>1</numHeaderLines>
+            <recordDelimiter>\r\n</recordDelimiter>
+            <attributeOrientation>column</attributeOrientation>
+            <simpleDelimited>
+              <fieldDelimiter>,</fieldDelimiter>
+              <quoteCharacter>"</quoteCharacter>
+            </simpleDelimited>
+          </textFormat>
+        </dataFormat>
+        <distribution>
+          <online>
+            <url
+        function="download">https://pasta.lternet.edu/package/data/eml/knb-lter-knz/26/12/2cb31d8bf5a96a038687d0986c3deb77</url>
+          </online>
+        </distribution>
+      </physical>
+      <attributeList>
+        <attribute>
+          <attributeName>DataCode</attributeName>
+          <attributeLabel>DataCode</attributeLabel>
+          <attributeDefinition>Dataset code</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Dataset code</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>RecType</attributeName>
+          <attributeLabel>RecType</attributeLabel>
+          <attributeDefinition>Record type</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Record type</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>RecYear</attributeName>
+          <attributeLabel>RecYear</attributeLabel>
+          <attributeDefinition>Year of record</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <customUnit>Year (YYYY)</customUnit>
+              </unit>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>RecMonth</attributeName>
+          <attributeLabel>RecMonth</attributeLabel>
+          <attributeDefinition>Month of record</attributeDefinition>
+          <storageType>date</storageType>
+          <measurementScale>
+            <dateTime>
+              <formatString>MM</formatString>
+            </dateTime>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>RecDay</attributeName>
+          <attributeLabel>RecDay</attributeLabel>
+          <attributeDefinition>Day of record</attributeDefinition>
+          <storageType>date</storageType>
+          <measurementScale>
+            <dateTime>
+              <formatString>DD</formatString>
+            </dateTime>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Season</attributeName>
+          <attributeLabel>Season</attributeLabel>
+          <attributeDefinition>Round of survey</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Round of survey</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Transnum</attributeName>
+          <attributeLabel>TRANSNUM</attributeLabel>
+          <attributeDefinition>Transect number(#7 &amp; 11 invalid)</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Transect number(#7 &amp; 11 invalid)</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Watershed</attributeName>
+          <attributeLabel>WATERSHED</attributeLabel>
+          <attributeDefinition>watershed (S00A-Shane Creek,G00A-North branch of Kings Creek, L00A-Lower Kings Creek)</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>watershed (S00A-Shane Creek,G00A-North branch of Kings Creek, L00A-Lower Kings Creek)</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Obsnum</attributeName>
+          <attributeLabel>OBSNUM</attributeLabel>
+          <attributeDefinition>Observation number</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Observation number</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Specname</attributeName>
+          <attributeLabel>SPECNAME</attributeLabel>
+          <attributeDefinition>Species name</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Species name</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>AOUcode</attributeName>
+          <attributeLabel>AOUCODE</attributeLabel>
+          <attributeDefinition>Standardized 4-letter alpha code for bird name</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Standardized 4-letter alpha code for bird name</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Common name</attributeName>
+          <attributeLabel>COMMONNAME</attributeLabel>
+          <attributeDefinition>Standardized common name of bird</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Standardized common name of bird</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Distance</attributeName>
+          <attributeLabel>DISTANCE</attributeLabel>
+          <attributeDefinition>Perpendicular distance to observed</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>meter</standardUnit>
+              </unit>
+              <precision>1</precision>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+          <missingValueCode>
+            <code>blank</code>
+            <codeExplanation>Missing or Not Measured</codeExplanation>
+          </missingValueCode>
+        </attribute>
+        <attribute>
+          <attributeName>Count</attributeName>
+          <attributeLabel>COUNT</attributeLabel>
+          <attributeDefinition>Number of birds detected</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Number of birds detected</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Sex</attributeName>
+          <attributeLabel>SEX</attributeLabel>
+          <attributeDefinition>Sex of bird m-male f-female u-unknown</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Sex of bird m-male f-female u-unknown</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Status</attributeName>
+          <attributeLabel>STATUS</attributeLabel>
+          <attributeDefinition>Residency status code</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Residency status code</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Comments</attributeName>
+          <attributeLabel>COMMENTS</attributeLabel>
+          <attributeDefinition>For obsnum=1, includes start and end time</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>For obsnum=1, includes start and end time</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Time</attributeName>
+          <attributeLabel>TIME</attributeLabel>
+          <attributeDefinition>For obsnum=1, start and end time of survey (CT)</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>For obsnum=1, start and end time of survey (CT)</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Duration</attributeName>
+          <attributeLabel>DURATION</attributeLabel>
+          <attributeDefinition>For obsnum=1, duration of survey</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>For obsnum=1, duration of survey</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Observer</attributeName>
+          <attributeLabel>OBSERVER</attributeLabel>
+          <attributeDefinition>For obsnum=1, person who conducted bird survey</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>For obsnum=1, person who conducted bird survey</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+      </attributeList>
+      <numberOfRecords>34988</numberOfRecords>
+    </dataTable>
+  </dataset>
+  <additionalMetadata>
+    <metadata>
+      <stmml:unitList
+        xmlns="http://www.xml-cml.org/schema/stmml"
+        xmlns:sch="http://www.ascc.net/xml/schematron"
+        xmlns:stmml="http://www.xml-cml.org/schema/stmml-1.1"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.xml-cml.org/schema/stmml-1.1 http://nis.lternet.edu/schemas/EML/eml-2.1.0/stmml.xsd">
+        <stmml:unit id="Year (YYYY)">
+          <stmml:description/>
+        </stmml:unit>
+      </stmml:unitList>
+    </metadata>
+  </additionalMetadata>
+</eml:eml>

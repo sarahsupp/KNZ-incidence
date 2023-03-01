@@ -1,0 +1,601 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eml:eml packageId="knb-lter-knz.55.14"
+  system="https://pasta.edirepository.org"
+  xmlns:eml="https://eml.ecoinformatics.org/eml-2.2.0"
+  xmlns:stmml="http://www.xml-cml.org/schema/stmml-1.1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="https://eml.ecoinformatics.org/eml-2.2.0    https://nis.lternet.edu/schemas/EML/eml-2.2.0/xsd/eml.xsd">
+  <access
+    authSystem="https://pasta.edirepository.org/authentication"
+    order="allowFirst" scope="document"
+      system="https://pasta.edirepository.org">
+    <allow>
+      <principal>uid=KNZ,o=LTER,dc=ecoinformatics,dc=org</principal>
+      <permission>all</permission>
+    </allow>
+    <allow>
+      <principal>public</principal>
+      <permission>read</permission>
+    </allow>
+  </access>
+  <dataset>
+    <alternateIdentifier
+        system="https://doi.org">doi:10.6073/pasta/08491e6228bce232399b87f9b97fb06d</alternateIdentifier><shortName>PAB01</shortName>
+    <title>PAB01 Aboveground net primary productivity of tallgrass prairie based on accumulated plant biomass on core LTER watersheds (001d, 004b, 020b)</title>
+    <creator>
+      <individualName>
+        <givenName>John</givenName>
+        <surName>Blair</surName>
+      </individualName>
+      <address>
+        <deliveryPoint>116 Ackert Hall, Division of Biology, Kansas State University</deliveryPoint>
+        <city>Manhattan</city>
+        <administrativeArea>KS</administrativeArea>
+        <postalCode>66506</postalCode>
+        <country>US</country>
+      </address>
+      <phone
+        phonetype="voice">785-532-7065</phone>
+      <phone
+        phonetype="facsimile">785-532-6653</phone>
+      <electronicMailAddress>jblair@ksu.edu</electronicMailAddress>
+      <userId
+        directory="http://orcid.org">http://orcid.org/0000-0003-0072-0721</userId>
+    </creator>
+    <creator>
+      <individualName>
+        <givenName>Jesse</givenName>
+        <surName>Nippert</surName>
+      </individualName>
+      <address>
+        <deliveryPoint>116 Ackert Hall, Division of Biology, Kansas State University</deliveryPoint>
+        <city>Manhattan</city>
+        <administrativeArea>KS</administrativeArea>
+        <postalCode>66506</postalCode>
+        <country>US</country>
+      </address>
+      <phone
+        phonetype="voice">785-532-0114</phone>
+      <electronicMailAddress>nippert@ksu.edu</electronicMailAddress>
+      <userId
+          directory="http://orcid.org">http://orcid.org/0000-0002-7939-342X</userId>
+    </creator>
+    <metadataProvider>
+      <organizationName>Konza LTER</organizationName>
+      <onlineUrl>http://www.konza.ksu.edu/</onlineUrl>
+    </metadataProvider>
+    <pubDate>2023-01-23</pubDate>
+    <abstract>
+      <section>
+        <para>
+       Data set contains estimates of end-of-season standing crop biomass (grams per square meter) of live graminoids, forbs, woody plants, and previous year's dead vegetation for 2 soil types (shallow and deep) on three core LTER watersheds representing three fire frequency treatments. Twenty quadrats (0.1 square meters) are harvested for each soil/treatment type. NOTE: Early (April) and mid-season (July) biomass was collected from 1983-1988, and these data are available by request.
+        </para>
+      </section>
+    </abstract>
+    <keywordSet>
+      <keyword>Primary Production</keyword>
+      <keywordThesaurus>Core Areas</keywordThesaurus>
+    </keywordSet>
+    <keywordSet>
+      <keyword>Producers</keyword>
+      <keywordThesaurus>Section</keywordThesaurus>
+    </keywordSet>
+    <keywordSet>
+      <keyword>aboveground biomass</keyword>
+      <keyword>detritus</keyword>
+      <keyword>forbs</keyword>
+      <keyword>graminoid</keyword>
+      <keyword>grasses</keyword>
+      <keyword>Kansas</keyword>
+      <keyword>Konza Prairie</keyword>
+      <keyword>Konza Prairie Biological Station</keyword>
+      <keyword>litter</keyword>
+      <keyword>LTER</keyword>
+      <keyword>net primary productivity</keyword>
+      <keyword>nitrogen</keyword>
+      <keyword>phosphorus</keyword>
+      <keyword>plant biomass</keyword>
+      <keyword>standing crop</keyword>
+      <keyword>primary productivity</keyword>
+      <keyword>previous year's dead</keyword>
+      <keyword>prairie</keyword>
+      <keyword>wood</keyword>
+      <keywordThesaurus>Station Keywords</keywordThesaurus>
+    </keywordSet>
+    <intellectualRights>
+      <section>
+        <title>Data Policies</title>
+        <para>
+       Data Use Agreements: The Intellectual Rights within the metadata associated with each KNZ data set determines the exact data and metadata use agreement between the data user and the KNZ LTER site. KNZ LTER data and metadata may be released under the license: CC BY - Attribution (https://creativecommons.org/licenses/by/4.0/). This license lets others distribute, remix, tweak, and build upon KNZ work (even commercially), as long as the KNZ program is credited for the original creation. Alternatively, some KNZ LTER data and metadata may be released into the public domain: CC0 - No Rights Reserved (https://creativecommons.org/share-your-work/public-domain/cc0/). CC0 states that data are placed in the public domain, so that others may freely build upon, enhance and reuse the works for any purposes without restriction under copyright or database law. In either case, users of KNZ data are referred to the following guidelines: "The consumer of these data ("Data User" herein) has an ethical obligation to cite it appropriately in any publication that results from its use. The Data User should realize that these data may be actively used by others for ongoing research and that coordination may be necessary to prevent duplicate publication. The Data User is urged to contact the authors of these data if any questions about methodology or results occur. Where appropriate, the Data User is encouraged to consider collaboration or coauthorship with the authors. The Data User should realize that misinterpretation of data may occur if used out of context of the original study. While substantial efforts are made to ensure the accuracy of data and associated documentation, complete accuracy of data sets cannot be guaranteed. All data are made available "as is." The Data User should be aware, however, that data are updated periodically and it is the responsibility of the Data User to check for new versions of the data. The data authors and the repository where these data were obtained shall not be liable for damages resulting from any use or misinterpretation of the data. Thank you".
+        </para>
+      </section>
+    </intellectualRights>
+    <distribution>
+      <online>
+        <url
+      function="information">http://lter.konza.ksu.edu/content/pab01-aboveground-net-primary-productivity-tallgrass-prairie-based-accumulated-plant-biomass</url>
+      </online>
+    </distribution>
+    <distribution
+      id="10.6073/pasta/08491e6228bce232399b87f9b97fb06d" scope="system"
+          system="https://pasta.edirepository.org"><online><url
+        function="information">https://doi.org/10.6073/pasta/08491e6228bce232399b87f9b97fb06d</url></online></distribution><coverage>
+      <geographicCoverage>
+        <geographicDescription>1D: Ungrazed and scheduled prescribed burned annually in the spring.</geographicDescription>
+        <boundingCoordinates>
+          <westBoundingCoordinate>-96.5658</westBoundingCoordinate>
+          <eastBoundingCoordinate>-96.5594</eastBoundingCoordinate>
+          <northBoundingCoordinate>39.0841</northBoundingCoordinate>
+          <southBoundingCoordinate>39.0732</southBoundingCoordinate>
+        </boundingCoordinates>
+      </geographicCoverage>
+      <geographicCoverage>
+        <geographicDescription>4B: Ungrazed and scheduled prescribed burned every 4 years in the spring</geographicDescription>
+        <boundingCoordinates>
+          <westBoundingCoordinate>-96.6035</westBoundingCoordinate>
+          <eastBoundingCoordinate>-96.5924</eastBoundingCoordinate>
+          <northBoundingCoordinate>39.0802</northBoundingCoordinate>
+          <southBoundingCoordinate>39.0712</southBoundingCoordinate>
+        </boundingCoordinates>
+      </geographicCoverage>
+      <geographicCoverage>
+        <geographicDescription>20B: Ungrazed and scheduled prescribed burned every 20 years in the spring.</geographicDescription>
+        <boundingCoordinates>
+          <westBoundingCoordinate>-96.5808</westBoundingCoordinate>
+          <eastBoundingCoordinate>-96.5741</eastBoundingCoordinate>
+          <northBoundingCoordinate>39.0758</northBoundingCoordinate>
+          <southBoundingCoordinate>39.0693</southBoundingCoordinate>
+        </boundingCoordinates>
+      </geographicCoverage>
+      <temporalCoverage>
+        <rangeOfDates>
+          <beginDate>
+            <calendarDate>1984-04-01</calendarDate>
+          </beginDate>
+          <endDate>
+            <calendarDate>2018-12-28</calendarDate>
+          </endDate>
+        </rangeOfDates>
+      </temporalCoverage>
+    </coverage>
+    <purpose>
+      <para>
+      To assess the total aboveground biomass per unit area and separate the total into live (includes grass, sedges and current year's dead), forb, woody and previous years' dead (p.dead) components; and determine N and P content of aboveground foliage on treatment plots burned annually, every 2 years, every 4 years, unburned and seasonally (spring, summer, fall, winter). This data set is separated into the following sub-sets: PAB011: end-of-season clips on core watersheds: 001D, 004B and 020B. PAB021: bi-weekly clips on 001A, 020A, 001C, and 020D. PAB031: end-of-season clips on seasonal watershed: 0SpA, 0SpB, 0FA, 0FB, 0WA 0WB, 0SuA, and 0SuB. PAB041: end-of-season clips on non-core watershed: 002C, 002D and 004A. PAB051: end-of-season clips on fire reversal watersheds: R01A, R01B, R20A and R20B.
+      </para>
+    </purpose>
+    <maintenance>
+      <description>
+        <para>
+       ongoing
+        </para>
+      </description>
+    </maintenance>
+    <contact>
+      <individualName>
+        <givenName>Konza</givenName>
+        <surName>LTER</surName>
+      </individualName>
+      <address>
+        <deliveryPoint>Division of Biology</deliveryPoint>
+        <city>Manhattan</city>
+        <administrativeArea>KS</administrativeArea>
+        <postalCode>66506</postalCode>
+        <country>US</country>
+      </address>
+      <phone
+        phonetype="voice">785-532-6729</phone>
+      <electronicMailAddress>knzlter@ksu.edu</electronicMailAddress>
+      <onlineUrl>http://lter.konza.ksu.edu</onlineUrl>
+    </contact>
+    
+    <publisher><organizationName>Environmental Data Initiative</organizationName><electronicMailAddress>info@edirepository.org</electronicMailAddress><onlineUrl>https://edirepository.org</onlineUrl><userId
+      directory="https://ror.org">0330j0z60</userId></publisher><pubPlace>Environmental Data Initiative</pubPlace>
+    <methods>
+      <methodStep>
+        <description>
+          <section>
+            <para>
+          Location of Sampling Stations: PAB011, PAB031, PAB041, PAB051: The above-ground biomass is harvested adjacent to the species composition plots in LTER watersheds 001D, R01A, R01B, 002C, 002D, 004A, 004B, 020B, R20A, R20B, 0SpA, 0SpB, 0SuA, 0SuB, 00FA, 00FB, 00WA and 00WB on Tully and Florence soils. Exceptions are 002C and 002D - Florence soils only. R01A and R20A - Tully soils only. A 50 meter line for aboveground biomass is located 3 m to the side of each species composition line. Side clipped varies from year to year - N and/or W then S and/or E the following year. PAB021: R01A (previously 020A), R01B (020D), R20A (001A) and R20B (001C). The location of the 'summer clips' was separate from the 'end of season' clips. All sites were on lowland soils (Irwin or Tully). Frequency of Sampling: PAB011, PAB041 and PAB051: The LTER watersheds are harvested in autumn (late Aug to Oct) when it is estimated that peak biomass has occurred. PAB011, PAB041 and PAB051: The LTER watersheds are harvested in autumn (late Aug to Oct) when it is estimated that peak biomass has occurred. PAB021: 1984 to 2000: Watersheds were harvested every two weeks from approximately May 15 until mid- September. A total of 10 clips were made over the growing season. The bi-weekly or 'summer clips' were separate from the 'end of season' clips. PAB031: 0SpA, 0Spb, 00FA, 00FB, 00WA, and 00WB are harvested in autumn (late Aug to Oct) when it is estimated that peak biomass has occurred. In the years when 0SuA and 0SuB are burned, they will be clipped twice; once prior to burning (mid to late July) and again in late October after a frost. Variable Measured: Total aboveground biomass per unit area. Prairie vegetation is separated into live, forb, woody and p. dead. Currently, only samples 1-3 for watersheds 001D, 004B, and 020B are ground and saved for determining percent N and P in foliage in live grass, forb, woody, and p. dead. Prior to 1999, all PAB samples were ground and saved for chemical analysis (PAB0_2). Field Methods for PAB011, PAB031, PAB041 and PAB051: Each LTER watershed has 4 transects per soil type (Florence and Tully). For each transect, five 0.1 m2 (50cm x 20cm) quadrats are clipped. The clips are done parallel to the species composition transects; 3 m away. Side clipped varies from year to year - N and/or W one year and S and/or E the next. All biomass is clipped to ground level. A quick sort of all the major plant types: grass (live grass, sedges, and current year's dead), forb, woody and previous years' dead (p.dead) is done at the time of clipping. Each type goes into a separate pre-labeled bag. For unburned sites, p. dead must be removed first. Following the edges of the clipping frame, cut through all the levels of litter avoiding live grass, forb and woody. Gently comb out the p.dead material and bag. Then collect remaining parts of sample. All material is dried at 60 oC for 2-3 days. Field Research Assistant has the maps of all clipping locations. Please note that while some of the maps indicate a specific 1-5 position, for clipping purposes this is not adhered to in the field. Field Methods for PAB021 (bi-weekly or summer clips): 1984 to 2000: Watershed 001A (now R20A) and 020A (now R01A) were harvested every two weeks from approximately May 15 until September 15; 10 clips total. 001C (now R20B) and 020D (now R01B) were also clipped every two weeks in 1999 and 2000. The location of the 'summer clips' was separate from the 'end of season' clips. All sites were on lowland soils (Irwin or Tully). At the beginning of the growing season, an area was marked off for these clips with flags.  Each flag was approximately 10 m from the next in a straight line numbered 1 to 20. The clipping line was parallel to the fireguard. Beginning on or near May 15 the first clip was done at the flags. Two weeks later, technicians returned to the site, took one step to the south, clipped another sample and marked it with a flag. The final clip (#10) was on or near September 15. The flags would remain over the winter and when the plots were laid out the following year, the new line would be located several paces west (for 020A and 001C) or east (for 001A and 020D) of the previous year's location. Once the new line was in place, the old flags were removed. A relatively large area was set aside for these clips; enough that the same area was not revisited for at least 5 years. Laboratory Methods: Sorting of the Vegetation for all PAB0_1 categories: In the lab, samples are 'cleaned up'. Burned samples are fully sorted to grass, forb and woody. Unburned bags are fully sorted to grass, forb, woody and p.dead. Dirt, roots, rocks and other debris are removed. Samples will be re-dried at 60oC for 24-hours prior to weighing. As of 1999, samples 1, 2 and 3 of 001D, 004B and 020B (PAB011) are retained for chemical analysis. All other samples (PAB031, PAB041, PAB051) are discarded. PAB021 was sorted the same as all other PAB0_1 samples. All samples were retained for chemical analysis. Chemical Analysis of PAB0_1 Samples:To determine N and P; 20-30 grams of each tissue category, live, forb, current year;s dead (until 2001) and p. dead, are ground through a Wiley mill using a 40 mesh screen. Samples that are too small for the Wiley are mechanically pulverized with steel rods or ball bearings. Samples are dried for 48 hours at 70oC and approximately 0.5000 g (to the nearest 0.0001 g) is weighed into pyrex digest tubes. Nitrogen and phosphorous content are determined by Kjeldahl digestion in concentrated sulfuric acid (H2SO4) followed by calorimetric measurements using a Technican auto-analyzer. We correct the data for incomplete recovery on the basis of pine needle standard reference material values. Data stored as percent N and P where: % N and P = ppm x cf (correction factor), cf = observed of 2o standards/literature value. PAB011: currently, only samples 1, 2 and 3 are archived. Prior to 1999, all 5 samples were retained.PAB021: all samples are archived.PAB031: samples are archived from 1994 to 1999. PAB041: samples prior to 1999 are archived. PAB051: samples prior to 1999 are archived. Chemical analysis data only exists for years 85-88 and 90-93. These years contain the combined data from all watersheds which were active at that time. Accuracy of data is unknown and can be made available upon request. Summary of All Changes:1991: End-of-season biomass samples from 1991 were sorted only into grass, forb, and previous dead (where applicable) categories. Due to an extensive wildfire in spring 1991, most watersheds had no litter accumulation, and 'grass' in 1991 included live grass + current year’s dead grass (no separation due to the large number of additional areas sampled that year and the need to process samples quickly). The April wildfire burned watersheds 001C, 001D, N01B, N01A, 004B, N04D, 020B, N20B, N20A, 002D.Prior to 1992: (for all PAB0_1) Woody plants were NOT separated from forbs. The most common woody species are: Amorpha canescens (lead plant), Ceanothus herbaceous (New Jersey tea), Cornus drummondii (dogwood), Rosa arkansana (wild rose), Rhus glabra (Smooth sumac), and Symphoricarpos orbiculatus (buckbrush).1994: seasonal burning began (PAB031). Prior to this all burning was done in the spring only.1994 and 1995: (PAB021) 020A was burned in a wildfire. 010B was clipped for two years to account for the p.dead component.1997: Watersheds 001A, 020A, 020D, 001C were set up to become part of the Fire Reversal. Experiment (PAB051). Fire Reversal did not take place until 2001.Watersheds 001A and 020A (Tully soils only) began being clipped at the end of the season as part of PAB051 and continued to be clipped biweekly throughout the summer as part of PAB021.Before 1999: All PAB0_1 samples were ground and saved for future chemical analysis. Currently, only 001D, 004B and 020B (PAB011) samples 1, 2 and 3 are ground and saved.1999: Watersheds 020D and 001C began being clipped biweekly as part of PAB021. They also continued to be clipped at the end of the season as part of PAB051.2000: PAB021 was terminated after the 2000 clip season.2001: Fire reversal experiment (PAB051) began. R01A was 020A, R20A was 001A, R01B was 020D, and R20B was 001C.2002: clipping on slope locations terminated for all PAB0_1.Prior to 2002: current year's dead (c.dead) was separated from live grass for all PAB0_1. After this time c.dead is included in live grass weights. For additional metadata information see: http://lter.konza.ksu.edu/sites/default/files/DC.pdf For additional methods information see: http://lter.konza.ksu.edu/sites/default/files/MM.pdf
+            </para>
+          </section>
+        </description>
+      </methodStep>
+    </methods>
+    <project>
+      <title>LTER: Manipulating drivers to assess grassland resilience</title>
+      <personnel>
+        <individualName>
+          <givenName>Jesse</givenName>
+          <surName>Nippert</surName>
+        </individualName>
+        <role>Principal Investigator</role>
+      </personnel>
+      <funding>NSF: DEB-2025849</funding>      
+      <relatedProject>
+        <title>LTER: Long-Term Research on Grassland Dynamics- Assessing Mechanisms of Sensitivity and Resilience to Global Change</title>
+        <personnel>
+          <individualName>
+            <givenName>Jesse</givenName>
+            <surName>Nippert</surName>
+          </individualName>
+          <role>Principal Investigator</role>
+        </personnel>
+        <personnel>
+          <individualName>
+            <givenName>John</givenName>
+            <surName>Blair</surName>
+          </individualName>
+          <role>Principal Investigator</role>
+        </personnel>
+        <funding>NSF: DEB-1440484</funding>
+      </relatedProject>      
+      <relatedProject>
+        <title>Konza Prairie LTER VI: Grassland Dynamics and Long-Term Trajectories of Change</title>
+        <personnel>
+          <individualName>
+            <givenName>John</givenName>
+            <surName>Blair</surName>
+          </individualName>
+          <role>Principal Investigator</role>
+        </personnel>
+        <funding>NSF: DEB-0823341</funding>
+      </relatedProject>    
+      <relatedProject>
+        <title>Konza Prairie LTER V: Long-Term Research on Grassland Dynamics and Global Change</title>
+        <personnel>
+          <individualName>
+            <givenName>John</givenName>
+            <surName>Blair</surName>
+          </individualName>
+          <role>Principal Investigator</role>
+        </personnel>
+        <funding>NSF: DEB-0218210</funding>
+      </relatedProject>   
+      <relatedProject>
+        <title>Long-Term Ecological Research in Tallgrass Prairie: The Konza Prairie LTER Program</title>
+        <personnel>
+          <individualName>
+            <givenName>Alan</givenName>
+            <surName>Knapp</surName>
+          </individualName>
+          <role>Principal Investigator</role>
+        </personnel>
+        <funding>NSF: DEB-9632851</funding>
+      </relatedProject>  
+      <relatedProject>
+        <title>Fire, Grazing, and Climatic Interactions in Tallgrass Prairie</title>
+        <personnel>
+          <individualName>
+            <givenName>Alan</givenName>
+            <surName>Knapp</surName>
+          </individualName>
+          <role>Principal Investigator</role>
+        </personnel>
+        <funding>NSF: DEB-9011662</funding>
+      </relatedProject>
+      <relatedProject>
+        <title>The Role of Fire and Other Disturbances in Determining Ecosystem Processes and Patterns in the Konza Prairie, Kansas</title>
+        <personnel>
+          <individualName>
+            <givenName>Donald</givenName>
+            <surName>Kaufman</surName>
+          </individualName>
+          <role>Principal Investigator</role>
+        </personnel>
+        <funding>NSF: DEB-8514327</funding>
+      </relatedProject>
+      <relatedProject>
+        <title>Long-Term Ecological Research in Tallgrass Prairie</title>
+        <personnel>
+          <individualName>
+            <givenName>Richard</givenName>
+            <surName>Marzolf</surName>
+          </individualName>
+          <role>Principal Investigator</role>
+        </personnel>
+        <funding>NSF: DEB-8012166</funding>
+      </relatedProject>   
+    </project>
+    <dataTable
+      id="4f2fa5abd59065b8355f01539c56f634" scope="document"
+          system="https://pasta.edirepository.org">
+      <entityName>PAB011</entityName>
+      <entityDescription>Aboveground biomass on various burning and grazing treatments at peak standing crop from 1984 to present</entityDescription>
+      <physical>
+        <objectName>PAB011.csv</objectName>
+        <size>272819</size>
+        <authentication
+          method="MD5">526911fc6d6725b3f2915f876050abea</authentication>
+        <authentication
+              method="SHA-1">313a49fd7030918a83fc0a13b8b8df261a9d5ae4</authentication>
+        <dataFormat>
+          <textFormat>
+            <numHeaderLines>1</numHeaderLines>
+            <recordDelimiter>\r\n</recordDelimiter>
+            <attributeOrientation>column</attributeOrientation>
+            <simpleDelimited>
+              <fieldDelimiter>,</fieldDelimiter>
+              <quoteCharacter>"</quoteCharacter>
+            </simpleDelimited>
+          </textFormat>
+        </dataFormat>
+        <distribution>
+          <online>
+            <url
+        function="download">https://pasta.lternet.edu/package/data/eml/knb-lter-knz/55/14/4f2fa5abd59065b8355f01539c56f634</url>
+          </online>
+        </distribution>
+      </physical>
+      <attributeList>
+        <attribute>
+          <attributeName>DataCode</attributeName>
+          <attributeLabel>DataCode</attributeLabel>
+          <attributeDefinition>Dataset code</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Dataset code</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>RecType</attributeName>
+          <attributeLabel>RecType</attributeLabel>
+          <attributeDefinition>Record type</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Record type</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>RecYear</attributeName>
+          <attributeLabel>RecYear</attributeLabel>
+          <attributeDefinition>Year of record</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <customUnit>Year (YYYY)</customUnit>
+              </unit>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>RecMonth</attributeName>
+          <attributeLabel>RecMonth</attributeLabel>
+          <attributeDefinition>Month of record</attributeDefinition>
+          <storageType>date</storageType>
+          <measurementScale>
+            <dateTime>
+              <formatString>MM</formatString>
+            </dateTime>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>RecDay</attributeName>
+          <attributeLabel>RecDay</attributeLabel>
+          <attributeDefinition>Day of record</attributeDefinition>
+          <storageType>date</storageType>
+          <measurementScale>
+            <dateTime>
+              <formatString>DD</formatString>
+            </dateTime>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Watershed</attributeName>
+          <attributeLabel>Watershed</attributeLabel>
+          <attributeDefinition>watershed</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>watershed</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Soiltype</attributeName>
+          <attributeLabel>Soiltype</attributeLabel>
+          <attributeDefinition>soil type tully, florence, or irwin</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <enumeratedDomain>
+                  <codeDefinition>
+                    <code>fl</code>
+                    <definition>florence soil</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>ir</code>
+                    <definition>irwin soil</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>tu</code>
+                    <definition>tully soil</definition>
+                  </codeDefinition>
+                </enumeratedDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Transect</attributeName>
+          <attributeLabel>Transect</attributeLabel>
+          <attributeDefinition>transect (A, B, C, D, or X)</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>transect (A, B, C, D, or X)</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Plotnum</attributeName>
+          <attributeLabel>Plotnum</attributeLabel>
+          <attributeDefinition>plot number (1-5 or 1-20 on 001a and 020a)</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>number</standardUnit>
+              </unit>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Lvgrass</attributeName>
+          <attributeLabel>Lvgrass</attributeLabel>
+          <attributeDefinition>mass of live grass (g/0.1m2)</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>gramsPerSquareMeter</standardUnit>
+              </unit>
+              <precision>0.01</precision>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+          <missingValueCode>
+            <code>blank</code>
+            <codeExplanation>Missing or Not Measured</codeExplanation>
+          </missingValueCode>
+        </attribute>
+        <attribute>
+          <attributeName>Forbs</attributeName>
+          <attributeLabel>Forbs</attributeLabel>
+          <attributeDefinition>mass of forbs (g/0.1m2)</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>gramsPerSquareMeter</standardUnit>
+              </unit>
+              <precision>0.01</precision>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+          <missingValueCode>
+            <code>blank</code>
+            <codeExplanation>Missing or Not Measured</codeExplanation>
+          </missingValueCode>
+        </attribute>
+        <attribute>
+          <attributeName>Cuyrdead</attributeName>
+          <attributeLabel>Cuyrdead</attributeLabel>
+          <attributeDefinition>mass of current years dead (g/0.1m2)</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>gramsPerSquareMeter</standardUnit>
+              </unit>
+              <precision>0.01</precision>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+          <missingValueCode>
+            <code>blank</code>
+            <codeExplanation>Missing or Not Measured</codeExplanation>
+          </missingValueCode>
+        </attribute>
+        <attribute>
+          <attributeName>Pryrdead</attributeName>
+          <attributeLabel>Pryrdead</attributeLabel>
+          <attributeDefinition>mass of previous years dead (g/0.1m2)</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>gramsPerSquareMeter</standardUnit>
+              </unit>
+              <precision>0.01</precision>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+          <missingValueCode>
+            <code>blank</code>
+            <codeExplanation>Missing or Not Measured</codeExplanation>
+          </missingValueCode>
+        </attribute>
+        <attribute>
+          <attributeName>Woody</attributeName>
+          <attributeLabel>Woody</attributeLabel>
+          <attributeDefinition>mass of woody (as of 24 aug 1992) (g/0.1m2)</attributeDefinition>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>gramsPerSquareMeter</standardUnit>
+              </unit>
+              <precision>0.01</precision>
+              <numericDomain>
+                <numberType>real</numberType>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+          <missingValueCode>
+            <code>blank</code>
+            <codeExplanation>Missing or Not Measured</codeExplanation>
+          </missingValueCode>
+        </attribute>
+        <attribute>
+          <attributeName>Comments</attributeName>
+          <attributeLabel>Comments</attributeLabel>
+          <attributeDefinition>Comments on data collection</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <textDomain>
+                  <definition>Comments on data collection</definition>
+                </textDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+      </attributeList>
+      <numberOfRecords>4800</numberOfRecords>
+    </dataTable>
+  </dataset>
+  <additionalMetadata>
+    <metadata>
+      <stmml:unitList
+        xmlns="http://www.xml-cml.org/schema/stmml"
+        xmlns:sch="http://www.ascc.net/xml/schematron"
+        xmlns:stmml="http://www.xml-cml.org/schema/stmml-1.1"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.xml-cml.org/schema/stmml-1.1 http://nis.lternet.edu/schemas/EML/eml-2.1.0/stmml.xsd">
+        <stmml:unit id="Year (YYYY)">
+          <stmml:description/>
+        </stmml:unit>
+      </stmml:unitList>
+    </metadata>
+  </additionalMetadata>
+</eml:eml>

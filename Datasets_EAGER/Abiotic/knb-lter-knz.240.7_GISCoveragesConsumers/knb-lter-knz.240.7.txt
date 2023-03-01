@@ -1,0 +1,425 @@
+
+  
+    
+      uid=KNZ,o=LTER,dc=ecoinformatics,dc=org
+      all
+    
+    
+      public
+      read
+    
+  
+  
+    doi:10.6073/pasta/e85c2d9b778a0b314cede31e6b829149GIS40
+    GIS40 GIS Coverages Defining the Sample Locations of Konza Consumer Data (1982-present)
+    
+      Zak Ratajczak
+      			116 Ackert Hall, Division of Biology, Kansas State University
+			Manhattan, KS 66506  US
+      518-424-8354
+      zarata@ksu.edu
+      https://zaratajczak.wixsite.com/zak-ratajczak
+      http://orcid.org/0000-0002-4675-5738
+    
+    
+      Konza LTER
+      			Division of Biology
+			Manhattan, KS 66506  US
+      785-532-6729
+      knzlter@ksu.edu
+      http://lter.konza.ksu.edu
+    
+    2023-01-20
+    
+      
+        
+       These data show the sampling locations for the consumer datasets at Konza Prairie. GIS400 defines the starting points for sweep samples of grasshoppers across Konza Prairie. These data may be used in conjunction with the sweep sample datasets (CGR02). GIS401 defines the starting points for sweep samples of grasshoppers across Konza Prairie, focusing on grazing impact. These data may be used in conjunction with the sweep sample datasets (CGR02Z). GIS405 defines the trap locations for small mammal sampling across Konza Prairie. These data may be used in conjunction with CSM0X. GIS 406 defines the locations of small mammal host parasite sampling at Konza Prairie. These data may be used in conjunction with CSM08. GIS410 defines the stream stretches for fish sampling across Konza Prairie. These data may be used in conjunction with CFC01. These data are available to download as zipped shapefiles (.zip), compressed Google Earth KML layers (.kmz), and associated EML metadata (.xml).
+        
+      
+    
+    
+      Disturbance
+      Populations
+      Core Areas
+    
+    
+      GIS
+      Section
+    
+    
+      LTER-KNZ
+      Station Keywords
+    
+    
+      biota
+      boundaries
+      communities
+      consumers
+      ecology
+      environment
+      fish
+      GIS
+      grasses
+      grasshoppers
+      grasslands
+      mammals
+      measurements
+      seasonality
+      trapping
+      GIS Keywords
+    
+    
+      
+        Data Policies
+        
+      Data Use Agreements: The Intellectual Rights within the metadata associated with each KNZ data set determines the exact data and metadata use agreement between the data user and the KNZ LTER site. KNZ LTER data and metadata may be released under the license: CC BY - Attribution (https://creativecommons.org/licenses/by/4.0/). This license lets others distribute, remix, tweak, and build upon KNZ work (even commercially), as long as the KNZ program is credited for the original creation. Alternatively, some KNZ LTER data and metadata may be released into the public domain: CC0 - No Rights Reserved (https://creativecommons.org/share-your-work/public-domain/cc0/). CC0 states that data are placed in the public domain, so that others may freely build upon, enhance and reuse the works for any purposes without restriction under copyright or database law. In either case, users of KNZ data are referred to the following guidelines: "The consumer of these data ("Data User" herein) has an ethical obligation to cite it appropriately in any publication that results from its use. The Data User should realize that these data may be actively used by others for ongoing research and that coordination may be necessary to prevent duplicate publication. The Data User is urged to contact the authors of these data if any questions about methodology or results occur. Where appropriate, the Data User is encouraged to consider collaboration or coauthorship with the authors. The Data User should realize that misinterpretation of data may occur if used out of context of the original study. While substantial efforts are made to ensure the accuracy of data and associated documentation, complete accuracy of data sets cannot be guaranteed. All data are made available "as is." The Data User should be aware, however, that data are updated periodically and it is the responsibility of the Data User to check for new versions of the data. The data authors and the repository where these data were obtained shall not be liable for damages resulting from any use or misinterpretation of the data. Thank you".
+        
+      
+    
+    
+      
+        http://lter.konza.ksu.edu/content/gis40-gis-coverages-defining-sample-locations-konza-consumer-data-1982-present
+      
+    
+    https://doi.org/10.6073/pasta/e85c2d9b778a0b314cede31e6b829149
+      
+        Konza Prairie Biological Station (KPBS) is located on a 3,487 hectare native tallgrass prairie preserve jointly owned by The Nature Conservancy and Kansas State University. The KPBS is located in the Flint Hills of northeastern Kansas (39°05’ N, 96°35’ W), a grassland region of steep-slopes overlain by shallow limestone soils unsuitable for cultivation.
+        
+          -96.5833
+          -96.5833
+          39.0833
+          39.0833
+          
+            397
+            397
+            meter
+          
+        
+      
+      
+        
+          
+            1982-01-01
+          
+          
+            2019-12-31
+          
+        
+      
+    
+    
+      
+        
+       ongoing
+        
+      
+    
+    
+      Konza LTER
+      			Division of Biology
+			Manhattan, KS 66506  US
+      785-532-6729
+      knzlter@ksu.edu
+      http://lter.konza.ksu.edu
+    
+    
+      Yang Xia
+      			116 Ackert Hall, Division of Biology, Kansas State University.
+			Manhattan, KS 66506  US
+      785-532-6729
+      785-532-6615
+      yangx@ksu.edu
+      http://orcid.org/0000-0002-7587-5835
+    
+    
+    Environmental Data Initiativeinfo@edirepository.orghttps://edirepository.org0330j0z60Environmental Data Initiative
+    
+      
+        
+          
+            
+           Information relevant to the GIS data encoding Sweep samples were taken for grasshoppers (Acrididae) at one site for each of the 12 Konza Prairie LTER treatments (3 fire treatments x 2 soils x 2 grazing treatments) in June, August, and September. This data may be used in conjunction with the Sweep samples for grasshoppers (CGRXX) datasets for spatially explicit analyses of these data.Horizontal Coordinate System Name:Transverse Mercator Datum: D North American 1983Reference Ellipsoid: Name: GRS 1980 Semi Axis: 6378137.0Meridian: GreenwichProjection Name : Transverse Mercator
+            
+          
+        
+      
+    
+    
+      LTER: Manipulating drivers to assess grassland resilience
+      
+        Jesse Nippert
+        Principal Investigator
+      
+      NSF: DEB-2025849      
+      
+        LTER: Long-Term Research on Grassland Dynamics- Assessing Mechanisms of Sensitivity and Resilience to Global Change
+        
+          Jesse Nippert
+          Principal Investigator
+        
+        
+          John Blair
+          Principal Investigator
+        
+        NSF: DEB-1440484
+            
+      
+        Konza Prairie LTER VI: Grassland Dynamics and Long-Term Trajectories of Change
+        
+          John Blair
+          Principal Investigator
+        
+        NSF: DEB-0823341
+          
+      
+        Konza Prairie LTER V: Long-Term Research on Grassland Dynamics and Global Change
+        
+          John Blair
+          Principal Investigator
+        
+        NSF: DEB-0218210
+         
+      
+        Long-Term Ecological Research in Tallgrass Prairie: The Konza Prairie LTER Program
+        
+          Alan Knapp
+          Principal Investigator
+        
+        NSF: DEB-9632851
+        
+      
+        Fire, Grazing, and Climatic Interactions in Tallgrass Prairie
+        
+          Alan Knapp
+          Principal Investigator
+        
+        NSF: DEB-9011662
+      
+      
+        The Role of Fire and Other Disturbances in Determining Ecosystem Processes and Patterns in the Konza Prairie, Kansas
+        
+          Donald Kaufman
+          Principal Investigator
+        
+        NSF: DEB-8514327
+      
+      
+        Long-Term Ecological Research in Tallgrass Prairie
+        
+          Richard Marzolf
+          Principal Investigator
+        
+        NSF: DEB-8012166
+         
+    
+    
+      GIS400
+      GIS400: Sweep Sample Locations for Konza Grasshoppers Datasets: Sweep samples were taken for grasshoppers (Acrididae) at one site for each of the 12 Konza Prairie LTER treatments (3 fire treatments x 2 soils x 2 grazing treatments) in June, August, and September. This data may be used in conjunction with the Sweep samples for grasshoppers (CGRXX) datasets for spatially explicit analyses of these data.
+      
+        GIS400.zip
+        11398
+        38450f14a4f74978e3430135e5cbd041
+        fc32e9e774eb420eec33f5469b192080f4a027e9
+        
+          
+            application/zip
+          
+        
+        
+          
+            https://pasta.lternet.edu/package/data/eml/knb-lter-knz/240/7/9f5c2f0cba639591f5b62136a7da6048
+          
+        
+      
+      document
+    
+    
+      KMZGIS400
+      Compressed Google Earth KML layers for GIS400
+      
+        GIS400.kmz
+        25507
+        b53b9345e4213219b75f2d4dbaa81342
+        ccbeaa20b2d608daf247a292b81d9cc72de725aa
+        
+          
+            application/vnd.google-earth.kmz
+          
+        
+        
+          
+            https://pasta.lternet.edu/package/data/eml/knb-lter-knz/240/7/9bcf25338dd3de12268c65865325f9d4
+          
+        
+      
+      document
+    
+    
+      GIS401
+      GIS401: Sweep Sample Locations for Bison Grant Grasshoppers Datasets: These data show the sampling locations for the consumer datasets at Konza Prairie. Record type 1 defines the starting points for sweep samples of grasshoppers across Konza Prairie (GIS400). These data may be used in conjunction with the sweep sample datasets (CGR02). Record type 2 defines the starting points for sweep samples of grasshoppers across Konza Prairie (GIS401), focusing on grazing impact. These data may be used in conjunction with the sweep sample datasets (CGR02Z). Record type 6 defines the trap locations for small mammal sampling across Konza Prairie (GIS405). These data may be used in conjunction with CSM01.
+      
+        GIS401.zip
+        7254
+        bb6d94150ac8d1b51a343f04cd6e2137
+        0a5a96f5cb7f8ff7bef1e8aa1e9d9d809ca9878e
+        
+          
+            application/zip
+          
+        
+        
+          
+            https://pasta.lternet.edu/package/data/eml/knb-lter-knz/240/7/a4f29f6514713d0e7e63fb5f01c88e38
+          
+        
+      
+      document
+    
+    
+      KMZGIS401
+      Compressed Google Earth KML layers for GIS401
+      
+        GIS401.kmz
+        29287
+        2f54f7b7b4eecb35c164f7b5ef9ec5a4
+        a2c988135d0d452ddc64ceb3de59f2017aab6324
+        
+          
+            application/vnd.google-earth.kmz
+          
+        
+        
+          
+            https://pasta.lternet.edu/package/data/eml/knb-lter-knz/240/7/a89c4b1ddef94dbceb0cde0052051a3f
+          
+        
+      
+      document
+    
+    
+      GIS405
+      GIS405: Small Mammal Traplines in Prairie Habitats: These data show the sampling locations for the consumer datasets at Konza Prairie. Record type 1 defines the starting points for sweep samples of grasshoppers across Konza Prairie (GIS400). These data may be used in conjunction with the sweep sample datasets (CGR02). Record type 2 defines the starting points for sweep samples of grasshoppers across Konza Prairie (GIS401), focusing on grazing impact. These data may be used in conjunction with the sweep sample datasets (CGR02Z). Record type 6 defines the trap locations for small mammal sampling across Konza Prairie (GIS405). These data may be used in conjunction with CSM01.
+      
+        GIS405.zip
+        27115
+        4f49227879f4da49755a1fbfbb5f1c29
+        36ea8e97cfc1279e0fb4a274477e21450f65edee
+        
+          
+            application/zip
+          
+        
+        
+          
+            https://pasta.lternet.edu/package/data/eml/knb-lter-knz/240/7/4d7b13d7c19f3a2b276c398913f8ca61
+          
+        
+      
+      document
+    
+    
+      KMZGIS405
+      Compressed Google Earth KML layers for GIS405
+      
+        GIS405.kmz
+        44041
+        3a6e63e4595bb5c477289dd45708be3e
+        cee2e51be0a75a8b123061ed38783f9186e777ee
+        
+          
+            application/vnd.google-earth.kmz
+          
+        
+        
+          
+            https://pasta.lternet.edu/package/data/eml/knb-lter-knz/240/7/2b86376177a0ac6df6072ab7217d51fe
+          
+        
+      
+      document
+    
+    
+      GIS406
+      GIS406: Small Mammal Host Parasite Sample Data for 16 Transects at Konza Prairie (2016 - present). GIS 406 defines the locations of small mammal host parasite sampling at Konza Prairie. These data may be used in conjunction with CSM08.
+      
+        GIS406.zip
+        24871
+        93ce189c166ff6725a6e8d07d417b12b
+        24be845b2807a5994f3b006766f7ab9dd13629c9
+        
+          
+            application/zip
+          
+        
+        
+          
+            https://pasta.lternet.edu/package/data/eml/knb-lter-knz/240/7/fcf8104725c0a52b16e5d7d129b6d5f7
+          
+        
+      
+      document
+    
+    
+      KMZGIS406
+      Compressed Google Earth KML layers for GIS406 
+      
+        GIS406.kmz
+        19051
+        eb572277ed9dae377bf08728aaa97f4d
+        ee5d68635c7ce850ab6b3cd0ba29686d38f79b80
+        
+          
+            application/vnd.google-earth.kmz
+          
+        
+        
+          
+            https://pasta.lternet.edu/package/data/eml/knb-lter-knz/240/7/2aa0625d0b85755644a9c2bb66df6b02
+          
+        
+      
+      document
+    
+    
+      GIS410
+      GIS410: Fish Communities in Konza Streams: These data show the sampling locations for the consumer datasets at Konza Prairie. Record type 1 defines the starting points for sweep samples of grasshoppers across Konza Prairie (GIS400). These data may be used in conjunction with the sweep sample datasets (CGR02). Record type 2 defines the starting points for sweep samples of grasshoppers across Konza Prairie (GIS401), focusing on grazing impact. These data may be used in conjunction with the sweep sample datasets (CGR02Z). Record type 6 defines the trap locations for small mammal sampling across Konza Prairie (GIS405). These data may be used in conjunction with CSM01. Record type 11 defines the stream stretches for fish sampling across Konza Prairie (GIS410). These data may be used in conjunction with CFP01.
+      
+        GIS410.zip
+        10633
+        bcdefc5a2c9dc5036a6a20cd720ec728
+        d8f55a25a77f209dfd382a6ab95c987e44a44eec
+        
+          
+            application/zip
+          
+        
+        
+          
+            https://pasta.lternet.edu/package/data/eml/knb-lter-knz/240/7/7180c5ca9971bcf589fb5c9bb86bee9c
+          
+        
+      
+      document
+    
+    
+      KMZGIS410
+      Compressed Google Earth KML layers for GIS410
+      
+        GIS410.kmz
+        24556
+        891ae1f133282cda42c7ddf4412afbda
+        c8d4f1cffbc6402516bd190fef4ec52ae3963fa9
+        
+          
+            application/vnd.google-earth.kmz
+          
+        
+        
+          
+            https://pasta.lternet.edu/package/data/eml/knb-lter-knz/240/7/8d386931a1307a6b28f5b3900ac5f8c0
+          
+        
+      
+      document
+    
+  
