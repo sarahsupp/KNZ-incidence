@@ -1,0 +1,60 @@
+---
+title: "KNZ-incidence: Cleaning Biotic Datasets"
+author: "Maya Parker-Smith"
+date: "2023-03-01"
+output: html_document
+ smart: no
+    theme: flatly
+    float: yes
+    css: "style.css"    
+editor_options: 
+  chunk_output_type: console
+mainfont: Arial
+mathfont: Arial
+fontsize: 12pt
+---
+
+
+# {.tabset .tabset-pills .tabset-fade}
+
+## Setup and Overview
+
+### **Setting up data for analysis**
+#### This RMarkdown will be used for the inital data cleaning of the four biotic datasets in the EAGER Konza Temporal Incidence project. 
+
+####The four datasets include bird sampling (knb-lter-knz.26.12 -> CB011.csv), grasshopper sweeping (knb-lter-knz.29.20 -> CGR021.csv & CGR022), small-mammal trapping (knb-lter-knz.88.9 -> CSM011.csv & CSM012.csv), and plant data- which includes biomass and species composition (knb-lter-knz.55.14 -> PAB011, and knb-lter-knz.69.21 -> PVC021.csv). All data were taken from the EDI Data Portal Repository. All are LTER datasets from Konza Prairie. Each dataset will have its own section for cleaning
+
+###Libraries and Set-up 
+```{r setup, include=FALSE}
+
+## Clear environment 
+rm(list=ls())
+
+##Libraries
+library(tidyverse)
+library(cowplot)
+library(bbmle)
+library(multcomp)
+library(mosaic)
+
+```
+
+# Bird Sampling
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
