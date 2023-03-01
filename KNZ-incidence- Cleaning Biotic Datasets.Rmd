@@ -17,6 +17,8 @@ fontsize: 12pt
 
 # {.tabset .tabset-pills .tabset-fade}
 
+#KNZ-Incidence EAGER Project
+
 ## Setup and Overview
 
 ### **Setting up data for analysis**
@@ -30,23 +32,59 @@ fontsize: 12pt
 ## Clear environment 
 rm(list=ls())
 
+
 ##Libraries
 library(tidyverse)
 library(cowplot)
 library(bbmle)
 library(multcomp)
 library(mosaic)
+library(readr)
 
 ```
 
-# Bird Sampling
+## Bird Sampling
+This section is dedicated to cleaning the bird-sampling dataset. Data was collected from 1981 to 2009. Watersheds that are supposedly included: N4B, N4D, 4A, N1B, 1D, R20A, R1B, 20C, 20B, N20B.
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Author: Alice Boyle
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+ZIP file: knb-lter-knz.26.12
 
-```{r cars}
-summary(cars)
+Data code: CBP01
+
+File(s): CB011.csv
+
+Summary of All Changes Up to 1993: 
+1981: Transects were as presently located except no transect in N20B and there were transects in  N20C (now N01A), N20D (now part of N01B), N01C (now N02B), N01D (now part of N01B), and N04C (now N04B). 
+1982: Transects in N20C (N01A) and N01C (N02B) were dropped, N20D was maintained in what is now N01B. N01D became the second transect in what is now N01B, and N04C transect was maintained in what is now N04B. N20B was added. 
+1990: 004d became SA and transect was dropped.
+
+```{r}
+#Read in and view bird data
+birds <- read_csv("Datasets_EAGER/Birds/knb-lter-knz.26.12/CBP011.csv")
+View(birds)
+
+#Changing classifications and names of columns
+birds <- birds %>% mutate(RECYEAR = factor(RECYEAR),
+                          RECMONTH = factor(RECMONTH),
+                          RECDAY = factor(RECDAY),
+                          SEASON = factor(SEASON),
+                          TRANSNUM = factor(TRANSNUM),
+                          WATERSHED = factor(WATERSHED),
+                          OBSNUM = factor(OBSNUM),
+                          SPECNAME = factor(SPECNAME),
+                          AOUCODE = factor(AOUCODE),
+                          COMMONNAME = factor(COMMONNAME),
+                          DISTANCE = as.numeric(DISTANCE),
+                          COUNT = as.numeric(COUNT), 
+                          SEX = factor(SEX),
+                          STATUS = factor(STATUS),
+                          COMMENTS = as.character(COMMENTS))
+glimpse(birds)
+
+
+
+
 ```
 
 ## Including Plots
