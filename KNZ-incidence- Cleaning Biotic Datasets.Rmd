@@ -83,16 +83,48 @@ birds <- birds %>% mutate(RECYEAR = factor(RECYEAR),
 glimpse(birds)
 
 
+#Shortening the dataset to only have the columns we are interested in
+birds_short <- birds %>% dplyr::select(RECYEAR, 
+                                       RECMONTH, 
+                                       RECDAY, 
+                                       SEASON, 
+                                       TRANSNUM,
+                                       DISTANCE,
+                                       WATERSHED, 
+                                       OBSNUM, 
+                                       SPECNAME,
+                                       COMMONNAME,
+                                       AOUCODE, 
+                                       COUNT)
 
+
+#Checking the species names to make sure there are any weird misspellings
+unique(birds_short$SPECNAME)
+unique(birds_short$COMMONNAME)
+##There are 204 unique species names, but 138 unique common names. I'll probably have to go through the species names to their full species names because I don't know the shortened ones.
+
+
+#Now checking the watersheds to see exactly what is here compared to what is said in the metadata
+unique(birds_short$WATERSHED)
 
 ```
 
 ## Including Plots
 
-You can also embed plots, for example:
-
 ```{r pressure, echo=FALSE}
-plot(pressure)
+
+#Looking at the distribution of bird observations by year
+birds_short %>% ggplot(aes(x = RECYEAR, y = COUNT)) + geom_col() +  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1))
+
+
+#Looking at the distribution of bird observations by watershed
+birds_short %>% ggplot(aes(x = WATERSHED, y = COUNT)) + geom_col() +  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1))
+
 ```
+
+So now I'm not quite sure what to do....
+I think we should maybe drop 004D since it was added later...
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
