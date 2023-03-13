@@ -95,7 +95,8 @@ birds_short <- birds %>% dplyr::select(RECYEAR,
                                        SPECNAME,
                                        COMMONNAME,
                                        AOUCODE, 
-                                       COUNT)
+                                       COUNT,
+                                       COMMENTS)
 
 
 #Checking the species names to make sure there are any weird misspellings
@@ -107,24 +108,158 @@ unique(birds_short$COMMONNAME)
 #Now checking the watersheds to see exactly what is here compared to what is said in the metadata
 unique(birds_short$WATERSHED)
 
+unique(birds_short$COUNT)
+
+```
+```{r}
+#Creating a tibble that has the info for the watersheds
+
+watershed_info <- tibble(WATERSHED = c("N04B", "N04D", "004A", "004B", 
+                                       "N01B", "001D", "R20A",
+                                       "R01B", "020C", "020B", 
+                                       "L00A", "S00A", "G00A", "N20B"), 
+                         Watershed = c("N4B", "N4D", "4A", "4B",
+                                       "N1B", "1D", "R20A", 
+                                       "R1B", "20C", "20B", 
+                                       "LA", "SA", "GA",
+                                       "N20B"), 
+                         Fire_interval = c("4_years", "4_years", "4_years", "4_years",
+                                           "1_year", "1_year", "20_years_reversed", 
+                                           "1_year_reversed", "20_years", "20_years",
+                                           "UNK", "UNK", "UNK", "20_years"),
+                         Grazing = c("Bison", "Bison", "Ungrazed", "Ungrazed",
+                                     "Bison", "Ungrazed", "Ungrazed", 
+                                     "Ungrazed", "Ungrazed", "Ungrazed",
+                                     "UNK", "UNK", "UNK", "Bison"),
+                         Type = c("Press", "Press", "Pulse", "Pulse",
+                                  "UNK", "Pulse", "UNK",
+                                  "UNK", "Control", "Control", 
+                                  "Gallery_forest?", "Forest_edge?", "Gallery_forest?", "Press"))
+
+#Combining the bird dataset with the watershed dataset
+
+birds_short1 <- left_join(birds_short, watershed_info, by="WATERSHED")
+
+
+#Removing the entries from Watershed 4D since it was converted to watershed SA in 1981
+birds_short2 <- birds_short1 %>% subset(birds_short1$WATERSHED != "004D")
+view(birds_short)
+
+
 ```
 
-## Including Plots
+
+### Plots
 
 ```{r pressure, echo=FALSE}
 
 #Looking at the distribution of bird observations by year
-birds_short %>% ggplot(aes(x = RECYEAR, y = COUNT)) + geom_col() +  theme(text = element_text(size=10),
+birds_short2 %>% ggplot(aes(x = RECYEAR)) + geom_bar() + theme(text = element_text(size=10),
         axis.text.x = element_text(angle=45, hjust=1))
 
 
 #Looking at the distribution of bird observations by watershed
-birds_short %>% ggplot(aes(x = WATERSHED, y = COUNT)) + geom_col() +  theme(text = element_text(size=10),
+birds_short2 %>% ggplot(aes(x = Watershed, y = COUNT, fill = Type)) + geom_col() + theme(text = element_text(size=10),
         axis.text.x = element_text(angle=45, hjust=1))
+
+
+#Looking at press vs pulse observations because why not
+
+##Grouping by species first to get the total observations per species per year
+birds_short2_grouping <- birds_short2 %>% 
+  group_by(RECYEAR, Type, SPECNAME) %>% 
+  dplyr::summarise(COUNT = sum(COUNT))
+
+##Summarizing the summed species observations by mean per year
+birds_short2_grouping <- birds_short2_grouping %>%
+  dplyr::summarise(Mean_count = mean(COUNT))
+
+#Plotting the mean per year 
+birds_short2_grouping %>% ggplot(aes(x = RECYEAR, y = Mean_count, group = Type)) + 
+  geom_line(aes(color = Type)) + geom_point(aes(color = Type)) + 
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1))
+
+
+##Taking away the unknowns and forests and replotting
+
+birds_short2_grouping1 <- birds_short2_grouping %>% subset(.$Type == c("Press", "Pulse", "Control"))
+
+
+birds_short2_grouping1 %>% ggplot(aes(x = RECYEAR, y = Mean_count, group = Type)) + 
+  geom_line(aes(color = Type)) + geom_point(aes(color = Type)) + 
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1))
+
+#All of this needs to be redone because I need to standardize using vegan
+
 
 ```
 
-So now I'm not quite sure what to do....
-I think we should maybe drop 004D since it was added later...
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+##Grasshopper Sweeping
+This section is dedicated to cleaning the grasshopper sweeping dataset. Data was collected from 1982 to 2020. Watersheds that are supposedly included: 2D, 1D, N20B, N1B, SuB, 4F, 20B, N4D, 2C, SpB, 4B, 4A, N1A, N20A.
+
+Author: Anthony Joern
+
+ZIP file: knb-lter-knz.29.20
+
+Data code: CGR02
+
+File(s): CGR021.csv, CGR022.csv, CGR023.csv
+
+
+```{r}
+
+#First dataset is about the environmental factors at the sweeping sites
+grasshoppers1 <- read_csv("Datasets_EAGER/Grasshoppers/knb-lter-knz.29.20/CGR021.csv")
+
+#Second dataset is the grasshopper species counts from each set of sweeps
+grasshoppers2 <- read_csv("Datasets_EAGER/Grasshoppers/knb-lter-knz.29.20/CGR022.csv")
+
+#Third dataset is the counts of instars and male and female grasshoppers 
+grasshoppers3 <- read_csv("Datasets_EAGER/Grasshoppers/knb-lter-knz.29.20/CGR023.csv")
+
+
+```
+
+
+##Small-mammal trapping
+This section is dedicated to cleaning the small-mammal trapping dataset. Data was collected from 1981 to 2013. Watersheds that are supposedly included: 4B, 4F, N4D, N20B, 1D, 20B, N1B.
+
+Author: Donald Kaufman
+
+ZIP file: knb-lter-knz.88.9
+
+Data code: CSM01
+
+File(s): CSM011.csv, CSM012.csv
+
+```{r}
+# Seasonal summaries of small mammals on LTER traplines 
+smallmammals1 <- read_csv("Datasets_EAGER/Small_mammals/knb-lter-knz.88.9_FourteenTraplines/CSM011.csv")
+
+#Data is for small mammal individual records
+smallmammals2 <- read_csv("Datasets_EAGER/Small_mammals/knb-lter-knz.88.9_FourteenTraplines/CSM012.csv")
+```
+
+
+##Plant Species Composition
+This section is dedicated to cleaning the small-mammal trapping dataset. Data was collected from 1983 to 2022. Watersheds that are supposedly included: FA, SuB, N4A, R1A, 2D, WB, N20B, 1D, N1A, R1B, SpA, SpB, WA, 20B, 4A, 4F, SuA, N1B, N20A, N4D.
+
+Author: David Hartnett, Scott Collins, Zak Ratajczak
+
+ZIP file: knb.lter.knz.69.21
+
+Data code: PVC02
+
+File(s): PVC021.csv
+
+
+```{r}
+
+plant_comp <- read_csv("Datasets_EAGER/Plants/knb-lter-knz.69.21_SpeciesComposition/PVC021.csv")
+View(PVC021)
+
+```
+
