@@ -61,11 +61,11 @@ Summary of All Changes Up to 1993:
 
 ```{r}
 #Read in and view bird data
-birds <- read_csv("Datasets_EAGER/Birds/knb-lter-knz.26.12/CBP011.csv")
-View(birds)
+birds_raw <- read_csv("Datasets_EAGER/Birds/knb-lter-knz.26.12/CBP011.csv")
+View(birds_raw)
 
 #Changing classifications and names of columns
-birds <- birds %>% mutate(RECYEAR = factor(RECYEAR),
+birds <- birds_raw %>% mutate(RECYEAR = factor(RECYEAR),
                           RECMONTH = factor(RECMONTH),
                           RECDAY = factor(RECDAY),
                           SEASON = factor(SEASON),
@@ -84,7 +84,7 @@ glimpse(birds)
 
 
 #Shortening the dataset to only have the columns we are interested in
-birds_short <- birds %>% dplyr::select(RECYEAR, 
+birds_1 <- birds %>% dplyr::select(RECYEAR, 
                                        RECMONTH, 
                                        RECDAY, 
                                        SEASON, 
@@ -100,22 +100,38 @@ birds_short <- birds %>% dplyr::select(RECYEAR,
 
 
 #Checking the species names to make sure there are any weird misspellings
-unique(birds_short$SPECNAME)
-unique(birds_short$COMMONNAME)
+unique(birds_1$SPECNAME)
+unique(birds_1$COMMONNAME)
 ##There are 204 unique species names, but 138 unique common names. I'll probably have to go through the species names to their full species names because I don't know the shortened ones.
 
 
+
 #Now checking the watersheds to see exactly what is here compared to what is said in the metadata
-unique(birds_short$WATERSHED)
+unique(birds_1$WATERSHED)
+birds_1$WATERSHED <- recode(birds_1$WATERSHED, 
+                            "N04D" = "N4D",
+                            "N04B" = "N4B",
+                            "004B" = "4B",
+                            "004A" = "4A",
+                            "004D" = "4D",
+                            "N01B" = "N1B",
+                            "001D" = "1D",
+                            "R20A" = "R20A",
+                            "R01B" = "R1B",
+                            "020C" = "20C",
+                            "020B" = "20B",
+                            "L00A" = "LA",
+                            "S00A" = "SA",
+                            "G00A" = "GA",
+                            "N20A" = "N20A")
 
 
 
-unique(birds_short$COUNT)
+unique(birds_1$COUNT)
 #Okay so the count is always "1"... they recorded the data so that every individual sighting has its own row and count number
-
+unique(birds_1$RECMONTH)
 
 ```
-
 
 
 
@@ -123,64 +139,92 @@ unique(birds_short$COUNT)
 ```{r}
 #Creating a tibble that has the info for the watersheds
 
-watershed_info <- tibble(WATERSHED = c("N04B", "N04D", "004A", "004B", 
-                                       "N01B", "001D", "R20A",
-                                       "R01B", "020C", "020B", 
-                                       "L00A", "S00A", "G00A", "N20B"), 
-                         Watershed = c("N4B", "N4D", "4A", "4B",
+birds_watershed <- tibble(WATERSHED = c("N4B", "N4D", "4A", "4B",
                                        "N1B", "1D", "R20A", 
                                        "R1B", "20C", "20B", 
                                        "LA", "SA", "GA",
                                        "N20B"), 
-                         Fire_interval = c("4_years", "4_years", "4_years", "4_years",
+                         FIRE_INT = c("4_years", "4_years", "4_years", "4_years",
                                            "1_year", "1_year", "20_years_reversed", 
                                            "1_year_reversed", "20_years", "20_years",
                                            "UNK", "UNK", "UNK", "20_years"),
-                         Grazing = c("Bison", "Bison", "Ungrazed", "Ungrazed",
+                         GRAZING = c("Bison", "Bison", "Ungrazed", "Ungrazed",
                                      "Bison", "Ungrazed", "Ungrazed", 
                                      "Ungrazed", "Ungrazed", "Ungrazed",
                                      "UNK", "UNK", "UNK", "Bison"),
-                         Type = c("Press", "Press", "Pulse", "Pulse",
+                         TYPE = c("Press", "Press", "Pulse", "Pulse",
                                   "UNK", "Pulse", "UNK",
                                   "UNK", "Control", "Control", 
-                                  "Gallery_forest?", "Forest_edge?", "Gallery_forest?", "Press"))
+                                  "Lower_Kings_Creek", "Shane_Creek", "North_Kings_Creek", "Press"))
 
 #Combining the bird dataset with the watershed dataset
-
-birds_short1 <- left_join(birds_short, watershed_info, by="WATERSHED")
+birds_2 <- left_join(birds_1, birds_watershed, by="WATERSHED")
 
 
 #Removing the entries from Watershed 4D since it was converted to watershed SA in 1981
-birds_short2 <- birds_short1 %>% subset(birds_short1$WATERSHED != "004D")
-view(birds_short)
+##birds_2 <- birds_2 %>% subset(birds_short1$WATERSHED != "004D")
+view(birds_2)
 
+
+```
+
+Looking at the amount of time data was collected for each watershed, transect, in each year, and in each month.
+```{r}
+#I am going to try to tally up how many times data is collected for each watershed per year.
+
+#Since the original dataset is looking at each individual bird as a separate row/observation, I am grouping them so that the species that have the same RECYEAR, RECMONTH, RECDAY, SEASON, TRANSNUM, and WATERSHED are grouped together
+birds_2_group <- birds_2 %>% group_by(RECYEAR, TRANSNUM, RECMONTH, SEASON, WATERSHED, SPECNAME) %>% 
+  dplyr::summarise(COUNT = sum(COUNT))
+
+
+#Making each species a different column so then we can count the number of times data was collected at each watershed in each year
+birds_2_group_wide <- birds_2_group %>% pivot_wider(names_from = SPECNAME, values_from = COUNT)
+
+birds_group_count1 <- birds_2_group_wide %>% group_by(WATERSHED) %>% 
+  summarise(total_count=n(),.groups = 'drop')
+
+
+birds_group_count2 <- birds_2_group_wide %>% group_by(RECYEAR, WATERSHED) %>% 
+  summarise(total_count=n(),.groups = 'drop')
+
+birds_group_count2 %>% ggplot(aes(x = RECYEAR, y = total_count, color = WATERSHED)) + geom_jitter(width = 0.2, height = 0.2)
+
+
+birds_group_count3 <- birds_2_group_wide %>% group_by(SEASON, WATERSHED) %>% 
+  summarise(total_count=n(),.groups = 'drop')
+
+birds_group_count4 <- birds_2_group_wide %>% group_by(SEASON, RECMONTH, WATERSHED) %>% 
+  summarise(total_count=n(),.groups = 'drop')
+
+birds_group_count5 <- birds_2_group_wide %>% group_by(TRANSNUM, WATERSHED) %>% 
+  summarise(total_count=n(),.groups = 'drop')
 
 ```
 
 
 ### Plots
 
-```{r pressure, echo=FALSE}
+```{r}
 
 #Looking at the distribution of bird observations by year
-birds_short2 %>% ggplot(aes(x = RECYEAR, y = COUNT)) + geom_col() + theme(text = element_text(size=10),
+birds_2 %>% ggplot(aes(x = RECYEAR, y = COUNT)) + geom_col() + theme(text = element_text(size=10),
         axis.text.x = element_text(angle=45, hjust=1))
 
 
 #Looking at the distribution of bird observations by watershed
-birds_short2 %>% ggplot(aes(x = Watershed, y = COUNT, fill = Type)) + geom_col() + theme(text = element_text(size=10),
+birds_2 %>% ggplot(aes(x = WATERSHED, y = COUNT, fill = TYPE)) + geom_col() + theme(text = element_text(size=10),
         axis.text.x = element_text(angle=45, hjust=1))
 
 
 #Looking at press vs pulse observations because why not
 ##Grouping by species first to get the total observations per species per year
-birds_short2_grouping <- birds_short2 %>% 
-  group_by(RECYEAR, Type, SPECNAME) %>% 
+birds_2_group <- birds_short2 %>% 
+  group_by(RECYEAR, TYPE, SPECNAME) %>% 
   dplyr::summarise(COUNT = sum(COUNT))
 
 ##Summarizing the summed species observations by mean per year
-birds_short2_grouping <- birds_short2_grouping %>%
-  dplyr::summarise(Mean_count = mean(COUNT))
+birds_2_group <- birds_2_group %>%
+  dplyr::summarise(MEAN_COUNT = mean(COUNT))
 
 
 #Plotting the mean per year 
@@ -238,22 +282,22 @@ The summer burn is conducted on the first water appropriate day in late July to 
 ```{r}
 
 #First dataset is about the environmental factors at the sweeping sites
-grasshoppers1 <- read_csv("Datasets_EAGER/Grasshoppers/knb-lter-knz.29.20/CGR021.csv")
+grasshoppers_env <- read_csv("Datasets_EAGER/Grasshoppers/knb-lter-knz.29.20/CGR021.csv")
 
 #Second dataset is the grasshopper species counts from each set of sweeps
-grasshoppers2 <- read_csv("Datasets_EAGER/Grasshoppers/knb-lter-knz.29.20/CGR022.csv")
+grasshoppers_raw <- read_csv("Datasets_EAGER/Grasshoppers/knb-lter-knz.29.20/CGR022.csv")
 
 #Third dataset is the counts of instars and male and female grasshoppers 
-grasshoppers3 <- read_csv("Datasets_EAGER/Grasshoppers/knb-lter-knz.29.20/CGR023.csv")
+grasshoppers_other <- read_csv("Datasets_EAGER/Grasshoppers/knb-lter-knz.29.20/CGR023.csv")
 
-view(grasshoppers2)
+view(grasshoppers_raw)
 
 ```
 
 ```{r}
 
 #Making the variables into factors for later graphing and analysis
-grasshoppers2 <- grasshoppers2 %>% mutate(RECTYPE = factor(RECTYPE), 
+grasshoppers <- grasshoppers_raw %>% mutate(RECTYPE = factor(RECTYPE), 
                                           RECYEAR = factor(RECYEAR),
                                           RECMONTH = factor(RECMONTH),
                                           RECDAY = factor(RECDAY),
@@ -265,15 +309,15 @@ grasshoppers2 <- grasshoppers2 %>% mutate(RECTYPE = factor(RECTYPE),
 
 
 #Checking the number of unique names for different variables to then compare to the metadata
-unique(grasshoppers2$SPECIES)
+unique(grasshoppers$SPECIES)
 ##Oh lord... theres capitalizations in some but not others and there are some unknowns. I'll have to alphabetize it and go through to see if there are multiple spellings for the same species
 
-unique(grasshoppers2$WATERSHED)
+unique(grasshoppers$WATERSHED)
 #There is weird capitalizations for these too... I'll have to go through and clean and probably get rid of some
 
 
 #Renaming watersheds to make it consistent
-grasshoppers2$WATERSHED <- recode(grasshoppers2$WATERSHED, 
+grasshoppers$WATERSHED <- recode(grasshoppers$WATERSHED, 
                                   "001d" = "1D",
                                   "004b" = "4B",
                                   "000b" = "B",
@@ -309,7 +353,7 @@ grasshoppers2$WATERSHED <- recode(grasshoppers2$WATERSHED,
                                   "N20A" = "N20A")
 
 #Recoding some of the species to make it consistent
-grasshoppers2$SPECIES <- recode(grasshoppers2$SPECIES,
+grasshoppers$SPECIES <- recode(grasshoppers$SPECIES,
                                 "ageneotett deorum" = "Ageneotettix deorum",
                                 "arphia conspersa" = "Arphia conspersa",
                                 "arphia simplex" = "Arphia simplex",
@@ -370,14 +414,14 @@ grasshoppers2$SPECIES <- recode(grasshoppers2$SPECIES,
                                 "unknown" = "Unknown",
                                 "xanthippus corallipe" = "Xanthippus corallipes")
 
-grasshoppers2$SPECIES <- recode(grasshoppers2$SPECIES,
+grasshoppers$SPECIES <- recode(grasshoppers$SPECIES,
                                 " Phoetaliotes nebrascensis" = "Phoetaliotes nebrascensis",
                                 " Xanthippus corallipes" = "Xanthippus corallipes")
 
 #Making a new dataset to then condense some of the watersheds based on the metadata
-grasshoppers2_1 <- grasshoppers2
+grasshoppers_1 <- grasshoppers
 
-grasshoppers2_1$WATERSHED <- recode(grasshoppers2_1$WATERSHED,
+grasshoppers_1$WATERSHED <- recode(grasshoppers_1$WATERSHED,
                                   "B" = "20B",
                                   "NB" = "N20B",
                                   "2D" = "SpB",
@@ -386,10 +430,10 @@ grasshoppers2_1$WATERSHED <- recode(grasshoppers2_1$WATERSHED,
                                   "10D" = "SuB",
                                   "4G" = "WB")
 
-unique(grasshoppers2_1$WATERSHED)
-unique(sort(grasshoppers2_1$SPECIES))
+unique(grasshoppers_1$WATERSHED)
+unique(sort(grasshoppers_1$SPECIES))
 
-watershed_info2 <- tibble(WATERSHED = c("1D", "4B", "20B", 
+watershed_grasshoppers <- tibble(WATERSHED = c("1D", "4B", "20B", 
                                                "N1B", "N4D", "N20B",
                                                "SpB", "SuB", "WB", 
                                                "2C", "N20A", "N1A", "N4A"), 
@@ -400,22 +444,52 @@ watershed_info2 <- tibble(WATERSHED = c("1D", "4B", "20B",
                           Grazing = c("Ungrazed", "Ungrazed", "Ungrazed", 
                                              "Grazed", "Grazed", "Grazed", 
                                              "Ungrazed", "Ungrazed", "Ungrazed", 
-                                             "Ungrazed", "Grazed", "Grazed", "Grazed"),
-                          Type = c("Pulse", "Pulse", "Control", 
-                                          "UNK", "Press", "Press", 
-                                          "UNK", "UNK", "UNK",
-                                          "Pulse", "Press", "UNK", "Press"))
+                                             "Ungrazed", "Grazed", "Grazed", "Grazed"))
 
-grasshoppers2_2 <- left_join(grasshoppers2_1, watershed_info2, by = "WATERSHED")
-view(grasshoppers2_2)
+grasshoppers_2 <- left_join(grasshoppers_1, watershed_grasshoppers, by = "WATERSHED")
+view(grasshoppers_2)
+
+unique(grasshoppers_2$RECMONTH)
+
+```
+
+Looking at the amount of time data was collected for each watershed, in each year, and in each month.
+```{r}
+#I am going to try to tally up how many times data is collected for each watershed per year.
+
+grasshoppers_2_group <- grasshoppers_2 %>% group_by(RECYEAR, RECMONTH, WATERSHED, SPECIES) %>% 
+  dplyr::summarise(TOTAL = sum(TOTAL))
+
+
+
+#Making each species a different column so then we can count the number of times data was collected at each watershed in each year
+grasshoppers_2_group_wide <- grasshoppers_2_group %>% pivot_wider(names_from = SPECIES, values_from = TOTAL)
+
+
+grasshoppers_group_count1 <- grasshoppers_2_group_wide %>% group_by(WATERSHED) %>% 
+  summarise(total_count=n(),.groups = 'drop')
+
+
+grasshoppers_group_count2 <- grasshoppers_2_group_wide %>% group_by(RECYEAR, WATERSHED) %>% summarise(total_count=n(),.groups = 'drop')
+
+grasshoppers_group_count2 %>% ggplot(aes(x = RECYEAR, y = total_count, color = WATERSHED)) + geom_jitter(width = 0.2, height = 0.2)
+
+
+
+
+grasshoppers_group_count3 <- grasshoppers_2_group_wide %>% group_by(RECYEAR, RECMONTH, WATERSHED) %>% summarise(total_count=n(),.groups = 'drop')
+
+unique(grasshoppers_group_count3$total_count)
 
 ```
 
 
 ```{r}
+
 #Looking at the distribution of grasshopper counts per year
 grasshoppers2_2 %>% ggplot(aes(x = RECYEAR, y = TOTAL)) + geom_col() + theme(text = element_text(size=10),
         axis.text.x = element_text(angle=45, hjust=1))
+
 
 #Looking at the distribution of grasshopper counts by watershed
 grasshoppers2_2 %>% ggplot(aes(x = WATERSHED, y = TOTAL, fill = Type)) + geom_col() + theme(text = element_text(size=10),
@@ -424,17 +498,23 @@ grasshoppers2_2 %>% ggplot(aes(x = WATERSHED, y = TOTAL, fill = Type)) + geom_co
 grasshoppers2_2 %>% ggplot(aes(x = RECYEAR, y = TOTAL, fill = WATERSHED)) + geom_col() + theme(text = element_text(size=10),
         axis.text.x = element_text(angle=45, hjust=1))
 
+
+
 #Looking at press vs pulse observations because why not
 ##Grouping by species first to get the total observations per species per year
-grasshoppers2_2_grouping <- grasshoppers2_2%>% 
+grasshoppers2_2_grouping <- grasshoppers2_2 %>% 
   group_by(RECYEAR, Type, SPECIES) %>% 
   dplyr::reframe(TOTAL = sum(TOTAL))
+
+
 
 #Summarizing the summed species observations by mean per year
 grasshoppers2_2_grouping_1 <- grasshoppers2_2_grouping %>%
   dplyr::reframe(Mean_total = mean(TOTAL), .by = c(RECYEAR, Type))
 
 grasshoppers2_2_grouping_1 <- subset(grasshoppers2_2_grouping_1, grasshoppers2_2_grouping_1$Type %in% c("Control","Press","Pulse"))
+
+
 
 #Plotting the mean per year 
 grasshoppers2_2_grouping_1 %>% ggplot(aes(x = RECYEAR, y = Mean_total, group = Type)) + 
@@ -475,29 +555,29 @@ All sampling periods from autumn 1981 through spring 1992 on these three treatme
 
 ```{r}
 #Seasonal summaries of small mammals on LTER traplines 
-smallmammals1 <- read_csv("Datasets_EAGER/Small_mammals/knb-lter-knz.88.9_FourteenTraplines/CSM011.csv")
+smallmammals_raw <- read_csv("Datasets_EAGER/Small_mammals/knb-lter-knz.88.9_FourteenTraplines/CSM011.csv")
 
 #Data is for small mammal individual records
-smallmammals2 <- read_csv("Datasets_EAGER/Small_mammals/knb-lter-knz.88.9_FourteenTraplines/CSM012.csv")
+smallmammals_indiv <- read_csv("Datasets_EAGER/Small_mammals/knb-lter-knz.88.9_FourteenTraplines/CSM012.csv")
 
 
 #Making some the comlumns "factors" for later manipulation and analysis
-smallmammals1 <- smallmammals1 %>% mutate(RECYEAR = factor(RECYEAR),
+smallmammals <- smallmammals_raw %>% mutate(RECYEAR = factor(RECYEAR),
                                           SEASON = factor(SEASON),
                                           `WATERSHED/LINE` = factor(`WATERSHED/LINE`)) 
 #Separating the watershed/line column into two separate columns
-smallmammals1_long <- separate(smallmammals1, 
+smallmammals <- separate(smallmammals, 
                                       `WATERSHED/LINE`, 
                                       into = c("WATERSHED", "LINE"), 
                                       sep = "-")
 
 #Pivoting the table so that each species is a column and each species per year is a different row
-smallmammals1_long <- pivot_longer(smallmammals1_long, 
+smallmammals_1 <- pivot_longer(smallmammals, 
                                           cols = 8:21, names_to = "Species", 
                                           values_to = "Count")
 
 #Renaming the species into their full names
-smallmammals1_long$Species <- recode(smallmammals1_long$Species,
+smallmammals_1$Species <- recode(smallmammals_1$Species,
                                      "Pm" = "Peromyscus_maniculatus",
                                      "Rmeg" = "Reithrodontomys_megalotis",
                                      "Sh" = "Sigmodon_hispidus",
@@ -513,8 +593,8 @@ smallmammals1_long$Species <- recode(smallmammals1_long$Species,
                                      "Zh" = "Zapus_hudsonius",
                                      "Cp" = "Cryptotis_parva")
 
-unique(smallmammals1_long$WATERSHED)
-smallmammals1_long$WATERSHED <- recode(smallmammals1_long$WATERSHED,
+unique(smallmammals_1$WATERSHED)
+smallmammals_1$WATERSHED <- recode(smallmammals_1$WATERSHED,
                                        "004F" = "4F",
                                        "004B" = "4B",
                                        "001D" = "1D",
@@ -532,13 +612,32 @@ watershed_info_smallmammals <- tibble(WATERSHED = c("4F", "4B", "1D",
                                                         "4_years"),
                                       Grazing = c("Ungrazed", "Ungrazed", "Ungrazed", 
                                                   "Ungrazed", "Grazed", "Grazed", 
-                                                  "Grazed"),
-                                      Type = c("Pulse", "Pulse", "Pulse", 
-                                               "Control", "Press", "UNK", 
-                                               "Press"))
+                                                  "Grazed"))
 
-smallmammals1_long <- left_join(smallmammals1_long, watershed_info_smallmammals, by = "WATERSHED")
-view(smallmammals1_long)
+smallmammals_2 <- left_join(smallmammals_1, watershed_info_smallmammals, by = "WATERSHED")
+view(smallmammals_2)
+
+```
+
+
+```{r}
+
+#Looking at the amount of time data was collected for each watershed, in each year, and in each month.
+view(smallmammals)
+unique(smallmammals$RECTYPE)
+
+smallmammals_group_count1 <- smallmammals %>%  group_by(WATERSHED) %>% 
+  summarise(total_count=n(),.groups = 'drop')
+
+smallmammals_group_count2 <- smallmammals %>%  group_by(RECYEAR, WATERSHED) %>% 
+  summarise(total_count=n(),.groups = 'drop')
+
+smallmammals_group_count2 %>% ggplot(aes(x = RECYEAR, y = total_count, color = WATERSHED)) + geom_jitter(width = 0.2, height = 0.2)
+
+
+smallmammals_group_count3 <- smallmammals %>% 
+  group_by(RECYEAR, SEASON, WATERSHED) %>% 
+  summarise(total_count=n(),.groups = 'drop')
 
 ```
 
@@ -576,7 +675,7 @@ smallmammals1_grouping_1 %>% ggplot(aes(x = RECYEAR, y = Mean_count, group = Typ
 
 
 ##Plant Species Composition
-This section is dedicated to cleaning the small-mammal trapping dataset. Data was collected from 1983 to 2022. Watersheds that are supposedly included: FA, SuB, N4A, R1A, 2D, WB, N20B, 1D, N1A, R1B, SpA, SpB, WA, 20B, 4A, 4F, SuA, N1B, N20A, N4D.
+This section is dedicated to cleaning the plant species composition/cover dataset. Data was collected from 1983 to 2022. Watersheds that are included: FA, SuB, N4A, R1A, 2D, WB, N20B, 1D, N1A, R1B, SpA, SpB, WA, 20B, 4A, 4F, SuA, N1B, N20A, N4D.
 
 Author: David Hartnett, Scott Collins, Zak Ratajczak
 
@@ -597,10 +696,108 @@ Thus, plots d1-d5 from 1983-1987 are NOT the same d1-d5 plots in subsequent year
 
 ```{r}
 
-plant_comp <- read_csv("Datasets_EAGER/Plants/knb-lter-knz.69.21_SpeciesComposition/PVC021.csv")
+plant_comp_raw <- read_csv("Datasets_EAGER/Plants/knb-lter-knz.69.21_SpeciesComposition/PVC021.csv")
 
-view(plant_comp)
+view(plant_comp_raw)
 
+plant_comp <- plant_comp_raw %>% mutate(RecType = factor(RecType),
+                                        RecYear = factor(RecYear),
+                                        RecMonth = factor(RecMonth),
+                                        RecDay = factor(RecDay),
+                                        WaterShed = factor(WaterShed),
+                                        SoilType = factor(SoilType),
+                                        Transect = factor(Transect),
+                                        Plot = factor(Plot),
+                                        SpeCode = factor(SpeCode))
+
+#Combining the genus and species column and creating a new column. 
+plant_comp1 <- add_column(unite(plant_comp, "Genus_spp", AB_genus:AB_species, sep = "_"))
+
+unique(plant_comp1$WaterShed)
+
+
+plant_comp1$WaterShed <- recode(plant_comp1$WaterShed,
+                                "001c" = "1C",
+                                "001d" = "1D",
+                                "004b" = "4B",
+                                "020b" = "20B",
+                                "n01b" = "N1B",
+                                "n04d" = "N4D",
+                                "n20b" = "N20B",
+                                "002c" = "2C",
+                                "002d" = "2D",
+                                "004a" = "4A",
+                                "004f" = "4F",
+                                "n04a" = "N4A",
+                                "n20a" = "N20A",
+                                "020d" = "20D",
+                                "n01a" = "N1A",
+                                "00wb" = "WB",
+                                "0spa" = "SpA",
+                                "0spb" = "SpB",
+                                "00fa" = "FA",
+                                "00fb" = "FB",
+                                "00wa" = "WA",
+                                "0sua" = "SuA",
+                                "0sub" = "SuB",
+                                "001a" = "1A",
+                                "020a" = "20A",
+                                "r01a" = "R1A",
+                                "r01b" = "R1B",
+                                "r20a" = "R20A",
+                                "r20b" = "R20B",
+                                "n02a" = "N2A",
+                                "n02b" = "N2B")
 
 ```
 
+
+```{r}
+#Looking at the amount of time data was collected for each watershed, in each year, and in each month.
+
+
+##grouping by the variables that we are interested in
+plant_comp1_group <- plant_comp1 %>% group_by(RecYear, RecMonth, WaterShed, Genus_spp) %>% 
+  dplyr::summarise(Cover = sum(Cover))
+
+
+
+
+##pivoting the dataset wider so that each species is a column
+plant_comp1_wide <- plant_comp1_group %>% pivot_wider(names_from = Genus_spp, values_from = Cover)
+
+
+plant_comp1_wide2 <- plant_comp1_wide %>% subset(.$WaterShed =! c("FA", "FB", "WA", "WB", "SpA", "SpB", "SuA", "SuB", "R1A", "R1B", "R20A", "R20B", "4F", "20A", "20D", "N2A", "N2B"))
+
+plant_comp_group_count1 <- plant_comp1_wide %>% group_by(WaterShed) %>% 
+  summarise(total_count=n(),.groups = 'drop')
+
+
+plant_comp_group_count2 <- plant_comp1_wide %>% group_by(RecYear, WaterShed) %>% 
+  summarise(total_count=n(),.groups = 'drop')
+
+plant_comp_group_count2 %>% ggplot(aes(x = RecYear, y = total_count, color = WaterShed)) + geom_jitter(width = 0.2, height = 0.2)
+
+
+plant_comp_group_count3 <- plant_comp1_wide %>% group_by(RecYear, RecMonth, WaterShed) %>% 
+  summarise(total_count=n(),.groups = 'drop')
+
+```
+
+
+##Plant Biomass
+This section is dedicated to cleaning the plant bimoass dataset. Data was collected from 1984 to 2018. Watersheds that are included: 1D, R1A, R1B, 2C, 2D, 4A, 4B, 20B, R20A, R20B, SpA, SpB, SuA, SuB, FA, FB, WA, WB.
+
+Author(s): John Blair and Jesse Nippert
+
+ZIP code: knb-lter-knz.55.14
+
+Data code: PAB01
+
+File(s): PAB011.csv
+
+End-of-season biomass samples from 1991 were sorted only into grass, forb, and previous dead (where applicable) categories. Due to an extensive wildfire in spring 1991, most watersheds had no litter accumulation, and 'grass' in 1991 included live grass + current year’s dead grass (no separation due to the large number of additional areas sampled that year and the need to process samples quickly). The April wildfire burned watersheds 001C, 001D, N01B, N01A, 004B, N04D, 020B, N20B, N20A, 002D.Prior to 1992: (for all PAB0_1) Woody plants were NOT separated from forbs. The most common woody species are: Amorpha canescens (lead plant), Ceanothus herbaceous (New Jersey tea), Cornus drummondii (dogwood), Rosa arkansana (wild rose), Rhus glabra (Smooth sumac), and Symphoricarpos orbiculatus (buckbrush).1994: seasonal burning began (PAB031). Prior to this all burning was done in the spring only.1994 and 1995: (PAB021) 020A was burned in a wildfire. 010B was clipped for two years to account for the p.dead component.1997: Watersheds 001A, 020A, 020D, 001C were set up to become part of the Fire Reversal. Experiment (PAB051). Fire Reversal did not take place until 2001.Watersheds 001A and 020A (Tully soils only) began being clipped at the end of the season as part of PAB051 and continued to be clipped biweekly throughout the summer as part of PAB021.Before 1999: All PAB0_1 samples were ground and saved for future chemical analysis. Currently, only 001D, 004B and 020B (PAB011) samples 1, 2 and 3 are ground and saved.1999: Watersheds 020D and 001C began being clipped biweekly as part of PAB021. They also continued to be clipped at the end of the season as part of PAB051.2000: PAB021 was terminated after the 2000 clip season.2001: Fire reversal experiment (PAB051) began. R01A was 020A, R20A was 001A, R01B was 020D, and R20B was 001C.2002: clipping on slope locations terminated for all PAB0_1.Prior to 2002: current year's dead (c.dead) was separated from live grass for all PAB0_1. After this time c.dead is included in live grass weights.
+
+```{r}
+
+plant_biomass_raw <- read_csv("~/Documents/GitHub/KNZ-incidence/Datasets_EAGER/Plants/knb-lter-knz.55.14_AbovegroundBiomass/PAB011.csv")
