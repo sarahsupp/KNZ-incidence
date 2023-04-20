@@ -1,30 +1,321 @@
 ---
-title: "EAGER: Small_mammals"
+title: "EAGER-Small_mammals"
 author: "Maya Parker-Smith"
 date: "2023-04-11"
 output: html_document
+ smart: no
+    theme: flatly
+    float: yes
+    css: "style.css"    
+editor_options: 
+  chunk_output_type: console
+mainfont: Arial
+mathfont: Arial
+fontsize: 12pt
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+## Clear environment 
+rm(list=ls())
+
+
+##Libraries
+library(tidyverse)
+library(cowplot)
+library(bbmle)
+library(lmerTest)
+library(car)
+library(readxl)
+library(multcomp)
+library(readr)
+library(incidence)
+library(vegan)
+library(goeveg)
+
 ```
 
-## R Markdown
+##Small-mammal trapping
+This section is dedicated to cleaning the small-mammal trapping dataset. Data was collected from 1981 to 2013. Watersheds that are supposedly included: 4B, 4F, N4D, N20B, 1D, 20B, N1B.
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Author: Donald Kaufman
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+ZIP file: knb-lter-knz.88.9
 
-```{r cars}
-summary(cars)
+Data code: CSM01
+
+File(s): CSM011.csv, CSM012.csv
+
+During winter 1981-1982, the Konza Prairie management committee shifted treatment boundaries, so our traplines in N00D were encompassed in the new boundaries of N01D. Therefore, we established two new traplines in another treatment unit (N00B) in spring 1982.
+In autumn 1984, four new traplines were established with two traplines in 002C and two in 002D (24 total sampling lines). 
+Four more traplines were added in autumn 1985 with two in 010D and two in 001A (28 total sampling lines). 
+After 1987, summer sampling was discontinued because of the intensive labor required to close traps in the morning and open traps in late afternoon each day on each trapline in each trapping period.
+In 1988, Konza Prairie management committee changed unburned research treatments to treatments with a 20-year frequency of occurrence of fire and, therefore, 000B and N00B became 020B and N20B, respectively. 
+The treatment units (N01B and N04D) remained unburned from 1968 until spring 1988 when annual burning was initiated on N01B and the 4-year cycle was initiated on N04D.
+Spring fires occurred after our trapping session in these and other treatment units. 
+N20B was not burned in 1988, but it had been burned in 1980. 
+Before the spring sampling period in 1989, the number of traplines sampled was reduced from 28 traplines to 14; the 14 traplines remaining included two traplines in each of seven experimental treatments (001D, 004B, 004F, 020B, N01B, N04D and N20B).
+In addition, a second ungrazed 4-year fire treatment (004F) was continued to help monitor climatic effects on small mammals in prairie experiencing periodic fires
+Data for small mammals captured on traplines that were discontinued (001A, 002C, 002D, 004D, 004G, 010A and 010D) can be found in CSM06
+In May 1992, gates were opened between phase I and phase II of the bison area. N01B, N04D and N20B lie within the phase II area. 
+All sampling periods from autumn 1981 through spring 1992 on these three treatment units occurred on traplines that had not been grazed by bison.
+
+
+```{r}
+#Seasonal summaries of small mammals on LTER traplines 
+smallmammals_raw <- read_csv("Datasets_EAGER/Small_mammals/knb-lter-knz.88.9_FourteenTraplines/CSM011.csv")
+
+#Table including the watershed info for all watersheds
+watershed_info <- read_excel("Datasets_EAGER/Other/Watershed Info.xlsx")
+
+
+#Making some the comlumns "factors" for later manipulation and analysis
+smallmammals <- smallmammals_raw %>% mutate(RECYEAR = factor(RECYEAR),
+                                          SEASON = factor(SEASON),
+                                          `WATERSHED/LINE` = factor(`WATERSHED/LINE`)) 
+#Separating the watershed/line column into two separate columns
+smallmammals <- separate(smallmammals, 
+                                      `WATERSHED/LINE`, 
+                                      into = c("WATERSHED", "LINE"), 
+                                      sep = "-")
+
+
+#Renaming columns just so that they're not all capitalized
+smallmammals <- smallmammals %>% rename("Watershed_name" = "WATERSHED",
+                                                  "Datacode" = "DATACODE",
+                                                  "Rectype" = "RECTYPE",
+                                                  "Recyear" = "RECYEAR",
+                                                  "Season" = "SEASON",
+
+
+smallmammals$Watershed_name <- dplyr::recode(smallmammals$Watershed_name,
+                                       "004F" = "4F",
+                                       "004B" = "4B",
+                                       "001D" = "1D",
+                                       "020B" = "20B",
+                                       "N20B" = "N20B",
+                                       "N01B" = "N1B",
+                                       "N04D" = "N4D")
+
+#Pivoting the table so that each species is a column and each species per year is a different row
+smallmammals_long <- pivot_longer(smallmammals, 
+                                          cols = 8:21, names_to = "Species", 
+                                          values_to = "Count")
+
+#Renaming the species into their full names
+smallmammals_long$Species <- recode(smallmammals_long$Species,
+                                     "Pm" = "Peromyscus_maniculatus",
+                                     "Rmeg" = "Reithrodontomys_megalotis",
+                                     "Sh" = "Sigmodon_hispidus",
+                                     "Bh" = "Blarina_hylophaga",
+                                     "Rmon" = "Reithrodontomys_montanus",
+                                     "St" = "Spermophilus_tridecemlineatus",
+                                     "Mo" = "Microtus_ochrogaster",
+                                     "Pl" = "Peromyscus_leucopus",
+                                     "Ch" = "Chaetodipus_hispidus",
+                                     "Mm" = "Mus_musculus",
+                                     "Nf" = "Neotoma_floridana",
+                                     "Sc" = "Synaptomys_cooperi",
+                                     "Zh" = "Zapus_hudsonius",
+                                     "Cp" = "Cryptotis_parva")
+
+
+
+#Joining the watershed_info dataset with the actual small mammal dataset
+smallmammals_long1 <- left_join(smallmammals_long, watershed_info, by = "Watershed_name")
+
+smallmammals_long1 <- smallmammals_long1 %>% mutate(Fire_interval = factor(Fire_interval),
+                                                    Burn_season = factor(Burn_season),
+                                                    Grazing = factor(Grazing),
+                                                    Watershed_name = factor(Watershed_name),
+                                                    Line = factor(Line))
+
+
+#Changing the order of the fire_interval and grazing treatments for graphing reasons later on
+smallmammals_long1$Fire_interval <- factor(smallmammals_long1$Fire_interval, 
+                                           levels = c("1_year", "4_years", "20_years"))
+
+smallmammals_long1$Grazing <- factor(smallmammals_long1$Grazing,
+                                     levels = c("Ungrazed", "Bison"))
+
+
+
+#Since bison were not present at these watersheds until 1992, I made all the "grazing" classifications for the grazed watersheds "NA" for the years 1981 thru 1991
+for(i in 1:nrow(smallmammals_long1)){
+  if (smallmammals_long1[i,4] == "1981" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
+  if (smallmammals_long1[i,4] == "1981" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
+  if (smallmammals_long1[i,4] == "1981" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
+  if (smallmammals_long1[i,4] == "1982" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
+  if (smallmammals_long1[i,4] == "1982" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
+  if (smallmammals_long1[i,4] == "1982" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
+  if (smallmammals_long1[i,4] == "1983" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
+  if (smallmammals_long1[i,4] == "1983" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
+  if (smallmammals_long1[i,4] == "1983" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
+  if (smallmammals_long1[i,4] == "1984" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
+  if (smallmammals_long1[i,4] == "1984" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
+  if (smallmammals_long1[i,4] == "1984" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
+  if (smallmammals_long1[i,4] == "1985" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
+  if (smallmammals_long1[i,4] == "1985" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
+  if (smallmammals_long1[i,4] == "1985" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
+  if (smallmammals_long1[i,4] == "1986" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
+  if (smallmammals_long1[i,4] == "1986" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
+  if (smallmammals_long1[i,4] == "1986" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
+  if (smallmammals_long1[i,4] == "1987" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
+  if (smallmammals_long1[i,4] == "1987" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
+  if (smallmammals_long1[i,4] == "1987" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
+  if (smallmammals_long1[i,4] == "1988" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
+  if (smallmammals_long1[i,4] == "1988" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
+  if (smallmammals_long1[i,4] == "1988" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
+  if (smallmammals_long1[i,4] == "1989" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
+  if (smallmammals_long1[i,4] == "1989" & smallmammals_long1[i,6] == "N4B"){smallmammals_long1[i,12] <- NA}
+  if (smallmammals_long1[i,4] == "1989" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
+  if (smallmammals_long1[i,4] == "1990" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
+  if (smallmammals_long1[i,4] == "1990" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
+  if (smallmammals_long1[i,4] == "1990" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
+  if (smallmammals_long1[i,4] == "1991" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
+  if (smallmammals_long1[i,4] == "1991" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
+  if (smallmammals_long1[i,4] == "1991" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
+}
+
+
 ```
 
-## Including Plots
+```{r}
 
-You can also embed plots, for example:
+#Selecting just certain columns from the larger dataset
+smallmammalsgroup1 <- smallmammals_long1 %>% 
+  group_by(Recyear, Watershed_name, Fire_interval, Grazing, Species) %>% 
+  dplyr::reframe(Count = sum(Count))
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+#Removing the 4F watershed to make sampling between all fire/grazing treatments equal (the 4 year fire interval with no grazing combination of disturbances has two watersheds represented, while all other combinations have just one). Also removing the the grazing classifcation "NA" (grazing watersheds that didn't actually have any grazing until 1992) from the data.
+smallmammalsgroup2 <- smallmammalsgroup1 %>%
+  filter(.$Watershed_name != "4F") %>% 
+  filter(.$Grazing != "NA")
+
+
+#Plotting the overall counts of species per year
+smallmammalsgroup2 %>% ggplot(aes(x = Recyear, y = Count, group = Species, color = Species)) + 
+  geom_point() + 
+  geom_line() + 
+  facet_grid(Grazing~Fire_interval) +
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1, size = 5)) 
+
+
+
+
+
+#Pivoting the the dataset wider, so that each species is its own column
+smallmammals_wide <- smallmammalsgroup2 %>% 
+  pivot_wider(names_from = "Species", values_from = "Count", 
+              values_fn = function(x) paste(sum(x)))
+
+#Making an environment table to add back onto the presence/absence data later
+smallmammals_env <- smallmammals_wide[, 1:4]
+
+#Standardizing by presence/absence
+decostand_pa_smallmammals <- decostand(smallmammals_wide[, -c(1:4)], "pa", na.rm = TRUE )
+
+#Checking the stress of this presence/absence data
+dimcheckMDS(decostand_pa_smallmammals, distance = "jaccard", k=5)
+#making an mds 
+idk_mds <- metaMDS(decostand_pa_smallmammals, distance = "jaccard", k = 3, trymax = 30)
+
+#Plotting the mds for no reason
+plot(idk_mds$points)
+
+plot(idk_mds, disp = "species", cex = .8)
+ordispider(idk_mds, smallmammals_wide$Grazing, label = T)
+
+
+
+#Adding the presence/absence dataset back with the enviornment dataset
+smallmammals_wide2 <- decostand_pa_smallmammals %>% add_column(smallmammals_env, .before = "Blarina_hylophaga")
+
+#Pivoting the presence/absence back to a longer format
+smallmammals_long2 <- smallmammals_wide2 %>% pivot_longer(cols = 5:18, 
+                                                          names_to = "Species", 
+                                                          values_to = "Presence")
+
+#Plotting species presence/absence by year, and facetting by species, grazing, and fire interval. VERY BUSY and LARGE plot
+smallmammals_long2 %>% 
+  ggplot(aes(x = Recyear, y = Presence, group = Species, color = Species)) + 
+  geom_point() + 
+  geom_line() + 
+  facet_grid(Species~Grazing~Fire_interval, switch = "y") +
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1, size =5),
+        strip.text.y.left = element_text(angle = 0))
+
+```
+```{r}
+
+bartlett.test(Presence ~ Fire_interval, data = smallmammals_long2)
+bartlett.test(Presence ~ Grazing, data = smallmammals_long2)
+
+model1<-lm(Presence ~ Fire_interval + Grazing, data = smallmammals_long2)
+Anova(model1)
+
+
+
+#Using the wide dataset to calculate species incidence?
+smallmammals_years_wide <- smallmammals_long2 %>% pivot_wider(names_from = "Recyear", values_from = "Presence")
+smallmammals_years_wide <- smallmammals_years_wide %>% mutate(Total_incidence = NA)
+
+for (i in 1:nrow(smallmammals_years_wide)){
+  smallmammals_years_wide$Total_incidence = sum(smallmammals_years_wide[,5:37])
+}
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+```{r}
+
+
+
+
+#Looking at the amount of time data was collected for each watershed, in each year, and in each month.
+view(smallmammals)
+unique(smallmammals$RECTYPE)
+
+smallmammals_group_count1 <- smallmammals %>%  group_by(Watershed_name) %>% 
+  summarise(total_count=n(),.groups = 'drop')
+
+smallmammals_group_count2 <- smallmammals %>%  group_by(RECYEAR, WATERSHED) %>% 
+  summarise(total_count=n(),.groups = 'drop')
+
+smallmammals_group_count2 %>% ggplot(aes(x = RECYEAR, y = total_count, color = WATERSHED)) + geom_jitter(width = 0.2, height = 0.2)
+
+
+smallmammals_group_count3 <- smallmammals %>% 
+  group_by(RECYEAR, SEASON, WATERSHED) %>% 
+  summarise(total_count=n(),.groups = 'drop')
+
+
+
+
+```
+
+
+```{r}
+
+
+
+#Grouping by species and then graphing by type
+smallmammals1_grouping <- smallmammals_long1%>% 
+  group_by(Recyear, Fire_interval, Grazing, Watershed_name, Species) %>% 
+  dplyr::reframe(Count = sum(Count))
+
+
+smallmammals1_grouping_1 <- smallmammals1_grouping %>%
+  dplyr::reframe(Mean_count = mean(Count), .by = c(Recyear, Watershed_name))
+
+
+
+smallmammals1_grouping_1 %>% ggplot(aes(x = RECYEAR, y = Mean_count, group = Type)) + 
+  geom_line(aes(color = Type)) + geom_point(aes(color = Type)) + 
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1))
+
+
+```

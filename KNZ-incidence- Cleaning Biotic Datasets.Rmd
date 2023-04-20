@@ -673,7 +673,6 @@ smallmammals1_grouping_1 %>% ggplot(aes(x = RECYEAR, y = Mean_count, group = Typ
 
 
 
-
 ##Plant Species Composition
 This section is dedicated to cleaning the plant species composition/cover dataset. Data was collected from 1983 to 2022. Watersheds that are included: FA, SuB, N4A, R1A, 2D, WB, N20B, 1D, N1A, R1B, SpA, SpB, WA, 20B, 4A, 4F, SuA, N1B, N20A, N4D.
 
@@ -764,10 +763,12 @@ plant_comp1_group <- plant_comp1 %>% group_by(RecYear, RecMonth, WaterShed, Genu
 
 
 ##pivoting the dataset wider so that each species is a column
-plant_comp1_wide <- plant_comp1_group %>% pivot_wider(names_from = Genus_spp, values_from = Cover)
+plant_comp1_wide <- plant_comp1_group %>% 
+  pivot_wider(names_from = Genus_spp, values_from = Cover)
 
 
-plant_comp1_wide2 <- plant_comp1_wide %>% subset(.$WaterShed =! c("FA", "FB", "WA", "WB", "SpA", "SpB", "SuA", "SuB", "R1A", "R1B", "R20A", "R20B", "4F", "20A", "20D", "N2A", "N2B"))
+plant_comp1_wide2 <- plant_comp1_wide %>% 
+  subset(.$WaterShed =! c("FA", "FB", "WA", "WB", "SpA", "SpB", "SuA", "SuB", "R1A", "R1B", "R20A", "R20B", "4F", "20A", "20D", "N2A", "N2B"))
 
 plant_comp_group_count1 <- plant_comp1_wide %>% group_by(WaterShed) %>% 
   summarise(total_count=n(),.groups = 'drop')
