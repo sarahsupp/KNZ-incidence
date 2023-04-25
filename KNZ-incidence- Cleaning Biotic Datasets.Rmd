@@ -250,7 +250,7 @@ birds_short2_grouping1 %>% ggplot(aes(x = RECYEAR, y = Mean_count, group = Type)
 
 
 ##Grasshopper Sweeping
-This section is dedicated to cleaning the grasshopper sweeping dataset. Data was collected from 1982 to 2020. Watersheds that are supposedly included: 2D, 1D, N20B, N1B, SuB, 4F, 20B, N4D, 2C, SpB, 4B, 4A, N1A, N20A.
+This section is dedicated to cleaning the grasshopper sweeping dataset. Data was collected from 1982 to 2020. Watersheds that are su pposedly included: 2D, 1D, N20B, N1B, SuB, 4F, 20B, N4D, 2C, SpB, 4B, 4A, N1A, N20A.
 
 Author: Anthony Joern
 

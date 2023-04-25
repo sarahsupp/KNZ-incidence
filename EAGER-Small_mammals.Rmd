@@ -31,7 +31,8 @@ library(readr)
 library(incidence)
 library(vegan)
 library(goeveg)
-
+library(randtests)
+library(reshape2)
 ```
 
 ##Small-mammal trapping
@@ -69,8 +70,7 @@ watershed_info <- read_excel("Datasets_EAGER/Other/Watershed Info.xlsx")
 
 
 #Making some the comlumns "factors" for later manipulation and analysis
-smallmammals <- smallmammals_raw %>% mutate(RECYEAR = factor(RECYEAR),
-                                          SEASON = factor(SEASON),
+smallmammals <- smallmammals_raw %>% mutate(SEASON = factor(SEASON),
                                           `WATERSHED/LINE` = factor(`WATERSHED/LINE`)) 
 #Separating the watershed/line column into two separate columns
 smallmammals <- separate(smallmammals, 
@@ -138,44 +138,46 @@ smallmammals_long1$Fire_interval <- factor(smallmammals_long1$Fire_interval,
 smallmammals_long1$Grazing <- factor(smallmammals_long1$Grazing,
                                      levels = c("Ungrazed", "Bison"))
 
-
+#Okay instead of what I am doing below, I just need to separate the dataset from 1992 onwards. 
+smallmammals_long1 <- smallmammals_long1 %>% subset(.$Recyear >= 1992)
+smallmammals_long1 <- smallmammals_long1 %>% mutate(Recyear = factor(Recyear))
 
 #Since bison were not present at these watersheds until 1992, I made all the "grazing" classifications for the grazed watersheds "NA" for the years 1981 thru 1991
-for(i in 1:nrow(smallmammals_long1)){
-  if (smallmammals_long1[i,4] == "1981" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
-  if (smallmammals_long1[i,4] == "1981" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
-  if (smallmammals_long1[i,4] == "1981" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
-  if (smallmammals_long1[i,4] == "1982" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
-  if (smallmammals_long1[i,4] == "1982" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
-  if (smallmammals_long1[i,4] == "1982" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
-  if (smallmammals_long1[i,4] == "1983" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
-  if (smallmammals_long1[i,4] == "1983" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
-  if (smallmammals_long1[i,4] == "1983" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
-  if (smallmammals_long1[i,4] == "1984" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
-  if (smallmammals_long1[i,4] == "1984" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
-  if (smallmammals_long1[i,4] == "1984" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
-  if (smallmammals_long1[i,4] == "1985" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
-  if (smallmammals_long1[i,4] == "1985" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
-  if (smallmammals_long1[i,4] == "1985" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
-  if (smallmammals_long1[i,4] == "1986" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
-  if (smallmammals_long1[i,4] == "1986" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
-  if (smallmammals_long1[i,4] == "1986" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
-  if (smallmammals_long1[i,4] == "1987" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
-  if (smallmammals_long1[i,4] == "1987" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
-  if (smallmammals_long1[i,4] == "1987" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
-  if (smallmammals_long1[i,4] == "1988" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
-  if (smallmammals_long1[i,4] == "1988" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
-  if (smallmammals_long1[i,4] == "1988" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
-  if (smallmammals_long1[i,4] == "1989" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
-  if (smallmammals_long1[i,4] == "1989" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
-  if (smallmammals_long1[i,4] == "1989" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
-  if (smallmammals_long1[i,4] == "1990" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
-  if (smallmammals_long1[i,4] == "1990" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
-  if (smallmammals_long1[i,4] == "1990" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
-  if (smallmammals_long1[i,4] == "1991" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
-  if (smallmammals_long1[i,4] == "1991" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
-  if (smallmammals_long1[i,4] == "1991" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
-}
+# for(i in 1:nrow(smallmammals_long1)){
+#   if (smallmammals_long1[i,4] == "1981" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
+#   if (smallmammals_long1[i,4] == "1981" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
+#   if (smallmammals_long1[i,4] == "1981" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
+#   if (smallmammals_long1[i,4] == "1982" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
+#   if (smallmammals_long1[i,4] == "1982" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
+#   if (smallmammals_long1[i,4] == "1982" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
+#   if (smallmammals_long1[i,4] == "1983" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
+#   if (smallmammals_long1[i,4] == "1983" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
+#   if (smallmammals_long1[i,4] == "1983" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
+#   if (smallmammals_long1[i,4] == "1984" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
+#   if (smallmammals_long1[i,4] == "1984" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
+#   if (smallmammals_long1[i,4] == "1984" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
+#   if (smallmammals_long1[i,4] == "1985" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
+#   if (smallmammals_long1[i,4] == "1985" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
+#   if (smallmammals_long1[i,4] == "1985" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
+#   if (smallmammals_long1[i,4] == "1986" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
+#   if (smallmammals_long1[i,4] == "1986" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
+#   if (smallmammals_long1[i,4] == "1986" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
+#   if (smallmammals_long1[i,4] == "1987" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
+#   if (smallmammals_long1[i,4] == "1987" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
+#   if (smallmammals_long1[i,4] == "1987" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
+#   if (smallmammals_long1[i,4] == "1988" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
+#   if (smallmammals_long1[i,4] == "1988" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
+#   if (smallmammals_long1[i,4] == "1988" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
+#   if (smallmammals_long1[i,4] == "1989" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
+#   if (smallmammals_long1[i,4] == "1989" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
+#   if (smallmammals_long1[i,4] == "1989" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
+#   if (smallmammals_long1[i,4] == "1990" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
+#   if (smallmammals_long1[i,4] == "1990" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
+#   if (smallmammals_long1[i,4] == "1990" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
+#   if (smallmammals_long1[i,4] == "1991" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
+#   if (smallmammals_long1[i,4] == "1991" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
+#   if (smallmammals_long1[i,4] == "1991" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
+# }
 
 
 ```
@@ -263,9 +265,6 @@ for(i in 1:14){
   print(hue_pal()(i))
 }
 
-
- "#F8766D" "#E38900" "#C49A00" "#99A800" "#53B400" "#00BC56" "#00C094" "#00BFC4" "#00B6EB" "#06A4FF"
-[11] "#A58AFF" "#DF70F8" "#FB61D7" "#FF66A8"
 #Plotting species presence/absence by year, and facetting by species, grazing, and fire interval. VERY BUSY and LARGE plot
 smallmammals_halfspecies1 %>% 
   ggplot(aes(x = Recyear, y = Presence, group = Species, color = Species)) + 
@@ -279,12 +278,12 @@ smallmammals_halfspecies1 %>%
         axis.text.x = element_text(angle=45, hjust=1, size =7),
         axis.text.y = element_text(size=7),
         strip.text.y.left = element_text(angle = 0))
-  
-  smallmammals_halfspecies2 %>% 
+   
+smallmammals_halfspecies2 %>% 
   ggplot(aes(x = Recyear, y = Presence, group = Species, color = Species)) + 
-   scale_color_manual(values = c("#00BFC4", "#00B6EB", "#06A4FF",
-                                 "#A58AFF", "#DF70F8", "#FB61D7", 
-                                 "#FF66A8")) +
+  scale_color_manual(values = c("#00BFC4", "#00B6EB", "#06A4FF",
+                                "#A58AFF", "#DF70F8", "#FB61D7", 
+                                "#FF66A8")) +
   geom_point() + 
   geom_line() + 
   facet_grid(Species~Grazing~Fire_interval, switch = "y") +
@@ -317,17 +316,12 @@ smallmammals_years_wide2 <-smallmammals_years_wide %>% mutate_all(~replace(., is
 
 #Summing the incidence of all years into a new column
 smallmammals_years_wide2 <- smallmammals_years_wide2 %>% mutate(Total_Persistence = 
-                                                                rowSums(smallmammals_years_wide2[, 5:37]))
+                                                                rowSums(smallmammals_years_wide2[, 5:26]))
 view(smallmammals_years_wide2)
 
 #Now I'm am going to make a for loop to calculate incidence by taking the total incidence and dividing it by the number of total years. The ungrazed and bison ones will have a different number of years.
-smallmammals_years_wide2 <- smallmammals_years_wide2 %>% mutate(Persistence = NA)
 
-for (j in 1:nrow(smallmammals_years_wide2)){
-  if(smallmammals_years_wide2[j,3] == "Ungrazed"){smallmammals_years_wide2[j,39]<-(smallmammals_years_wide2[j,38])/33}
-  if(smallmammals_years_wide2[j,3] == "Bison"){smallmammals_years_wide2[j,39]<-(smallmammals_years_wide2[j,38])/22}
-}
-
+smallmammals_years_wide2 <- smallmammals_years_wide2 %>% mutate(Persistence = (.$Total_Persistence/22))
 
 #Just getting a table to show the species persistence by fire-interval, grazing, and years total
 Persistence_table <- smallmammals_years_wide2 %>% group_by(Fire_interval, Grazing, Species) %>% 
@@ -415,11 +409,13 @@ smallmammals_halfspecies3 %>%
         strip.text.y.left = element_text(angle = 0))
   
 
-  Abundance_plot2 <- smallmammals_halfspecies4 %>% 
+
+
+smallmammals_halfspecies4 %>% 
   ggplot(aes(x = Recyear, y = Abundance, group = Species, color = Species)) + 
-   scale_color_manual(values = c("#00BFC4", "#00B6EB", "#06A4FF",
-                                 "#A58AFF", "#DF70F8", "#FB61D7", 
-                                 "#FF66A8")) +
+  scale_color_manual(values = c("#00BFC4", "#00B6EB", "#06A4FF",
+                                "#A58AFF", "#DF70F8", "#FB61D7", 
+                                "#FF66A8")) +
   geom_point() + 
   geom_line() + 
   facet_grid(Species~Grazing~Fire_interval, switch = "y") +
@@ -428,14 +424,179 @@ smallmammals_halfspecies3 %>%
         axis.text.y = element_text(size=7),
         strip.text.y.left = element_text(angle = 0))
 
-  view(Abundance_plot2)
+smallmammals_long2 %>% ggplot(aes(x = Recyear, y = Presence, fill = Species)) + 
+  geom_tile(width = .9, height = .9) + 
+  facet_grid(Species~Grazing~Fire_interval)
+
 
 ```
 
 ```{r}
 
+#Alright this section is for trying the contingency table and chi-square and Wald-Wolfowitz runs test. But I dunno what I'm doing so I am just hoping for the best now. 
 
+#Species incidence classification is determined by combined results from a contingency table with a chi-squared test and a runs test (Figs 3-4; ,8). Species present in all years are assigned “no change” and their sequential incidences are not tested. The following steps will be completed on each sample-based rarefaction run of each assemblage, and values will be compared to ensure that classification is robust to sampling error.
 #Looking at the amount of time data was collected for each watershed, in each year, and in each month.
+
+#Okay so what am I exactly trying to figure out... So I want to see how species occurrence changes throughout time. So I wonder if I use the persistence numbers to tie into incidence. Hmmmmm... a chi-square test tests whether two variables are independent of each other. So what does that mean for what I am doing? Looking at the project proposal, it looks like I am going through each individal species (so not comparing species yet), then 
+
+
+#Okay so I think I need to make a contingency table by splitting the time series into early/late and presence/absence 
+
+smallmammals_cont <- smallmammals_long2 
+smallmammals_cont <- smallmammals_cont %>% mutate(Presence_cont = NA,
+                                                  Early_late = NA,
+                                                  Presence = factor(Presence))
+
+
+
+
+ for(j in 1:nrow(smallmammals_cont)){
+   if (smallmammals_cont[j,6] == "1"){smallmammals_cont[j,7] <- "Present"}
+   if (smallmammals_cont[j,6] == "0"){smallmammals_cont[j,7] <- "Absent"}
+ } 
+
+for(i in 1:nrow(smallmammals_cont)){
+   if (smallmammals_cont[i,1] == "1992"){smallmammals_cont[i,8] <- "Early"}
+   if (smallmammals_cont[i,1] == "1993"){smallmammals_cont[i,8] <- "Early"}
+   if (smallmammals_cont[i,1] == "1994"){smallmammals_cont[i,8] <- "Early"}
+   if (smallmammals_cont[i,1] == "1995"){smallmammals_cont[i,8] <- "Early"}
+   if (smallmammals_cont[i,1] == "1996"){smallmammals_cont[i,8] <- "Early"}
+   if (smallmammals_cont[i,1] == "1997"){smallmammals_cont[i,8] <- "Early"}
+   if (smallmammals_cont[i,1] == "1998"){smallmammals_cont[i,8] <- "Early"}
+   if (smallmammals_cont[i,1] == "1999"){smallmammals_cont[i,8] <- "Early"}
+   if (smallmammals_cont[i,1] == "2000"){smallmammals_cont[i,8] <- "Early"}
+   if (smallmammals_cont[i,1] == "2001"){smallmammals_cont[i,8] <- "Early"}
+   if (smallmammals_cont[i,1] == "2002"){smallmammals_cont[i,8] <- "Early"}
+   if (smallmammals_cont[i,1] == "2003"){smallmammals_cont[i,8] <- "Late"}
+   if (smallmammals_cont[i,1] == "2004"){smallmammals_cont[i,8] <- "Late"}
+   if (smallmammals_cont[i,1] == "2005"){smallmammals_cont[i,8] <- "Late"}
+   if (smallmammals_cont[i,1] == "2006"){smallmammals_cont[i,8] <- "Late"}
+   if (smallmammals_cont[i,1] == "2007"){smallmammals_cont[i,8] <- "Late"}
+   if (smallmammals_cont[i,1] == "2008"){smallmammals_cont[i,8] <- "Late"}
+   if (smallmammals_cont[i,1] == "2009"){smallmammals_cont[i,8] <- "Late"}
+   if (smallmammals_cont[i,1] == "2010"){smallmammals_cont[i,8] <- "Late"}
+   if (smallmammals_cont[i,1] == "2011"){smallmammals_cont[i,8] <- "Late"}
+   if (smallmammals_cont[i,1] == "2012"){smallmammals_cont[i,8] <- "Late"}
+   if (smallmammals_cont[i,1] == "2013"){smallmammals_cont[i,8] <- "Late"}
+ }
+
+smallmammals_cont <- smallmammals_cont %>% mutate(Presence_cont = factor(Presence_cont),
+                                                  Early_late = factor(Early_late))
+
+
+
+smallmammals_cont_1D <- smallmammals_cont %>% filter(.$Watershed_name == "1D")
+smallmammals_cont_4B <- smallmammals_cont %>% filter(.$Watershed_name == "4B")
+smallmammals_cont_20B <- smallmammals_cont %>% filter(.$Watershed_name == "20B")
+smallmammals_cont_N1B <- smallmammals_cont %>% filter(.$Watershed_name == "N1B")
+smallmammals_cont_N4D <- smallmammals_cont %>% filter(.$Watershed_name == "N4D")
+smallmammals_cont_N20B <- smallmammals_cont %>% filter(.$Watershed_name == "N20B")
+
+smallmammals_cont %>% cbind(.$Presence_cont, .$Early_late)
+
+chahis_1D <- smallmammals_cont_1D %>% 
+  filter(Species == "Chaetodipus_hispidus") %>% 
+  dplyr::add_count(.$Presence_cont,
+               .$Early_late)
+
+chahis_4B <- smallmammals_cont_4B %>% 
+  filter(Species == "Chaetodipus_hispidus") %>%
+  dplyr::add_count(.$Presence_cont,
+                   .$Early_late)
+
+smallmammals_cont_1D_blahyl <- smallmammals_cont %>% filter(.$Watershed_name == "1D" & .$Species == "Blarina_hylophaga")
+smallmammals_cont_1D_chahis <- smallmammals_cont %>% filter(.$Watershed_name == "1D" & .$Species == "Chaetodipus_hispidus")
+smallmammals_cont_4B_chahis <- smallmammals_cont %>% filter(.$Watershed_name == "4B" & .$Species == "Chaetodipus_hispidus")
+smallmammals_cont_20B_chahis <- smallmammals_cont %>% filter(.$Watershed_name == "20B" & .$Species == "Chaetodipus_hispidus")
+smallmammals_cont_N1B_chahis <- smallmammals_cont %>% filter(.$Watershed_name == "N1B" & .$Species == "Chaetodipus_hispidus")
+smallmammals_cont_N4D_chahis <- smallmammals_cont %>% filter(.$Watershed_name == "N4D" & .$Species == "Chaetodipus_hispidus")
+smallmammals_cont_N20B_chahis <- smallmammals_cont %>% filter(.$Watershed_name == "N20B" & .$Species == "Chaetodipus_hispidus")
+
+table(smallmammals_cont_N20B_chahis$Presence_cont, smallmammals_cont_N20B_chahis$Early_late)
+chahis <- smallmammals_cont %>% filter(smallmammals_cont$Species == "Chaetodipus_hispidus")
+blahyl <- smallmammals_cont %>% filter(smallmammals_cont$Species == "Blarina_hylophaga")
+crypar <- smallmammals_cont %>% filter(smallmammals_cont$Species == "Cryptotis_parva")
+micoch <- smallmammals_cont %>% filter(smallmammals_cont$Species == "Microtus_ochrogaster")
+musmus <- smallmammals_cont %>% filter(smallmammals_cont$Species == "Mus_musculus")
+neoflo <- smallmammals_cont %>% filter(smallmammals_cont$Species == "Neotoma_floridana")
+perleu <- smallmammals_cont %>% filter(smallmammals_cont$Species == "Peromyscus_leucopus")
+perman <- smallmammals_cont %>% filter(smallmammals_cont$Species == "Peromyscus_maniculatus")
+reimeg <- smallmammals_cont %>% filter(smallmammals_cont$Species == "Reithrodontomys_megalotis")
+reimon <- smallmammals_cont %>% filter(smallmammals_cont$Species == "Reithrodontomys_montanus")
+sighis <- smallmammals_cont %>% filter(smallmammals_cont$Species == "Sigmodon_hispidus")
+spetri <- smallmammals_cont %>% filter(smallmammals_cont$Species == "Spermophilus_tridecemlineatus")
+syncoo <- smallmammals_cont %>% filter(smallmammals_cont$Species == "Synaptomys_cooperi")
+zaphud <- smallmammals_cont %>% filter(smallmammals_cont$Species == "Zapus_hudsonius")
+
+
+table(chahis$Presence_cont, chahis$Early_late)
+chisq.test(chahis$Presence_cont, chahis$Early_late)
+
+table(blahyl$Presence_cont, blahyl$Early_late)
+chisq.test(blahyl$Presence_cont, blahyl$Early_late)
+
+table(crypar$Presence_cont, crypar$Early_late)
+chisq.test(crypar$Recyear, crypar$Presence_cont)
+
+table(micoch$Presence_cont, micoch$Early_late)
+chisq.test(micoch$Presence_cont, micoch$Early_late)
+
+table(musmus$Presence_cont, musmus$Early_late)
+chisq.test(musmus$Presence_cont, musmus$Early_late)
+
+table(neoflo$Presence_cont, neoflo$Early_late)
+chisq.test(neoflo$Presence_cont, neoflo$Early_late)
+
+table(perleu$Presence_cont, perleu$Early_late)
+chisq.test(perleu$Presence_cont, perleu$Early_late)
+
+table(perman$Presence_cont, perman$Early_late)
+chisq.test(perman$Presence_cont, perman$Early_late)
+
+table(reimeg$Presence_cont, reimeg$Early_late)
+chisq.test(reimeg$Presence_cont, reimeg$Early_late)
+
+table(reimon$Presence_cont, reimon$Early_late)
+chisq.test(reimon$Presence_cont, reimon$Early_late)
+
+table(sighis$Presence_cont, sighis$Early_late)
+chisq.test(sighis$Presence_cont, sighis$Early_late)
+
+table(spetri$Presence_cont, spetri$Early_late)
+chisq.test(spetri$Presence_cont, spetri$Early_late)
+
+table(syncoo$Presence_cont, syncoo$Early_late)
+chisq.test(syncoo$Presence_cont, syncoo$Early_late)
+
+table(zaphud$Presence_cont, zaphud$Early_late)
+chisq.test(zaphud$Presence_cont, zaphud$Early_late)
+
+
+dcast(smallmammals_cont, Species ~ Watershed_name, fun.aggregate = count)
+
+xtabs(cbind(Presence_cont, Early_late)~ Species + Watershed_name + Early_late, smallmammals_cont)
+
+ConTab_1D <- table(smallmammals_cont_1D$Presence_cont, smallmammals_cont_1D$Early_late)
+ConTab_4B <- table(smallmammals_cont_4B$Presence_cont, smallmammals_cont_4B$Early_late)
+ConTab_20B <- table(smallmammals_cont_20B$Presence_cont, smallmammals_cont_20B$Early_late)
+ConTab_N1B <- table(smallmammals_cont_N1B$Presence_cont, smallmammals_cont_N1B$Early_late)
+ConTab_N4D <- table(smallmammals_cont_N4D$Presence_cont, smallmammals_cont_N4D$Early_late)
+ConTab_N20B <- table(smallmammals_cont_N20B$Presence_cont, smallmammals_cont_N20B$Early_late)
+
+ConTab_1D_blahyl <- table(smallmammals_cont_1D_blahyl$Presence_cont, smallmammals_cont_1D_blahyl$Early_late)
+
+chisq.test(smallmammals_cont_N20B_chahis$Presence_cont, smallmammals_cont_N20B_chahis$Early_late)
+
+
+
+
+
+runs.test(blahyl_1.ungrazed$Count)
+runs.test(blahyl_presence.1.ungrazed$Presence)
+view(sweetpotato)
+chisq.test(smallmammals_long1$Fire_interval, smallmammals_long$Count)
+
 # view(smallmammals)
 # unique(smallmammals$RECTYPE)
 # 
