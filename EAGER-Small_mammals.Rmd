@@ -424,9 +424,14 @@ smallmammals_halfspecies4 %>%
         axis.text.y = element_text(size=7),
         strip.text.y.left = element_text(angle = 0))
 
-smallmammals_long2 %>% ggplot(aes(x = Recyear, y = Presence, fill = Species)) + 
+smallmammals_long2 %>% ggplot(aes(x = Recyear, y = factor(Presence), fill = factor(Presence))) + 
   geom_tile(width = .9, height = .9) + 
-  facet_grid(Species~Grazing~Fire_interval)
+  facet_grid(Species~Grazing~Fire_interval, switch = "y") +
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1, size =7),
+        axis.text.y = element_text(size=7),
+        strip.text.y.left = element_text(angle = 0)) +
+  scale_fill_manual(values = c("white", "black"))
 
 
 ```
@@ -449,7 +454,7 @@ smallmammals_cont <- smallmammals_cont %>% mutate(Presence_cont = NA,
                                                   Presence = factor(Presence))
 
 
-
+smallmammals_cont <- smallmammals_cont %>% group_by(Species) %>% mutate(id=cur_group_id()) 
 
  for(j in 1:nrow(smallmammals_cont)){
    if (smallmammals_cont[j,6] == "1"){smallmammals_cont[j,7] <- "Present"}
@@ -479,7 +484,55 @@ for(i in 1:nrow(smallmammals_cont)){
    if (smallmammals_cont[i,1] == "2011"){smallmammals_cont[i,8] <- "Late"}
    if (smallmammals_cont[i,1] == "2012"){smallmammals_cont[i,8] <- "Late"}
    if (smallmammals_cont[i,1] == "2013"){smallmammals_cont[i,8] <- "Late"}
- }
+}
+
+list <- list()
+  
+for(i in 1:length(unique(smallmammals_cont$id))){
+  filtered <- subset(smallmammals_cont,id==i) 
+  list[[i]] <- filtered
+  if (smallmammals_cont[i,2] == "1D"){table(smallmammals_cont$Presence_cont, smallmammals_cont$Early_late)}
+  
+}
+list[[1]]
+
+
+for (i in 1:length(smallmammals_cont)){
+  smallmammals_cont %>% 
+  group_by(across((id)))%>%
+    group_by(across(Watershed_name)) %>%
+    dplyr::count(.$Presence_cont, .$Early_late)
+}
+
+
+
+
+summary_tbl <- smallmammals_cont %>% 
+    group_by(across(Watershed_name)) %>%
+    dplyr::count(.$Presence_cont, .$Early_late)
+ 
+ 
+summary_tbl2 <- smallmammals_cont %>%
+  group_by(Species,Watershed_name)%>%
+    dplyr::count(Presence_cont, Early_late)
+
+summary_tbl2 <- summary_tbl2 %>% unite("Species_Watershed", Species:Watershed_name, sep = "_")
+
+
+summary_tbl2_wide <- summary_tbl2 %>% 
+  pivot_wider(names_from = Species_Watershed, values_from = n)
+
+contabs <- xtabs(n ~ Presence_cont + Early_late + Species_Watershed, summary_tbl2)
+apply(contabs, 3, chisq.test)
+
+chisq_p.values<- tibble(do.call(rbind,lapply(chisqtests,function(v){v$p.value})))
+
+chisq_p.values <- chisq_p.values %>% rename("chisq_p.values" = "do.call(...)")
+
+
+
+
+
 
 smallmammals_cont <- smallmammals_cont %>% mutate(Presence_cont = factor(Presence_cont),
                                                   Early_late = factor(Early_late))
