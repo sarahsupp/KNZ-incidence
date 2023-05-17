@@ -1,0 +1,241 @@
+---
+title: "EAGER-Grasshoppers"
+author: "Maya Parker-Smith"
+date: "2023-05-10"
+output: html_document
+ smart: no
+    theme: flatly
+    float: yes
+    css: "style.css"    
+editor_options: 
+  chunk_output_type: console
+mainfont: Arial
+mathfont: Arial
+fontsize: 12pt
+---
+
+```{r setup, include=FALSE}
+## Clear environment 
+rm(list=ls())
+
+
+##Libraries
+library(tidyverse)
+library(cowplot)
+library(bbmle)
+library(lmerTest)
+library(car)
+library(readxl)
+library(multcomp)
+library(readr)
+library(incidence)
+library(vegan)
+library(goeveg)
+library(randtests)
+library(reshape2)
+```
+
+##Grasshopper Sweeping
+This section is dedicated to cleaning the grasshopper sweeping dataset. Data was collected from 1982 to 2020. Watersheds that are su pposedly included: 2D, 1D, N20B, N1B, SuB, 4F, 20B, N4D, 2C, SpB, 4B, 4A, N1A, N20A.
+
+Author: Anthony Joern
+
+ZIP file: knb-lter-knz.29.20
+
+Data code: CGR02
+
+File(s): CGR021.csv, CGR022.csv, CGR023.csv
+
+1982-1987: Sites were sampled at various earlier dates in addition to the late July-early August. 
+1985:Sweeping was restricted to all sites being sampled (twice, on different dates) in late July and early August. 
+Additional watersheds (002D, 004D (now 0SpB), 004F AND 010D (now 0SuB) were added to the sampling regime for early August to provide more long-term data on the influence of fire frequency on grasshoppers. 
+Sampling on watersheds to be grazed (N01B, N04D, and N20B) was discontinued. 
+1986: Watershed 004G (now 00WB) was temporarily added. 
+Sampling in June and early July was reduced to watersheds 001D, 004D, 010D and 020B only; too few grasshoppers are collected by sweeping in the first half of the summer for all watersheds to merit sampling. 
+1987: Sampling in June and early July was restricted to sites 001D, 002C, 004B and 004F. 
+1994:Fire regime changed for 004D (became 0SpB) and 010D (became 0SuB). In the years when 0SuB is burned the sweeps are done 2 weeks earlier than normal. 
+The summer burn is conducted on the first water appropriate day in late July to early August. 
+1996: Wildfire in February, burned 004F, 0SuB, 001D and 002D. 
+1998: 0SuB done earlier than other sites (mid-July) under the mistaken idea that the summer burns were to occur this year. 
+2002: Grazed (bison) transects were added in N01A, N01B, N04A, N04D, N20A and N02B. An older version of the methods manual indicates that 3 lowland (Tully) sites were once done. Locations were: 001D A: T-28; 004B A: G-28; B: S-28; B: F-28; 020B A: N-29; B: N-29 
+2011: WindMate 200 replaced previous machine used for checking wind speeds. The previous machine had limit of detection of 5mph. WindMate 200 specifications: Temperature -20 oC to 158 oF accuracy +1.8 oC to 89 mph accuracy +3%. 
+2013: Beginning with this year, Oecanthinae spp., Gryllidae spp., Tettigoniidae spp., are being added to our list. These are not new species to Konza. We are adding them to the official listing because they are related and ecologically similar. 
+2016: In years when SuB is burned, pre-burn and post-burn sweeps will be done. Timing for pre-burn will be mid-July and timing for post-burn will be mid-September. 
+2018: March 14. 004B – A was burned in a wildfire. A third sweep, “C”, will be done in the vicinity of pab011 FC until 2021 when 004b is scheduled to burn per “normal” schedule.
+
+
+```{r}
+#Second dataset is the grasshopper species counts from each set of sweeps
+grasshoppers_raw <- read_csv("Datasets_EAGER/Grasshoppers/knb-lter-knz.29.20/CGR022.csv")
+
+watershed_info <- read_excel("Datasets_EAGER/Other/Watershed Info.xlsx")
+
+
+unique(grasshoppers_raw$WATERSHED)
+#Making the variables into factors for later graphing and analysis
+grasshoppers <- grasshoppers_raw %>% mutate(RECTYPE = factor(RECTYPE),
+                                          RECMONTH = factor(RECMONTH),
+                                          RECDAY = factor(RECDAY),
+                                          WATERSHED = factor(WATERSHED),
+                                          SOILTYPE = factor(SOILTYPE),
+                                          REPSITE = factor(REPSITE),
+                                          SPCODE = factor(SPCODE))
+
+problems(grasshoppers_raw)
+#Checking the number of unique names for different variables to then compare to the metadata
+unique(grasshoppers$SPECIES)
+##Oh lord... theres capitalizations in some but not others and there are some unknowns. I'll have to alphabetize it and go through to see if there are multiple spellings for the same species
+
+unique(grasshoppers$WATERSHED)
+#There is weird capitalizations for these too... I'll have to go through and clean and probably get rid of some
+
+
+#Renaming watersheds to make it consistent
+grasshoppers1 <- grasshoppers
+grasshoppers1$WATERSHED <- dplyr::recode(grasshoppers1$WATERSHED,
+                                  "001d" = "1D",
+                                  "004b" = "4B",
+                                  "000b" = "B",
+                                  "n04a" = "N4A",
+                                  "n01b" = "N1B",
+                                  "n04d" = "N4D",
+                                  "n00b" = "NB",
+                                  "002d" = "2D", 
+                                  "004d" = "4D",
+                                  "004f" = "4F",
+                                  "010d" = "10D",
+                                  "004g" = "4G",
+                                  "002c" = "2C",
+                                  "0sub" = "SuB",
+                                  "020b" = "20B",
+                                  "0spb" = "SpB",
+                                  "n20a" = "N20A",
+                                  "n20b" = "N20B",
+                                  "n01a" = "N1A",
+                                  "N20B" = "N20B",
+                                  "002D" = "2D",
+                                  "N01B" = "N1B",
+                                  "001D" = "1D",
+                                  "N04D" = "N4D",
+                                  "004F" = "4F",
+                                  "002C" = "2C",
+                                  "020B" = "20B",
+                                  "0SUB" = "SuB",
+                                  "0SPB" = "SpB",
+                                  "004B" = "4B",
+                                  "N01A" = "N1A",
+                                  "N04A" = "N4A",
+                                  "N20A" = "N20A")
+
+#Recoding some of the species to make it consistent
+grasshoppers1$SPECIES <- dplyr::recode(grasshoppers1$SPECIES,
+                                "ageneotett deorum" = "Ageneotettix deorum",
+                                "arphia conspersa" = "Arphia conspersa",
+                                "arphia simplex" = "Arphia simplex",
+                                "arphia species" = "Arphia spp.",
+                                "arphia spp." = "Arphia spp.",
+                                "arphia xanthopte" = "Arphia xanthoptera",
+                                "boopedon auriventr" = "Boopedon auriventris",
+                                "boopedon gracile" = "Boopedon gracile",
+                                "boopedon nubilum" = "Boopedon nubilum",
+                                "brachystol magna" = "Brachystola magna", 
+                                "campylacan olivacea" = "Campylacantha olivacea",
+                                "chortophag viridifas" = "Chortophaga viridifasciata",
+                                "encoptolop sordidus" = "Encoptolophus sordidus",
+                                "encoptolop spp." = "Encoptolphus spp.",
+                                "encoptolop subgracil" = "Encoptolophus subgracilis",
+                                "eritettix simplex" = "Eritettix simplex",
+                                "hadrotetti trifascia" = "Hadrotettix trifasciatus",
+                                "hesperotet species" = "Hesperotettix spp.",
+                                "hesperotet speciosus" = "Hesperotettix speciosus",
+                                "hesperotet spp." = "Hesperotettix spp.",
+                                "hesperotet viridis" = "Hesperotettix viridis",
+                                "hippiscus rugosus" = "Hippiscus rugosus",
+                                "hypochlora alba" = "Hypochlora alba",
+                                "melanoplus angustipe" = "Melanoplus angustipennis",
+                                "melanoplus bivittatu" = "Melanoplus bivittatus",
+                                "melanoplus confusus" = "Melanoplus confusus",
+                                "melanoplus different" = "Melanoplus differentialis",
+                                "melanoplus femurrubr" = "Melanoplus femurrubrum",
+                                "melanoplus foedus" = "Melanoplus foedus",
+                                "melanoplus keeleri" = "Melanoplus keeleri",
+                                "melanoplus occidenta" = "Melanoplus occidentalis",
+                                "melanoplus packardii" = "Melanoplus packardii",
+                                "melanoplus sanguinip" = "Melanoplus sanguinipes",
+                                "melanoplus scudderi" = "Melanoplus scudderi",
+                                "melanoplus species" = "Melanoplus spp.",
+                                "melanoplus spp." = "Melanoplus spp.",
+                                "mermiria bivitatta" = "Mermiria bivittata",
+                                "mermiria bivittata" = "Mermiria bivittata",
+                                "mermiria picta" = "Mermiria picta",
+                                "mermiria species" = "Mermiria spp.",
+                                "mermiria spp." = "Mermiria spp.",
+                                "oedipodinae" = "Oedipodinae spp.",
+                                "opeia obscura" = "Opeia obscura",
+                                "orphulella speciosa" = "Orphulella speciosa",
+                                "orphullela speciosa" = "Orphulella speciosa",
+                                "paratylota brunneri" = "Paratylotropidia brunneri",
+                                "paratylotr brunneri" = "Paratylotropidia brunneri",
+                                "pardalopho haldemani" = "Pardalophora haldemani",
+                                "pardalopho apiculata" = "Pardalophora apiculata",
+                                "pardalopho species" = "Pardalophora spp.",
+                                "pardalopho spp." = "Pardalophora spp.",
+                                "phoetaliot nebrascen" = "Phoetaliotes nebrascensis",
+                                "pseudopoma brachypte" = "Pseuodopomala brachyptera",
+                                "psoloessa delicatul" = "Psoloessa delicatula",
+                                "schistocer lineata" = "Schistocerca lineata",
+                                "schistocer obscura" = "Schistocerca obscura",
+                                "syrbula admirabil" = "Syrbula admirabilis",
+                                "unknown" = "Unknown",
+                                "xanthippus corallipe" = "Xanthippus corallipes")
+
+
+
+#Making a new dataset to then condense some of the watersheds based on the metadata
+grasshoppers2 <- grasshoppers1
+
+grasshoppers2$WATERSHED <- dplyr::recode(grasshoppers2$WATERSHED,
+                                   "B" = "20B",
+                                   "NB" = "N20B",
+                                   "2D" = "SpB",
+                                   "4D" = "SpB",
+                                   "4F" = "SuB",
+                                   "10D" = "SuB",
+                                   "4G" = "WB")
+
+
+grasshoppers2 <- grasshoppers2 %>% rename("Watershed_name" = "WATERSHED",
+                              "Recyear" = "RECYEAR",
+                              "Recmonth" = "RECMONTH",
+                              "Recday" = "RECDAY",
+                              "Species" = "SPECIES",
+                              "Total" = "TOTAL")
+
+
+grasshoppers3 <- grasshoppers2
+grasshoppers3 <- grasshoppers3 %>% subset(.$Recyear >= 1992)
+grasshoppers3 <- grasshoppers3 %>% mutate(Recyear = factor(Recyear))
+
+
+#Removing watersheds and transects I won't use for further analysis
+grasshoppers3 <- grasshoppers3 %>%
+  subset(Watershed_name %in% c("1D", "20B", "4B",
+                              "N1A", "N1B", 
+                              "N4A", "N4D",
+                               "N20B", "N20A")) 
+
+grasshoppers3 <- left_join(grasshoppers3, watershed_info, by = "Watershed_name")
+
+length(unique(grasshoppers3$SPCODE))
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
