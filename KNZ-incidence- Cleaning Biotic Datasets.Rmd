@@ -38,13 +38,15 @@ library(tidyverse)
 library(cowplot)
 library(bbmle)
 library(multcomp)
-library(mosaic)
 library(readr)
+library(car)
 
 ```
 
 ## Bird Sampling
-This section is dedicated to cleaning the bird-sampling dataset. Data was collected from 1981 to 2009. Watersheds that are supposedly included: N4B, N4D, 4A, N1B, 1D, R20A, R1B, 20C, 20B, N20B.
+This section is dedicated to cleaning the bird-sampling dataset. Data was collected from 1981 to 2009. Watersheds that are supposedly included: N4B, N4D, 4A, N1B, 1D, R20A, R1B, 20C, 20B, N20B. Censuses are conducted two times during the year: during the first two weeks of January as
+a measure of wintering populations, and during the first two weeks of June as a measure of
+breeding populations.
 
 Author: Alice Boyle
 
@@ -63,10 +65,10 @@ Summary of All Changes Up to 1993:
 #Read in and view bird data
 birds_raw <- read_csv("Datasets_EAGER/Birds/knb-lter-knz.26.12/CBP011.csv")
 View(birds_raw)
+unique(birds_raw$WATERSHED)
 
 #Changing classifications and names of columns
-birds <- birds_raw %>% mutate(RECYEAR = factor(RECYEAR),
-                          RECMONTH = factor(RECMONTH),
+birds <- birds_raw %>% mutate(RECMONTH = factor(RECMONTH),
                           RECDAY = factor(RECDAY),
                           SEASON = factor(SEASON),
                           TRANSNUM = factor(TRANSNUM),
@@ -76,15 +78,14 @@ birds <- birds_raw %>% mutate(RECYEAR = factor(RECYEAR),
                           AOUCODE = factor(AOUCODE),
                           COMMONNAME = factor(COMMONNAME),
                           DISTANCE = as.numeric(DISTANCE),
-                          COUNT = as.numeric(COUNT), 
+                          COUNT = as.numeric(COUNT),
                           SEX = factor(SEX),
                           STATUS = factor(STATUS),
                           COMMENTS = as.character(COMMENTS))
-glimpse(birds)
 
 
 #Shortening the dataset to only have the columns we are interested in
-birds_1 <- birds %>% dplyr::select(RECYEAR, 
+birds_1 <- birds_raw %>% dplyr::select(RECYEAR, 
                                        RECMONTH, 
                                        RECDAY, 
                                        SEASON, 
@@ -98,7 +99,6 @@ birds_1 <- birds %>% dplyr::select(RECYEAR,
                                        COUNT,
                                        COMMENTS)
 
-
 #Checking the species names to make sure there are any weird misspellings
 unique(birds_1$SPECNAME)
 unique(birds_1$COMMONNAME)
@@ -108,22 +108,24 @@ unique(birds_1$COMMONNAME)
 
 #Now checking the watersheds to see exactly what is here compared to what is said in the metadata
 unique(birds_1$WATERSHED)
-birds_1$WATERSHED <- recode(birds_1$WATERSHED, 
-                            "N04D" = "N4D",
-                            "N04B" = "N4B",
-                            "004B" = "4B",
-                            "004A" = "4A",
-                            "004D" = "4D",
-                            "N01B" = "N1B",
-                            "001D" = "1D",
-                            "R20A" = "R20A",
-                            "R01B" = "R1B",
-                            "020C" = "20C",
-                            "020B" = "20B",
-                            "L00A" = "LA",
-                            "S00A" = "SA",
-                            "G00A" = "GA",
-                            "N20A" = "N20A")
+
+birds_1 <- birds_1 %>% mutate(WATERSHED = case_when(
+    WATERSHED == "N04D" ~ "N4D",
+    WATERSHED == "N04B" ~ "N4B",
+    WATERSHED == "004B" ~ "4B",
+    WATERSHED == "004A" ~ "4A",
+    WATERSHED == "004D" ~ "4D",
+    WATERSHED == "N01B" ~ "N1B",
+    WATERSHED == "001D" ~ "1D",
+    WATERSHED == "R20A" ~ "R20A",
+    WATERSHED == "R01B" ~ "R1B",
+    WATERSHED == "020C" ~ "20C",
+    WATERSHED == "020B" ~ "20B",
+    WATERSHED == "L00A" ~ "LA",
+    WATERSHED == "S00A" ~ "SA",
+    WATERSHED == "G00A" ~ "GA",
+    WATERSHED == "N20B" ~ "N20B"
+  ))
 
 
 
@@ -138,33 +140,24 @@ unique(birds_1$RECMONTH)
 
 ```{r}
 #Creating a tibble that has the info for the watersheds
+watershed_info <- read_excel("Datasets_EAGER/Other/Watershed Info.xlsx")
 
-birds_watershed <- tibble(WATERSHED = c("N4B", "N4D", "4A", "4B",
-                                       "N1B", "1D", "R20A", 
-                                       "R1B", "20C", "20B", 
-                                       "LA", "SA", "GA",
-                                       "N20B"), 
-                         FIRE_INT = c("4_years", "4_years", "4_years", "4_years",
-                                           "1_year", "1_year", "20_years_reversed", 
-                                           "1_year_reversed", "20_years", "20_years",
-                                           "UNK", "UNK", "UNK", "20_years"),
-                         GRAZING = c("Bison", "Bison", "Ungrazed", "Ungrazed",
-                                     "Bison", "Ungrazed", "Ungrazed", 
-                                     "Ungrazed", "Ungrazed", "Ungrazed",
-                                     "UNK", "UNK", "UNK", "Bison"),
-                         TYPE = c("Press", "Press", "Pulse", "Pulse",
-                                  "UNK", "Pulse", "UNK",
-                                  "UNK", "Control", "Control", 
-                                  "Lower_Kings_Creek", "Shane_Creek", "North_Kings_Creek", "Press"))
-
+birds_1 <- birds_1 %>% rename("Watershed_name" = "WATERSHED",
+                              "Recyear" = "RECYEAR",
+                              "Recmonth" = "RECMONTH",
+                              "Recday" = "RECDAY",
+                              "Transect" = "TRANSNUM",
+                              "Species" = "SPECNAME",
+                              "Count" = "COUNT",
+                              "Season" = "SEASON")
 #Combining the bird dataset with the watershed dataset
-birds_2 <- left_join(birds_1, birds_watershed, by="WATERSHED")
+birds_2 <- left_join(birds_1, watershed_info, by = "Watershed_name")
 
 
 #Removing the entries from Watershed 4D since it was converted to watershed SA in 1981
 ##birds_2 <- birds_2 %>% subset(birds_short1$WATERSHED != "004D")
-view(birds_2)
-
+birds_3 <- birds_2 %>% subset(.$Recyear >= 1992)
+birds_3 <- birds_3 %>% mutate(Recyear = factor(Recyear))
 
 ```
 
@@ -173,31 +166,44 @@ Looking at the amount of time data was collected for each watershed, transect, i
 #I am going to try to tally up how many times data is collected for each watershed per year.
 
 #Since the original dataset is looking at each individual bird as a separate row/observation, I am grouping them so that the species that have the same RECYEAR, RECMONTH, RECDAY, SEASON, TRANSNUM, and WATERSHED are grouped together
-birds_2_group <- birds_2 %>% group_by(RECYEAR, TRANSNUM, RECMONTH, SEASON, WATERSHED, SPECNAME) %>% 
-  dplyr::summarise(COUNT = sum(COUNT))
+birds_3_group <- birds_3 %>% 
+  group_by(Recyear, Transect, Recmonth, Season, Watershed_name, Species, Fire_interval, Grazing) %>%
+  dplyr::summarise(Count = sum(Count))
 
 
 #Making each species a different column so then we can count the number of times data was collected at each watershed in each year
-birds_2_group_wide <- birds_2_group %>% pivot_wider(names_from = SPECNAME, values_from = COUNT)
+birds_3_group_wide <- birds_3_group %>% pivot_wider(names_from = Species, values_from = Count)
 
-birds_group_count1 <- birds_2_group_wide %>% group_by(WATERSHED) %>% 
+birds_group_count1 <- birds_3_group_wide %>% group_by(Watershed_name) %>% 
   summarise(total_count=n(),.groups = 'drop')
 
 
-birds_group_count2 <- birds_2_group_wide %>% group_by(RECYEAR, WATERSHED) %>% 
+birds_group_count2 <- birds_3_group_wide %>% group_by(Recyear, Watershed_name) %>% 
   summarise(total_count=n(),.groups = 'drop')
 
-birds_group_count2 %>% ggplot(aes(x = RECYEAR, y = total_count, color = WATERSHED)) + geom_jitter(width = 0.2, height = 0.2)
+birds_group_count2 %>% 
+  ggplot(aes(x = RECYEAR, y = total_count, color = WATERSHED)) + 
+  geom_jitter(width = 0.2, height = 0.2)
 
 
-birds_group_count3 <- birds_2_group_wide %>% group_by(SEASON, WATERSHED) %>% 
+birds_group_count3 <- birds_3_group_wide %>% group_by(Season, Transect) %>% 
   summarise(total_count=n(),.groups = 'drop')
 
-birds_group_count4 <- birds_2_group_wide %>% group_by(SEASON, RECMONTH, WATERSHED) %>% 
+
+birds_group_count3 <- birds_3_group_wide %>% group_by(Recyear, Transect, Watershed_name) %>% 
   summarise(total_count=n(),.groups = 'drop')
 
-birds_group_count5 <- birds_2_group_wide %>% group_by(TRANSNUM, WATERSHED) %>% 
+birds_group_count4 <- birds_3_group_wide %>% group_by(Season, Recmonth, Watershed_name) %>% 
   summarise(total_count=n(),.groups = 'drop')
+
+birds_group_count5 <- birds_3_group_wide %>% group_by(Transect, Watershed_name, Fire_interval, Grazing) %>% 
+  summarise(total_count=n(),.groups = 'drop')
+
+birds_2_group <- birds_3_group %>% mutate(Recyear = factor(Recyear))
+birds_2_group %>% subset(.$Watershed_name == "N20B") %>% ggplot(aes(x = Recyear, y = Count)) + 
+  geom_col() 
+
+
 
 ```
 
@@ -307,7 +313,7 @@ grasshoppers <- grasshoppers_raw %>% mutate(RECTYPE = factor(RECTYPE),
                                           SPECIES = factor(SPECIES),
                                           SPCODE = factor(SPCODE))
 
-
+problems(grasshoppers_raw)
 #Checking the number of unique names for different variables to then compare to the metadata
 unique(grasshoppers$SPECIES)
 ##Oh lord... theres capitalizations in some but not others and there are some unknowns. I'll have to alphabetize it and go through to see if there are multiple spellings for the same species
@@ -317,40 +323,41 @@ unique(grasshoppers$WATERSHED)
 
 
 #Renaming watersheds to make it consistent
-grasshoppers$WATERSHED <- recode(grasshoppers$WATERSHED, 
-                                  "001d" = "1D",
-                                  "004b" = "4B",
-                                  "000b" = "B",
-                                  "n04a" = "N4A",
-                                  "n01b" = "N1B",
-                                  "n04d" = "N4D",
-                                  "n00b" = "NB",
-                                  "002d" = "2D", 
-                                  "004d" = "4D",
-                                  "004f" = "4F",
-                                  "010d" = "10D",
-                                  "004g" = "4G",
-                                  "002c" = "2C",
-                                  "0sub" = "SuB",
-                                  "020b" = "20B",
-                                  "0spb" = "SpB",
-                                  "n20a" = "N20A",
-                                  "n20b" = "N20B",
-                                  "n01a" = "N1A",
-                                  "N20B" = "N20B",
-                                  "002D" = "2D",
-                                  "N01B" = "N1B",
-                                  "001D" = "1D",
-                                  "N04D" = "N4D",
-                                  "004F" = "4F",
-                                  "002C" = "2C",
-                                  "020B" = "20B",
-                                  "0SUB" = "SuB",
-                                  "0SPB" = "SpB",
-                                  "004B" = "4B",
-                                  "N01A" = "N1A",
-                                  "N04A" = "N4A",
-                                  "N20A" = "N20A")
+grasshoppers_1 <- grasshoppers
+grasshoppers_1 <- grasshoppers %>% mutate(WATERSHED = case_when( 
+                                 WATERSHED == "001d" ~ "1D",
+                                 WATERSHED == "004b" ~ "4B",
+                                 WATERSHED == "000b" ~ "B",
+                                 WATERSHED == "n04a" ~ "N4A",
+                                 WATERSHED == "n01b" ~ "N1B",
+                                 WATERSHED == "n04d" ~ "N4D",
+                                 WATERSHED == "n00b" ~ "NB",
+                                 WATERSHED == "002d" ~ "2D", 
+                                 WATERSHED == "004d" ~ "4D",
+                                 WATERSHED == "004f" ~ "4F",
+                                 WATERSHED == "010d" ~ "10D",
+                                 WATERSHED == "004g" ~ "4G",
+                                 WATERSHED == "002c" ~ "2C",
+                                 WATERSHED == "0sub" ~ "SuB",
+                                 WATERSHED == "020b" ~ "20B",
+                                 WATERSHED == "0spb" ~ "SpB",
+                                 WATERSHED == "n20a" ~ "N20A",
+                                 WATERSHED == "n20b" ~ "N20B",
+                                 WATERSHED == "n01a" ~ "N1A",
+                                 WATERSHED == "N20B" ~ "N20B",
+                                 WATERSHED == "002D" ~ "2D",
+                                 WATERSHED == "N01B" ~ "N1B",
+                                 WATERSHED == "001D" ~ "1D",
+                                 WATERSHED == "N04D" ~ "N4D",
+                                 WATERSHED == "004F" ~ "4F",
+                                 WATERSHED == "002C" ~ "2C",
+                                 WATERSHED == "020B" ~ "20B",
+                                 WATERSHED == "0SUB" ~ "SuB",
+                                 WATERSHED == "0SPB" ~ "SpB",
+                                 WATERSHED == "004B" ~ "4B",
+                                 WATERSHED == "N01A" ~ "N1A",
+                                 WATERSHED == "N04A" ~ "N4A",
+                                 WATERSHED == "N20A" ~ "N20A"))
 
 #Recoding some of the species to make it consistent
 grasshoppers$SPECIES <- recode(grasshoppers$SPECIES,
@@ -414,21 +421,28 @@ grasshoppers$SPECIES <- recode(grasshoppers$SPECIES,
                                 "unknown" = "Unknown",
                                 "xanthippus corallipe" = "Xanthippus corallipes")
 
-grasshoppers$SPECIES <- recode(grasshoppers$SPECIES,
-                                " Phoetaliotes nebrascensis" = "Phoetaliotes nebrascensis",
-                                " Xanthippus corallipes" = "Xanthippus corallipes")
+
 
 #Making a new dataset to then condense some of the watersheds based on the metadata
-grasshoppers_1 <- grasshoppers
+grasshoppers_2 <- grasshoppers_1
 
-grasshoppers_1$WATERSHED <- recode(grasshoppers_1$WATERSHED,
-                                  "B" = "20B",
-                                  "NB" = "N20B",
-                                  "2D" = "SpB",
-                                  "4D" = "SpB",
-                                  "4F" = "SuB",
-                                  "10D" = "SuB",
-                                  "4G" = "WB")
+grasshoppers_2 <- grasshoppers_1 %>% mutate(WATERSHED = case_when(
+                                  WATERSHED == "B" ~ "20B",
+                                  WATERSHED == "NB" ~ "N20B",
+                                  WATERSHED == "2D" ~ "SpB",
+                                  WATERSHED == "4D" ~ "SpB",
+                                  WATERSHED == "4F" ~ "SuB",
+                                  WATERSHED == "10D" ~ "SuB",
+                                  WATERSHED == "4G" ~ "WB"))
+
+
+grasshoppers <- grasshoppers %>% rename("Watershed_name" = "WATERSHED",
+                              "Recyear" = "RECYEAR",
+                              "Recmonth" = "RECMONTH",
+                              "Recday" = "RECDAY",
+                              "Species" = "SPECIES",
+                              "Total" = "TOTAL")
+
 
 unique(grasshoppers_1$WATERSHED)
 unique(sort(grasshoppers_1$SPECIES))
@@ -446,7 +460,9 @@ watershed_grasshoppers <- tibble(WATERSHED = c("1D", "4B", "20B",
                                              "Ungrazed", "Ungrazed", "Ungrazed", 
                                              "Ungrazed", "Grazed", "Grazed", "Grazed"))
 
-grasshoppers_2 <- left_join(grasshoppers_1, watershed_grasshoppers, by = "WATERSHED")
+
+
+grasshoppers_2 <- left_join(grasshoppers, watershed_info, by = "Watershed_name")
 view(grasshoppers_2)
 
 unique(grasshoppers_2$RECMONTH)
@@ -457,16 +473,16 @@ Looking at the amount of time data was collected for each watershed, in each yea
 ```{r}
 #I am going to try to tally up how many times data is collected for each watershed per year.
 
-grasshoppers_2_group <- grasshoppers_2 %>% group_by(RECYEAR, RECMONTH, WATERSHED, SPECIES) %>% 
-  dplyr::summarise(TOTAL = sum(TOTAL))
+grasshoppers_2_group <- grasshoppers_2 %>% group_by(Recyear, Recmonth, Watershed_name, Species) %>% 
+  dplyr::summarise(Total = sum(Total))
 
 
 
 #Making each species a different column so then we can count the number of times data was collected at each watershed in each year
-grasshoppers_2_group_wide <- grasshoppers_2_group %>% pivot_wider(names_from = SPECIES, values_from = TOTAL)
+grasshoppers_2_group_wide <- grasshoppers_2_group %>% pivot_wider(names_from = Species, values_from = Total)
 
 
-grasshoppers_group_count1 <- grasshoppers_2_group_wide %>% group_by(WATERSHED) %>% 
+grasshoppers_group_count1 <- grasshoppers_2_group_wide %>% group_by(Watershed_name, Recmonth) %>% 
   summarise(total_count=n(),.groups = 'drop')
 
 
@@ -562,8 +578,7 @@ smallmammals_indiv <- read_csv("Datasets_EAGER/Small_mammals/knb-lter-knz.88.9_F
 
 
 #Making some the comlumns "factors" for later manipulation and analysis
-smallmammals <- smallmammals_raw %>% mutate(RECYEAR = factor(RECYEAR),
-                                          SEASON = factor(SEASON),
+smallmammals <- smallmammals_raw %>% mutate(SEASON = factor(SEASON),
                                           `WATERSHED/LINE` = factor(`WATERSHED/LINE`)) 
 #Separating the watershed/line column into two separate columns
 smallmammals <- separate(smallmammals, 
@@ -571,51 +586,49 @@ smallmammals <- separate(smallmammals,
                                       into = c("WATERSHED", "LINE"), 
                                       sep = "-")
 
+smallmammals <- smallmammals %>% mutate(WATERSHED = case_when(
+                                       WATERSHED == "004F" ~ "4F",
+                                       WATERSHED == "004B" ~ "4B",
+                                       WATERSHED == "001D" ~ "1D",
+                                       WATERSHED == "020B" ~ "20B",
+                                       WATERSHED == "N20B" ~ "N20B",
+                                       WATERSHED == "N01B" ~ "N1B",
+                                       WATERSHED == "N04D" ~ "N4D"))
+
+smallmammals <- smallmammals %>% rename("Peromyscus_maniculatus" = "Pm", 
+                                        "Reithrodontomys_megalotis" ="Rmeg",
+                                        "Sigmodon_hispidus" = "Sh",
+                                        "Blarina_hylophaga" = "Bh",
+                                        "Reithrodontomys_montanus" = "Rmon", 
+                                        "Spermophilus_tridecemlineatus" = "St",
+                                        "Microtus_ochrogaster" = "Mo",
+                                        "Peromyscus_leucopus" = "Pl",
+                                        "Chaetodipus_hispidus" = "Ch", 
+                                        "Mus_musculus" = "Mm",
+                                        "Neotoma_floridana" = "Nf", 
+                                        "Synaptomys_cooperi" = "Sc", 
+                                        "Zapus_hudsonius" = "Zh", 
+                                        "Cryptotis_parva" = "Cp")
+
+smallmammals <- smallmammals %>% rename("Watershed_name" = "WATERSHED",
+                              "Recyear" = "RECYEAR",
+                              "Line" = "LINE",
+                              "Season" = "SEASON")
+
+smallmammals <- left_join(smallmammals, watershed_info, by = "Watershed_name")
+
+
+smallmammals_1 <- smallmammals %>% subset(.$Recyear >= 1992)
+smallmammals_1 <- smallmammals_1 %>% mutate(Recyear = factor(Recyear))
+
 #Pivoting the table so that each species is a column and each species per year is a different row
-smallmammals_1 <- pivot_longer(smallmammals, 
+smallmammals_2 <- pivot_longer(smallmammals_1, 
                                           cols = 8:21, names_to = "Species", 
                                           values_to = "Count")
 
 #Renaming the species into their full names
-smallmammals_1$Species <- recode(smallmammals_1$Species,
-                                     "Pm" = "Peromyscus_maniculatus",
-                                     "Rmeg" = "Reithrodontomys_megalotis",
-                                     "Sh" = "Sigmodon_hispidus",
-                                     "Bh" = "Blarina_hylophaga",
-                                     "Rmon" = "Reithrodontomys_montanus",
-                                     "St" = "Spermophilus_tridecemlineatus",
-                                     "Mo" = "Microtus_ochrogaster",
-                                     "Pl" = "Peromyscus_leucopus",
-                                     "Ch" = "Chaetodipus_hispidus",
-                                     "Mm" = "Mus_musculus",
-                                     "Nf" = "Neotoma_floridana",
-                                     "Sc" = "Synaptomys_cooperi",
-                                     "Zh" = "Zapus_hudsonius",
-                                     "Cp" = "Cryptotis_parva")
-
-unique(smallmammals_1$WATERSHED)
-smallmammals_1$WATERSHED <- recode(smallmammals_1$WATERSHED,
-                                       "004F" = "4F",
-                                       "004B" = "4B",
-                                       "001D" = "1D",
-                                       "020B" = "20B",
-                                       "N20B" = "N20B",
-                                       "N01B" = "N1B",
-                                       "N04D" = "N4D")
 
 
-watershed_info_smallmammals <- tibble(WATERSHED = c("4F", "4B", "1D",
-                                                    "20B", "N20B", "N1B",
-                                                    "N4D"),
-                                      Fire_interval = c("4_years", "4_years", "1_years",
-                                                        "20_years", "20_years", "1_years", 
-                                                        "4_years"),
-                                      Grazing = c("Ungrazed", "Ungrazed", "Ungrazed", 
-                                                  "Ungrazed", "Grazed", "Grazed", 
-                                                  "Grazed"))
-
-smallmammals_2 <- left_join(smallmammals_1, watershed_info_smallmammals, by = "WATERSHED")
-view(smallmammals_2)
 
 ```
 
@@ -626,10 +639,15 @@ view(smallmammals_2)
 view(smallmammals)
 unique(smallmammals$RECTYPE)
 
-smallmammals_group_count1 <- smallmammals %>%  group_by(WATERSHED) %>% 
+smallmammalsgroup1 <- smallmammals_long1 %>% 
+  group_by(Recyear, Watershed_name, Fire_interval, Grazing, Species) %>% 
+  dplyr::reframe(Count = sum(Count))
+
+
+smallmammals_group_count1 <- smallmammals_1 %>%  group_by(Watershed_name) %>% 
   summarise(total_count=n(),.groups = 'drop')
 
-smallmammals_group_count2 <- smallmammals %>%  group_by(RECYEAR, WATERSHED) %>% 
+smallmammals_group_count2 <- smallmammals %>%  group_by(Recyear, WATERSHED) %>% 
   summarise(total_count=n(),.groups = 'drop')
 
 smallmammals_group_count2 %>% ggplot(aes(x = RECYEAR, y = total_count, color = WATERSHED)) + geom_jitter(width = 0.2, height = 0.2)
