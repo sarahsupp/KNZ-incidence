@@ -1,0 +1,85 @@
+---
+title: "Watershed Fires"
+author: "Maya Parker-Smith"
+date: "2023-05-22"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+## Clear environment 
+rm(list=ls())
+
+
+##Libraries
+library(tidyverse)
+library(cowplot)
+library(bbmle)
+library(lmerTest)
+library(car)
+library(readxl)
+library(multcomp)
+library(readr)
+
+
+```
+
+## R Markdown
+
+
+```{r}
+fires_raw <- read_csv("Watershed_fire_info.csv")
+
+fires <- fires_raw %>% mutate(Date = as.character(Date),
+                              Watershed = factor(Watershed),
+                              Type = factor(Type))
+fires$Type <- dplyr::recode(fires$Type,
+                            "PP" = "Prescribed_Planned",
+                            "PU" = "Prescribed_Unplanned",
+                            "WP" = "Wild_Planned",
+                            "WU" = "Wild_Unplanned")
+fires$Watershed <- factor(fires$Watershed,
+                          levels = c("1D", "N1A", "N1B", 
+                                     "4A", "4B", "4F", 
+                                     "N4A", "N4B", "N4D", 
+                                     "20B", "20C", "N20A", 
+                                     "N20B"))
+
+fires1 <- fires
+fires1$Date <- as.Date(fires1$Date, format = "%Y-%m-%d")
+
+fires1 <- fires1 %>% mutate(Occurrence = 1)
+
+
+
+
+fires1 %>% ggplot(aes(x = Date, y = factor(Occurrence), color = Type)) + 
+  geom_jitter(height = 0.06, alpha = 0.6) + 
+  facet_grid(Watershed~., switch = "y") +
+  theme(text = element_text(size=7),
+        axis.text.x = element_text(angle=45, hjust=1, size =7),
+         strip.text.y.left = element_text(angle = 0, size = 8)) +
+  scale_x_date(date_breaks = "2 years")
+
+
+fires1 %>% subset(Watershed == "1D") %>% 
+  ggplot(aes(x = Date, y = factor(Occurrence), color = Type)) + 
+  geom_point(alpha = 0.6) +
+  theme(text = element_text(size=5),
+        axis.text.x = element_text(angle=45, hjust=1, size =5)) +
+  scale_x_date(date_breaks = "2 years")
+  
+fires_N1A <- fires1 %>% subset(Watershed == "N1A")
+
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
