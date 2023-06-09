@@ -127,6 +127,8 @@ grasshoppers1$WATERSHED <- dplyr::recode(grasshoppers1$WATERSHED,
                                   "N04A" = "N4A",
                                   "N20A" = "N20A")
 
+
+
 #Recoding some of the species to make it consistent
 grasshoppers1$SPECIES <- dplyr::recode(grasshoppers1$SPECIES,
                                 "ageneotett deorum" = "Ageneotettix deorum",
@@ -189,7 +191,17 @@ grasshoppers1$SPECIES <- dplyr::recode(grasshoppers1$SPECIES,
                                 "unknown" = "Unknown",
                                 "xanthippus corallipe" = "Xanthippus corallipes")
 
+###After some exploration, I found that Hippiscus rugosa and Hippiscus ocelote are the same thing, so I will change everything to Hippiscus ocelote.
 
+grasshoppers1$SPECIES <- dplyr::recode(grasshoppers$SPECIES,
+                                      "Hippiscus rugosus" = "Hippiscus ocelote")
+
+###Also, some of the species names aren't correctly matched with their spp code, so I will fix that
+ for(i in 1:nrow(grasshoppers1)){
+   if (grasshoppers1[i,10] == "Oecanthinae spp."){grasshoppers1[i,9] <- "56"}
+   if (grasshoppers1[i,10] == "Tettigoniidae spp."){grasshoppers1[i,9] <- "59"}
+   if (grasshoppers1[i,10] == "Gryllidae spp."){grasshoppers1[i,9] <- "58"}
+ }
 
 #Making a new dataset to then condense some of the watersheds based on the metadata
 grasshoppers2 <- grasshoppers1
@@ -209,12 +221,14 @@ grasshoppers2 <- grasshoppers2 %>% rename("Watershed_name" = "WATERSHED",
                               "Recmonth" = "RECMONTH",
                               "Recday" = "RECDAY",
                               "Species" = "SPECIES",
-                              "Total" = "TOTAL")
+                              "Total" = "TOTAL",
+                              "Soil_type" = "SOILTYPE",
+                              "Repsite" = "REPSITE",
+                              "Spp_code" = "SPCODE")
 
 
 grasshoppers3 <- grasshoppers2
 grasshoppers3 <- grasshoppers3 %>% subset(.$Recyear >= 1992)
-grasshoppers3 <- grasshoppers3 %>% mutate(Recyear = factor(Recyear))
 
 
 #Removing watersheds and transects I won't use for further analysis
@@ -222,20 +236,116 @@ grasshoppers3 <- grasshoppers3 %>%
   subset(Watershed_name %in% c("1D", "20B", "4B",
                               "N1A", "N1B", 
                               "N4A", "N4D",
-                               "N20B", "N20A")) 
+                              "N20B", "N20A")) 
 
+#Adding in the watershed information 
 grasshoppers3 <- left_join(grasshoppers3, watershed_info, by = "Watershed_name")
 
-length(unique(grasshoppers3$SPCODE))
+#Since the bison grazed plots weren't sampled until 2002, I am removing all data pre-2002
+grasshoppers4 <- grasshoppers3 %>% subset(.$Recyear >= 2002)
+
+length(unique(grasshoppers3$Spp_code))
+length(unique(grasshoppers3$Species))
+
+unique(grasshoppers3$Spp_code)
+unique(grasshoppers3$Species)
 
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r, echo=FALSE}
+
+#This section is for checking the sampling amounts for certain variables/parameters
+grasshoppers3_group <- grasshoppers3 %>% 
+  group_by(Recyear, Recmonth, Watershed_name, Species) %>% 
+  dplyr::summarise(Total = sum(Total))
+
+
+grasshoppers3_wide <- grasshoppers3_group %>% 
+  pivot_wider(names_from = Species, values_from = Total)
+
+grasshoppers3_group_count1 <- grasshoppers3_wide %>% group_by(Recyear, Watershed_name) %>% 
+  summarise(total_count=n(),.groups = 'drop')
+
+grasshoppers3_group_count1 %>% ggplot(aes(x = Recyear, y = total_count, color = Watershed_name)) + 
+  geom_point() + 
+  facet_wrap(.~Watershed_name) + 
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1, size =7))
+
+
+grasshoppers4_group <- grasshoppers4 %>% group_by(Recyear, Recmonth, Watershed_name, Species) %>% 
+  dplyr::summarise(Total = sum(Total))
+
+grasshoppers4_wide <- grasshoppers4_group %>% pivot_wider(names_from = Species, values_from = Total)
+
+grasshoppers4_group_count1 <- grasshoppers4_wide %>% group_by(Recyear, Recmonth, Watershed_name) %>% 
+  summarise(total_count=n(),.groups = 'drop')
+
+grasshoppers4_group_count1 <- grasshoppers4_wide %>% group_by(Recyear, Recmonth, Watershed_name) %>% 
+  summarise(total = sum(total))
+
+grasshoppers4_group_count1 %>% ggplot(aes(x = Recyear, y = total_count, color = Watershed_name)) + 
+  geom_point() + 
+  facet_wrap(.~Watershed_name) + 
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1, size =7))
+
+
+
+grasshoppers4_month8 <- grasshoppers4 %>% subset(Recmonth == "8")
+
+grasshoppers4_month8_group <- grasshoppers4_month8 %>% group_by(Recyear, Recmonth, Watershed_name, Species) %>% 
+  dplyr::summarise(Total = sum(Total))
+
+grasshoppers4_month8_wide <- grasshoppers4_month8_group %>% pivot_wider(names_from = Species, values_from = Total)
+
+grasshoppers4_month8_group_count1 <- grasshoppers4_month8_wide %>% group_by(Recyear, Watershed_name) %>% 
+  summarise(total_count=n(),.groups = 'drop')
+
+grasshoppers4_month8_group_count1 %>% ggplot(aes(x = Recyear, y = total_count, color = Watershed_name)) + 
+  geom_point() + 
+  facet_wrap(.~Watershed_name) + 
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1, size =7))
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r}
+#After checking sampling amounts, I decided to keep sampling for month 8 for all years, and include month 7 sampling for the years where month 8 is missing. 
+
+grasshoppers5 <- grasshoppers4  
+grasshoppers5 <- grasshoppers5 %>% subset(Recyear %in% c(2002, 2003, 2012) | Recmonth == "8")
+
+
+#Grouping wanted variables and summing the counts for each species per sampling period
+grasshoppers5_short <- grasshoppers5 %>% group_by(Recyear, Recmonth, Watershed_name, Fire_interval, Grazing, Repsite, Species, Spp_code) %>% dplyr::reframe(Total = sum(Total))
+
+#Removing unknowns from dataset (looks like there are 49 unknown entries)
+grasshoppers6 <- grasshoppers5_short %>% subset(Species != "Unknown")
+
+unique(grasshoppers6$Spp_code)
+unique(grasshoppers6$Species)
+
+length(unique(grasshoppers5_short$Species))
+length(unique(grasshoppers5_short$Spp_code))
+unique(grasshoppers5_short$Species)
+unique(grasshoppers5_short$Spp_code)
+#I am going to separate the genus and species to see how many times things were just identified down to genus
+grasshoppers6 <- grasshoppers6 %>% separate(Species, c("Genus", "Spp"), sep = " ")
+
+grasshoppers_wspp <- grasshoppers6 %>% subset(Spp == "spp.")
+grasshoppers_wospp <- grasshoppers6 %>% subset(Spp != "spp.")
+
+
+length(unique(grasshoppers_wspp$Genus))
+unique(grasshoppers_wspp$Genus)
+
+
+length(unique(grasshoppers_wospp$Spp_code))
+unique(grasshoppers_wospp$Spp_code)
+
+```
+
+
