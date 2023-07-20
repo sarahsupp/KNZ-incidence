@@ -1,0 +1,435 @@
+---
+title: "explore-KNZ"
+author: "Sarah Supp"
+date: "3/4/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(tseries)
+library(betapart)
+library(vegan)
+library(forcats)
+
+set.seed(123)
+```
+
+
+Import some KNZ datasets
+```{r}
+birds <- read_csv("CBC011.csv")
+birdsT<- read_csv("CBP011.csv")
+fish <- read_csv("CFC011.csv")
+fishW <- read_csv("CFP011.csv")
+Hoppersite <- read_csv("CGR021.csv")
+hoppers <- read_csv("CGR022.csv")
+smammals <- read_csv("CSM012_0.csv")
+smammal2 <- read_csv("CSM042.csv")
+smammal3 <- read_csv("CSM052.csv")
+plants <- read_csv("PVC021.csv")
+```
+
+count number of unique species
+```{r}
+birdS <- length(unique(birds$Species))
+birdlist <- unique(birds$Species)
+
+birdsTS <- length(unique(birdsT$SPECNAME))
+birdsTlist <- unique(birdsT$SPECNAME)
+
+# at least 4 of these appear to be non-fish
+fishS <- length(unique(fish$Species))
+fishlist <- unique(fish$Species)
+
+# 1 of these is NA
+fishWS <- length(unique(fishW$ScienceName))
+fishWlist <- unique(fishW$ScienceName)
+
+#at least some of these are genera only, would need to look closer
+hoppersS <- length(unique(hoppers$SPECIES))
+hopperslist <- unique(hoppers$SPECIES)
+
+#at least 4 of these are non smammal or genera only
+smammalsS <- length(unique(smammals$Species))
+smammalslist <- unique(smammals$Species)
+
+#at least 2 of these are genera only or unknown?
+smammal2S<- length(unique(smammal2$Species))
+smammal2list <- unique(smammal2$Species)
+
+#at least 2 of these are genera only or non smammal?
+smammal3S<- length(unique(smammal3$Species))
+smammal3list <- unique(smammal3$Species)
+
+#at least 2 of these are genera only or non smammal?
+plantsS<- length(unique(plants$SpeCode))
+plantslist <- unique(plants$SpeCode)
+```
+
+Classification Scheme (Gotelli et al. 2022)
+```{r}
+getTrends<-function(x) {
+  
+  time <- rep("late",length(x))
+  time[1:(round(length(x)/2))] <- "early"
+  
+  # tabulate f
+  z_x <- table(x,time)
+  
+  tslen<-length(x)
+  tssum<-sum(x)
+  l<-c()
+  
+  for(k in 1:(tslen-1)){
+    j<-abs(x[k+1]-x[k])
+    l<-c(l, j)
+    v<-sum(l)
+  }
+  
+  bsline<-x[1]
+  
+  if(tslen>tssum) {
+    
+    rownames(z_x) <- c("absent","present")
+    # get p value
+    p_val <- chisq.test(z_x)$p.val
+    
+    # get early and late fractions
+    f_early <- z_x["present","early"]/sum(z_x[,1])
+    f_late <- z_x["present","late"]/sum(z_x[,2])
+   
+    if((f_early > f_late) & (p_val <= 0.05)) {
+      trend<--1
+      cat="decreasing"
+    }
+    if((f_early < f_late) & (p_val <= 0.05)) {
+      trend<-1
+      cat="increasing"
+    }
+    if(p_val > 0.05) trend<-0
+    runsPV<-runs.test(as.factor(x),alternative="less")
+    runsTestPV<-runsPV$p.value
+    if((p_val>0.05) & (runsTestPV<0.05)) {
+      trendPlus<-10
+      cat="recurrent"
+    }
+    if((p_val>0.05) & (runsTestPV>0.05)){
+      trendPlus<-5
+      cat="random"
+    }
+  }
+  if(tslen==tssum) {
+    p_val <- NA
+    f_early <- NA
+    f_late <- NA
+    runsTestPV<-NA
+    trend<-NA
+    trendPlus<-NA
+    cat<-"no change"
+  }
+  
+  statSumm<-list("trendPlus"=trendPlus, "chiPval"=p_val, "runsPval"=runsTestPV, 
+                 "trend"=trend, "bsline"=bsline, "category"=cat)
+  return(statSumm)
+} 
+```
+
+Calculating compositional dissimilarity
+```{r}
+getBeta<-function(df) {
+  
+  yr<-unique(df[, 1]) 
+  df<-df[,-1]
+  bindf<-df 
+  bindf[bindf>0]<-1
+  getBas<-beta.pair(df, index.family="jac")$beta.jac
+  getChao<-vegdist(bindf, method="chao")
+  
+  basJac<-c(1, getBas[1:(nrow(spec_df)-1)])
+  chaoJac<-c(1, getChao[1:(nrow(spec_df2)-1)])
+  
+  df_out<-data.frame(Year=yr, J=basJac, chaoJac=chaoJac)
+ 
+  return(df_out)
+} 
+```
+
+
+Randomisation functions
+```{r}
+## where t1 is the long form time series and p1 is the subset of species with the classification to be randomised
+
+### this first function takes account only of presence and absence
+
+getRandomisation<-function(t1, p1) {
+  
+  df<-data.frame()
+  nameRow<-c()
+  
+  m1<-as.data.frame(pivot_wider(t1, names_from=Year, values_from=Abundance))
+  m1[is.na(m1)]<-0
+  nameCol<-unique(t1$Year)
+  
+  for(i in 1:length(m1$Species)) {
+    x<-m1[i,]
+    sp<-as.vector(m1[i,1])
+    dird<-as.vector(unique(p1$Species))
+    if(sp %in% dird) {
+      nameRow<-c(nameRow, sp)
+      x<-x[-1]
+      x[x>0]<-1
+      y<-as.data.frame(t(x))[,1]
+      v<-sample(y[-1])
+      z<-c(y[1], v)
+      df<-rbind(df, z)
+    }
+    if(!sp %in% dird) {
+      nameRow<-c(nameRow, sp)
+      x<-x[-1]
+      x[x>0]<-1
+      y<-as.data.frame(t(x))[,1]
+      z<-y
+      df<-rbind(df, z)
+    }
+  }
+  
+  colnames(df)<-nameCol
+  rownames(df)<-nameRow
+ 
+  nameCR<-c("Species", nameCol)
+  names(df)<-nameCR
+  df2<-as.data.frame(t(df))
+  df3<-df2[-1,]
+  names(df3)
+  names(df3)<-nameRow
+  
+  return(df3)
+}
+
+### function to replace sample to shuffle weighted by abundance
+
+abun_shuffle <- function() {
+  
+  occur_shuf <- rep(0,length(occur)) # set up an empty vector
+  index <- seq_along(occur) # set up vector of indices
+  presence <- sample(x=index,size=sum(occur),prob=abun) # select index values 
+  occur_shuf[presence] <- 1 #assign occurrences
+  return(occur_shuf)
+} # end of abun_shuffle
+# -------------------------------------
+
+
+## revised randomisation function which now includes the vector of abundances for a time series
+
+getAbundRandomisation<-function(t1, p1, rf1) {
+  
+  df<-data.frame()
+  nameRow<-c()
+  
+  m1<-as.data.frame(pivot_wider(t1, names_from=Year, values_from=Abundance))
+  m1[is.na(m1)]<-0
+  nameCol<-unique(t1$Year)
+  
+  for(i in 1:length(m1$Species)) {
+    x<-m1[i,]
+    sp<-as.vector(m1[i,1])
+    dird<-as.vector(unique(p1$Species))
+    if(sp %in% dird) {
+      nameRow<-c(nameRow, sp)
+      x<-x[-1]
+      x[x>0]<-1
+      y<-as.data.frame(t(x))[,1]
+      v<-abun_shuffle(y[-1], rf1[-1])
+      z<-c(y[1], v)
+      df<-rbind(df, z)
+    }
+    if(!sp %in% dird) {
+      nameRow<-c(nameRow, sp)
+      x<-x[-1]
+      x[x>0]<-1
+      y<-as.data.frame(t(x))[,1]
+      z<-y
+      df<-rbind(df, z)
+    }
+  }
+  
+  colnames(df)<-nameCol
+  rownames(df)<-nameRow
+  
+  nameCR<-c("Species", nameCol)
+  names(df)<-nameCR
+  df2<-as.data.frame(t(df))
+  df3<-df2[-1,]
+  names(df3)
+  names(df3)<-nameRow
+  
+  return(df3)
+}
+```
+
+Other functions
+```{r}
+getSummStats<-function(x, y, namesCl) {
+  x<-na.omit(x)
+  y<-na.omit(y)
+  names(x)<-c("nx")
+  names(y)<-c("ny")
+  meanCl<-mean(x$nx)
+  medianCl<-median(x$nx)
+  sd<-sd(x$nx)
+  noRF<-sum(y$ny)
+  confCl<-round(quantile(x$nx, probs=c(0.025,0.975)), 4)
+  v<-c("class"=namesCl, "mean"=meanCl, "median"=medianCl, "sd"=sd, "number of populations"=noRF, "confid levels"=confCl)
+  return(v)
+}
+```
+
+
+
+## Look into some example patterns from smammals
+```{r}
+#1.	Construct a species occurrence matrix for the assemblage (Fig. 2C). Each row is a species (i = 1 to S), each column is a consecutive year (j = 2 to T), and the entries are the presence (1) or absence (0) of a particular species in a particular year. The very first year (j = 1) is designated as the baseline.
+
+pa <- smammals %>%
+  group_by(Watershed, Recyear, Species) %>%
+  summarize(count = n())
+
+#plot watersheds separately to identify the longest timeseries
+ggplot(pa, aes(Recyear, count, group=Species)) + 
+  geom_line(aes(col=Species)) + 
+  facet_wrap(~Watershed)
+  
+pa_no4d <- pa %>%
+  filter(Watershed == "n04d")
+
+#plot abundance trends superimposed on the same graph
+ggplot(pa_no4d, aes(Recyear, count, group=Species)) + 
+  geom_line(aes(col=Species)) + 
+  facet_wrap(~Watershed)
+
+#plot abundance trends for species over time in Watershed n04d with lm trend lines
+ggplot(pa_no4d, aes(Recyear, count, group=Species)) + 
+  geom_point(aes(col=Species)) + 
+  geom_smooth(method="lm") +
+  facet_wrap(~Species)
+
+#count then number of years each species is present
+pa_no4d_counts <- smammals %>%
+  filter(Watershed == "n04d") %>%
+  filter(Species %in% c("bh", "ch", "mm", "mo", "mp", "nf", "ph", "pl", "pm", "rmeg", "rmon",
+                        "sc", "sh", "st")) %>%
+  group_by(Species) %>%
+  summarize(nyears = n_distinct(Recyear),
+            propyears = nyears/33) %>%
+  arrange(propyears)
+
+ggplot(pa_no4d_counts, aes(Species, propyears)) +
+  geom_bar(position="identity")
+
+# Reorder following the value of another column:
+pa_no4d_counts %>%
+  mutate(Species = fct_reorder(Species, propyears)) %>%
+  ggplot( aes(x=Species, y=propyears)) +
+    geom_bar(stat="identity", fill="#f68060", alpha=.6, width=.4) +
+    xlab("Small mammal species") +
+    ylab("Proportion of years present") +
+    theme_bw()
+
+#abundance trends through time, calculate slopes, none are significant at p<0.05 level
+modrmeg <- lm(count ~ Recyear, data=pa_no4d %>% filter(Species=="rmeg"))
+summary(modrmeg)
+
+modbh <- lm(count ~ Recyear, data=pa_no4d %>% filter(Species=="bh"))
+summary(modbh)
+
+modsh <- lm(count ~ Recyear, data=pa_no4d %>% filter(Species=="sh"))
+summary(modsh)
+
+modnf <- lm(count ~ Recyear, data=pa_no4d %>% filter(Species=="nf"))
+summary(modnf)
+
+modmm <- lm(count ~ Recyear, data=pa_no4d %>% filter(Species=="mm"))
+summary(modmm) #slope = 0, only 3 data points, all the same
+
+modrmon <- lm(count ~ Recyear, data=pa_no4d %>% filter(Species=="rmon"))
+summary(modrmon) #only 2 data points
+
+#incidence trends
+no4d_smamm <- smammals %>%
+  filter(Watershed == "n04d")
+
+no4d_wide <- pa_no4d %>%
+  filter(Species %in% c("bh", "ch", "mm", "mo", "mp", "nf", "ph", "pl", "pm", "rmeg", "rmon",
+                        "sc", "sh", "st")) %>%
+  pivot_wider(names_from = Recyear, values_from = count) %>%
+  ungroup()
+
+#replace abundance values with 1 (presence)
+no4d_wide_1s <- no4d_wide %>% 
+ #filter(Species %in% c("rmeg", "bh", "sh", "nf", "mm", "rmon")) %>%
+  mutate_if(is.numeric, ~1 * (. > 0)) %>%
+  select(-Watershed) %>%
+  pivot_longer(!Species, names_to="year", values_to="present")
+
+#make a plot with the colored boxes to show presence/absence over time, shade and order by overall persistence 
+#TODO
+
+#replace abundance values with 1 (presence)
+#Let's look at just a few species here, rmeg, bh, sh, nf, mm, rmon
+no4d_wide_pa <- no4d_wide %>% 
+ #filter(Species %in% c("rmeg", "bh", "sh", "nf", "mm", "rmon")) %>%
+  mutate_if(is.numeric, ~1 * (. > 0)) %>%
+  mutate_all(~replace_na(.,0)) %>%
+  select(-Watershed, -Species)
+
+no4d_matrix <- as.matrix(no4d_wide_pa)
+```
+
+Use Gotelli et al. 2022 functions on the matrix of presences and absences
+```{r}
+#input is only a row of a matrix where the species are rows and the columns are each year with 1/0 values. So you need to iterate each row separately to get the results
+
+for (i in 1:nrow(no4d_matrix)) {
+  dat = no4d_matrix[i,]
+  result <- getTrends(dat)
+  print(result)
+}
+
+```
+
+Make figures for an explanatory panel on the methods, using bh, nf, and sc from the grazed 4-year burn site
+```{r}
+#plot abundance trends for species over time in Watershed n04d with lm trend lines
+ggplot(pa_no4d %>% filter(Species=="sc"), aes(Recyear, count, group=Species)) + 
+  geom_point() + 
+ # geom_smooth(method="lm") +
+  xlab("Year") +
+  ylab("abundance") +
+  ylim(0,5) +
+  theme_bw()
+
+#check if slope of abundance change is significant
+modspex <- lm(count ~ Recyear, data=pa_no4d %>% filter(Species=="bh"))
+summary(modspex)
+
+#replace abundance values with 1 (presence)
+#Let's look at just a few species here, rmeg, bh, sh, nf, mm, rmon
+no4d_spex <- no4d_wide %>% 
+ filter(Species == "bh") %>%
+  mutate_if(is.numeric, ~1 * (. > 0)) %>%
+  mutate_all(~replace_na(.,0)) %>%
+  select(-Watershed, -Species)
+
+result <- getTrends(as.matrix(no4d_spex))
+result
+
+propyears <- sum(no4d_spex)/length(no4d_spex)
+propyears
+
+no4d_spex[1,]
+
+```
+
