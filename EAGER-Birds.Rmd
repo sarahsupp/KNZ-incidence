@@ -144,7 +144,7 @@ birds2 <- birds2 %>% mutate(Recyear = factor(Recyear))
 
 #Removing watersheds and transects I won't use for further analysis
 birds3 <-  birds2 %>% subset(!(Watershed_name %in% c("4D", "R20A",
-                                                     "R1B", "20C", "LA",
+                                                     "R1B", "LA",
                                                      "GA", "SA")))
 
 birds3 <-  birds3 %>% subset(Transect != "10")
@@ -152,6 +152,8 @@ birds3 <-  birds3 %>% subset(Transect != "10")
 #Also removing observations that are just "none"
 birds3 <-  birds3 %>% subset(AOU_code != "NONE")
 birds3 <-  birds3 %>% subset(AOU_code != "VOID")
+birds3 <-  birds3 %>% subset(AOU_code != "UNSP")
+birds3 <-  birds3 %>% subset(AOU_code != "UNEM")
 birds3$AOU_code <- dplyr::recode(birds3$AOU_code,
                                 "eawp" = "EAWP")
 
@@ -171,7 +173,7 @@ ssp_grouped2 <- birds3 %>% group_by(Watershed_name, AOU_code) %>% summarize(tota
 
 ```{r}
 
-#Selecting the columns I want for further analysis ##NOTE: I am using the species, not the AOU code -- need to confirm with Sarah that this is okay
+#Selecting the columns I want for further analysis 
 birds3_short <- birds3 %>% group_by(Recyear, Watershed_name, Fire_interval, Grazing, AOU_code) %>% 
   reframe(Count = sum(Count))
 
@@ -200,12 +202,91 @@ birds_wide2 <- decostand_pa_birds %>% add_column(birds_env, .before = "BHCO")
 
 #Pivoting the presence/absence back to a longer format
 
-birds_long <- birds_wide2 %>% pivot_longer(cols = 5:88,
+birds_long <- birds_wide2 %>% pivot_longer(cols = 5:86,
                                            names_to = "AOU_code",
                                            values_to = "Presence")
 
 birds_long <- birds_long %>% mutate(AOU_code = factor(AOU_code))
 birds_long <- birds_long %>% mutate(Watershed_name = factor(Watershed_name))
+
+```
+
+
+```{r}
+unique(birds3$Watershed_name)
+
+
+birds_4 <- birds3 %>% subset(Watershed_name %in% c("4A", "4B"))
+birds_4 <- birds_4 %>% group_by(Watershed_name, Fire_interval, Grazing, AOU_code) %>% 
+  reframe(Total = sum(Count))
+
+
+birds_4wide <- birds_4 %>% 
+  pivot_wider(names_from = "AOU_code", values_from = "Total", 
+              values_fn = function(x) paste(sum(x)))
+
+birds_4wide_short <- birds_4wide[, -c(1:3)]
+birds_4wide_short <- birds_4wide_short %>% mutate_if(is.character, as.numeric)
+birds_4wide_short[is.na(birds_4wide_short)] <- 0
+
+sum(apply(birds_4wide_short, 2, function(x) abs(max(x)-min(x)))) / sum(rowSums(birds_4wide_short))
+
+
+
+
+birds_N4 <- birds3 %>% subset(Watershed_name %in% c("N4B", "N4D"))
+birds_N4 <- birds_N4 %>% group_by(Watershed_name, Fire_interval, Grazing, AOU_code) %>% 
+  reframe(Total = sum(Count))
+
+
+birds_N4wide <- birds_N4 %>% 
+  pivot_wider(names_from = "AOU_code", values_from = "Total", 
+              values_fn = function(x) paste(sum(x)))
+
+birds_N4wide_short <- birds_N4wide[, -c(1:3)]
+birds_N4wide_short <- birds_N4wide_short %>% mutate_if(is.character, as.numeric)
+birds_N4wide_short[is.na(birds_N4wide_short)] <- 0
+
+sum(apply(birds_N4wide_short, 2, function(x) abs(max(x)-min(x)))) / sum(rowSums(birds_N4wide_short))
+
+
+
+birds_20 <- birds3 %>% subset(Watershed_name %in% c("20B", "20C"))
+birds_20 <- birds_20 %>% group_by(Watershed_name, Fire_interval, Grazing, AOU_code) %>% 
+  reframe(Total = sum(Count))
+
+
+birds_20wide <- birds_20 %>% 
+  pivot_wider(names_from = "AOU_code", values_from = "Total", 
+              values_fn = function(x) paste(sum(x)))
+
+birds_20wide_short <- birds_20wide[, -c(1:3)]
+birds_20wide_short <- birds_20wide_short %>% mutate_if(is.character, as.numeric)
+birds_20wide_short[is.na(birds_20wide_short)] <- 0
+
+sum(apply(birds_20wide_short, 2, function(x) abs(max(x)-min(x)))) / sum(rowSums(birds_20wide_short))
+
+```
+
+
+```{r}
+##Creating a Bray-Curtis dissimilarity matrix for the watershed
+
+birds4 <- birds3 %>% group_by(Watershed_name, Fire_interval, Grazing, AOU_code) %>% 
+  reframe(Total = sum(Count))
+
+
+birds4_wide <- birds4 %>% 
+  pivot_wider(names_from = "AOU_code", values_from = "Total", 
+              values_fn = function(x) paste(sum(x)))
+
+
+birds4_wide_env <- birds4_wide[, c(1:3)]
+birds4_wide1 <- birds4_wide[, -c(1:3)]
+birds4_wide1 <- birds4_wide1 %>% mutate_if(is.character, as.numeric)
+birds4_wide1[is.na(birds4_wide1)] <- 0
+
+diss_matrix <- vegdist(birds4_wide1, method = "bray")
 
 ```
 
@@ -352,7 +433,7 @@ merged_p.values2 <- merge(merged_p.values2, group, by = "Species_Watershed")
 
 for (k in 1:nrow(merged_p.values2)){
   if (is.nan(merged_p.values2$chisq_p.values[k])) {merged_p.values2$chisq_p.values[k] <- 2}
-  if (is.nan(merged_p.values2$runstest_p.values[k])) {merged_p.values2$runstest_p.values[k] <- 2}
+  if (is.na(merged_p.values2$runstest_p.values[k])) {merged_p.values2$runstest_p.values[k] <- 2}
 }
 
 merged_p.values3 <- merged_p.values2

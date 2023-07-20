@@ -65,8 +65,6 @@ All sampling periods from autumn 1981 through spring 1992 on these three treatme
 #Seasonal summaries of small mammals on LTER traplines 
 smallmammals_raw <- read_csv("Datasets_EAGER/Small_mammals/knb-lter-knz.88.9_FourteenTraplines/CSM011.csv")
 
-
-unique(smallmammals_raw$`WATERSHED/LINE`)
 #Table including the watershed info for all watersheds
 watershed_info <- read_excel("Datasets_EAGER/Other/Watershed Info.xlsx")
 
@@ -92,7 +90,7 @@ smallmammals <- smallmammals %>% rename("Watershed_name" = "WATERSHED",
                                         "Season" = "SEASON",
                                         "Line" = "LINE")
 
-
+#Shortening the names of the watersheds
 smallmammals$Watershed_name <- dplyr::recode(smallmammals$Watershed_name,
                                        "004F" = "4F",
                                        "004B" = "4B",
@@ -149,43 +147,6 @@ smallmammals_long1$Grazing <- factor(smallmammals_long1$Grazing,
 smallmammals_long1 <- smallmammals_long1 %>% subset(.$Recyear >= 1992)
 smallmammals_long1 <- smallmammals_long1 %>% mutate(Recyear = factor(Recyear))
 
-#Since bison were not present at these watersheds until 1992, I made all the "grazing" classifications for the grazed watersheds "NA" for the years 1981 thru 1991
-# for(i in 1:nrow(smallmammals_long1)){
-#   if (smallmammals_long1[i,4] == "1981" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
-#   if (smallmammals_long1[i,4] == "1981" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
-#   if (smallmammals_long1[i,4] == "1981" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
-#   if (smallmammals_long1[i,4] == "1982" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
-#   if (smallmammals_long1[i,4] == "1982" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
-#   if (smallmammals_long1[i,4] == "1982" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
-#   if (smallmammals_long1[i,4] == "1983" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
-#   if (smallmammals_long1[i,4] == "1983" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
-#   if (smallmammals_long1[i,4] == "1983" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
-#   if (smallmammals_long1[i,4] == "1984" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
-#   if (smallmammals_long1[i,4] == "1984" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
-#   if (smallmammals_long1[i,4] == "1984" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
-#   if (smallmammals_long1[i,4] == "1985" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
-#   if (smallmammals_long1[i,4] == "1985" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
-#   if (smallmammals_long1[i,4] == "1985" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
-#   if (smallmammals_long1[i,4] == "1986" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
-#   if (smallmammals_long1[i,4] == "1986" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
-#   if (smallmammals_long1[i,4] == "1986" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
-#   if (smallmammals_long1[i,4] == "1987" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
-#   if (smallmammals_long1[i,4] == "1987" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
-#   if (smallmammals_long1[i,4] == "1987" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
-#   if (smallmammals_long1[i,4] == "1988" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
-#   if (smallmammals_long1[i,4] == "1988" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
-#   if (smallmammals_long1[i,4] == "1988" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
-#   if (smallmammals_long1[i,4] == "1989" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
-#   if (smallmammals_long1[i,4] == "1989" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
-#   if (smallmammals_long1[i,4] == "1989" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
-#   if (smallmammals_long1[i,4] == "1990" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
-#   if (smallmammals_long1[i,4] == "1990" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
-#   if (smallmammals_long1[i,4] == "1990" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
-#   if (smallmammals_long1[i,4] == "1991" & smallmammals_long1[i,6] == "N1B"){smallmammals_long1[i,12] <- NA}
-#   if (smallmammals_long1[i,4] == "1991" & smallmammals_long1[i,6] == "N4D"){smallmammals_long1[i,12] <- NA}
-#   if (smallmammals_long1[i,4] == "1991" & smallmammals_long1[i,6] == "N20B"){smallmammals_long1[i,12] <- NA}
-# }
-
 
 ```
 
@@ -225,6 +186,30 @@ smallmammals_wide <- smallmammalsgroup2 %>%
               values_fn = function(x) paste(sum(x)))
 
 ```
+
+
+
+```{r}
+#Making similarity matrices for the watersheds
+smallmammals2 <- smallmammals_long1 %>% 
+  group_by(Watershed_name, Fire_interval, Grazing, Species) %>% 
+  reframe(Total = sum(Count))
+
+smallmammals2_wide <- smallmammals2 %>% 
+  pivot_wider(names_from = "Species", values_from = "Total", 
+              values_fn = function(x) paste(sum(x)))
+
+
+smallmammals2_wide_env <- smallmammals2_wide[, c(1:3)]
+smallmammals2_wide1 <- smallmammals2_wide[, -c(1:3)]
+smallmammals2_wide1 <- smallmammals2_wide1 %>% mutate_if(is.character, as.numeric)
+
+diss_matrix <- vegdist(smallmammals2_wide1, method = "bray")
+
+
+
+```
+
 
 ```{r}
 #Making an environment table to add back onto the presence/absence data later
@@ -540,7 +525,7 @@ smallmammals_cont <- smallmammals_cont %>% mutate(Presence_cont = factor(Presenc
 view(smallmammals_cont)
 
 summary_tbl2 <- smallmammals_cont %>%
-  group_by(Species,Watershed_name)%>%
+  group_by(Species, Watershed_name)%>%
     dplyr::count(Presence_cont, Early_late)
 
 summary_tbl2 <- summary_tbl2 %>% unite("Species_Watershed", Species:Watershed_name, sep = "_") 
@@ -673,7 +658,6 @@ smallmammals_wclassification1$Grazing <- factor(smallmammals_wclassification1$Gr
 smallmammals_wclassification2 <- smallmammals_wclassification1
 
 smallmammals_wclassification2 <- smallmammals_wclassification2 %>% mutate(Presence = factor(Presence))  
-
 smallmammals_wclassification2 <- smallmammals_wclassification2 %>% mutate(Recyear = as.character(Recyear))
 smallmammals_wclassification2 <- smallmammals_wclassification2 %>% mutate(Recyear = as.numeric(Recyear))
   
@@ -686,6 +670,7 @@ smallmammals_wclassification2 %>% ggplot(aes(x = Recyear, y = Presence, fill = C
         strip.text.y.left = element_text(angle = 0)) +
   geom_vline(xintercept = 2002.5) +
   labs(x = "Year", y = "Presence", title = "Small mammals: incidence classification by species") 
+
 
 # lm(Count ~ cbind(Recyear, Species_Watershed), abund.tabs)
 # 

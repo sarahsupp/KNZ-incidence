@@ -1,5 +1,5 @@
 ---
-title: "KNZ-incidence: Cleaning Biotic Datasets"
+title: "EAGER-Plants"
 author: "Maya Parker-Smith"
 date: "2023-05-15"
 output: html_document
@@ -33,6 +33,8 @@ library(vegan)
 library(goeveg)
 library(randtests)
 library(reshape2)
+library(lubridate)
+
 ```
 
 ##Plant Species Composition
@@ -56,14 +58,13 @@ Thus, plots d1-d5 from 1983-1987 are NOT the same d1-d5 plots in subsequent year
 
 ```{r}
 
-plant_comp_raw <- read_csv("Datasets_EAGER/Plants/knb-lter-knz.69.21_SpeciesComposition/PVC021.csv")
+plantcomp_raw <- read_csv("Datasets_EAGER/Plants/knb-lter-knz.69.21_SpeciesComposition/PVC021.csv")
 
 watershed_info <- read_excel("Datasets_EAGER/Other/Watershed Info.xlsx")
 
-unique(plant_comp_raw$WaterShed)
-view(plant_comp_raw)
+unique(plantcomp_raw$WaterShed)
 
-plant_comp <- plant_comp_raw %>% mutate(RecType = factor(RecType),
+plantcomp <- plantcomp_raw %>% mutate(RecType = factor(RecType),
                                         RecMonth = factor(RecMonth),
                                         RecDay = factor(RecDay),
                                         WaterShed = factor(WaterShed),
@@ -73,12 +74,12 @@ plant_comp <- plant_comp_raw %>% mutate(RecType = factor(RecType),
                                         SpeCode = factor(SpeCode))
 
 #Combining the genus and species column and creating a new column. 
-plant_comp1 <- add_column(unite(plant_comp, "Genus_spp", AB_genus:AB_species, sep = "_"))
+plantcomp1 <- unite(plantcomp, "Genus_spp", AB_genus:AB_species, sep = "_", remove = FALSE)
 
-unique(plant_comp1$WaterShed)
+unique(plantcomp1$WaterShed)
 
 
-plant_comp1$WaterShed <- dplyr::recode(plant_comp1$WaterShed,
+plantcomp1$WaterShed <- dplyr::recode(plantcomp1$WaterShed,
                                 "001c" = "1C",
                                 "001d" = "1D",
                                 "004b" = "4B",
@@ -111,23 +112,23 @@ plant_comp1$WaterShed <- dplyr::recode(plant_comp1$WaterShed,
                                 "n02a" = "N2A",
                                 "n02b" = "N2B")
 
-unique(plant_comp1$WaterShed)
+unique(plantcomp1$WaterShed)
 
-plant_comp1 <- plant_comp1 %>% rename("Watershed_name" = "WaterShed",
+plantcomp1 <- plantcomp1 %>% rename("Watershed_name" = "WaterShed",
                               "Recyear" = "RecYear",
                               "Recmonth" = "RecMonth",
                               "Recday" = "RecDay")
 
 
-plant_comp2 <- plant_comp1
-plant_comp2 <- plant_comp2 %>% subset(.$Recyear >= 1992)
-plant_comp2 <- plant_comp2 %>% mutate(Recyear = factor(Recyear))
+plantcomp2 <- plantcomp1
+plantcomp2 <- plantcomp2 %>% subset(.$Recyear >= 1993)
+plantcomp2 <- plantcomp2 %>% mutate(Recyear = factor(Recyear))
 
 
 #Removing watersheds and transects I won't use for further analysis
-plant_comp3 <- plant_comp2
+plantcomp3 <- plantcomp2
 
-plant_comp3 <- plant_comp3 %>%
+plantcomp3 <- plantcomp3 %>%
   subset(Watershed_name %in% c("1A", "1C", "1D",
                               "4A", "4B", "4F",
                               "20A", "20B", "20D",
@@ -135,21 +136,110 @@ plant_comp3 <- plant_comp3 %>%
                               "N4A", "N4D",
                               "N20A", "N20B")) 
 
-plant_comp3 <- left_join(plant_comp3, watershed_info, by = "Watershed_name")
+plantcomp3 <- left_join(plantcomp3, watershed_info, by = "Watershed_name")
+sort(unique(plantcomp3$Genus_spp))
+length(unique(plantcomp3$SpeCode))
 
-length(unique(plant_comp3$SpeCode))
 
-unique(plant_comp3$SpeCode)
+plantcomp4 <- subset(plantcomp4,!(Genus_spp %in% c("annual_forb", "carex_spp.", "cyperu_spp.", 
+                                                   "euphor_spp.", "symphy_spp.")))
 
+
+plantcomp4 <- plantcomp4 %>% unite("Month_Day", Recmonth:Recday, sep = "-")
+
+plantcomp4 <- plantcomp4 %>% unite("Date", Recyear:Month_Day, sep = "-", remove = FALSE)
+
+plantcomp4$Date <- ymd(plantcomp4$Date)
+datecheck <- plantcomp4 %>% group_by(Date)%>% reframe(Cover = sum(Cover))
 
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
+```{r}
+#This section is for checking the sampling amounts for certain variables/parameters
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+plantcomp_group1 <- plantcomp3 %>% group_by(Recyear, Watershed_name, Genus_spp) %>% 
+  reframe(Cover = sum(Cover))
+
+plantcomp_wide1 <- plantcomp_group1 %>% pivot_wider(names_from = Genus_spp, values_from = Cover)
+
+plantcomp_count1 <- plantcomp_wide1 %>% group_by(Watershed_name) %>% 
+  summarise(total_count=n(),.groups = 'drop')
+
+
+#After looking at the total number of times each watershed is sampled, I decided to cut watersheds 1A, 1C, 20A, 20D, 4F, N1A, and N20A. And keep watersheds 1D, 20B, 4A, 4B, N1B, N20B, N4A, and N4D
+
+plantcomp4 <- plantcomp4 %>% subset(Watershed_name %in% c("1D", "20B", "4A", "4B", "N1A", "N1B", "N20A", "N20B", "N4A", "N4D"))
+
+#Checking the months the watershed were sampled in
+plantcomp_group2 <- plantcomp4 %>% group_by(Recyear, Recmonth, Watershed_name, Genus_spp) %>% 
+  reframe(Cover = sum(Cover))
+
+plantcomp_wide2 <- plantcomp_group2 %>% pivot_wider(names_from = Genus_spp, values_from = Cover)
+
+plantcomp_count2 <- plantcomp_wide2 %>% group_by(Recyear, Watershed_name) %>% 
+  summarise(total_count=n(),.groups = 'drop')
+
+
+plantcomp_count2 %>% ggplot(aes(x = Recyear, y = total_count)) + 
+  geom_point() + 
+  facet_wrap(.~Watershed_name) + 
+  theme(text = element_text(size=12),
+        axis.text.x = element_text(angle=45, hjust=1, size =7))
+
+plantcomp_count2 %>% ggplot(aes(x = Recyear, y = total_count, color = Recmonth)) + 
+  geom_point(position = "stack") + 
+  facet_wrap(.~Watershed_name) + 
+  theme(text = element_text(size=12),
+        axis.text.x = element_text(angle=45, hjust=1, size =7))
+
+
+plantcomp_group3 <- plantcomp5 %>% group_by(Recyear, Recmonth, Watershed_name, Genus_spp) %>% 
+  reframe(Cover = sum(Cover))
+
+plantcomp_wide3 <- plantcomp_group3 %>% pivot_wider(names_from = Genus_spp, values_from = Cover)
+
+plantcomp_count3 <- plantcomp_wide3 %>% group_by(Watershed_name) %>% 
+  summarise(total_count=n(),.groups = 'drop')
+
+
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r}
+
+length(unique(plantcomp4$Genus_spp))
+length(unique(plantcomp4$SpeCode))
+
+
+spp_grouped <- plantcomp4 %>% group_by(SpeCode, AB_genus, AB_species, Genus_spp) %>% summarise(total_count=n(),.groups = 'drop')
+
+spp_grouped1 <- spp_grouped[order(spp_grouped$Genus_spp),]
+
+length(unique(spp_grouped$Genus_spp))
+
+species_tbl <- plantcomp4 %>% dplyr::select(AB_genus, AB_species, Genus_spp)
+
+
+```
+
+```{r}
+#Dissimilarity matrix for watersheds
+plantcomp5 <- plantcomp4 %>% group_by(Watershed_name, Fire_interval, Grazing, Genus_spp) %>% 
+  reframe(Cover = sum(Cover))
+
+plantcomp5_wide <- plantcomp5 %>% 
+  pivot_wider(names_from = "Genus_spp", values_from = "Cover", 
+              values_fn = function(x) paste(sum(x)))
+
+plantcomp5_wide_env <- plantcomp5_wide[, c(1:3)]
+plantcomp5_wide1 <- plantcomp5_wide[, -c(1:3)]
+plantcomp5_wide1 <- plantcomp5_wide1 %>% mutate_if(is.character, as.numeric)
+plantcomp5_wide1[is.na(plantcomp5_wide1)] <- 0
+
+diss_matrix <- vegdist(plantcomp5_wide1, method = "bray")
+
+```
+
+
