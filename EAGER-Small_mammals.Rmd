@@ -129,6 +129,8 @@ smallmammals_long$Species <- dplyr::recode(smallmammals_long$Species,
 #Joining the watershed_info dataset with the actual small mammal dataset
 smallmammals_long1 <- left_join(smallmammals_long, watershed_info, by = "Watershed_name")
 
+
+#Making variables factors
 smallmammals_long1 <- smallmammals_long1 %>% mutate(Fire_interval = factor(Fire_interval),
                                                     Burn_season = factor(Burn_season),
                                                     Grazing = factor(Grazing),
@@ -143,87 +145,80 @@ smallmammals_long1$Fire_interval <- factor(smallmammals_long1$Fire_interval,
 smallmammals_long1$Grazing <- factor(smallmammals_long1$Grazing,
                                      levels = c("Ungrazed", "Bison"))
 
-#Okay instead of what I am doing below, I just need to separate the dataset from 1992 onwards. 
+#Separate the dataset from 1992 onwards. 
 smallmammals_long1 <- smallmammals_long1 %>% subset(.$Recyear >= 1992)
-smallmammals_long1 <- smallmammals_long1 %>% mutate(Recyear = factor(Recyear))
 
 
-```
+#Since likely won't differentiate the data based on the traplines, I am summing the data based on just watershed
+smallmammals_long1 <- smallmammals_long1 %>% group_by(Recyear, Watershed_name, 
+                                                      Species, Fire_interval, Grazing) %>% 
+  reframe(Count = sum(Count))
 
-```{r}
-
-#Selecting just certain columns from the larger dataset
-smallmammalsgroup1 <- smallmammals_long1 %>% 
-  group_by(Recyear, Watershed_name, Fire_interval, Grazing, Species) %>% 
-  dplyr::reframe(Count = sum(Count))
-
-
-smallmammals_wide_random <- smallmammalsgroup1 %>% pivot_wider(names_from = "Species", values_from = "Count")
-
-smallmammals_group_count1 <- smallmammals_wide_random %>%  
-  group_by(Watershed_name, Fire_interval, Grazing) %>% 
-  summarise(total_count=n(),.groups = 'drop')
-
-#Removing the 4F watershed to make sampling between all fire/grazing treatments equal (the 4 year fire interval with no grazing combination of disturbances has two watersheds represented, while all other combinations have just one). Also removing the the grazing classifcation "NA" (grazing watersheds that didn't actually have any grazing until 1992) from the data.
-smallmammalsgroup2 <- smallmammalsgroup1 %>%
-  filter(.$Watershed_name != "4F") %>% 
-  filter(.$Grazing != "NA")
-
-
-#Plotting the overall counts of species per year
-smallmammalsgroup2 %>% ggplot(aes(x = Recyear, y = Count, group = Species, color = Species)) + 
-  geom_point() + 
-  geom_line() + 
-  facet_grid(Grazing~Fire_interval) +
-  theme(text = element_text(size=10),
-        axis.text.x = element_text(angle=45, hjust=1, size = 5)) 
-
-
-
-#Pivoting the the dataset wider, so that each species is its own column
-smallmammals_wide <- smallmammalsgroup2 %>% 
-  pivot_wider(names_from = "Species", values_from = "Count", 
-              values_fn = function(x) paste(sum(x)))
+#Removing the 4F watershed to make sampling between all fire/grazing treatments equal (the 4 year fire interval with no grazing combination of disturbances has two watersheds represented, while all other combinations have just one).
+####smallmammals_long1 <- smallmammals_long1 %>% subset(Watershed_name != "4F")
 
 ```
 
 
 
 ```{r}
-#Making similarity matrices for the watersheds
+#Making dissimilarity matrices for the watersheds - abundance
+
+#Selecting only necessary columns, 
 smallmammals2 <- smallmammals_long1 %>% 
   group_by(Watershed_name, Fire_interval, Grazing, Species) %>% 
   reframe(Total = sum(Count))
 
+#Pivoting the the dataset wider 
 smallmammals2_wide <- smallmammals2 %>% 
   pivot_wider(names_from = "Species", values_from = "Total", 
               values_fn = function(x) paste(sum(x)))
 
 
+smallmammals2_wide <- smallmammals2 %>% 
+  pivot_wider(names_from = "Species", values_from = "Total", 
+              values_fn = function(x) paste(sum(x)))
+
+#Making an environment dataset with the classifying variables
 smallmammals2_wide_env <- smallmammals2_wide[, c(1:3)]
+
+#Removing the classifying variables for the dissimilarity analysis
 smallmammals2_wide1 <- smallmammals2_wide[, -c(1:3)]
+
+
+
+#Making the values numeric instead of characters
 smallmammals2_wide1 <- smallmammals2_wide1 %>% mutate_if(is.character, as.numeric)
 
-diss_matrix <- vegdist(smallmammals2_wide1, method = "bray")
+#Standardizing for the total abundance by watershed
+decostand_tot_smallmammals <- decostand(smallmammals2_wide1, method = "total")
 
-
+#Creating the dissimilarity matrix
+diss_matrix <- vegdist(decostand_tot_smallmammals, method = "bray")
 
 ```
 
 
 ```{r}
+
+#Selecting only necessary columns and creating a new dataset
+smallmammals_short <- smallmammals_long1 
+
+
+#Pivoting the the dataset wider, so that each species is its own column
+smallmammals_wide <- smallmammals_short %>% 
+  pivot_wider(names_from = "Species", values_from = "Count", 
+              values_fn = function(x) paste(sum(x)))
+
 #Making an environment table to add back onto the presence/absence data later
 smallmammals_env <- smallmammals_wide[, 1:4]
 
 #Standardizing by presence/absence
 decostand_pa_smallmammals <- decostand(smallmammals_wide[, -c(1:4)], "pa", na.rm = TRUE )
 
+
 #Checking the stress of this presence/absence data
 dimcheckMDS(decostand_pa_smallmammals, distance = "jaccard", k=5)
-#making an mds 
-idk_mds <- metaMDS(decostand_pa_smallmammals, distance = "jaccard", k = 3, trymax = 30)
-
-
 
 
 #Adding the presence/absence dataset back with the enviornment dataset
@@ -233,102 +228,40 @@ smallmammals_wide2 <- decostand_pa_smallmammals %>% add_column(smallmammals_env,
 smallmammals_long2 <- smallmammals_wide2 %>% pivot_longer(cols = 5:18, 
                                                           names_to = "Species", 
                                                           values_to = "Presence")
+
+#Making sure the species are coded as factors
 smallmammals_long2 <- smallmammals_long2 %>% mutate(Species = factor(Species))
-
-
-
-smallmammals_halfspecies1 <- smallmammals_long2 %>% subset(Species %in% 
-                                                             c("Peromyscus_leucopus", 
-                                                               "Peromyscus_maniculatus", 
-                                                               "Blarina_hylophaga", 
-                                                               "Microtus_ochrogaster",
-                                                               "Sigmodon_hispidus", 
-                                                               "Synaptomys_cooperi", 
-                                                               "Neotoma_floridana"))
-
-smallmammals_halfspecies2 <- smallmammals_long2 %>% subset(Species %in% 
-                                                             c("Chaetodipus_hispidus",
-                                                               "Cryptotis_parva", 
-                                                               "Mus_musculus", 
-                                                               "Reithrodontomys_megalotis", 
-                                                               "Reithrodontomys_montanus", 
-                                                               "Spermophilus_tridecemlineatus", 
-                                                               "Zapus_hudsonius"))
-
-unique(smallmammals_long2$Species)
-
-
-library(scales)
-
-#display ggplot2 default hex color codes from 1 to 8
-for(i in 1:14){
-  print(hue_pal()(i))
-}
-
-#Plotting species presence/absence by year, and facetting by species, grazing, and fire interval. VERY BUSY and LARGE plot
-smallmammals_halfspecies1 %>% 
-  ggplot(aes(x = Recyear, y = Presence, group = Species, color = Species)) + 
-   scale_color_manual(values = c("#F8766D", "#E38900", "#C49A00", 
-                                 "#99A800", "#53B400", "#00BC56", 
-                                 "#00C094")) +
-  geom_point() + 
-  geom_line() + 
-  facet_grid(Species~Grazing~Fire_interval, switch = "y") +
-  theme(text = element_text(size=10),
-        axis.text.x = element_text(angle=45, hjust=1, size =7),
-        axis.text.y = element_text(size=7),
-        strip.text.y.left = element_text(angle = 0))
-   
-smallmammals_halfspecies2 %>% 
-  ggplot(aes(x = Recyear, y = Presence, group = Species, color = Species)) + 
-  scale_color_manual(values = c("#00BFC4", "#00B6EB", "#06A4FF",
-                                "#A58AFF", "#DF70F8", "#FB61D7", 
-                                "#FF66A8")) +
-  geom_point() + 
-  geom_line() + 
-  facet_grid(Species~Grazing~Fire_interval, switch = "y") +
-  theme(text = element_text(size=10),
-        axis.text.x = element_text(angle=45, hjust=1, size =7),
-        axis.text.y = element_text(size=7),
-        strip.text.y.left = element_text(angle = 0))
-
 
 ```
 
 
 
-
 ```{r}
 
-bartlett.test(Presence ~ Fire_interval, data = smallmammals_long2)
-bartlett.test(Presence ~ Grazing, data = smallmammals_long2)
-
-model1<-lm(Presence ~ Fire_interval + Grazing, data = smallmammals_long2)
-Anova(model1)
-
-
-
-#Using the wide dataset to calculate species incidence?
-smallmammals_years_wide <- smallmammals_long2 %>% pivot_wider(names_from = "Recyear", values_from = "Presence")
+#Creating another dataset by species and years to calculate persistence
+smallmammals_years_wide <- smallmammals_long2 %>% 
+  pivot_wider(names_from = "Recyear", values_from = "Presence")
 
 #Making NA's zeroes... MIGHT HAVE TO UNDO THIS
-smallmammals_years_wide2 <-smallmammals_years_wide %>% mutate_all(~replace(., is.na(.), 0))
+smallmammals_years_wide2 <-smallmammals_years_wide %>% 
+  mutate_all(~replace(., is.na(.), 0))
 
-#Summing the incidence of all years into a new column
-smallmammals_years_wide2 <- smallmammals_years_wide2 %>% mutate(Total_Persistence = 
-                                                                rowSums(smallmammals_years_wide2[, 5:26]))
-view(smallmammals_years_wide2)
+#Summing the persistence of all years into a new column
+smallmammals_years_wide2 <- smallmammals_years_wide2 %>% 
+  mutate(Total_Persistence = rowSums(smallmammals_years_wide2[, 5:26]))
 
-#Now I'm am going to make a for loop to calculate incidence by taking the total incidence and dividing it by the number of total years. The ungrazed and bison ones will have a different number of years.
 
-smallmammals_years_wide2 <- smallmammals_years_wide2 %>% mutate(Persistence = (.$Total_Persistence/22))
+smallmammals_years_wide2 <- smallmammals_years_wide2 %>% 
+  mutate(Persistence = (.$Total_Persistence/22))
 
 #Just getting a table to show the species persistence by fire-interval, grazing, and years total
-Persistence_table <- smallmammals_years_wide2 %>% group_by(Fire_interval, Grazing, Species) %>% 
+Persistence_table <- smallmammals_years_wide2 %>% 
+  group_by(Fire_interval, Grazing, Species) %>% 
   dplyr::reframe(Persistence = sum(Persistence))
 
-sort(Persistence_table$Persistence, decreasing = TRUE)
 
+
+#Plotting persistence in a simple bar graph
 smallmammals_years_wide2 %>% ggplot(aes(x = Species, y = Persistence, fill = Species)) + 
   geom_col() +  
   facet_grid(Grazing~Fire_interval) +
@@ -336,93 +269,11 @@ smallmammals_years_wide2 %>% ggplot(aes(x = Species, y = Persistence, fill = Spe
   theme(axis.text.x = element_text(angle=45, hjust=1, size = 10)) 
 
 
-
-
 ```
 
+
+
 ```{r}
-
-#Now I'm basically going to do everything over again, but with abundance instead?
-
-smallmammals_wide <- smallmammalsgroup2 %>% 
-  pivot_wider(names_from = "Species", values_from = "Count", 
-              values_fn = function(x) paste(sum(x)))
-
-#Making an environment table to add back onto the presence/absence data later
-smallmammals_env <- smallmammals_wide[, 1:4]
-
-
-smallmammals_wide3 <- smallmammals_wide %>% mutate(across(where(is.character), as.numeric))
-#Standardizing by presence/absence
-decostand_tot_smallmammals <- decostand(smallmammals_wide3[, -c(1:4)], "total", na.rm = TRUE )
-
-#Checking the stress of this presence/absence data
-dimcheckMDS(decostand_tot_smallmammals, distance = "bray", k=5)
-#making an mds 
-idk_mds2 <- metaMDS(decostand_tot_smallmammals, distance = "bray", k = 2, trymax = 30)
-
-
-
-
-#Adding the presence/absence dataset back with the enviornment dataset
-smallmammals_wide4 <- decostand_tot_smallmammals %>% add_column(smallmammals_env, .before = "Blarina_hylophaga")
-
-#Pivoting the presence/absence back to a longer format
-smallmammals_long3 <- smallmammals_wide4 %>% pivot_longer(cols = 5:18, 
-                                                          names_to = "Species", 
-                                                          values_to = "Abundance")
-smallmammals_long3 <- smallmammals_long3 %>% mutate(Species = factor(Species))
-
-
-
-
-smallmammals_halfspecies3 <- smallmammals_long3 %>% subset(Species %in% 
-                                                             c("Peromyscus_leucopus", 
-                                                               "Peromyscus_maniculatus", 
-                                                               "Blarina_hylophaga", 
-                                                               "Microtus_ochrogaster",
-                                                               "Sigmodon_hispidus", 
-                                                               "Synaptomys_cooperi", 
-                                                               "Neotoma_floridana"))
-
-smallmammals_halfspecies4 <- smallmammals_long3 %>% subset(Species %in% 
-                                                             c("Chaetodipus_hispidus",
-                                                               "Cryptotis_parva", 
-                                                               "Mus_musculus", 
-                                                               "Reithrodontomys_megalotis", 
-                                                               "Reithrodontomys_montanus", 
-                                                               "Spermophilus_tridecemlineatus", 
-                                                               "Zapus_hudsonius"))
-
-
-smallmammals_halfspecies3 %>% 
-  ggplot(aes(x = Recyear, y = Abundance, group = Species, color = Species)) + 
-   scale_color_manual(values = c("#F8766D", "#E38900", "#C49A00", 
-                                 "#99A800", "#53B400", "#00BC56", 
-                                 "#00C094")) +
-  geom_point() + 
-  geom_line() + 
-  facet_grid(Species~Grazing~Fire_interval, switch = "y") +
-  theme(text = element_text(size=10),
-        axis.text.x = element_text(angle=45, hjust=1, size =7),
-        axis.text.y = element_text(size=7),
-        strip.text.y.left = element_text(angle = 0))
-  
-
-
-
-smallmammals_halfspecies4 %>% 
-  ggplot(aes(x = Recyear, y = Abundance, group = Species, color = Species)) + 
-  scale_color_manual(values = c("#00BFC4", "#00B6EB", "#06A4FF",
-                                "#A58AFF", "#DF70F8", "#FB61D7", 
-                                "#FF66A8")) +
-  geom_point() + 
-  geom_line() + 
-  facet_grid(Species~Grazing~Fire_interval, switch = "y") +
-  theme(text = element_text(size=10),
-        axis.text.x = element_text(angle=45, hjust=1, size =7),
-        axis.text.y = element_text(size=7),
-        strip.text.y.left = element_text(angle = 0))
 
 smallmammals_long2 %>% ggplot(aes(x = Recyear, y = factor(Presence), fill = factor(Presence))) + 
   geom_tile(width = .9, height = .9) + 
@@ -463,8 +314,10 @@ smallmammals_long5 <- smallmammals_long5 %>% mutate(Recyear = as.numeric(Recyear
 
 #Okay so I think I need to make a contingency table by splitting the time series into early/late and presence/absence 
 
-
+#Making a new dataset just in case
 smallmammals_cont <- smallmammals_long2 
+
+#Adding empty columns onto new dataset
 smallmammals_cont <- smallmammals_cont %>% mutate(Presence_cont = NA,
                                                   Early_late = NA,
                                                   Presence = factor(Presence))
@@ -472,34 +325,17 @@ smallmammals_cont <- smallmammals_cont %>% mutate(Presence_cont = NA,
 
 smallmammals_cont <- smallmammals_cont %>% group_by(Species) %>% mutate(id=cur_group_id()) 
 
+
+#Filling presence contingency column based on presence/absence
  for(j in 1:nrow(smallmammals_cont)){
    if (smallmammals_cont[j,6] == "1"){smallmammals_cont[j,7] <- "Present"}
    if (smallmammals_cont[j,6] == "0"){smallmammals_cont[j,7] <- "Absent"}
  } 
 
+#Filling early/late contingency based on year
 for(i in 1:nrow(smallmammals_cont)){
-   if (smallmammals_cont[i,1] == "1992"){smallmammals_cont[i,8] <- "Early"}
-   if (smallmammals_cont[i,1] == "1993"){smallmammals_cont[i,8] <- "Early"}
-   if (smallmammals_cont[i,1] == "1994"){smallmammals_cont[i,8] <- "Early"}
-   if (smallmammals_cont[i,1] == "1995"){smallmammals_cont[i,8] <- "Early"}
-   if (smallmammals_cont[i,1] == "1996"){smallmammals_cont[i,8] <- "Early"}
-   if (smallmammals_cont[i,1] == "1997"){smallmammals_cont[i,8] <- "Early"}
-   if (smallmammals_cont[i,1] == "1998"){smallmammals_cont[i,8] <- "Early"}
-   if (smallmammals_cont[i,1] == "1999"){smallmammals_cont[i,8] <- "Early"}
-   if (smallmammals_cont[i,1] == "2000"){smallmammals_cont[i,8] <- "Early"}
-   if (smallmammals_cont[i,1] == "2001"){smallmammals_cont[i,8] <- "Early"}
-   if (smallmammals_cont[i,1] == "2002"){smallmammals_cont[i,8] <- "Early"}
-   if (smallmammals_cont[i,1] == "2003"){smallmammals_cont[i,8] <- "Late"}
-   if (smallmammals_cont[i,1] == "2004"){smallmammals_cont[i,8] <- "Late"}
-   if (smallmammals_cont[i,1] == "2005"){smallmammals_cont[i,8] <- "Late"}
-   if (smallmammals_cont[i,1] == "2006"){smallmammals_cont[i,8] <- "Late"}
-   if (smallmammals_cont[i,1] == "2007"){smallmammals_cont[i,8] <- "Late"}
-   if (smallmammals_cont[i,1] == "2008"){smallmammals_cont[i,8] <- "Late"}
-   if (smallmammals_cont[i,1] == "2009"){smallmammals_cont[i,8] <- "Late"}
-   if (smallmammals_cont[i,1] == "2010"){smallmammals_cont[i,8] <- "Late"}
-   if (smallmammals_cont[i,1] == "2011"){smallmammals_cont[i,8] <- "Late"}
-   if (smallmammals_cont[i,1] == "2012"){smallmammals_cont[i,8] <- "Late"}
-   if (smallmammals_cont[i,1] == "2013"){smallmammals_cont[i,8] <- "Late"}
+   if (smallmammals_cont[i,1] < 2003){smallmammals_cont[i,8] <- "Early"}
+   if (smallmammals_cont[i,1] >= 2003){smallmammals_cont[i,8] <- "Late"}
 }
 
 smallmammals_cont <- smallmammals_cont %>% mutate(Presence_cont = factor(Presence_cont),

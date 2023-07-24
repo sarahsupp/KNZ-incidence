@@ -92,7 +92,7 @@ sort(unique(grasshoppers$WATERSHED))
 #There is weird capitalizations for these too... I'll have to go through and clean and probably get rid of some
 
 
-#Renaming watersheds to make it consistent
+#Recoding watersheds to make it consistent
 grasshoppers1 <- grasshoppers
 grasshoppers1$WATERSHED <- dplyr::recode(grasshoppers1$WATERSHED,
                                   "001d" = "1D",
@@ -196,7 +196,6 @@ grasshoppers1$SPECIES <- dplyr::recode(grasshoppers1$SPECIES,
                                 "xanthippus corallipe" = "Xanthippus corallipes")
 
 ###After some exploration, I found that Hippiscus rugosa and Hippiscus ocelote are the same thing, so I will change everything to Hippiscus ocelote.
-
 grasshoppers1$SPECIES <- dplyr::recode(grasshoppers1$SPECIES,
                                       "Hippiscus rugosus" = "Hippiscus ocelote")
 
@@ -210,7 +209,6 @@ grasshoppers1$SPECIES <- dplyr::recode(grasshoppers1$SPECIES,
 
 #Making a new dataset to then condense some of the watersheds based on the metadata
 grasshoppers2 <- grasshoppers1
-
 grasshoppers2$WATERSHED <- dplyr::recode(grasshoppers2$WATERSHED,
                                    "B" = "20B",
                                    "NB" = "N20B",
@@ -425,85 +423,35 @@ grasshoppers_long <- grasshoppers_long %>% mutate(Watershed_name = factor(Waters
 ```
 
 
-
-
 ```{r}
-unique(grasshoppers_wide$Watershed_name)
+##Dissimilarity matrix for watersheds - abundance
 
-#This section is to check the similarity between two sites of the same fire/grazing treatment
-grasshoppers_N1 <- grasshoppers_cae2_short %>% subset(Watershed_name %in% c("N1A", "N1B"))
-grasshoppers_N1 <- grasshoppers_N1 %>% group_by(Watershed_name, Fire_interval, Grazing, Species) %>% 
+#Creating a new dataset with just the variables I need (excludes years)
+grasshoppers7 <- grasshoppers_cae2 %>% 
+  group_by(Watershed_name, Fire_interval, Grazing, Species) %>% 
   reframe(Total = sum(Total))
 
-
-grasshoppers_N1wide <- grasshoppers_N1 %>% 
-  pivot_wider(names_from = "Species", values_from = "Total", 
-              values_fn = function(x) paste(sum(x)))
-
-grasshoppers_N1wide_short <- grasshoppers_N1wide[, -c(1:3)]
-grasshoppers_N1wide_short <- grasshoppers_N1wide_short %>% mutate_if(is.character, as.numeric)
-grasshoppers_N1wide_short[is.na(grasshoppers_N1wide_short)] <- 0
-
-sum(apply(grasshoppers_N1wide_short, 2, function(x) abs(max(x)-min(x)))) / sum(rowSums(grasshoppers_N1wide_short))
-
-decostand_bray_grasshoppersN1 <- decostand(grasshoppers_N1wide_short, "total", na.rm = FALSE)
-all_mds_bray <- metaMDS(decostand_bray_grasshoppersN1, distance = "bray", k=1, trymax = 40)
-
-
-
-
-
-grasshoppers_N4 <- grasshoppers_cae2_short %>% subset(Watershed_name %in% c("N4A", "N4D"))
-grasshoppers_N4 <- grasshoppers_N4 %>% group_by(Watershed_name, Fire_interval, Grazing, Species) %>% 
-  reframe(Total = sum(Total))
-
-grasshoppers_N4wide <- grasshoppers_N4 %>% 
-  pivot_wider(names_from = "Species", values_from = "Total", 
-              values_fn = function(x) paste(sum(x)))
-
-grasshoppers_N4wide_short <- grasshoppers_N4wide[, -c(1:3)]
-grasshoppers_N4wide_short <- grasshoppers_N4wide_short %>% mutate_if(is.character, as.numeric)
-grasshoppers_N4wide_short[is.na(grasshoppers_N4wide_short)] <- 0
-
-sum(apply(grasshoppers_N4wide_short, 2, function(x) abs(max(x)-min(x)))) / sum(rowSums(grasshoppers_N4wide_short))
-
-
-
-
-
-
-grasshoppers_N20 <- grasshoppers_cae2_short %>% subset(Watershed_name %in% c("N20A", "N20B"))
-grasshoppers_N20 <- grasshoppers_N20 %>% group_by(Watershed_name, Fire_interval, Grazing, Species) %>% 
-  reframe(Total = sum(Total))
-
-grasshoppers_N20wide <- grasshoppers_N20 %>% 
-  pivot_wider(names_from = "Species", values_from = "Total", 
-              values_fn = function(x) paste(sum(x)))
-
-grasshoppers_N20wide_short <- grasshoppers_N20wide[, -c(1:3)]
-grasshoppers_N20wide_short <- grasshoppers_N20wide_short %>% mutate_if(is.character, as.numeric)
-grasshoppers_N20wide_short[is.na(grasshoppers_N20wide_short)] <- 0
-
-sum(apply(grasshoppers_N20wide_short, 2, function(x) abs(max(x)-min(x)))) / sum(rowSums(grasshoppers_N20wide_short))
-
-
-```
-
-```{r}
-#Dissimilarity matrix for watersheds
-grasshoppers7 <- grasshoppers_cae2 %>% group_by(Watershed_name, Fire_interval, Grazing, Species) %>% 
-  reframe(Total = sum(Total))
-
+#Pivoting the dataset wider so that each watershed is on a different row
 grasshoppers7_wide <- grasshoppers7 %>% 
   pivot_wider(names_from = "Species", values_from = "Total", 
               values_fn = function(x) paste(sum(x)))
 
+#Making an environment dataset with the classifying variables
 grasshoppers7_wide_env <- grasshoppers7_wide[, c(1:3)]
+
+#Removing the classifying variables for the dissimilarity analysis
 grasshoppers7_wide1 <- grasshoppers7_wide[, -c(1:3)]
+
+#Making the values numeric instead of characters
 grasshoppers7_wide1 <- grasshoppers7_wide1 %>% mutate_if(is.character, as.numeric)
+
+#Making all the na's into zeroes
 grasshoppers7_wide1[is.na(grasshoppers7_wide1)] <- 0
 
-diss_matrix <- vegdist(grasshoppers7_wide1, method = "bray")
+decostand_tot_grasshoppers <- decostand(grasshoppers7_wide1, method = "total")
+
+#Creating the dissimilarity matrix
+diss_matrix <- vegdist(decostand_tot_grasshoppers, method = "bray")
 ```
 
 
