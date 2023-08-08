@@ -13,6 +13,7 @@ mainfont: Arial
 mathfont: Arial
 fontsize: 12pt
 ---
+#  {.tabset .tabset-pills .tabset-fade}
 
 ```{r setup, include=FALSE}
 ## Clear environment 
@@ -34,7 +35,6 @@ library(goeveg)
 library(randtests)
 library(reshape2)
 library(psych)
-
 
 ```
 
@@ -58,7 +58,7 @@ Summary of All Changes Up to 1993:
 1982: Transects in N20C (N01A) and N01C (N02B) were dropped, N20D was maintained in what is now N01B. N01D became the second transect in what is now N01B, and N04C transect was maintained in what is now N04B. N20B was added. 
 1990: 004d became SA and transect was dropped.
 
-
+##Reading in the data and basic set-up
 ```{r}
 #Read in and view bird data
 birds_raw <- read_csv("Datasets_EAGER/Birds/knb-lter-knz.26.12/CBP011.csv")
@@ -67,7 +67,7 @@ View(birds_raw)
 
 
 #Changing classifications and names of columns
-birds <- birds_raw %>% mutate(RECMONTH = factor(RECMONTH),
+birds_all <- birds_raw %>% mutate(RECMONTH = factor(RECMONTH),
                           RECDAY = factor(RECDAY),
                           SEASON = factor(SEASON),
                           TRANSNUM = factor(TRANSNUM),
@@ -80,8 +80,8 @@ birds <- birds_raw %>% mutate(RECMONTH = factor(RECMONTH),
                           STATUS = factor(STATUS),
                           COMMENTS = as.character(COMMENTS))
 
-
-birds <- birds %>% rename("Watershed_name" = "WATERSHED",
+#Renaming the columns so they're not all capitalized
+birds_all <- birds_all %>% rename("Watershed_name" = "WATERSHED",
                           "Datacode" = "DATACODE",
                           "Recyear" = "RECYEAR",
                           "Recmonth" = "RECMONTH",
@@ -101,8 +101,8 @@ birds <- birds %>% rename("Watershed_name" = "WATERSHED",
                           "Duration" = "DURATION",
                           "Observer" = "OBSERVER")
 
-
-birds$Watershed_name <- dplyr::recode(birds$Watershed_name,
+#Renaming the watersheds to make the names shorter
+birds_all$Watershed_name <- dplyr::recode(birds_all$Watershed_name,
                                        "N04D" = "N4D",
                                        "N04B" = "N4B",
                                        "004B" = "4B",
@@ -119,68 +119,75 @@ birds$Watershed_name <- dplyr::recode(birds$Watershed_name,
                                        "G00A" = "GA",
                                        "N20B" = "N20B")
 
-
-
 #Joining the watershed_info dataset with the actual birds dataset
-birds1 <- left_join(birds, watershed_info, by = "Watershed_name")
+birds_all <- left_join(birds_all, watershed_info, by = "Watershed_name")
 
-birds1 <- birds1 %>% mutate(Fire_interval = factor(Fire_interval),
-                                                    Burn_season = factor(Burn_season),
-                                                    Grazing = factor(Grazing))
-
-
-#Changing the order of the fire_interval and grazing treatments for graphing reasons later on
-birds1$Fire_interval <- factor(birds1$Fire_interval, 
-                               levels = c("1_year", "4_years", "20_years"))
-
-birds1$Grazing <- factor(birds1$Grazing,
-                         levels = c("Ungrazed", "Bison"))
+#Converting some of the variables into factors
+birds_all <- birds_all %>% mutate(Fire_interval = factor(Fire_interval),
+                                  Burn_season = factor(Burn_season),
+                                  Grazing = factor(Grazing))
 
 
 #I need to separate the dataset from 1992 onwards. 
-birds2 <- birds1 %>% subset(.$Recyear >= 1992)
-birds2 <- birds2 %>% mutate(Recyear = factor(Recyear))
+birds <- birds_all %>% subset(.$Recyear >= 1992)
 
 
 #Removing watersheds and transects I won't use for further analysis
-birds3 <-  birds2 %>% subset(!(Watershed_name %in% c("4D", "R20A",
+birds <-  birds %>% subset(!(Watershed_name %in% c("4D", "R20A", "20C",
                                                      "R1B", "LA",
                                                      "GA", "SA")))
+##This transect is being removed to not duplicate the observations at a single watershed; watershed N1B has two transects (6, 10) and all other watersheds just have one transect
+###I did do a Bray-Curtis dissimilarity test on the two different transects to make sure they were similar enough, and it looks like they are about 23% dissimilar (~77% similar)
+birds <-  birds %>% subset(Transect != "10")
 
-birds3 <-  birds3 %>% subset(Transect != "10")
 
-#Also removing observations that are just "none"
-birds3 <-  birds3 %>% subset(AOU_code != "NONE")
-birds3 <-  birds3 %>% subset(AOU_code != "VOID")
-birds3 <-  birds3 %>% subset(AOU_code != "UNSP")
-birds3 <-  birds3 %>% subset(AOU_code != "UNEM")
-birds3$AOU_code <- dplyr::recode(birds3$AOU_code,
+#Also removing observations that are unspecified
+birds <-  subset(birds, !(AOU_code %in% c("NONE", "VOID", "UNSP", "UNEM", "RSTO")))
+birds$AOU_code <- dplyr::recode(birds$AOU_code,
                                 "eawp" = "EAWP")
 
-
-length(unique(birds3$Species))
-length(unique(birds3$AOU_code))
-
-spp_grouped <- birds3 %>% group_by(Species, AOU_code, Common_name) %>% summarise(total_count=n(),.groups = 'drop')
-spp_grouped1 <- spp_grouped[order(spp_grouped$AOU_code),]
-
-ssp_grouped2 <- birds3 %>% group_by(Watershed_name, AOU_code) %>% summarize(total_count=n(),.groups='drop')
-
+#Checking the lengths of the species (the 'species' variable has a lot more entries, but they are duplicates. So I'll use the AOU code instead)
+length(unique(birds$Species))
+length(unique(birds$AOU_code))
 
 
 ```
 
+##Watershed Dissimilarity matrix
+```{r}
 
+##Creating a Bray-Curtis dissimilarity matrix for the watersheds
+birds_diss <- birds %>% group_by(Watershed_name, Fire_interval, Grazing, AOU_code) %>% 
+  reframe(Total = sum(Count))
+
+
+birds_diss <- birds_diss %>% 
+  pivot_wider(names_from = "AOU_code", values_from = "Total", 
+              values_fn = function(x) paste(sum(x)))
+
+
+birds_diss_env <- birds_diss[, c(1:3)]
+birds_diss <- birds_diss[, -c(1:3)]
+birds_diss <- birds_diss %>% mutate_if(is.character, as.numeric)
+birds_diss[is.na(birds_diss)] <- 0
+
+decostand_tot_birds <- decostand(birds_diss, method = "total")
+
+diss_matrix <- vegdist(decostand_tot_birds, method = "bray")
+
+```
+
+
+##Changing to presence/absence
 ```{r}
 
 #Selecting the columns I want for further analysis 
-birds3_short <- birds3 %>% group_by(Recyear, Watershed_name, Fire_interval, Grazing, AOU_code) %>% 
+birds_group <- birds %>% group_by(Recyear, Watershed_name, Fire_interval, Grazing, AOU_code) %>% 
   reframe(Count = sum(Count))
 
 
-
 #Pivoting the the dataset wider, so that each species is its own column
-birds_wide <- birds3_short %>% 
+birds_wide <- birds_group %>% 
   pivot_wider(names_from = "AOU_code", values_from = "Count", 
               values_fn = function(x) paste(sum(x)))
 
@@ -193,147 +200,132 @@ birds_env <- birds_wide[, 1:4]
 decostand_pa_birds <- decostand(birds_wide[, -c(1:4)], "pa", na.rm = FALSE)
 decostand_pa_birds[is.na(decostand_pa_birds)] <- 0
 
-#adding the presence/absence dataset back with the enviornment dataset
-birds_wide2 <- decostand_pa_birds %>% add_column(birds_env, .before = "BHCO")
-
-
-
+#adding the presence/absence dataset back with the environment dataset
+birds_wide <- cbind(birds_env, decostand_pa_birds)
 
 
 #Pivoting the presence/absence back to a longer format
-
-birds_long <- birds_wide2 %>% pivot_longer(cols = 5:86,
+birds_pa <- birds_wide %>% pivot_longer(cols = -c(1:4),
                                            names_to = "AOU_code",
                                            values_to = "Presence")
 
-birds_long <- birds_long %>% mutate(AOU_code = factor(AOU_code))
-birds_long <- birds_long %>% mutate(Watershed_name = factor(Watershed_name))
+#making the species names and watershed names into factors
+birds_pa <- birds_pa %>% mutate(AOU_code = factor(AOU_code))
+birds_pa <- birds_pa %>% mutate(Watershed_name = factor(Watershed_name))
 
 ```
 
 
-
-```{r}
-##Creating a Bray-Curtis dissimilarity matrix for the watershed
-
-birds4 <- birds3 %>% group_by(Watershed_name, Fire_interval, Grazing, AOU_code) %>% 
-  reframe(Total = sum(Count))
-
-
-birds4_wide <- birds4 %>% 
-  pivot_wider(names_from = "AOU_code", values_from = "Total", 
-              values_fn = function(x) paste(sum(x)))
-
-
-birds4_wide_env <- birds4_wide[, c(1:3)]
-birds4_wide1 <- birds4_wide[, -c(1:3)]
-birds4_wide1 <- birds4_wide1 %>% mutate_if(is.character, as.numeric)
-birds4_wide1[is.na(birds4_wide1)] <- 0
-
-decostand_tot_birds <- decostand(birds4_wide1, method = "total")
-
-diss_matrix <- vegdist(decostand_tot_birds, method = "bray")
-
-```
-
-
+##Calculating persistence
 ```{r}
 
 #Using the wide dataset to calculate species incidence?
-birds_years_wide <- birds_long %>% pivot_wider(names_from = factor("Recyear"), values_from = "Presence")
+birds_years_wide <- birds_pa %>% pivot_wider(names_from = factor("Recyear"), values_from = "Presence")
 
-birds_years_wide <- birds_years_wide %>% mutate(Total_Persistence = 
+#Summing the amount of years each species was present at each watershed
+birds_years_wide <- birds_years_wide %>% mutate(Total_Presence = 
                                                   rowSums(birds_years_wide[, 5:22]))
 
+#Dividing the number of years each species was present by the total number of years in the dataset
+birds_years_wide <- birds_years_wide %>% mutate(Persistence = (Total_Presence/18))
 
-view(birds_years_wide)
-birds_years_wide <- birds_years_wide %>% mutate(Persistence = (Total_Persistence/18))
+#Summing the number of times each species occurs in the early half of the dataset and later half of the dataset for the incidence classification later on
+birds_years_wide <- birds_years_wide %>% 
+  mutate(Early_pres = rowSums(birds_years_wide[,c(5:13)], na.rm = TRUE)) %>%
+  mutate(Late_pres = rowSums(birds_years_wide[,c(14:22)], na.rm = TRUE))
 
-birds_years_wide %>% ggplot(aes(x = Persistence)) + geom_histogram(binwidth = 0.1)
+#Plotting persistence
+##COMMENTING OUT FOR NOW UNTIL I FIGURE OUT A BETTER WAY TO GRAPH
+# birds_years_wide %>% ggplot(aes(x = AOU_code, y = Persistence, color = Watershed_name)) + 
+#   geom_point(alpha = 0.6) + 
+#   facet_grid(Watershed_name~.) + 
+#   theme(text = element_text(size=10),
+#         axis.text.x = element_text(angle=45, hjust=1, size =7))
+# 
+# birds_years_wide$Watershed_name <- factor(birds_years_wide$Watershed_name,
+#                                           levels = c("1D", "N1B", "4A", "4B", "N4B", "N4D", "20B", "N20B"))
+# 
+# birds_years_wide %>% ggplot(aes(x = Persistence, fill = Watershed_name)) + geom_histogram(stat = "count") + facet_grid(.~Watershed_name) +
+#   theme(text = element_text(size=10),
+#         axis.text.x = element_text(angle=90, hjust=1, size =10))
+# 
+# 
+# 
+# birds_years_wide %>% ggplot(aes(x = Watershed_name, y = Persistence, color = Watershed_name)) + 
+#   geom_point(alpha = 0.6, position = position_jitter(width = 0.2)) + 
+#   theme(text = element_text(size=10),
+#         axis.text.x = element_text(angle=45, hjust=1, size =7))
+# 
+# birds_years_wide %>% ggplot(aes(x = Persistence)) + geom_histogram() +
+#   facet_wrap(.~AOU_code) + 
+#   theme(text = element_text(size=10),
+#         axis.text.x = element_text(angle=45, hjust=1, size =7))
 
-
-birds_long3 <- pivot_longer(birds_years_wide, cols = 5:22,
+#Pivoting the dataset back to long format for further analysis; this dataset included the persistence calculations so that I can classify always_absent, always_present, increasing, and decreasing incidence later on
+birds_long_pers <- pivot_longer(birds_years_wide, cols = 5:22,
                      names_to = "Recyear",
                      values_to = "Presence")
 
 
 
 
-birds_long4 %>% ggplot(aes(x = Recyear, y = factor(Presence), fill = factor(Presence))) + 
-  geom_tile() + 
-  facet_grid(Species~Grazing~Fire_interval) +
-  theme(text = element_text(size=10),
-        axis.text.x = element_text(angle=45, hjust=1, size =7),
-        axis.text.y = element_text(size=7),
-        strip.text.y.left = element_text(angle = 0)) +
-  scale_fill_manual(values = c("white", "black")) 
-
- birds_long4 %>%  ggplot(aes(Recyear, factor(Presence), fill = factor(Presence))) +
-  geom_tile(color = "gray30") +
-   facet_grid(Species~Grazing~Fire_interval, switch = "y") +
-   theme(text = element_text(size=7),
-        axis.text.x = element_text(angle=45, hjust=1, size =7),
-        axis.text.y = element_text(size=7),
-        strip.text.y.left = element_text(angle = 0)) +
-   coord_equal() +
-  scale_fill_manual(values = c("white", "black"), guide = "none") +
-  theme_minimal(base_size = 16)
+# birds_long4 %>% ggplot(aes(x = Recyear, y = factor(Presence), fill = factor(Presence))) + 
+#   geom_tile() + 
+#   facet_grid(Species~Grazing~Fire_interval) +
+#   theme(text = element_text(size=10),
+#         axis.text.x = element_text(angle=45, hjust=1, size =7),
+#         axis.text.y = element_text(size=7),
+#         strip.text.y.left = element_text(angle = 0)) +
+#   scale_fill_manual(values = c("white", "black")) 
+# 
+#  birds_long4 %>%  ggplot(aes(Recyear, factor(Presence), fill = factor(Presence))) +
+#   geom_tile(color = "gray30") +
+#    facet_grid(Species~Grazing~Fire_interval, switch = "y") +
+#    theme(text = element_text(size=7),
+#         axis.text.x = element_text(angle=45, hjust=1, size =7),
+#         axis.text.y = element_text(size=7),
+#         strip.text.y.left = element_text(angle = 0)) +
+#    coord_equal() +
+#   scale_fill_manual(values = c("white", "black"), guide = "none") +
+#   theme_minimal(base_size = 16)
 
 
 ```
 
+
+##Chi-square contingency tables
 ```{r}
 
-birds_cont <- birds_long3 
-birds_cont <- birds_cont %>% mutate(Presence_cont = NA,
-                                    Early_late = NA,
+#Making a new dataset just in case
+birds_cont <- birds_long_pers
+
+#Adding empty columns onto new dataset
+birds_cont <- birds_cont %>% mutate(Early_late = NA,
                                     Presence = factor(Presence))
 
+#Filling presence contingency column based on presence/absence
+ # for(j in 1:nrow(birds_cont)){
+ #   if (birds_cont[j,10] == "1"){birds_cont[j,11] <- "Present"}
+ #   if (birds_cont[j,10] == "0"){birds_cont[j,11] <- "Absent"}
+ # } 
 
-
-
- for(j in 1:nrow(birds_cont)){
-   if (birds_cont[j,8] == "1"){birds_cont[j,9] <- "Present"}
-   if (birds_cont[j,8] == "0"){birds_cont[j,9] <- "Absent"}
- } 
-
+#Filling early/late contingency based on year
 for(i in 1:nrow(birds_cont)){
-   if (birds_cont[i,7] == "1992"){birds_cont[i,10] <- "Early"}
-   if (birds_cont[i,7] == "1993"){birds_cont[i,10] <- "Early"}
-   if (birds_cont[i,7] == "1994"){birds_cont[i,10] <- "Early"}
-   if (birds_cont[i,7] == "1995"){birds_cont[i,10] <- "Early"}
-   if (birds_cont[i,7] == "1996"){birds_cont[i,10] <- "Early"}
-   if (birds_cont[i,7] == "1997"){birds_cont[i,10] <- "Early"}
-   if (birds_cont[i,7] == "1998"){birds_cont[i,10] <- "Early"}
-   if (birds_cont[i,7] == "1999"){birds_cont[i,10] <- "Early"}
-   if (birds_cont[i,7] == "2000"){birds_cont[i,10] <- "Early"}
-   if (birds_cont[i,7] == "2001"){birds_cont[i,10] <- "Late"}
-   if (birds_cont[i,7] == "2002"){birds_cont[i,10] <- "Late"}
-   if (birds_cont[i,7] == "2003"){birds_cont[i,10] <- "Late"}
-   if (birds_cont[i,7] == "2004"){birds_cont[i,10] <- "Late"}
-   if (birds_cont[i,7] == "2005"){birds_cont[i,10] <- "Late"}
-   if (birds_cont[i,7] == "2006"){birds_cont[i,10] <- "Late"}
-   if (birds_cont[i,7] == "2007"){birds_cont[i,10] <- "Late"}
-   if (birds_cont[i,7] == "2008"){birds_cont[i,10] <- "Late"}
-   if (birds_cont[i,7] == "2009"){birds_cont[i,10] <- "Late"}
+   if (birds_cont[i,9] < 2001){birds_cont[i,11] <- "Early"}
+   if (birds_cont[i,9] >= 2001){birds_cont[i,11] <- "Late"}
 }
 
 
-unique(birds_cont$Early_late)
-
-
-
-birds_cont <- birds_cont %>% mutate(Presence_cont = factor(Presence_cont),
-                                    Early_late = factor(Early_late))
+birds_cont <- birds_cont %>% mutate(Early_late = factor(Early_late))
 
 summary_tbl <- birds_cont %>%
-  group_by(AOU_code, Watershed_name, Fire_interval, Grazing, Persistence)%>%
-    dplyr::count(Presence_cont, Early_late)
+  group_by(AOU_code, Watershed_name, Fire_interval, Grazing, Persistence, Early_pres, Late_pres)%>%
+    dplyr::count(Presence, Early_late)
 
 summary_tbl <- summary_tbl %>% unite("Species_Watershed", AOU_code:Watershed_name, sep = "_") 
 summary_tbl <- summary_tbl %>% mutate(Species_Watershed = factor(Species_Watershed))
 
-contabs <- xtabs(n ~ Presence_cont + Early_late + Species_Watershed, summary_tbl)
+contabs <- xtabs(n ~ Presence + Early_late + Species_Watershed, summary_tbl)
 chisqtests <- apply(contabs, 3, chisq.test)
 
 chisq_p.values <- tibble(names(chisqtests), do.call(rbind,lapply(chisqtests,function(v){v$p.value})))
@@ -344,134 +336,138 @@ chisq_p.values <- chisq_p.values %>% mutate(Species_Watershed = factor(Species_W
 
 
 
+```
 
-birds_long4 <- birds_long3 %>% 
-  group_by(Recyear, AOU_code, Watershed_name, Persistence) %>% reframe(Presence = Presence)
+##Runs-test 
+```{r}
 
-birds_long4 <- birds_long4 %>% unite("Species_Watershed", AOU_code:Watershed_name, sep = "_")
+#Selecting the variables I need for the runs.test and again combining the species and watershed to create unique identifiers
+birds_long_runs <- birds_long_pers %>% 
+  group_by(Recyear, AOU_code, Watershed_name, Persistence, Early_pres, Late_pres) %>% reframe(Presence = Presence) %>% unite("Species_Watershed", AOU_code:Watershed_name, sep = "_")
 
-grouped4 <- birds_long4 %>% group_by(Recyear, Species_Watershed) %>% reframe(Presence = Presence)
-
-
-presence.tabs <- xtabs(Presence ~ Recyear + Species_Watershed, birds_long4)
+#Creating the runs.test matrices 
+presence.tabs <- xtabs(Presence ~ Recyear + Species_Watershed, birds_long_runs)
+#Applying runs.tests to the matrices (MARGIN = 2 means that they are looking at the columns)
 runstests <- apply(presence.tabs, 2, runs.test)
+#Extracting the p.values from the runs.test into a table
 runstest_p.values <- tibble(names(runstests), do.call(rbind,lapply(runstests,function(v){v$p.value})))
+#Renaming the variables from the runs.test p.value table
 runstest_p.values <- runstest_p.values %>% rename("runstest_p.values" = "do.call(...)",
                                                   "Species_Watershed" = "names(runstests)")
-runstest_p.values <- runstest_p.values %>% mutate(Species_Watershed = factor(Species_Watershed))
-
-
-merged_p.values <- merge(chisq_p.values,runstest_p.values, by = "Species_Watershed", all = TRUE)
-
-
 
 
 ```
 
 
+##Incidence classification
 ```{r}
 
-merged_p.values2 <- merged_p.values %>% mutate(Incidence_change = NA,
-                                          Sequential_patterns = NA)
-group <- summary_tbl %>% dplyr::select(Species_Watershed, Fire_interval, Grazing, Persistence) %>% distinct()
-merged_p.values2 <- merge(merged_p.values2, group, by = "Species_Watershed")
+#Merging the p.value outputs from the chi.sq and runs.tests 
+merged_p.values <- merge(chisq_p.values,runstest_p.values, by = "Species_Watershed", all = TRUE)
 
+
+#Separating the combined Species_watershed again so that I can join these p.values to previous datasets
+merged_p.values1 <- merged_p.values %>% separate(Species_Watershed, into = c("AOU_code", "Watershed_name"))
+
+#Joining the merged p.values with a previous dataset to get all the variables
+merged_p.values1 <- left_join(merged_p.values1, (dplyr::select(birds_years_wide, c(Watershed_name, Fire_interval, Grazing, AOU_code, Persistence, Early_pres, Late_pres))), by = c("Watershed_name", "AOU_code"))
+
+#Adding new empty columns, one to indicate incidence change (chi.sq significance) and one to indicate sequential patterns(runs.test significance)
+merged_p.values2 <- merged_p.values1 %>% mutate(Incidence_change = NA,
+                                          Sequential_patterns = NA)
+
+#Avoiding the NA/NaN error by changing all NA's/NaN to "2" (will change back later)
 for (k in 1:nrow(merged_p.values2)){
   if (is.nan(merged_p.values2$chisq_p.values[k])) {merged_p.values2$chisq_p.values[k] <- 2}
   if (is.na(merged_p.values2$runstest_p.values[k])) {merged_p.values2$runstest_p.values[k] <- 2}
 }
 
+#Copying the dataset again (this is all just for caution)
 merged_p.values3 <- merged_p.values2
 
+#Marking the incidence change and sequential patterns with either a "significant" (p.value < 0.05), a "-" (in the original output, p-value was NaN), or a "NS" (not significant, p.value > 0.05)
 for (kk in 1:nrow(merged_p.values3)){
-  if (merged_p.values3[kk, 2] == 2){merged_p.values3[kk, 4] <- "-"}
-  if (merged_p.values3[kk, 2] <= 0.05){merged_p.values3[kk, 4] <- "Significant"}
-  if (merged_p.values3[kk, 2] > 0.05 & merged_p.values3[kk, 2] < 2){merged_p.values3[kk, 4] <- "NS"}
-  if (merged_p.values3[kk, 3] == 2){merged_p.values3[kk, 5] <- "-"}
-  if (merged_p.values3[kk, 3] <= 0.05){merged_p.values3[kk, 5] <- "Significant"}
-  if (merged_p.values3[kk, 3] > 0.05 & merged_p.values3[kk, 3] < 2){merged_p.values3[kk, 5] <- "NS"}
+  if (merged_p.values3$chisq_p.values[kk] == 2){merged_p.values3$Incidence_change[kk] <- "-"}
+  if (merged_p.values3$chisq_p.values[kk] <= 0.05){merged_p.values3$Incidence_change[kk] <- "Significant"}
+  if (merged_p.values3$chisq_p.values[kk] > 0.05 & merged_p.values3$chisq_p.values[kk] < 2){merged_p.values3$Incidence_change[kk] <- "NS"}
+  if (merged_p.values3$runstest_p.values[kk] == 2){merged_p.values3$Sequential_patterns[kk] <- "-"}
+  if (merged_p.values3$runstest_p.values[kk] <= 0.05){merged_p.values3$Sequential_patterns[kk] <- "Significant"}
+  if (merged_p.values3$runstest_p.values[kk] > 0.05 & merged_p.values3$runstest_p.values[kk] < 2){merged_p.values3$Sequential_patterns[kk] <- "NS"}
 }
 
-
+#Copying the dataset again and adding a classification column (this is all just for caution)
 merged_p.values4 <- merged_p.values3 %>% mutate(Classification = NA)
 
+#Classifying the incidence based on the "incidence change" and "sequential patterns" columns
 for (jj in 1:nrow(merged_p.values4)){
-  if (merged_p.values4[jj, 4] == "-" & merged_p.values4[jj, 5] == "-" & merged_p.values4[jj,8] == 0){merged_p.values4[jj, 9] <- "No_change.always_absent"}
-  if (merged_p.values4[jj, 4] == "-" & merged_p.values4[jj, 5] == "-" & merged_p.values4[jj,8] == 1){merged_p.values4[jj, 9] <- "No_change.always_present"}
-  if (merged_p.values4[jj, 4] == "NS" & merged_p.values4[jj, 5] == "NS"){merged_p.values4[jj, 9] <- "Random"}
-  if (merged_p.values4[jj, 4] == "NS" & merged_p.values4[jj, 5] == "Significant"){merged_p.values4[jj, 9] <- "Recurrent"}
-  if (merged_p.values4[jj, 4] == "Significant" & merged_p.values4[jj, 5] == "-"){merged_p.values4[jj, 9] <- "Significant"}
-  if (merged_p.values4[jj, 4] == "NS" & merged_p.values4[jj, 5] == "-"){merged_p.values4[jj, 9] <- "Random"}
-}
+  if (merged_p.values4$Incidence_change[jj] == "-" & merged_p.values4$Sequential_patterns[jj] == "-" & merged_p.values4$Persistence[jj] == 0){merged_p.values4$Classification[jj] <- "No_change.always_absent"} #Chi.sq and runs.tests p.value are NaN; persistence is "0"
   
-
-merged_p.values5 <- merged_p.values4
-
-for (aa in 1:nrow(merged_p.values5)){
-  if (merged_p.values5[aa, 1] == "BARS_4A"){merged_p.values5[aa, 9] <- "Increasing"}
-  if (merged_p.values5[aa, 1] == "BGGN_N20B"){merged_p.values5[aa, 9] <- "Increasing"}
-  if (merged_p.values5[aa, 1] == "BGGN_N4D"){merged_p.values5[aa, 9] <- "Increasing"}
-  if (merged_p.values5[aa, 1] == "EAKI_N20B"){merged_p.values5[aa, 9] <- "Decreasing"}
-  if (merged_p.values5[aa, 1] == "EAKI_N4D"){merged_p.values5[aa, 9] <- "Decreasing"}
-  if (merged_p.values5[aa, 1] == "EATO_4A"){merged_p.values5[aa, 9] <- "Increasing"}
-  if (merged_p.values5[aa, 1] == "EATO_N4D"){merged_p.values5[aa, 9] <- "Increasing"}
-  if (merged_p.values5[aa, 1] == "INBU_20B"){merged_p.values5[aa, 9] <- "Increasing"}
-  if (merged_p.values5[aa, 1] == "INBU_N4D"){merged_p.values5[aa, 9] <- "Increasing"}
-  if (merged_p.values5[aa, 1] == "RNEP_1D"){merged_p.values5[aa, 9] <- "Decreasing"}
-  if (merged_p.values5[aa, 1] == "RSTO_N20B"){merged_p.values5[aa, 9] <- "Decreasing"}
-  if (merged_p.values5[aa, 1] == "RSTO_N4D"){merged_p.values5[aa, 9] <- "Decreasing"}
-  if (merged_p.values5[aa, 1] == "RWBL_4A"){merged_p.values5[aa, 9] <- "Decreasing"}
-  if (merged_p.values5[aa, 1] == "EATO_N20B"){merged_p.values5[aa, 9] <- "Increasing"}
-  if (merged_p.values5[aa, 1] == "EATO_20B"){merged_p.values5[aa, 9] <- "Increasing"}
-  if (merged_p.values5[aa, 1] == "FISP_4B"){merged_p.values5[aa, 9] <- "Decreasing"}
-  if (merged_p.values5[aa, 1] == "INBU_N20B"){merged_p.values5[aa, 9] <- "Increasing"}
+  if (merged_p.values4$Incidence_change[jj] == "-" & merged_p.values4$Sequential_patterns[jj] == "-" & merged_p.values4$Persistence[jj] == 1){merged_p.values4$Classification[jj] <- "No_change.always_present"} #Chi.sq and runs.tests p.value are NaN; persistence is "1"
+  
+  if (merged_p.values4$Incidence_change[jj] == "NS" & merged_p.values4$Sequential_patterns[jj] == "NS"){merged_p.values4$Classification[jj] <- "Random"} #Chi.sq and runs.test p.values are both > 0.05 
+  
+  if (merged_p.values4$Incidence_change[jj] == "NS" & merged_p.values4$Sequential_patterns[jj] == "Significant"){merged_p.values4$Classification[jj] <- "Recurrent"} #Chi.sq p.value is > 0.05; runs.test p.value is < 0.05
+  
+  if (merged_p.values4$Incidence_change[jj] == "Significant" & merged_p.values4$Sequential_patterns[jj] == "-"){merged_p.values4$Classification[jj] <- "Significant"} #Chi.sq p.value is < 0.05; runs.test p.value is NaN
+  
+  if (merged_p.values4$Incidence_change[jj] == "NS" & merged_p.values4$Sequential_patterns[jj] == "-"){merged_p.values4$Classification[jj] <- "Random"} #Chi.sq p.value is > 0.05; runs.test is NaN
+  
+  if (merged_p.values4$Incidence_change[jj] == "Significant" & merged_p.values4$Sequential_patterns[jj] == "Significant"){merged_p.values4$Classification[jj] <- "Significant"} #Chi.sq p.value is < 0.05; runs.test is < 0.05
+  
+  if (merged_p.values4$Incidence_change[jj] == "Significant" & merged_p.values4$Sequential_patterns[jj] == "NS"){merged_p.values4$Classification[jj] <- "Significant"} #Chi.sq p.value is < 0.05; runs.test p.value > 0.05
 }
 
+#Copying the dataset again (this is all just for caution)
+merged_p.values5 <- merged_p.values4  
+
+#Classifying the Chi.sq p.values that are < 0.05 into 'decreasing' and 'increasing' based on its early presence vs late presence
+for (xx in 1:nrow(merged_p.values5)){
+  if (merged_p.values5$Classification[xx] == "Significant" & ((merged_p.values5$Early_pres[xx]) > (merged_p.values5$Late_pres[xx]))){merged_p.values5$Classification[xx] <- "Decreasing"} #Chi.sq p.value is < 0.05; early persistence is more than late presence
+  if (merged_p.values5$Classification[xx] == "Significant" & ((merged_p.values5$Late_pres[xx]) > (merged_p.values5$Early_pres[xx]))){merged_p.values5$Classification[xx] <- "Increasing"} #Chi.sq p.value is < 0.05; early persistence is less than late presence
+}
+
+#Reverting the "2" for the p.values back into NAs
 for (ii in 1:nrow(merged_p.values5)){
-  if (merged_p.values5[ii, 2] == 2) {merged_p.values5$chisq_p.values[ii] <- NA}
-  if (merged_p.values5[ii, 3] == 2) {merged_p.values5$runstest_p.values[ii] <- NA}
+  if (merged_p.values5$chisq_p.values[ii] == 2) {merged_p.values5$chisq_p.values[ii] <- NA}
+  if (merged_p.values5$runstest_p.values[ii] == 2) {merged_p.values5$runstest_p.values[ii] <- NA}
 }
 
 
-check <- merged_p.values4 %>% subset(Classification == "Significant")
-is.na(merged_p.values5$Classification)
 
-birds_years_wide3 <- birds_years_wide %>% unite("Species_Watershed", c(AOU_code, Watershed_name), sep = "_")
-
-birds_check <- birds_long4 %>% subset(Species_Watershed %in% c("BARS_4A", "BGGN_N20B", "BGGN_N4D", "EAKI_N20B", "EAKI_N4D", "EATO_4A", "EATO_N4D", "INBU_20B", "INBU_N4D", "RNEP_1D", "RSTO_N20B", "RSTO_N4D", "RWBL_4A", "EATO_20B", "EATO_N20B", "FISP_4B", "INBU_N20B"))
-
-birds_check %>% ggplot(aes(x = Recyear, y = factor(Presence), fill = factor(Presence))) + 
-  geom_tile(width = .9, height = .9) + 
-  facet_wrap(.~Species_Watershed, switch = "y")
-  theme(text = element_text(size=10),
-        axis.text.x = element_text(angle=45, hjust=1, size =7),
-        axis.text.y = element_text(size=7),
-        strip.text.y.left = element_text(angle = 0)) +
-  labs(x = "Year", y = "Presence", fill = "Presence")
-
-grouped_idk <- merged_p.values5 %>% group_by(Classification, Fire_interval, Grazing) %>% summarize(total_count=n(),.groups = 'drop')
-
-grouped_idk %>% ggplot(aes(x = Classification, y = total_count, fill = Classification)) + geom_col() +
-  facet_wrap(Fire_interval~Grazing)
+# birds_check <- birds_long4 %>% subset(Species_Watershed %in% c("BARS_4A", "BGGN_N20B", "BGGN_N4D", "EAKI_N20B", "EAKI_N4D", "EATO_4A", "EATO_N4D", "INBU_20B", "INBU_N4D", "RNEP_1D", "RSTO_N20B", "RSTO_N4D", "RWBL_4A", "EATO_20B", "EATO_N20B", "FISP_4B", "INBU_N20B"))
+# 
+# birds_check %>% ggplot(aes(x = Recyear, y = factor(Presence), fill = factor(Presence))) + 
+#   geom_tile(width = .9, height = .9) + 
+#   facet_wrap(.~Species_Watershed, switch = "y") +
+#   theme(text = element_text(size=10),
+#         axis.text.x = element_text(angle=45, hjust=1, size =7),
+#         axis.text.y = element_text(size=7),
+#         strip.text.y.left = element_text(angle = 0)) +
+#   labs(x = "Year", y = "Presence", fill = "Presence")
+# 
+# grouped_idk <- merged_p.values5 %>% group_by(Classification, Fire_interval, Grazing) %>% summarize(total_count=n(),.groups = 'drop')
+# 
+# grouped_idk %>% ggplot(aes(x = Classification, y = total_count, fill = Classification)) + geom_col() +
+#   facet_wrap(Fire_interval~Grazing)
 
 ```
 
 
 
-
+##Exploration Plots
 ```{r}
 
+#Joining the merged p.value dataset that includes classification with a previous dataset to have all variables (year, fire-interval, grazing, etc.)
+birds_class <- left_join(birds_long_pers, merged_p.values5)
 
-birds_long5 <- left_join(birds_long4, merged_p.values5)
-birds_long6 <- birds_long5 %>% separate(Species_Watershed, c("Species", "Watershed"), "_")
-birds_long6 <- birds_long6 %>% mutate(Species = factor(Species), Watershed = factor(Watershed))
+#Reordering the classification variables for plotting
+birds_class$Classification <- factor(birds_class$Classification, 
+                               levels = c("No_change.always_absent", "No_change.always_present", 
+                                          "Random", "Increasing", "Decreasing"))
 
-birds_long6$Classification <- factor(birds_long6$Classification, 
-                               levels = c("No_change.always_absent", "No_change.always_present", "Random", "Increasing", "Decreasing"))
-
-birds_long6 %>% ggplot(aes(x = Recyear, y = factor(Presence), fill = factor(Presence))) + 
+birds_class %>% ggplot(aes(x = Recyear, y = factor(Presence), fill = factor(Presence))) + 
   geom_tile(width = .6, height = .6) + 
-  facet_grid(Species~Watershed, switch = "y") +
+  facet_grid(AOU_code~Watershed_name, switch = "y") +
   theme(text = element_text(size=5),
         axis.text.x = element_text(angle=45, hjust=1, size =5),
         axis.text.y = element_text(size=5),
@@ -479,41 +475,53 @@ birds_long6 %>% ggplot(aes(x = Recyear, y = factor(Presence), fill = factor(Pres
   scale_fill_manual(values = c("NA", "black")) +
   labs(x = "Year", y = "Presence", fill = "Presence")
 
-birds_long7 <- birds_long6
-birds_long7$Presence[birds_long7$Presence == 0] <- NA
-birds_long7 <- birds_long7 %>% mutate(Recyear = as.character(Recyear))
-birds_long7 <- birds_long7 %>% mutate(Recyear = as.numeric(Recyear))
+#Copying the dataset to manipulate it for graphing
+birds_graphing <- birds_class
 
-unique(birds_long7$Watershed)
-birds_long7$Watershed <- factor(birds_long7$Watershed,
+#Making all presence = "0" inti NA's so they don't show up in theb graph
+birds_graphing$Presence[birds_graphing$Presence == 0] <- NA
+
+#Making the years numeric instead of characters
+birds_graphing <- birds_graphing %>% mutate(Recyear = as.character(Recyear))
+birds_graphing <- birds_graphing %>% mutate(Recyear = as.numeric(Recyear))
+
+#Changing the order of the watersheds so that the grazing and non-grazing watersheds of the same burn interval are next to each other
+birds_graphing$Watershed_name <- factor(birds_graphing$Watershed_name,
                                 levels = c("1D", "N1B", "4A", 
                                            "4B", "N4B", "N4D", 
                                            "20B", "N20B"))
 
-birds_long7 %>% ggplot(aes(x = Recyear, y = Presence, fill = Classification)) + 
+birds_graphing$Classification <- factor(birds_graphing$Classification, 
+                               levels = c("No_change.always_absent", "No_change.always_present", "Random", "Increasing", "Decreasing"))
+
+#Graphing all species by classification and watershed
+birds_graphing %>% ggplot(aes(x = Recyear, y = Presence, fill = Classification)) + 
   geom_tile(width = .6, height = .6) + 
-  facet_grid(Species~Watershed, switch = "y") +
+  facet_grid(AOU_code~Watershed_name, switch = "y") +
   theme(text = element_text(size=7),
         axis.text.x = element_text(angle=45, hjust=1, size =7),
         axis.text.y = element_text(size=5),
         strip.text.y.left = element_text(angle = 0, size = 3),
         strip.text.x.top = element_text(size = 7)) +
-  scale_fill_manual(values = c("NA", "black", "dodgerblue2", "green3", "indianred3")) +
+  scale_fill_manual(values = c("NA", "black", "dodgerblue2", "darkolivegreen4", "firebrick3")) +
   labs(x = "Year", y = "Presence", fill = "Classification")
 
 
-birds_long7_sig <- birds_long7 %>% subset(Species %in% c("BARS", "BGGN", "EAKI", "EATO", "INBU", "RNEP", "RSTO", "RWBL", "FISP"))
+#Making a separate dataset with just the species that have a significant incidence classification (increasing or decreasing) in one of the watersheds
+birds_graphing_sig <- birds_graphing %>% subset(AOU_code %in% c("BARS", "BGGN", "EAKI", "EATO", "INBU", "RNEP", "RWBL", "FISP"))
 
-birds_long7_sig %>% ggplot(aes(x = Recyear, y = Presence, fill = Classification)) + 
+#Graphing the species that have a significant classifcation
+birds_graphing_sig %>% ggplot(aes(x = Recyear, y = Presence, fill = Classification)) + 
   geom_tile(width = .6, height = .6) + 
-  facet_grid(Watershed~Species, switch = "y", scales = "free_y", space = "free_y") +
+  facet_grid(AOU_code~Watershed_name, switch = "y", scales = "free_y", space = "free_y") +
   theme(text = element_text(size=10),
         axis.text.x = element_text(angle=45, hjust=1, size =7),
         axis.text.y = element_text(size=7),
         strip.text.y.left = element_text(angle = 0)) +
-  scale_fill_manual(values = c("NA", "black", "dodgerblue2", "green3", "indianred3")) +
+  scale_fill_manual(values = c("NA", "black", "dodgerblue2", "darkolivegreen4", "firebrick3")) +
   geom_vline(xintercept = 2000.5, linetype= 3) +
   labs(x = "Year", y = "Presence") 
+
 
 ```
 
