@@ -2,8 +2,9 @@
 title: "EAGER-Small_mammals"
 author: "Maya Parker-Smith"
 date: "2023-04-11"
-output: html_document
- smart: no
+output: 
+  html_document:
+    smart: no
     theme: flatly
     float: yes
     css: "style.css"    
@@ -13,6 +14,7 @@ mainfont: Arial
 mathfont: Arial
 fontsize: 12pt
 ---
+#  {.tabset .tabset-pills .tabset-fade}
 
 ```{r setup, include=FALSE}
 ## Clear environment 
@@ -35,7 +37,9 @@ library(randtests)
 library(reshape2)
 ```
 
-##Small-mammal trapping
+#Small-mammal trapping 
+
+###List of changes
 This section is dedicated to cleaning the small-mammal trapping dataset. Data was collected from 1981 to 2013. Watersheds that are supposedly included: 4B, 4F, N4D, N20B, 1D, 20B, N1B.
 
 Author: Donald Kaufman
@@ -61,37 +65,36 @@ In May 1992, gates were opened between phase I and phase II of the bison area. N
 All sampling periods from autumn 1981 through spring 1992 on these three treatment units occurred on traplines that had not been grazed by bison.
 
 
+
+##Reading in the data and basic set-up
 ```{r}
 #Seasonal summaries of small mammals on LTER traplines 
-smallmammals_raw <- read_csv("Datasets_EAGER/Small_mammals/knb-lter-knz.88.9_FourteenTraplines/CSM011.csv")
+smammals_raw <- read_csv("Datasets_EAGER/Small_mammals/knb-lter-knz.88.9_FourteenTraplines/CSM011.csv")
 
 #Table including the watershed info for all watersheds
 watershed_info <- read_excel("Datasets_EAGER/Other/Watershed Info.xlsx")
 
 
 #Making some the columns "factors" for later manipulation and analysis
-smallmammals <- smallmammals_raw %>% mutate(SEASON = factor(SEASON),
-                                          `WATERSHED/LINE` = factor(`WATERSHED/LINE`)) 
+smammals <- smammals_raw %>% mutate(SEASON = factor(SEASON),
+                                    `WATERSHED/LINE` = factor(`WATERSHED/LINE`)) 
 
 
 
 #Separating the watershed/line column into two separate columns
-smallmammals <- separate(smallmammals, 
-                                      `WATERSHED/LINE`, 
-                                      into = c("WATERSHED", "LINE"), 
-                                      sep = "-")
+smammals <- separate(smammals, `WATERSHED/LINE`, into = c("WATERSHED", "LINE"), sep = "-")
 
 
 #Renaming columns just so that they're not all capitalized
-smallmammals <- smallmammals %>% rename("Watershed_name" = "WATERSHED",
-                                        "Datacode" = "DATACODE",
-                                        "Rectype" = "RECTYPE",
-                                        "Recyear" = "RECYEAR",
-                                        "Season" = "SEASON",
-                                        "Line" = "LINE")
+smammals <- smammals %>% rename("Watershed_name" = "WATERSHED", 
+                                "Datacode" = "DATACODE",
+                                "Rectype" = "RECTYPE", 
+                                "Recyear" = "RECYEAR", 
+                                "Season" = "SEASON", 
+                                "Line" = "LINE")
 
 #Shortening the names of the watersheds
-smallmammals$Watershed_name <- dplyr::recode(smallmammals$Watershed_name,
+smammals$Watershed_name <- dplyr::recode(smammals$Watershed_name,
                                        "004F" = "4F",
                                        "004B" = "4B",
                                        "001D" = "1D",
@@ -103,12 +106,10 @@ smallmammals$Watershed_name <- dplyr::recode(smallmammals$Watershed_name,
 
 
 #Pivoting the table so that each species is a column and each species per year is a different row
-smallmammals_long <- pivot_longer(smallmammals, 
-                                          cols = 8:21, names_to = "Species", 
-                                          values_to = "Count")
+smammals_long <- pivot_longer(smammals, cols = 8:21, names_to = "Species", values_to = "Count")
 
 #Renaming the species into their full names
-smallmammals_long$Species <- dplyr::recode(smallmammals_long$Species,
+smammals_long$Species <- dplyr::recode(smammals_long$Species,
                                      "Pm" = "Peromyscus_maniculatus",
                                      "Rmeg" = "Reithrodontomys_megalotis",
                                      "Sh" = "Sigmodon_hispidus",
@@ -127,181 +128,147 @@ smallmammals_long$Species <- dplyr::recode(smallmammals_long$Species,
 
 
 #Joining the watershed_info dataset with the actual small mammal dataset
-smallmammals_long1 <- left_join(smallmammals_long, watershed_info, by = "Watershed_name")
+smammals_long <- left_join(smammals_long, watershed_info, by = "Watershed_name")
 
 
 #Making variables factors
-smallmammals_long1 <- smallmammals_long1 %>% mutate(Fire_interval = factor(Fire_interval),
-                                                    Burn_season = factor(Burn_season),
-                                                    Grazing = factor(Grazing),
-                                                    Watershed_name = factor(Watershed_name),
-                                                    Line = factor(Line))
+smammals_long <- smammals_long %>% mutate(Fire_interval = factor(Fire_interval),
+                    Burn_season = factor(Burn_season),
+                    Grazing = factor(Grazing),
+                    Watershed_name = factor(Watershed_name),
+                    Line = factor(Line))
 
-
-#Changing the order of the fire_interval and grazing treatments for graphing reasons later on
-smallmammals_long1$Fire_interval <- factor(smallmammals_long1$Fire_interval, 
-                                           levels = c("1_year", "4_years", "20_years"))
-
-smallmammals_long1$Grazing <- factor(smallmammals_long1$Grazing,
-                                     levels = c("Ungrazed", "Bison"))
 
 #Separate the dataset from 1992 onwards. 
-smallmammals_long1 <- smallmammals_long1 %>% subset(.$Recyear >= 1992)
+smammals_long <- smammals_long %>% subset(.$Recyear >= 1992)
 
 
-#Since likely won't differentiate the data based on the traplines, I am summing the data based on just watershed
-smallmammals_long1 <- smallmammals_long1 %>% group_by(Recyear, Watershed_name, 
-                                                      Species, Fire_interval, Grazing) %>% 
-  reframe(Count = sum(Count))
+#Since I likely won't differentiate the data based on the trap lines, I am summing the data based on just watershed
+smammals_long <- smammals_long %>% group_by(Recyear, Watershed_name, 
+                                            Species, Fire_interval, Grazing) %>% reframe(Count = sum(Count))
 
 #Removing the 4F watershed to make sampling between all fire/grazing treatments equal (the 4 year fire interval with no grazing combination of disturbances has two watersheds represented, while all other combinations have just one).
 ####smallmammals_long1 <- smallmammals_long1 %>% subset(Watershed_name != "4F")
 
+
+
 ```
 
 
-
+##Watershed Dissimilarity matrix
 ```{r}
 #Making dissimilarity matrices for the watersheds - abundance
 
-#Selecting only necessary columns, 
-smallmammals2 <- smallmammals_long1 %>% 
+#Selecting only necessary columns
+smammals_group_diss <- smammals_long %>% 
   group_by(Watershed_name, Fire_interval, Grazing, Species) %>% 
   reframe(Total = sum(Count))
 
 #Pivoting the the dataset wider 
-smallmammals2_wide <- smallmammals2 %>% 
+smammals_diss <- smammals_group_diss %>% 
   pivot_wider(names_from = "Species", values_from = "Total", 
               values_fn = function(x) paste(sum(x)))
 
-
-smallmammals2_wide <- smallmammals2 %>% 
-  pivot_wider(names_from = "Species", values_from = "Total", 
-              values_fn = function(x) paste(sum(x)))
 
 #Making an environment dataset with the classifying variables
-smallmammals2_wide_env <- smallmammals2_wide[, c(1:3)]
+smammals_diss_env <- smammals_diss[, c(1:3)]
 
 #Removing the classifying variables for the dissimilarity analysis
-smallmammals2_wide1 <- smallmammals2_wide[, -c(1:3)]
+smammals_diss <- smammals_diss[, -c(1:3)]
 
 
 
 #Making the values numeric instead of characters
-smallmammals2_wide1 <- smallmammals2_wide1 %>% mutate_if(is.character, as.numeric)
+smammals_diss <- smammals_diss %>% mutate_if(is.character, as.numeric)
 
 #Standardizing for the total abundance by watershed
-decostand_tot_smallmammals <- decostand(smallmammals2_wide1, method = "total")
+decostand_tot_smammals <- decostand(smammals_diss, method = "total")
 
 #Creating the dissimilarity matrix
-diss_matrix <- vegdist(decostand_tot_smallmammals, method = "bray")
+diss_matrix <- vegdist(decostand_tot_smammals, method = "bray")
 
 ```
 
-
+##Changing to presence/absence
 ```{r}
 
-#Selecting only necessary columns and creating a new dataset
-smallmammals_short <- smallmammals_long1 
-
-
 #Pivoting the the dataset wider, so that each species is its own column
-smallmammals_wide <- smallmammals_short %>% 
+smammals_wide <- smammals_long %>% 
   pivot_wider(names_from = "Species", values_from = "Count", 
               values_fn = function(x) paste(sum(x)))
 
 #Making an environment table to add back onto the presence/absence data later
-smallmammals_env <- smallmammals_wide[, 1:4]
+smammals_env <- smammals_wide[, 1:4]
 
 #Standardizing by presence/absence
-decostand_pa_smallmammals <- decostand(smallmammals_wide[, -c(1:4)], "pa", na.rm = TRUE )
+decostand_pa_smammals <- decostand(smammals_wide[, -c(1:4)], "pa", na.rm = TRUE )
 
 
 #Checking the stress of this presence/absence data
-dimcheckMDS(decostand_pa_smallmammals, distance = "jaccard", k=5)
+dimcheckMDS(decostand_pa_smammals, distance = "jaccard", k=5)
 
 
 #Adding the presence/absence dataset back with the enviornment dataset
-smallmammals_wide2 <- decostand_pa_smallmammals %>% add_column(smallmammals_env, .before = "Blarina_hylophaga")
+smammals_wide <- decostand_pa_smammals %>% add_column(smammals_env, .before = "Blarina_hylophaga")
 
 #Pivoting the presence/absence back to a longer format
-smallmammals_long2 <- smallmammals_wide2 %>% pivot_longer(cols = 5:18, 
-                                                          names_to = "Species", 
-                                                          values_to = "Presence")
+smammals_long_pa <- smammals_wide %>% pivot_longer(cols = 5:18, 
+                                                   names_to = "Species", 
+                                                   values_to = "Presence")
 
 #Making sure the species are coded as factors
-smallmammals_long2 <- smallmammals_long2 %>% mutate(Species = factor(Species))
+smammals_long_pa <- smammals_long_pa %>% mutate(Species = factor(Species))
 
 ```
 
 
-
+##Calculating persistence
 ```{r}
 
 #Creating another dataset by species and years to calculate persistence
-smallmammals_years_wide <- smallmammals_long2 %>% 
+smammals_years_wide <- smammals_long_pa %>% 
   pivot_wider(names_from = "Recyear", values_from = "Presence")
 
 #Making NA's zeroes... MIGHT HAVE TO UNDO THIS
-smallmammals_years_wide2 <-smallmammals_years_wide %>% 
+smammals_years_wide <- smammals_years_wide %>% 
   mutate_all(~replace(., is.na(.), 0))
 
-#Summing the persistence of all years into a new column
-smallmammals_years_wide2 <- smallmammals_years_wide2 %>% 
-  mutate(Total_Persistence = rowSums(smallmammals_years_wide2[, 5:26]))
+#Summing the amount of years each species was present at each watershed 
+smammals_years_wide <- smammals_years_wide %>% 
+  mutate(Total_Presence = rowSums(smammals_years_wide[, 5:26]))
 
 
-smallmammals_years_wide2 <- smallmammals_years_wide2 %>% 
-  mutate(Persistence = (.$Total_Persistence/22))
+#Dividing the number each species was present by the total number of years in the dataset
+smammals_years_wide <- smammals_years_wide %>% 
+  mutate(Persistence = (.$Total_Presence/22))
 
-#Just getting a table to show the species persistence by fire-interval, grazing, and years total
-Persistence_table <- smallmammals_years_wide2 %>% 
-  group_by(Fire_interval, Grazing, Species) %>% 
-  dplyr::reframe(Persistence = sum(Persistence))
+#Summing the number of times each species occurs in the early half of the dataset and later half of the dataset for the incidence classification later on
+smammals_years_wide <- smammals_years_wide %>% 
+  mutate(Early_pres = rowSums(smammals_years_wide[,c(5:15)], na.rm = TRUE)) %>%
+  mutate(Late_pres = rowSums(smammals_years_wide[,c(16:26)], na.rm = TRUE))
+
+
+#Pivoting the dataset back to long format for further analysis; this dataset included the persistence calculations so that I can classify always_absent, always_present, increasing, and decreasing incidence later on
+smammals_long_pers <- pivot_longer(smammals_years_wide, cols = 5:26,
+                     names_to = "Recyear",
+                     values_to = "Presence")
 
 
 
 #Plotting persistence in a simple bar graph
-smallmammals_years_wide2 %>% ggplot(aes(x = Species, y = Persistence, fill = Species)) + 
+smammals_years_wide %>% ggplot(aes(x = Species, y = Persistence, fill = Species)) + 
   geom_col() +  
-  facet_grid(Grazing~Fire_interval) +
+  facet_grid(Watershed_name~.) +
   theme(text = element_text(size=10))+
   theme(axis.text.x = element_text(angle=45, hjust=1, size = 10)) 
 
 
-```
-
-
-
-```{r}
-
-smallmammals_long2 %>% ggplot(aes(x = Recyear, y = factor(Presence), fill = factor(Presence))) + 
-  geom_tile(width = .9, height = .9) + 
-  facet_grid(Species~Grazing~Fire_interval, switch = "y") +
-  theme(text = element_text(size=10),
-        axis.text.x = element_text(angle=45, hjust=1, size =7),
-        axis.text.y = element_text(size=7),
-        strip.text.y.left = element_text(angle = 0)) +
-  scale_fill_manual(values = c("white", "black")) 
-
-
-smallmammals_long5 %>% ggplot(aes(x = Recyear, y = factor(Presence), fill = factor(Presence))) + 
-  geom_tile(width = .9, height = .9) + 
-  facet_grid(Species~Grazing~Fire_interval, switch = "y") +
-  theme(text = element_text(size=10),
-        axis.text.x = element_text(angle=45, hjust=1, size =7),
-        axis.text.y = element_text(size=7),
-        strip.text.y.left = element_text(angle = 0)) +
-  scale_fill_manual(values = c("NA", "black")) +
-  geom_vline(xintercept = 2002.5) +
-  labs(x = "Year", y = "Presence", fill = "Presence")
-
-smallmammals_long5 <- smallmammals_long2
-smallmammals_long5 <- smallmammals_long5 %>% mutate(Recyear = as.numeric(Recyear))
 
 
 ```
 
+
+##Chi-square contingency tables
 ```{r}
 
 #Alright this section is for trying the contingency table and chi-square and Wald-Wolfowitz runs test. But I dunno what I'm doing so I am just hoping for the best now. 
@@ -309,195 +276,206 @@ smallmammals_long5 <- smallmammals_long5 %>% mutate(Recyear = as.numeric(Recyear
 #Species incidence classification is determined by combined results from a contingency table with a chi-squared test and a runs test (Figs 3-4; ,8). Species present in all years are assigned “no change” and their sequential incidences are not tested. The following steps will be completed on each sample-based rarefaction run of each assemblage, and values will be compared to ensure that classification is robust to sampling error.
 #Looking at the amount of time data was collected for each watershed, in each year, and in each month.
 
-#Okay so what am I exactly trying to figure out... So I want to see how species occurrence changes throughout time. So I wonder if I use the persistence numbers to tie into incidence. Hmmmmm... a chi-square test tests whether two variables are independent of each other. So what does that mean for what I am doing? Looking at the project proposal, it looks like I am going through each individal species (so not comparing species yet), then 
 
 
 #Okay so I think I need to make a contingency table by splitting the time series into early/late and presence/absence 
 
+
 #Making a new dataset just in case
-smallmammals_cont <- smallmammals_long2 
+smammals_cont <- smammals_long_pers
 
 #Adding empty columns onto new dataset
-smallmammals_cont <- smallmammals_cont %>% mutate(Presence_cont = NA,
-                                                  Early_late = NA,
-                                                  Presence = factor(Presence))
-
-
-smallmammals_cont <- smallmammals_cont %>% group_by(Species) %>% mutate(id=cur_group_id()) 
-
+smammals_cont <- smammals_cont %>% mutate(Presence_cont = NA,
+                                          Early_late = NA,
+                                          Recyear = as.numeric(Recyear))
 
 #Filling presence contingency column based on presence/absence
- for(j in 1:nrow(smallmammals_cont)){
-   if (smallmammals_cont[j,6] == "1"){smallmammals_cont[j,7] <- "Present"}
-   if (smallmammals_cont[j,6] == "0"){smallmammals_cont[j,7] <- "Absent"}
- } 
+ # for(j in 1:nrow(smammals_cont)){
+ #   if (smammals_cont[j,10] == 1){smammals_cont[j,11] <- "Present"}
+ #   if (smammals_cont[j,10] == 0){smammals_cont[j,11] <- "Absent"}
+ # } 
 
 #Filling early/late contingency based on year
-for(i in 1:nrow(smallmammals_cont)){
-   if (smallmammals_cont[i,1] < 2003){smallmammals_cont[i,8] <- "Early"}
-   if (smallmammals_cont[i,1] >= 2003){smallmammals_cont[i,8] <- "Late"}
+for(i in 1:nrow(smammals_cont)){
+   if (smammals_cont[i,9] < 2003){smammals_cont[i,12] <- "Early"}
+   if (smammals_cont[i,9] >= 2003){smammals_cont[i,12] <- "Late"}
 }
 
-smallmammals_cont <- smallmammals_cont %>% mutate(Presence_cont = factor(Presence_cont),
-                                                  Early_late = factor(Early_late))
-# list <- list()
-#   
-# for(i in 1:length(unique(smallmammals_cont$id))){
-#   filtered <- subset(smallmammals_cont,id==i) 
-#   list[[i]] <- filtered
-#   if (smallmammals_cont[i,2] == "1D"){table(smallmammals_cont$Presence_cont, smallmammals_cont$Early_late)}
-#   
-# }
-# list[[1]]
-# 
-# 
-# for (i in 1:length(smallmammals_cont)){
-#   smallmammals_cont %>% 
-#   group_by(across((id)))%>%
-#     group_by(across(Watershed_name)) %>%
-#     dplyr::count(.$Presence_cont, .$Early_late)
-# }
-# 
-view(smallmammals_cont)
+#Converting the new presence/absence and early/late columns into factors
+smammals_cont <- smammals_cont %>% mutate(Early_late = factor(Early_late))
 
-summary_tbl2 <- smallmammals_cont %>%
+
+#Creating a summary table to convert to matrices for chi.sq analysis
+summary_tbl <- smammals_cont %>%
   group_by(Species, Watershed_name)%>%
-    dplyr::count(Presence_cont, Early_late)
+    dplyr::count(Presence, Early_late)
 
-summary_tbl2 <- summary_tbl2 %>% unite("Species_Watershed", Species:Watershed_name, sep = "_") 
-summary_tbl2 <- summary_tbl2 %>% mutate(Species_Watershed = factor(Species_Watershed))
+#Uniting the species and watershed columns so there is a unique identifier column
+summary_tbl <- summary_tbl %>% unite("Species_watershed", Species:Watershed_name, sep = "_") 
+#Converting the new Species_watershed column into a factor
+summary_tbl <- summary_tbl %>% mutate(Species_watershed = factor(Species_watershed))
 
-contabs <- xtabs(n ~ Presence_cont + Early_late + Species_Watershed, summary_tbl2)
+
+#Creating the contingency matrices 
+contabs <- xtabs(n ~ Presence + Early_late + Species_watershed, summary_tbl)
+#Applying chi-sq tests to each individual matrix (MARGIN = 3 means it is looking at rows and columns)
 chisqtests <- apply(contabs, 3, chisq.test)
+#Extracting all the p.values from the chi.sq tests into a table
 chisq_p.values <- tibble(names(chisqtests), do.call(rbind,lapply(chisqtests,function(v){v$p.value})))
 
-
+#Renaming the variables from the chi-square p.value table
 chisq_p.values <- chisq_p.values %>% rename("chisq_p.values" = "do.call(...)",
                                             "Species_watershed" = "names(chisqtests)")
 
+#Just doing a test
+test <- matrix(c(7,4,  9,2), nrow = 2, ncol = 2, byrow = TRUE,
+       dimnames = list(c("absent", "present"),
+                       c("early", "late")))
+
+chisq.test(test)
 
 ```
 
-
+##Runs-test 
 ```{r}
-#Okay now I am going to try and figure out the slopes for the species so I can determine if things are increasing or decreasing?
 
-
-smallmammals_long4 <- smallmammals_long2 %>% 
+#Selecting the variables I need for the runs.test and again combining the species and watershed to create unique identifiers
+smammals_long_runs <- smammals_long_pers %>% 
   group_by(Recyear, Species, Watershed_name) %>% reframe(Presence = Presence) %>%
-  unite("Species_Watershed", Species:Watershed_name, sep = "_")
+  unite("Species_watershed", Species:Watershed_name, sep = "_")
 
-grouped4 <- smallmammals_long4 %>% group_by(Recyear, Species_Watershed) %>% reframe(Presence = Presence)
-
-
-
-presence.tabs <- xtabs(Presence ~ Recyear + Species_Watershed, smallmammals_long4)
+#Creating the runs.test matrices 
+presence.tabs <- xtabs(Presence ~ Recyear + Species_watershed, smammals_long_runs)
+#Applying runs.tests to the matrices (MARGIN = 2 means that they are looking at the columns)
 runstests <- apply(presence.tabs, 2, runs.test)
+#Extracting the p.values from the runs.test into a table
 runstest_p.values <- tibble(names(runstests), do.call(rbind,lapply(runstests,function(v){v$p.value})))
+#Renaming the variables from the runs.test p.value table
 runstest_p.values <- runstest_p.values %>% rename("runstest_p.values" = "do.call(...)",
                                                   "Species_watershed" = "names(runstests)")
 
+```
 
-merged_p.values <- merge(chisq_p.values,runstest_p.values, by = "Species_watershed", all = TRUE)
+##Incidence classification
+```{r}
 
-chisq_p.values <- chisq_p.values %>% mutate(Incidence_change = NA)
+#Merging the p.value outputs from the chi.sq and runs.tests 
+merged_p.values <- merge(chisq_p.values, runstest_p.values, by = "Species_watershed", all = TRUE)
 
 
-
-
+#Separating the combined Species_watershed again so that I can join these p.values to previous datasets
 merged_p.values1 <- merged_p.values %>% separate(Species_watershed, into = c("Species", "spp", "Watershed_name")) %>% 
   unite("Species", Species, spp)
 
-merged_p.values1 <- left_join(merged_p.values1, watershed_info, by = "Watershed_name")
+#Joining the merged p.values with a previous dataset to get all the variables
+merged_p.values1 <- left_join(merged_p.values1, (dplyr::select(smammals_years_wide, c(Watershed_name, Fire_interval, Grazing, Species, Persistence, Early_pres, Late_pres))), by = c("Watershed_name", "Species"))
 
 
-
-
+#Copying the merged p.value dataset
 merged_p.values2 <- merged_p.values1
+#Adding new empty columns, one to indicate incidence change (chi.sq significance) and one to indicate sequential patterns(runs.test significance)
 merged_p.values2 <- merged_p.values2 %>% mutate(Incidence_change = NA,
                                           Sequential_patterns = NA)
 
+#Avoiding the NA/NaN error by changing all NA's/NaN to "2" (will change back later)
 for (k in 1:nrow(merged_p.values2)){
   if (is.nan(merged_p.values2$chisq_p.values[k])) {merged_p.values2$chisq_p.values[k] <- 2}
   if (is.nan(merged_p.values2$runstest_p.values[k])) {merged_p.values2$runstest_p.values[k] <- 2}
 }
 
+#Copying the dataset again (this is all just for caution)
 merged_p.values3 <- merged_p.values2
 
+#Marking the incidence change and sequential patterns with either a "significant" (p.value < 0.05), a "-" (in the original output, p-value was NaN), or a "NS" (not significant, p.value > 0.05)
 for (kk in 1:nrow(merged_p.values3)){
-  if (merged_p.values3[kk, 3] == 2){merged_p.values3[kk, 9] <- "-"}
-  if (merged_p.values3[kk, 3] <= 0.05){merged_p.values3[kk, 9] <- "Significant"}
-  if (merged_p.values3[kk, 3] > 0.05 & merged_p.values3[kk, 3] < 2){merged_p.values3[kk, 9] <- "NS"}
-  if (merged_p.values3[kk, 4] == 2){merged_p.values3[kk, 10] <- "-"}
-  if (merged_p.values3[kk, 4] <= 0.05){merged_p.values3[kk, 10] <- "Significant"}
-  if (merged_p.values3[kk, 4] > 0.05 & merged_p.values3[kk, 4] < 2){merged_p.values3[kk, 10] <- "NS"}
+  if (merged_p.values3$chisq_p.values[kk] == 2){merged_p.values3$Incidence_change[kk] <- "-"}
+  if (merged_p.values3$chisq_p.values[kk] <= 0.05){merged_p.values3$Incidence_change[kk] <- "Significant"}
+  if (merged_p.values3$chisq_p.values[kk] > 0.05 & merged_p.values3$chisq_p.values[kk] < 2){merged_p.values3$Incidence_change[kk] <- "NS"}
+  if (merged_p.values3$runstest_p.values[kk] == 2){merged_p.values3$Sequential_patterns[kk] <- "-"}
+  if (merged_p.values3$runstest_p.values[kk] <= 0.05){merged_p.values3$Sequential_patterns[kk] <- "Significant"}
+  if (merged_p.values3$runstest_p.values[kk] > 0.05 & merged_p.values3$runstest_p.values[kk] < 2){merged_p.values3$Sequential_patterns[kk] <- "NS"}
 }
 
+#Copying the dataset again and adding a classification column (this is all just for caution)
+merged_p.values4 <- merged_p.values3 %>% mutate(Classification = NA)
 
-merged_p.values3 <- merged_p.values3 %>% mutate(Classification = NA)
-
-for (jj in 1:nrow(merged_p.values3)){
-  if (merged_p.values3[jj, 9] == "-" & merged_p.values3[jj, 10] == "-"){merged_p.values3[jj, 11] <- "No_change"}
-  if (merged_p.values3[jj, 9] == "NS" & merged_p.values3[jj, 10] == "NS"){merged_p.values3[jj, 11] <- "Random"}
-  if (merged_p.values3[jj, 9] == "NS" & merged_p.values3[jj, 10] == "Significant"){merged_p.values3[jj, 11] <- "Recurrent"}
-  if (merged_p.values3[jj, 9] == "Significant" & merged_p.values3[jj, 10] == "-"){merged_p.values3[jj, 11] <- "Increasing"}
-  if (merged_p.values3[jj, 9] == "NS" & merged_p.values3[jj, 10] == "-"){merged_p.values3[jj, 11] <- "Random"}
-}
+#Classifying the incidence based on the "incidence change" and "sequential patterns" columns
+for (jj in 1:nrow(merged_p.values4)){
+  if (merged_p.values4$Incidence_change[jj] == "-" & merged_p.values4$Sequential_patterns[jj] == "-" & merged_p.values4$Persistence[jj] == 0){merged_p.values4$Classification[jj] <- "No_change.always_absent"} #Chi.sq and runs.tests p.value are NaN; persistence is "0"
   
-for (ii in 1:nrow(merged_p.values3)){
-  if (merged_p.values3[ii, 3] == 2) {merged_p.values3$chisq_p.values[ii] <- NA}
-  if (merged_p.values3[ii, 4] == 2) {merged_p.values3$runstest_p.values[ii] <- NA}
-}
-
-sum(merged_p.values3$Classification == "No_change") / 84
-sum(merged_p.values3$Classification == "Random") / 84
-sum(merged_p.values3$Classification == "Recurrent") / 84
-sum(merged_p.values3$Classification == "Increasing") / 84
-
-
-merged_p.values_grouped <- merged_p.values3 %>% group_by(Fire_interval, Grazing, Classification) %>%
-  dplyr::reframe(Class_count = n())
-
-merged_p.values_grouped <- merged_p.values_grouped %>% mutate(Proportion_count = Class_count/(sum(Class_count)))
-
-merged_p.values_grouped %>% 
-  ggplot(aes(x = Classification, y = , group = Classification, fill = Classification)) + 
-  geom_tile(width = .9, height = .9) + 
-  facet_grid(Grazing~Fire_interval) +
-  theme(text = element_text(size=10),
-        axis.text.x = element_text(angle=45, hjust=1, size =7),
-        axis.text.y = element_text(size=7),
-        strip.text.y.left = element_text(angle = 0)) 
-
-sum(merged_p.values_grouped$Class_count)
-
-
-smallmammals_wclassification <- left_join(smallmammals_long2, merged_p.values3, 
-                                          by = c("Species", "Watershed_name", "Fire_interval", "Grazing"))
-
-
-smallmammals_wclassification1 <- smallmammals_wclassification
-
-
-for (p in 1:nrow(smallmammals_wclassification1)){
-  if (smallmammals_wclassification1[p, 6] == 0) {smallmammals_wclassification1$Presence[[p]] <- NA}
-}
+  if (merged_p.values4$Incidence_change[jj] == "-" & merged_p.values4$Sequential_patterns[jj] == "-" & merged_p.values4$Persistence[jj] == 1){merged_p.values4$Classification[jj] <- "No_change.always_present"} #Chi.sq and runs.tests p.value are NaN; persistence is "1"
   
+  if (merged_p.values4$Incidence_change[jj] == "NS" & merged_p.values4$Sequential_patterns[jj] == "NS"){merged_p.values4$Classification[jj] <- "Random"} #Chi.sq and runs.test p.values are both > 0.05 
+  
+  if (merged_p.values4$Incidence_change[jj] == "NS" & merged_p.values4$Sequential_patterns[jj] == "Significant"){merged_p.values4$Classification[jj] <- "Recurrent"} #Chi.sq p.value is > 0.05; runs.test p.value is < 0.05
+  
+  if (merged_p.values4$Incidence_change[jj] == "Significant" & merged_p.values4$Sequential_patterns[jj] == "-"){merged_p.values4$Classification[jj] <- "Significant"} #Chi.sq p.value is < 0.05; runs.test p.value is NaN
+  
+  if (merged_p.values4$Incidence_change[jj] == "NS" & merged_p.values4$Sequential_patterns[jj] == "-"){merged_p.values4$Classification[jj] <- "Random"} #Chi.sq p.value is > 0.05; runs.test is NaN
+  
+  if (merged_p.values4$Incidence_change[jj] == "Significant" & merged_p.values4$Sequential_patterns[jj] == "Significant"){merged_p.values4$Classification[jj] <- "Significant"} #Chi.sq p.value is < 0.05; runs.test is < 0.05
+  
+  if (merged_p.values4$Incidence_change[jj] == "Significant" & merged_p.values4$Sequential_patterns[jj] == "NS"){merged_p.values4$Classification[jj] <- "Significant"} #Chi.sq p.value is < 0.05; runs.test p.value > 0.05
+}
 
-smallmammals_wclassification1$Fire_interval <- factor(smallmammals_wclassification1$Fire_interval, 
+#Copying the dataset again (this is all just for caution)
+merged_p.values5 <- merged_p.values4  
+
+#Classifying the Chi.sq p.values that are < 0.05 into 'decreasing' and 'increasing' based on its early presence vs late presence
+for (xx in 1:nrow(merged_p.values5)){
+  if (merged_p.values5$Classification[xx] == "Significant" & ((merged_p.values5$Early_pres[xx]) > (merged_p.values5$Late_pres[xx]))){merged_p.values5$Classification[xx] <- "Decreasing"} #Chi.sq p.value is < 0.05; early persistence is more than late presence
+  if (merged_p.values5$Classification[xx] == "Significant" & ((merged_p.values5$Late_pres[xx]) > (merged_p.values5$Early_pres[xx]))){merged_p.values5$Classification[xx] <- "Increasing"} #Chi.sq p.value is < 0.05; early persistence is less than late presence
+}
+
+#Reverting the "2" for the p.values back into NAs
+for (ii in 1:nrow(merged_p.values5)){
+  if (merged_p.values5$chisq_p.values[ii] == 2) {merged_p.values5$chisq_p.values[ii] <- NA}
+  if (merged_p.values5$runstest_p.values[ii] == 2) {merged_p.values5$runstest_p.values[ii] <- NA}
+}
+
+```
+
+
+##Exploration Plots
+```{r}
+
+#Joining the merged p.value dataset that includes classification with a previous dataset to have all variables (year, fire-interval, grazing, etc.)
+smammals_class <- left_join(smammals_long_pers, merged_p.values5)
+
+#Reordering the classification variables for plotting
+smammals_class$Classification <- factor(smammals_class$Classification, 
+                               levels = c("No_change.always_absent", "No_change.always_present", 
+                                          "Random", "Recurrent", "Increasing"))
+
+#Making the zeroes in the presence column into NAs for plotting (that way they don't show up on the graph)
+smammals_class$Presence[smammals_class$Presence == 0] <- NA
+#Making sure the Recyear is coded as numeric 
+smammals_class <- smammals_class %>% mutate(Recyear = as.numeric(Recyear))
+#Reordering the fire intervals for plotting
+smammals_class$Fire_interval <- factor(smammals_class$Fire_interval, 
                                            levels = c("1_year", "4_years", "20_years"))
-
-smallmammals_wclassification1$Grazing <- factor(smallmammals_wclassification1$Grazing,
+#Reordering the grazing for plotting
+smammals_class$Grazing <- factor(smammals_class$Grazing,
                                      levels = c("Ungrazed", "Bison"))
-  
+#Reordering the watersheds for plotting
+smammals_class$Watershed_name <- factor(smammals_class$Watershed_name,
+                                        levels = c("1D", "N1B", "4B", "4F", "N4D", "20B", "N20B"))
 
-smallmammals_wclassification2 <- smallmammals_wclassification1
+#Creating a graph to look at the classification by species and presence/absence by year
+smammals_class %>% ggplot(aes(x = Recyear, y = Presence, fill = Classification)) + 
+  geom_tile(width = .6, height = .6) + 
+  facet_grid(Species~Watershed_name, switch = "y") +
+  theme(text = element_text(size=7),
+        axis.text.x = element_text(angle=45, hjust=1, size =7),
+        axis.text.y = element_text(size=5),
+        strip.text.y.left = element_text(angle = 0, size = 3),
+        strip.text.x.top = element_text(size = 7)) +
+  geom_vline(xintercept = 2002.5, linetype= 3) +
+  labs(x = "Year", y = "Presence") +
+  scale_fill_manual(values = c("NA", "black", "dodgerblue2", "darkorchid", "darkolivegreen4", "firebrick3"))
 
-smallmammals_wclassification2 <- smallmammals_wclassification2 %>% mutate(Presence = factor(Presence))  
-smallmammals_wclassification2 <- smallmammals_wclassification2 %>% mutate(Recyear = as.character(Recyear))
-smallmammals_wclassification2 <- smallmammals_wclassification2 %>% mutate(Recyear = as.numeric(Recyear))
   
-smallmammals_wclassification2 %>% ggplot(aes(x = Recyear, y = Presence, fill = Classification)) + 
+smammals_class %>% ggplot(aes(x = Recyear, y = Presence, fill = Classification)) + 
   geom_tile(width = .9, height = .9) + 
   facet_grid(Species~Grazing~Fire_interval, switch = "y") +
   theme(text = element_text(size=10),
@@ -508,178 +486,8 @@ smallmammals_wclassification2 %>% ggplot(aes(x = Recyear, y = Presence, fill = C
   labs(x = "Year", y = "Presence", title = "Small mammals: incidence classification by species") 
 
 
-# lm(Count ~ cbind(Recyear, Species_Watershed), abund.tabs)
-# 
-# 
-# lm(Count ~ Recyear, blahyl_1D) %>% summary()
-# pkr::Slope(blahyl_1D$Recyear, blahyl_1D$Count)
-# 
-# 
-# apply(abund.tabs, 1, function(x) lm(x[2] ~ x[1]))
-# apply(grouped4, 1, function(x) lm(x[3]~x[1])$coefficients)
-
 
 ```
 
 
 
-
-
-
-
-
-# smallmammals_cont_1D <- smallmammals_cont %>% filter(.$Watershed_name == "1D")
-# smallmammals_cont_4B <- smallmammals_cont %>% filter(.$Watershed_name == "4B")
-# smallmammals_cont_20B <- smallmammals_cont %>% filter(.$Watershed_name == "20B")
-# smallmammals_cont_N1B <- smallmammals_cont %>% filter(.$Watershed_name == "N1B")
-# smallmammals_cont_N4D <- smallmammals_cont %>% filter(.$Watershed_name == "N4D")
-# smallmammals_cont_N20B <- smallmammals_cont %>% filter(.$Watershed_name == "N20B")
-# 
-# smallmammals_cont %>% cbind(.$Presence_cont, .$Early_late)
-# 
-# chahis_1D <- smallmammals_cont_1D %>% 
-#   filter(Species == "Chaetodipus_hispidus") %>% 
-#   dplyr::add_count(.$Presence_cont,
-#                .$Early_late)
-# 
-# chahis_4B <- smallmammals_cont_4B %>% 
-#   filter(Species == "Chaetodipus_hispidus") %>%
-#   dplyr::add_count(.$Presence_cont,
-#                    .$Early_late)
-# 
-# smallmammals_cont_1D_blahyl <- smallmammals_cont %>% filter(.$Watershed_name == "1D" & .$Species == "Blarina_hylophaga")
-# smallmammals_cont_1D_chahis <- smallmammals_cont %>% filter(.$Watershed_name == "1D" & .$Species == "Chaetodipus_hispidus")
-# smallmammals_cont_4B_chahis <- smallmammals_cont %>% filter(.$Watershed_name == "4B" & .$Species == "Chaetodipus_hispidus")
-# smallmammals_cont_20B_chahis <- smallmammals_cont %>% filter(.$Watershed_name == "20B" & .$Species == "Chaetodipus_hispidus")
-# smallmammals_cont_N1B_chahis <- smallmammals_cont %>% filter(.$Watershed_name == "N1B" & .$Species == "Chaetodipus_hispidus")
-# smallmammals_cont_N4D_chahis <- smallmammals_cont %>% filter(.$Watershed_name == "N4D" & .$Species == "Chaetodipus_hispidus")
-# smallmammals_cont_N20B_chahis <- smallmammals_cont %>% filter(.$Watershed_name == "N20B" & .$Species == "Chaetodipus_hispidus")
-# 
-# table(smallmammals_cont_N20B_chahis$Presence_cont, smallmammals_cont_N20B_chahis$Early_late)
-# chahis <- smallmammals_cont %>% filter(smallmammals_cont$Species == "Chaetodipus_hispidus")
-# blahyl <- smallmammals_cont %>% filter(smallmammals_cont$Species == "Blarina_hylophaga")
-# crypar <- smallmammals_cont %>% filter(smallmammals_cont$Species == "Cryptotis_parva")
-# micoch <- smallmammals_cont %>% filter(smallmammals_cont$Species == "Microtus_ochrogaster")
-# musmus <- smallmammals_cont %>% filter(smallmammals_cont$Species == "Mus_musculus")
-# neoflo <- smallmammals_cont %>% filter(smallmammals_cont$Species == "Neotoma_floridana")
-# perleu <- smallmammals_cont %>% filter(smallmammals_cont$Species == "Peromyscus_leucopus")
-# perman <- smallmammals_cont %>% filter(smallmammals_cont$Species == "Peromyscus_maniculatus")
-# reimeg <- smallmammals_cont %>% filter(smallmammals_cont$Species == "Reithrodontomys_megalotis")
-# reimon <- smallmammals_cont %>% filter(smallmammals_cont$Species == "Reithrodontomys_montanus")
-# sighis <- smallmammals_cont %>% filter(smallmammals_cont$Species == "Sigmodon_hispidus")
-# spetri <- smallmammals_cont %>% filter(smallmammals_cont$Species == "Spermophilus_tridecemlineatus")
-# syncoo <- smallmammals_cont %>% filter(smallmammals_cont$Species == "Synaptomys_cooperi")
-# zaphud <- smallmammals_cont %>% filter(smallmammals_cont$Species == "Zapus_hudsonius")
-# 
-# 
-# table(chahis$Presence_cont, chahis$Early_late)
-# chisq.test(chahis$Presence_cont, chahis$Early_late)
-# 
-# table(blahyl$Presence_cont, blahyl$Early_late)
-# chisq.test(blahyl$Presence_cont, blahyl$Early_late)
-# 
-# table(crypar$Presence_cont, crypar$Early_late)
-# chisq.test(crypar$Recyear, crypar$Presence_cont)
-# 
-# table(micoch$Presence_cont, micoch$Early_late)
-# chisq.test(micoch$Presence_cont, micoch$Early_late)
-# 
-# table(musmus$Presence_cont, musmus$Early_late)
-# chisq.test(musmus$Presence_cont, musmus$Early_late)
-# 
-# table(neoflo$Presence_cont, neoflo$Early_late)
-# chisq.test(neoflo$Presence_cont, neoflo$Early_late)
-# 
-# table(perleu$Presence_cont, perleu$Early_late)
-# chisq.test(perleu$Presence_cont, perleu$Early_late)
-# 
-# table(perman$Presence_cont, perman$Early_late)
-# chisq.test(perman$Presence_cont, perman$Early_late)
-# 
-# table(reimeg$Presence_cont, reimeg$Early_late)
-# chisq.test(reimeg$Presence_cont, reimeg$Early_late)
-# 
-# table(reimon$Presence_cont, reimon$Early_late)
-# chisq.test(reimon$Presence_cont, reimon$Early_late)
-# 
-# table(sighis$Presence_cont, sighis$Early_late)
-# chisq.test(sighis$Presence_cont, sighis$Early_late)
-# 
-# table(spetri$Presence_cont, spetri$Early_late)
-# chisq.test(spetri$Presence_cont, spetri$Early_late)
-# 
-# table(syncoo$Presence_cont, syncoo$Early_late)
-# chisq.test(syncoo$Presence_cont, syncoo$Early_late)
-# 
-# table(zaphud$Presence_cont, zaphud$Early_late)
-# chisq.test(zaphud$Presence_cont, zaphud$Early_late)
-# 
-# 
-# dcast(smallmammals_cont, Species ~ Watershed_name, fun.aggregate = count)
-# 
-# xtabs(cbind(Presence_cont, Early_late)~ Species + Watershed_name + Early_late, smallmammals_cont)
-# 
-# ConTab_1D <- table(smallmammals_cont_1D$Presence_cont, smallmammals_cont_1D$Early_late)
-# ConTab_4B <- table(smallmammals_cont_4B$Presence_cont, smallmammals_cont_4B$Early_late)
-# ConTab_20B <- table(smallmammals_cont_20B$Presence_cont, smallmammals_cont_20B$Early_late)
-# ConTab_N1B <- table(smallmammals_cont_N1B$Presence_cont, smallmammals_cont_N1B$Early_late)
-# ConTab_N4D <- table(smallmammals_cont_N4D$Presence_cont, smallmammals_cont_N4D$Early_late)
-# ConTab_N20B <- table(smallmammals_cont_N20B$Presence_cont, smallmammals_cont_N20B$Early_late)
-# 
-# ConTab_1D_blahyl <- table(smallmammals_cont_1D_blahyl$Presence_cont, smallmammals_cont_1D_blahyl$Early_late)
-# 
-# chisq.test(smallmammals_cont_N20B_chahis$Presence_cont, smallmammals_cont_N20B_chahis$Early_late)
-# 
-# 
-# 
-# 
-# 
-# runs.test(blahyl_1.ungrazed$Count)
-# runs.test(blahyl_presence.1.ungrazed$Presence)
-# view(sweetpotato)
-# chisq.test(smallmammals_long1$Fire_interval, smallmammals_long$Count)
-
-# view(smallmammals)
-# unique(smallmammals$RECTYPE)
-# 
-# smallmammals_group_count1 <- smallmammals %>%  group_by(Watershed_name) %>% 
-#   summarise(total_count=n(),.groups = 'drop')
-# 
-# smallmammals_group_count2 <- smallmammals %>%  group_by(RECYEAR, WATERSHED) %>% 
-#   summarise(total_count=n(),.groups = 'drop')
-# 
-# smallmammals_group_count2 %>% ggplot(aes(x = RECYEAR, y = total_count, color = WATERSHED)) + geom_jitter(width = 0.2, height = 0.2)
-# 
-# 
-# smallmammals_group_count3 <- smallmammals %>% 
-#   group_by(RECYEAR, SEASON, WATERSHED) %>% 
-#   summarise(total_count=n(),.groups = 'drop')
-
-
-
-
-```
-
-
-```{r}
-
-
-
-#Grouping by species and then graphing by type
-# smallmammals1_grouping <- smallmammals_long1%>% 
-#   group_by(Recyear, Fire_interval, Grazing, Watershed_name, Species) %>% 
-#   dplyr::reframe(Count = sum(Count))
-# 
-# 
-# smallmammals1_grouping_1 <- smallmammals1_grouping %>%
-#   dplyr::reframe(Mean_count = mean(Count), .by = c(Recyear, Watershed_name))
-# 
-# 
-# 
-# smallmammals1_grouping_1 %>% ggplot(aes(x = RECYEAR, y = Mean_count, group = Type)) + 
-#   geom_line(aes(color = Type)) + geom_point(aes(color = Type)) + 
-#   theme(text = element_text(size=10),
-#         axis.text.x = element_text(angle=45, hjust=1))
-
-
-```
