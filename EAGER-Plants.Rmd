@@ -13,6 +13,7 @@ mainfont: Arial
 mathfont: Arial
 fontsize: 12pt
 ---
+#  {.tabset .tabset-pills .tabset-fade}
 
 ```{r setup, include=FALSE}
 ## Clear environment 
@@ -224,21 +225,46 @@ plantcomp4 <- plantcomp4 %>% subset(Watershed_name %in% c("1D", "20B", "4A",
 ```
 
 ```{r}
-#Dissimilarity matrix for watersheds
-plantcomp5 <- plantcomp4 %>% 
-  group_by(Watershed_name, Fire_interval, Grazing, Genus_spp) %>% 
-  reframe(Cover = sum(Cover))
 
-plantcomp5_wide <- plantcomp5 %>% 
+#Dissimilarity matrix for watersheds
+
+#Transforming the cover estimates into discrete numbers based on the cover categories mid-way points: 
+#1 = <1% cover = 0.5 individuals
+#2 = 1-5% cover = 3 individuals
+#3 = 5-25% cover = 15 individuals
+#4 = 25-50% cover = 37.5 individuals
+#5 = 50-75% cover = 62.5 individuals
+#6 = 75-95% cover = 85 individuals
+#7 = 95-100% cover = 97.5 individuals
+
+plantcomp5 <- plantcomp4
+plantcomp5 <- plantcomp5 %>% mutate(Cover_transformed = NA)
+for (pp in 1:nrow(plantcomp5)){
+  if (plantcomp5[pp, 14] == 1){plantcomp5[pp, 21] <- 0.5}
+  if (plantcomp5[pp, 14] == 2){plantcomp5[pp, 21] <- 3}
+  if (plantcomp5[pp, 14] == 3){plantcomp5[pp, 21] <- 15}
+  if (plantcomp5[pp, 14] == 4){plantcomp5[pp, 21] <- 37.5}
+  if (plantcomp5[pp, 14] == 5){plantcomp5[pp, 21] <- 62.5}
+  if (plantcomp5[pp, 14] == 6){plantcomp5[pp, 21] <- 85}
+  if (plantcomp5[pp, 14] == 7){plantcomp5[pp, 21] <- 97.5}
+}
+
+
+plantcomp5_group1 <- plantcomp5 %>% 
+  group_by(Watershed_name, Fire_interval, Grazing, Genus_spp) %>% 
+  reframe(Cover_transformed = sum(Cover_transformed))
+
+plantcomp5_wide <- plantcomp5_group1 %>% 
   pivot_wider(names_from = "Genus_spp", 
-              values_from = "Cover", 
+              values_from = "Cover_transformed", 
               values_fn = function(x) paste(sum(x)))
 
 plantcomp5_wide_env <- plantcomp5_wide[, c(1:3)]
 plantcomp5_wide1 <- plantcomp5_wide[, -c(1:3)]
 plantcomp5_wide1 <- plantcomp5_wide1 %>% mutate_if(is.character, as.numeric)
-decostand_tot_plants <- decostand(plantcomp5_wide1, method = "total")
 plantcomp5_wide1[is.na(plantcomp5_wide1)] <- 0
+decostand_tot_plants <- decostand(plantcomp5_wide1, method = "total")
+
 
 diss_matrix <- vegdist(decostand_tot_plants, method = "bray")
 
@@ -302,6 +328,19 @@ plantcomp_years_wide3 <- plantcomp_years_wide2 %>%
 plantcomp_long2 <- pivot_longer(plantcomp_years_wide3, cols = 5:34,
                      names_to = "Recyear",
                      values_to = "Presence")
+
+
+
+plantcomp_years_wide3 %>% ggplot(aes(x = Persistence, fill = Watershed_name)) + geom_histogram(stat = "count") + facet_grid(Watershed_name~.) +
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=90, hjust=1, size =10)) +
+coord_flip() 
+
+plantcomp_years_wide3$Watershed_name <- factor(plantcomp_years_wide3$Watershed_name,
+                                               levels = c("1D", "N1A", "N1B", "4A", "4B", "N4A", "N4D", "20B", "N20A", "N20B"))
+plantcomp_years_wide3 %>% ggplot(aes(x = Persistence, fill = Watershed_name)) + geom_histogram(stat = "count") + facet_grid(.~Watershed_name) +
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=90, hjust=1, size =10))
 
 ```
 
@@ -454,22 +493,32 @@ plantcomp_long4$Classification <- factor(plantcomp_long4$Classification,
                                levels = c("No_change.always_absent", "No_change.always_present", "Random", "Recurrent", "Increasing", "Decreasing"))
 
 
+
 #Trying to plot persistence
 plantcomp_long4 %>% ggplot(aes(x = Persistence, fill = Watershed_name)) + geom_histogram(stat = "count") + facet_grid(.~Watershed_name) + 
   theme(text = element_text(size=10),
         axis.text.x = element_text(angle=45, hjust=1, size =10))
 
+test <- merged_p.values5 %>% separate(Species_Watershed, into = c("Genus", "spp", "Watershed_name")) %>% 
+  unite("Species", Genus, spp)
 
-plantcomp_long4 %>% ggplot(aes(x = Classification, fill = Watershed_name)) + geom_histogram(stat = "count") + facet_grid(.~Watershed_name) +
-  facet_grid(.~Watershed_name) + 
+test$Classification <- factor(test$Classification, 
+                               levels = c("No_change.always_absent", "No_change.always_present", "Random", "Recurrent", "Increasing", "Decreasing"))
+test$Watershed_name <- factor(test$Watershed_name, 
+                              levels = c("1D", "N1A", "N1B", "4A", "4B", "N4A", "N4D", "20B", "N20A", "N20B"))
+
+test %>% ggplot(aes(x = Classification, fill = Classification)) + geom_histogram(stat = "count") + facet_grid(Watershed_name~.) +
   theme(text = element_text(size=10),
-        axis.text.x = element_text(angle=90, hjust=1, size =10))
+        axis.text.x = element_text(angle=90, hjust=1, size =10)) +
+coord_flip() +
+  scale_fill_manual(values = c("gray", "black", "dodgerblue2", "darkorchid", "darkolivegreen4", "firebrick3"))
 
 
 plantcomp_long4_short <- plantcomp_long4 %>% subset(Classification %in% c("Recurrent", "Increasing", "Decreasing"))
 
 change_species <- list(plantcomp_long4_short$Species)
 
+length(unique(plantcomp_long4_short$Species))
 
 
 ```
