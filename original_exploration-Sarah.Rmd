@@ -270,6 +270,7 @@ getAbundRandomisation<-function(t1, p1, rf1) {
 }
 ```
 
+
 Other functions
 ```{r}
 getSummStats<-function(x, y, namesCl) {

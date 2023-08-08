@@ -156,6 +156,7 @@ smammals_long <- smammals_long %>% group_by(Recyear, Watershed_name,
 
 
 ##Watershed Dissimilarity matrix
+We want to check dissimilarity across the different treatments because...
 ```{r}
 #Making dissimilarity matrices for the watersheds - abundance
 
@@ -224,6 +225,8 @@ smammals_long_pa <- smammals_long_pa %>% mutate(Species = factor(Species))
 
 ##Calculating persistence
 ```{r}
+# find number of years in the dataset
+totalyears <- length(unique(smammals_long_pa$Recyear))
 
 #Creating another dataset by species and years to calculate persistence
 smammals_years_wide <- smammals_long_pa %>% 
@@ -237,10 +240,9 @@ smammals_years_wide <- smammals_years_wide %>%
 smammals_years_wide <- smammals_years_wide %>% 
   mutate(Total_Presence = rowSums(smammals_years_wide[, 5:26]))
 
-
 #Dividing the number each species was present by the total number of years in the dataset
 smammals_years_wide <- smammals_years_wide %>% 
-  mutate(Persistence = (.$Total_Presence/22))
+  mutate(Persistence = (.$Total_Presence/totalyears))
 
 #Summing the number of times each species occurs in the early half of the dataset and later half of the dataset for the incidence classification later on
 smammals_years_wide <- smammals_years_wide %>% 
@@ -262,13 +264,11 @@ smammals_years_wide %>% ggplot(aes(x = Species, y = Persistence, fill = Species)
   theme(text = element_text(size=10))+
   theme(axis.text.x = element_text(angle=45, hjust=1, size = 10)) 
 
-
-
-
 ```
 
 
 ##Chi-square contingency tables
+Move the notes that describes what this is and what it tells us about the ecology and the incidence of the species from the code chunk to here in the markdown part.
 ```{r}
 
 #Alright this section is for trying the contingency table and chi-square and Wald-Wolfowitz runs test. But I dunno what I'm doing so I am just hoping for the best now. 
@@ -281,7 +281,7 @@ smammals_years_wide %>% ggplot(aes(x = Species, y = Persistence, fill = Species)
 #Okay so I think I need to make a contingency table by splitting the time series into early/late and presence/absence 
 
 
-#Making a new dataset just in case
+#Making a new dataset just in case #FIXME: can probably get rid of this line
 smammals_cont <- smammals_long_pers
 
 #Adding empty columns onto new dataset
@@ -289,16 +289,15 @@ smammals_cont <- smammals_cont %>% mutate(Presence_cont = NA,
                                           Early_late = NA,
                                           Recyear = as.numeric(Recyear))
 
-#Filling presence contingency column based on presence/absence
- # for(j in 1:nrow(smammals_cont)){
- #   if (smammals_cont[j,10] == 1){smammals_cont[j,11] <- "Present"}
- #   if (smammals_cont[j,10] == 0){smammals_cont[j,11] <- "Absent"}
- # } 
+# finds the median (middle) year in the dataset
+# if there are an even number of years, separate equally
+# if there are an odd number of years, the late mid year is counted as late #FIXME: check
+midpoint <- ceiling(median(unique(smammals_cont$Recyear)))
 
 #Filling early/late contingency based on year
 for(i in 1:nrow(smammals_cont)){
-   if (smammals_cont[i,9] < 2003){smammals_cont[i,12] <- "Early"}
-   if (smammals_cont[i,9] >= 2003){smammals_cont[i,12] <- "Late"}
+   if (smammals_cont[i,9] < midpoint){smammals_cont[i,12] <- "Early"}
+   if (smammals_cont[i,9] >= midpoint){smammals_cont[i,12] <- "Late"}
 }
 
 #Converting the new presence/absence and early/late columns into factors
