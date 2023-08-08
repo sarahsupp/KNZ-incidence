@@ -13,6 +13,7 @@ mainfont: Arial
 mathfont: Arial
 fontsize: 12pt
 ---
+#  {.tabset .tabset-pills .tabset-fade}
 
 ```{r setup, include=FALSE}
 ## Clear environment 
@@ -33,6 +34,7 @@ library(vegan)
 library(goeveg)
 library(randtests)
 library(reshape2)
+library(lubridate)
 ```
 
 ##Grasshopper Sweeping
@@ -67,15 +69,13 @@ The summer burn is conducted on the first water appropriate day in late July to 
 ```{r}
 #Second dataset is the grasshopper species counts from each set of sweeps
 grasshoppers_raw <- read_csv("Datasets_EAGER/Grasshoppers/knb-lter-knz.29.20/CGR022.csv")
-
 watershed_info <- read_excel("Datasets_EAGER/Other/Watershed Info.xlsx")
-
 grasshopper_families <- read_excel("Datasets_EAGER/Grasshoppers/Grasshopper_families.xlsx")
 
 
-unique(grasshoppers_raw$WATERSHED)
+
 #Making the variables into factors for later graphing and analysis
-grasshoppers <- grasshoppers_raw %>% mutate(RECTYPE = factor(RECTYPE),
+grasshoppers_all <- grasshoppers_raw %>% mutate(RECTYPE = factor(RECTYPE),
                                           RECMONTH = factor(RECMONTH),
                                           RECDAY = factor(RECDAY),
                                           WATERSHED = factor(WATERSHED),
@@ -83,18 +83,16 @@ grasshoppers <- grasshoppers_raw %>% mutate(RECTYPE = factor(RECTYPE),
                                           REPSITE = factor(REPSITE),
                                           SPCODE = factor(SPCODE))
 
-problems(grasshoppers_raw)
 #Checking the number of unique names for different variables to then compare to the metadata
-sort(unique(grasshoppers$SPECIES))
-##Oh lord... theres capitalizations in some but not others and there are some unknowns. I'll have to alphabetize it and go through to see if there are multiple spellings for the same species
-
-sort(unique(grasshoppers$WATERSHED))
+sort(unique(grasshoppers_all$SPECIES))
+##Theres capitalizations in some but not others and there are some unknowns. I'll have to alphabetize it and go through to see if there are multiple spellings for the same species
+sort(unique(grasshoppers_all$WATERSHED))
 #There is weird capitalizations for these too... I'll have to go through and clean and probably get rid of some
 
 
 #Recoding watersheds to make it consistent
-grasshoppers1 <- grasshoppers
-grasshoppers1$WATERSHED <- dplyr::recode(grasshoppers1$WATERSHED,
+grasshoppers_all <- grasshoppers_all
+grasshoppers_all$WATERSHED <- dplyr::recode(grasshoppers_all$WATERSHED,
                                   "001d" = "1D",
                                   "004b" = "4B",
                                   "000b" = "B",
@@ -132,7 +130,7 @@ grasshoppers1$WATERSHED <- dplyr::recode(grasshoppers1$WATERSHED,
 
 
 #Recoding some of the species to make it consistent
-grasshoppers1$SPECIES <- dplyr::recode(grasshoppers1$SPECIES,
+grasshoppers_all$SPECIES <- dplyr::recode(grasshoppers_all$SPECIES,
                                 "ageneotett deorum" = "Ageneotettix deorum",
                                 "arphia conspersa" = "Arphia conspersa",
                                 "arphia simplex" = "Arphia simplex",
@@ -196,20 +194,19 @@ grasshoppers1$SPECIES <- dplyr::recode(grasshoppers1$SPECIES,
                                 "xanthippus corallipe" = "Xanthippus corallipes")
 
 ###After some exploration, I found that Hippiscus rugosa and Hippiscus ocelote are the same thing, so I will change everything to Hippiscus ocelote.
-grasshoppers1$SPECIES <- dplyr::recode(grasshoppers1$SPECIES,
+grasshoppers_all$SPECIES <- dplyr::recode(grasshoppers_all$SPECIES,
                                       "Hippiscus rugosus" = "Hippiscus ocelote")
 
 ###Also, some of the species names aren't correctly matched with their spp code, so I will fix that
- for(i in 1:nrow(grasshoppers1)){
-   if (grasshoppers1[i,10] == "Oecanthinae spp."){grasshoppers1[i,9] <- "56"}
-   if (grasshoppers1[i,10] == "Tettigoniidae spp."){grasshoppers1[i,9] <- "59"}
-   if (grasshoppers1[i,10] == "Gryllidae spp."){grasshoppers1[i,9] <- "58"}
-   if (grasshoppers1[i,10] == "Melanoplus femurrubrum"){grasshoppers1[i,9] <- "12"}
+ for(i in 1:nrow(grasshoppers_all)){
+   if (grasshoppers_all$SPECIES[i] == "Oecanthinae spp."){grasshoppers_all$SPCODE[i] <- "56"}
+   if (grasshoppers_all$SPECIES[i] == "Tettigoniidae spp."){grasshoppers_all$SPCODE[i] <- "59"}
+   if (grasshoppers_all$SPECIES[i] == "Gryllidae spp."){grasshoppers_all$SPCODE[i] <- "58"}
+   if (grasshoppers_all$SPECIES[i] == "Melanoplus femurrubrum"){grasshoppers_all$SPCODE[i] <- "12"}
  }
 
-#Making a new dataset to then condense some of the watersheds based on the metadata
-grasshoppers2 <- grasshoppers1
-grasshoppers2$WATERSHED <- dplyr::recode(grasshoppers2$WATERSHED,
+#Condensing some of the watersheds based on the metadata
+grasshoppers_all$WATERSHED <- dplyr::recode(grasshoppers_all$WATERSHED,
                                    "B" = "20B",
                                    "NB" = "N20B",
                                    "2D" = "SpB",
@@ -219,7 +216,10 @@ grasshoppers2$WATERSHED <- dplyr::recode(grasshoppers2$WATERSHED,
                                    "4G" = "WB")
 
 
-grasshoppers2 <- grasshoppers2 %>% rename("Watershed_name" = "WATERSHED",
+##Since the bison grazed plots weren't sampled until 2002, I am removing all data pre-2002
+grasshoppers <- grasshoppers_all %>% subset(.$RECYEAR >= 2002)
+#Renaming the columns so they're not all capitalized
+grasshoppers <- grasshoppers %>% rename("Watershed_name" = "WATERSHED",
                               "Recyear" = "RECYEAR",
                               "Recmonth" = "RECMONTH",
                               "Recday" = "RECDAY",
@@ -228,49 +228,60 @@ grasshoppers2 <- grasshoppers2 %>% rename("Watershed_name" = "WATERSHED",
                               "Soil_type" = "SOILTYPE",
                               "Repsite" = "REPSITE",
                               "Spp_code" = "SPCODE")
-
-
-grasshoppers3 <- grasshoppers2
-grasshoppers3 <- grasshoppers3 %>% subset(.$Recyear >= 1992)
-unique(grasshoppers2$Watershed_name)
+unique(grasshoppers$Watershed_name)
 
 #Removing watersheds and transects I won't use for further analysis
-grasshoppers3 <- grasshoppers3 %>%
+grasshoppers <- grasshoppers %>%
   subset(Watershed_name %in% c("1D", "20B", "4B",
                               "N1A", "N1B", 
                               "N4A", "N4D",
                               "N20B", "N20A")) 
 
 #Adding in the watershed information 
-grasshoppers3 <- left_join(grasshoppers3, watershed_info, by = "Watershed_name")
+grasshoppers <- left_join(grasshoppers, watershed_info, by = "Watershed_name")
 
-#Adding in family and suborder information
-grasshoppers3 <- grasshoppers3 %>% separate(Species, c("Genus", "Spp"), sep = " ")
-grasshoppers3 <- left_join(grasshoppers3, grasshopper_families, by = "Genus")
-grasshoppers3 <- grasshoppers3 %>% unite("Species", Genus:Spp, sep = "_")
+#Adding in family and suborder information. First I need to separate the genus and spp
+grasshoppers <- grasshoppers %>% separate(Species, c("Genus", "Spp"), sep = " ")
+grasshoppers <- left_join(grasshoppers, grasshopper_families, by = "Genus")
+grasshoppers <- grasshoppers %>% unite("Species", Genus:Spp, sep = "_")
 
-#Since the bison grazed plots weren't sampled until 2002, I am removing all data pre-2002
-grasshoppers4 <- grasshoppers3 %>% subset(.$Recyear >= 2002)
+#Just checking the species codes and names
+length(unique(grasshoppers$Spp_code))
+length(unique(grasshoppers$Species))
 
-length(unique(grasshoppers4$Spp_code))
-length(unique(grasshoppers4$Species))
+unique(grasshoppers$Spp_code)
+unique(grasshoppers$Species)
 
-unique(grasshoppers4$Spp_code)
-unique(grasshoppers4$Species)
+#Doing a date check to see the sampling times by year
+# grasshoppers_datecheck <- grasshoppers %>% unite("Month_Day", Recmonth:Recday, sep = "-")
+# grasshoppers_datecheck <- grasshoppers_datecheck %>% unite("Date", Recyear:Month_Day, sep = "-", remove = FALSE)
+# grasshoppers_datecheck$Date <- ymd(grasshoppers_datecheck$Date)
+# grasshoppers_datecheck <- grasshoppers_datecheck %>% group_by(Date)%>% reframe(Total = sum(Total))
 
 
-grasshoppers5 <- grasshoppers4 %>% unite("Month_Day", Recmonth:Recday, sep = "-")
 
-grasshoppers5 <- grasshoppers5 %>% unite("Date", Recyear:Month_Day, sep = "-", remove = FALSE)
+#Removing the unknowns from the dataset (looks like there are 49 unknown entries, with 271 individuals)
+grasshoppers <- grasshoppers %>% subset(Species != "Unknown_NA")
 
-grasshoppers5$Date <- ymd(grasshoppers5$Date)
-datecheck <- grasshoppers5 %>% group_by(Date)%>% reframe(Total = sum(Total))
+#Adding the family/suborder dataset to this dataset
+
+#Making a dataset with just the suborder Caelifera. Suborder Ensifera are katydids and crickets
+grasshoppers_cae <- grasshoppers %>% subset(Suborder == "Caelifera")
+
+
+#Removing the entries that aren't identified to species (I need to separate genus and spp again... oops)
+grasshoppers_cae <- grasshoppers_cae %>% separate(Species, c("Genus", "Spp"), sep = "_")
+grasshoppers_cae <- grasshoppers_cae %>% subset(Spp != "spp.")
+grasshoppers_cae <- grasshoppers_cae %>% unite("Species", Genus:Spp, sep = "_")
 
 ```
 
 
 
 ```{r, echo=FALSE}
+
+##This section was for looking at the number of times watersheds were sampled throughout the dataset
+
 
 #This section is for checking the sampling amounts for certain variables/parameters
 # grasshoppers3_group <- grasshoppers3 %>% 
@@ -330,24 +341,13 @@ datecheck <- grasshoppers5 %>% group_by(Date)%>% reframe(Total = sum(Total))
 
 ```{r}
 
-grasshoppers5_group <- grasshoppers5 %>% group_by(Recyear, Watershed_name, Species, Fire_interval, Grazing) %>% 
+
+
+grasshoppers_group <- grasshoppers %>% group_by(Recyear, Watershed_name, Species, Fire_interval, Grazing) %>% 
   dplyr::reframe(Total = sum(Total))
 
-grasshoppers5_wide <- grasshoppers5_group %>% pivot_wider(names_from = Species, values_from = Total)
+grasshoppers_wide <- grasshoppers_group %>% pivot_wider(names_from = Species, values_from = Total)
 
-grasshoppers5_count1 <- grasshoppers5_wide %>% group_by(Recyear, Watershed_name) %>% 
-  summarise(total_count=n(),.groups = 'drop')
-
-
-grasshoppers5_count2 <- grasshoppers5_wide %>% group_by(Watershed_name, Fire_interval, Grazing) %>% 
-  summarise(total_count=n(),.groups = 'drop')
-
-
-#Grouping wanted variables and summing the counts for each species per sampling period
-grasshoppers5_short <- grasshoppers5 %>% 
-  group_by(Recyear, Watershed_name, 
-           Fire_interval, Grazing, Repsite, 
-           Spp_code, Suborder, Family, Species) %>% dplyr::reframe(Total = sum(Total))
 
 #Removing unknowns from dataset (looks like there are 49 unknown entries, with 271 individuals)
 grasshoppers6 <- grasshoppers5_short %>% subset(Species != "Unknown_NA")
@@ -373,20 +373,6 @@ wospp_sumtab <- grasshoppers_wospp %>%
 ```
 
 ```{r}
-
-
-#Making a dataset with just the suborder Caelifera
-grasshoppers_cae <- grasshoppers6 %>% subset(Suborder == "Caelifera")
-
-
-#Removing the entries that aren't identified to species
-grasshoppers_cae1 <- grasshoppers_cae %>% subset(Spp != "spp.")
-grasshoppers_cae2 <- grasshoppers_cae1 %>% unite("Species", Genus:Spp, sep = "_")
-
-
-grasshoppers_cae2_short <- grasshoppers_cae2 %>% 
-  group_by(Recyear, Watershed_name, Fire_interval, Grazing, Species) %>% 
-  reframe(Total = sum(Total))
 
 
 
@@ -422,7 +408,7 @@ grasshoppers_long <- grasshoppers_long %>% mutate(Watershed_name = factor(Waters
 
 ```
 
-
+##Watershed Dissimilarity matrix
 ```{r}
 ##Dissimilarity matrix for watersheds - abundance
 
@@ -454,6 +440,38 @@ decostand_tot_grasshoppers <- decostand(grasshoppers7_wide1, method = "total")
 diss_matrix <- vegdist(decostand_tot_grasshoppers, method = "bray")
 ```
 
+```{r}
+# #Creating another dataset by species and years to calculate persistence
+# grasshoppers_years_wide <- grasshoppers_long %>% 
+#   pivot_wider(names_from = "Recyear", values_from = "Presence")
+# 
+# #Making NA's zeroes... MIGHT HAVE TO UNDO THIS
+# grasshoppers_years_wide <- grasshoppers_years_wide %>% 
+#   mutate_all(~replace(., is.na(.), 0))
+# 
+# #Summing the persistence of all years into a new column
+# grasshoppers_years_wide <- grasshoppers_years_wide %>% 
+#   mutate(Total_Presence = rowSums(grasshoppers_years_wide[, 5:23]))
+# 
+# 
+# #Dividing that column by the total number of years in the dataset
+# grasshoppers_years_wide <- grasshoppers_years_wide %>% 
+#   mutate(Persistence = (.$Total_Presence/19))
+# 
+# #Summing the number of times each species occurs in the early half of the dataset and later half of the dataset for the incidence classification 
+# 
+# 
+# #Pivoting the dataset back to long format for further analysis; this dataset included the persistence calculations so that I can classify always_absent, always_present, increasing, and decreasing incidence later on
+# smammals_long_pers <- pivot_longer(smammals_years_wide, cols = 5:26,
+#                      names_to = "Recyear",
+#                      values_to = "Presence")
+# 
+# 
+# 
+# 
+# 
+
+```
 
 ```{r}
 
@@ -466,8 +484,24 @@ grasshoppers_years_wide <- grasshoppers_years_wide %>% mutate(Total_Persistence 
 
 grasshoppers_years_wide <- grasshoppers_years_wide %>% mutate(Persistence = (Total_Persistence/19))
 
+grasshoppers_years_wide <- grasshoppers_years_wide %>% 
+  mutate(Early_pres = rowSums(grasshoppers_years_wide[,c(5:13)], na.rm = TRUE)) %>%
+  mutate(Late_pres = rowSums(grasshoppers_years_wide[,c(14:23)], na.rm = TRUE))
+
+
 grasshoppers_years_wide %>% ggplot(aes(x = Persistence)) + geom_histogram(binwidth = 0.1)
 
+grasshoppers_years_wide$Watershed_name <- factor(grasshoppers_years_wide$Watershed_name,
+                                                 levels = c("1D", "N1A", "N1B", "4B", "N4A", "N4D", "20B", "N20A", "N20B"))
+
+grasshoppers_years_wide %>% ggplot(aes(x = Persistence, fill = Watershed_name)) + geom_histogram(stat = "count") + facet_grid(.~Watershed_name) +
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=90, hjust=1, size =10))
+
+grasshoppers_years_wide %>% ggplot(aes(x=Species, y = Persistence, fill = Species)) + geom_col() +
+  facet_grid(.~Watershed_name) +
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=90, hjust=1, size =5))
 
 grasshoppers_long2 <- pivot_longer(grasshoppers_years_wide, cols = 5:23,
                      names_to = "Recyear",
@@ -504,37 +538,21 @@ grasshoppers_long2 %>%  ggplot(aes(Recyear, factor(Presence), fill = factor(Pres
 grasshoppers_cont <- grasshoppers_long2
 grasshoppers_cont <- grasshoppers_cont %>% mutate(Presence_cont = NA,
                                     Early_late = NA,
-                                    Presence = factor(Presence))
+                                    Presence = factor(Presence),
+                                    Recyear = as.numeric(Recyear))
 
 
 
 
  for(j in 1:nrow(grasshoppers_cont)){
-   if (grasshoppers_cont[j,8] == "1"){grasshoppers_cont[j,9] <- "Present"}
-   if (grasshoppers_cont[j,8] == "0"){grasshoppers_cont[j,9] <- "Absent"}
+   if (grasshoppers_cont[j,10] == "1"){grasshoppers_cont[j,11] <- "Present"}
+   if (grasshoppers_cont[j,10] == "0"){grasshoppers_cont[j,11] <- "Absent"}
  } 
 
-for(i in 1:nrow(grasshoppers_cont)){
-   if (grasshoppers_cont[i,7] == "2002"){grasshoppers_cont[i,10] <- "Early"}
-   if (grasshoppers_cont[i,7] == "2003"){grasshoppers_cont[i,10] <- "Early"}
-   if (grasshoppers_cont[i,7] == "2004"){grasshoppers_cont[i,10] <- "Early"}
-   if (grasshoppers_cont[i,7] == "2005"){grasshoppers_cont[i,10] <- "Early"}
-   if (grasshoppers_cont[i,7] == "2006"){grasshoppers_cont[i,10] <- "Early"}
-   if (grasshoppers_cont[i,7] == "2007"){grasshoppers_cont[i,10] <- "Early"}
-   if (grasshoppers_cont[i,7] == "2008"){grasshoppers_cont[i,10] <- "Early"}
-   if (grasshoppers_cont[i,7] == "2009"){grasshoppers_cont[i,10] <- "Early"}
-   if (grasshoppers_cont[i,7] == "2010"){grasshoppers_cont[i,10] <- "Early"}
-   if (grasshoppers_cont[i,7] == "2011"){grasshoppers_cont[i,10] <- "Late"}
-   if (grasshoppers_cont[i,7] == "2012"){grasshoppers_cont[i,10] <- "Late"}
-   if (grasshoppers_cont[i,7] == "2013"){grasshoppers_cont[i,10] <- "Late"}
-   if (grasshoppers_cont[i,7] == "2014"){grasshoppers_cont[i,10] <- "Late"}
-   if (grasshoppers_cont[i,7] == "2015"){grasshoppers_cont[i,10] <- "Late"}
-   if (grasshoppers_cont[i,7] == "2016"){grasshoppers_cont[i,10] <- "Late"}
-   if (grasshoppers_cont[i,7] == "2017"){grasshoppers_cont[i,10] <- "Late"}
-   if (grasshoppers_cont[i,7] == "2018"){grasshoppers_cont[i,10] <- "Late"}
-   if (grasshoppers_cont[i,7] == "2019"){grasshoppers_cont[i,10] <- "Late"}
-   if (grasshoppers_cont[i,7] == "2020"){grasshoppers_cont[i,10] <- "Late"}
-}
+ for(j in 1:nrow(grasshoppers_cont)){
+   if (grasshoppers_cont[j,9] < 2011){grasshoppers_cont[j,12] <- "Present"}
+   if (grasshoppers_cont[j,9] >= 2011){grasshoppers_cont[j,12] <- "Absent"}
+ } 
 
 
 unique(grasshoppers_cont$Early_late)
@@ -542,7 +560,7 @@ grasshoppers_cont <- grasshoppers_cont %>% mutate(Presence_cont = factor(Presenc
                                     Early_late = factor(Early_late))
 
 summary_tbl <- grasshoppers_cont %>%
-  group_by(Species, Watershed_name, Fire_interval, Grazing, Persistence)%>%
+  group_by(Species, Watershed_name, Fire_interval, Grazing, Persistence, Early_pres, Late_pres)%>%
     dplyr::count(Presence_cont, Early_late)
 
 summary_tbl <- summary_tbl %>% unite("Species.Watershed", Species:Watershed_name, sep = "_") 
@@ -560,7 +578,7 @@ chisq_p.values <- chisq_p.values %>% rename("chisq_p.values" = "do.call(...)",
 
 
 grasshoppers_long3 <- grasshoppers_long2 %>% 
-  group_by(Recyear, Species, Watershed_name, Persistence) %>% reframe(Presence = Presence)
+  group_by(Recyear, Species, Watershed_name, Persistence, Early_pres, Late_pres) %>% reframe(Presence = Presence)
 
 grasshoppers_long3 <- grasshoppers_long3 %>% unite("Species.Watershed", Species:Watershed_name, sep = "_")
 
@@ -596,7 +614,7 @@ grasshoppers_long2 %>% ggplot(aes(x = Recyear, y = Presence, fill = factor(Prese
 
 merged_p.values2 <- merged_p.values %>% mutate(Incidence_change = NA,
                                           Sequential_patterns = NA)
-group <- summary_tbl %>% dplyr::select(Species.Watershed, Fire_interval, Grazing, Persistence) %>% distinct()
+group <- summary_tbl %>% dplyr::select(Species.Watershed, Fire_interval, Grazing, Persistence, Early_pres, Late_pres) %>% distinct()
 merged_p.values2 <- merge(merged_p.values2, group, by = "Species.Watershed")
 
 for (k in 1:nrow(merged_p.values2)){
@@ -619,18 +637,27 @@ for (kk in 1:nrow(merged_p.values3)){
 merged_p.values4 <- merged_p.values3 %>% mutate(Classification = NA)
 
 for (jj in 1:nrow(merged_p.values4)){
-  if (merged_p.values4[jj, 4] == "-" & merged_p.values4[jj, 5] == "-" & merged_p.values4[jj,8] == 0){merged_p.values4[jj, 9] <- "No_change.always_absent"}
-  if (merged_p.values4[jj, 4] == "-" & merged_p.values4[jj, 5] == "-" & merged_p.values4[jj,8] == 1){merged_p.values4[jj, 9] <- "No_change.always_present"}
-  if (merged_p.values4[jj, 4] == "NS" & merged_p.values4[jj, 5] == "NS"){merged_p.values4[jj, 9] <- "Random"}
-  if (merged_p.values4[jj, 4] == "NS" & merged_p.values4[jj, 5] == "Significant"){merged_p.values4[jj, 9] <- "Recurrent"}
-  if (merged_p.values4[jj, 4] == "Significant" & merged_p.values4[jj, 5] == "-"){merged_p.values4[jj, 9] <- "Decreasing"}
-  if (merged_p.values4[jj, 4] == "NS" & merged_p.values4[jj, 5] == "-"){merged_p.values4[jj, 9] <- "Random"}
+  if (merged_p.values4[jj, 4] == "-" & merged_p.values4[jj, 5] == "-" & merged_p.values4[jj,8] == 0){merged_p.values4[jj, 11] <- "No_change.always_absent"} #Chi.sq and runs.tests p.value are NaN; persistence is "0"
+  if (merged_p.values4[jj, 4] == "-" & merged_p.values4[jj, 5] == "-" & merged_p.values4[jj,8] == 1){merged_p.values4[jj, 11] <- "No_change.always_present"} #Chi.sq and runs.tests p.value are NaN; persistence is "1"
+  if (merged_p.values4[jj, 4] == "NS" & merged_p.values4[jj, 5] == "NS"){merged_p.values4[jj, 11] <- "Random"} #Chi.sq and runs.test p.values are both > 0.05 
+  if (merged_p.values4[jj, 4] == "NS" & merged_p.values4[jj, 5] == "Significant"){merged_p.values4[jj, 11] <- "Recurrent"} #Chi.sq p.value is > 0.05; runs.test p.value is < 0.05
+  if (merged_p.values4[jj, 4] == "Significant" & merged_p.values4[jj, 5] == "-"){merged_p.values4[jj, 11] <- "Significant"} #Chi.sq p.value is < 0.05; runs.test p.value is NaN
+  if (merged_p.values4[jj, 4] == "NS" & merged_p.values4[jj, 5] == "-"){merged_p.values4[jj, 11] <- "Random"} #Chi.sq p.value is > 0.05; runs.test is NaN
+  if (merged_p.values4[jj, 4] == "Significant" & merged_p.values4[jj, 5] == "Significant"){merged_p.values4[jj, 11] <- "Significant"} #Chi.sq p.value is < 0.05; runs.test is < 0.05
+  if (merged_p.values4[jj, 4] == "Significant" & merged_p.values4[jj, 5] == "NS"){merged_p.values4[jj, 11] <- "Significant"} # Chi.sq p.value is < 0.05; runs.test p.value > 0.05
+}
+
+merged_p.values5 <- merged_p.values4  
+
+for (xx in 1:nrow(merged_p.values5)){
+  if (merged_p.values5[xx, 11] == "Significant" & ((merged_p.values5[xx, 9]) > (merged_p.values5[xx, 10]))){merged_p.values5[xx, 11] <- "Decreasing"} #Chi.sq p.value is < 0.05; early persistence is more than late persistence
+  if (merged_p.values5[xx, 11] == "Significant" & ((merged_p.values5[xx, 10]) > (merged_p.values5[xx, 9]))){merged_p.values5[xx, 11] <- "Increasing"} #Chi.sq p.value is < 0.05; early persistence is less than late persistence
 }
   
 
-for (ii in 1:nrow(merged_p.values4)){
-  if (merged_p.values4[ii, 2] == 2) {merged_p.values4$chisq_p.values[ii] <- NA}
-  if (merged_p.values4[ii, 3] == 2) {merged_p.values4$runstest_p.values[ii] <- NA}
+for (ii in 1:nrow(merged_p.values5)){
+  if (merged_p.values5[ii, 2] == 2) {merged_p.values5$chisq_p.values[ii] <- NA}
+  if (merged_p.values5[ii, 3] == 2) {merged_p.values5$runstest_p.values[ii] <- NA}
 }
 
 
@@ -641,7 +668,7 @@ unique(merged_p.values4$Classification)
 ```{r}
 
 
-grasshoppers_long4 <- left_join(grasshoppers_long3, merged_p.values4)
+grasshoppers_long4 <- left_join(grasshoppers_long3, merged_p.values5)
 grasshoppers_long4 <- grasshoppers_long4 %>% separate(Species.Watershed, into = c("Species", "spp", "Watershed_name")) %>% 
   unite("Species", Species, spp)
 
@@ -657,6 +684,9 @@ grasshoppers_long4$Classification <- factor(grasshoppers_long4$Classification,
 grasshoppers_long5 <- grasshoppers_long4
 grasshoppers_long5$Presence[grasshoppers_long5$Presence == 0] <- NA
 grasshoppers_long5 <- grasshoppers_long5 %>% mutate(Recyear = as.numeric(Recyear))
+
+grasshoppers_long5$Watershed_name <- factor(grasshoppers_long5$Watershed_name,
+                                            levels = c("1D", "N1A", "N1B", "4B", "N4A", "N4D", "20B", "N20A", "N20B")) 
 
 grasshoppers_long5 %>% ggplot(aes(x = Recyear, y = Presence, fill = Classification)) + 
   geom_tile(width = .6, height = .6) + 
