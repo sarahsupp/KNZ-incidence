@@ -34,35 +34,35 @@ plants <- read_csv("Datasets_EAGER/Plants/knb-lter-knz.69.21_SpeciesComposition/
 
 count number of unique species
 ```{r}
-birdS <- length(unique(birds$Species))
-birdlist <- unique(birds$Species)
+#birdS <- length(unique(birds$Species))
+#birdlist <- unique(birds$Species)
 
 birdsTS <- length(unique(birdsT$SPECNAME))
 birdsTlist <- unique(birdsT$SPECNAME)
 
 # at least 4 of these appear to be non-fish
-fishS <- length(unique(fish$Species))
-fishlist <- unique(fish$Species)
+#fishS <- length(unique(fish$Species))
+#fishlist <- unique(fish$Species)
 
 # 1 of these is NA
-fishWS <- length(unique(fishW$ScienceName))
-fishWlist <- unique(fishW$ScienceName)
+#fishWS <- length(unique(fishW$ScienceName))
+#fishWlist <- unique(fishW$ScienceName)
 
 #at least some of these are genera only, would need to look closer
 hoppersS <- length(unique(hoppers$SPECIES))
 hopperslist <- unique(hoppers$SPECIES)
 
 #at least 4 of these are non smammal or genera only
-smammalsS <- length(unique(smammals$Species))
-smammalslist <- unique(smammals$Species)
-
-#at least 2 of these are genera only or unknown?
-smammal2S<- length(unique(smammal2$Species))
-smammal2list <- unique(smammal2$Species)
-
-#at least 2 of these are genera only or non smammal?
-smammal3S<- length(unique(smammal3$Species))
-smammal3list <- unique(smammal3$Species)
+# smammalsS <- length(unique(smammals$Species))
+# smammalslist <- unique(smammals$Species)
+# 
+# #at least 2 of these are genera only or unknown?
+# smammal2S<- length(unique(smammal2$Species))
+# smammal2list <- unique(smammal2$Species)
+# 
+# #at least 2 of these are genera only or non smammal?
+# smammal3S<- length(unique(smammal3$Species))
+# smammal3list <- unique(smammal3$Species)
 
 #at least 2 of these are genera only or non smammal?
 plantsS<- length(unique(plants$SpeCode))
@@ -71,7 +71,10 @@ plantslist <- unique(plants$SpeCode)
 
 Classification Scheme (Gotelli et al. 2022)
 ```{r}
-getTrends<-function(x) {
+getTrends <- function(x) {
+  #input (x) is a single row of a matrix where the species are rows and the columns are each year with 1/0 values (1=present, 0=absent). 
+  #So you need to iterate each row separately to get the results
+  # Output is a list with 6 items, that represents the classification results for a single species
   
   time <- rep("late",length(x))
   time[1:(round(length(x)/2))] <- "early"
