@@ -20,16 +20,16 @@ set.seed(123)
 
 Import some KNZ datasets
 ```{r}
-birds <- read_csv("CBC011.csv")
-birdsT<- read_csv("CBP011.csv")
-fish <- read_csv("CFC011.csv")
-fishW <- read_csv("CFP011.csv")
-Hoppersite <- read_csv("CGR021.csv")
-hoppers <- read_csv("CGR022.csv")
-smammals <- read_csv("CSM012_0.csv")
-smammal2 <- read_csv("CSM042.csv")
-smammal3 <- read_csv("CSM052.csv")
-plants <- read_csv("PVC021.csv")
+#birds <- read_csv("Datasets_EAGER/Birds/CBC011.csv")
+birdsT<- read_csv("Datasets_EAGER/Birds/knb-lter-knz.26.12/CBP011.csv")
+#fish <- read_csv("CFC011.csv")
+#fishW <- read_csv("CFP011.csv")
+Hoppersite <- read_csv("Datasets_EAGER/Grasshoppers/knb-lter-knz.29.20/CGR021.csv")
+hoppers <- read_csv("Datasets_EAGER/Grasshoppers/knb-lter-knz.29.20/CGR022.csv")
+#smammals <- read_csv("CSM012_0.csv")
+#smammal2 <- read_csv("CSM042.csv")
+#smammal3 <- read_csv("CSM052.csv")
+plants <- read_csv("Datasets_EAGER/Plants/knb-lter-knz.69.21_SpeciesComposition/PVC021.csv")
 ```
 
 count number of unique species
