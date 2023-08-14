@@ -76,66 +76,105 @@ getTrends <- function(x) {
   #So you need to iterate each row separately to get the results
   # Output is a list with 6 items, that represents the classification results for a single species
   
-  time <- rep("late",length(x))
+  #create an object the same length as x that defines early vs late years
+  time <- rep("late", length(x))
   time[1:(round(length(x)/2))] <- "early"
   
-  # tabulate f
+  # make a table that tells you how many 0s and 1s are in the early and the late halves of the time series
   z_x <- table(x,time)
   
-  tslen<-length(x)
-  tssum<-sum(x)
-  l<-c()
+  #find the time-series length (number of years)
+  tslen <- length(x)
+
+  # counts the number of years the species was present
+  tssum <- sum(x)
+ 
+  # create an empty vector to store results in for the next for loop
+   l <- c()
   
-  for(k in 1:(tslen-1)){
-    j<-abs(x[k+1]-x[k])
-    l<-c(l, j)
-    v<-sum(l)
+  # identifies when a change from a 0 to a 1 or vice versa happens
+  for(k in 1:(tslen-1)) {
+    j <- abs(x[k+1] - x[k])
+    l <- c(l, j)
+    v <- sum(l)
   }
   
-  bsline<-x[1]
+  # identifies if the species was present (1) or absent(0)
+   # at the beginning of the timeseries
+   # for our study, we generally ignore the baseline
+  bsline <- x[1]
   
-  if(tslen>tssum) {
-    
-    rownames(z_x) <- c("absent","present")
-    # get p value
-    p_val <- chisq.test(z_x)$p.val
-    
-    # get early and late fractions
-    f_early <- z_x["present","early"]/sum(z_x[,1])
-    f_late <- z_x["present","late"]/sum(z_x[,2])
-   
-    if((f_early > f_late) & (p_val <= 0.05)) {
-      trend<--1
-      cat="decreasing"
-    }
-    if((f_early < f_late) & (p_val <= 0.05)) {
-      trend<-1
-      cat="increasing"
-    }
-    if(p_val > 0.05) trend<-0
-    runsPV<-runs.test(as.factor(x),alternative="less")
-    runsTestPV<-runsPV$p.value
-    if((p_val>0.05) & (runsTestPV<0.05)) {
-      trendPlus<-10
-      cat="recurrent"
-    }
-    if((p_val>0.05) & (runsTestPV>0.05)){
-      trendPlus<-5
-      cat="random"
-    }
+  # If all the values are 0, it is always absent
+  if (tssum == 0) {
+    p_val <- NA
+    f_early <- NA
+    f_late <- NA
+    runsTestPV <- NA
+    trend <- NA
+    trendPlus <- NA
+    cat <- "always absent"
   }
-  if(tslen==tssum) {
+  
+  # if all the values are 1, it is always present
+  else if (tslen == tssum) {
     p_val <- NA
     f_early <- NA
     f_late <- NA
     runsTestPV<-NA
     trend<-NA
     trendPlus<-NA
-    cat<-"no change"
+    cat<-"always present"
   }
   
+  else {
+     
+    #adds rownames to the z_x table
+    rownames(z_x) <- c("absent","present")
+    
+    # get p value for the chi-squared test
+    p_val <- chisq.test(z_x)$p.val
+    
+    # get early and late fractions
+    # for each the early and the late parts of the time series:
+    #    the number of years it was present divided by the number of years
+    f_early <- z_x["present","early"] / sum(z_x[,1]) 
+    f_late <- z_x["present","late"] / sum(z_x[,2])
+   
+    if((f_early > f_late) & (p_val <= 0.05)) {
+      trend <- -1
+      cat = "decreasing"
+    }
+    
+    if((f_early < f_late) & (p_val <= 0.05)) {
+      trend <- 1
+      cat = "increasing"
+    }
+    
+    # Chi-squared test not significant
+    if(p_val > 0.05) trend<-0
+    
+    #conduct a runs test on the time-series
+    runsPV <- runs.test(as.factor(x), alternative="less")
+    runsTestPV <- runsPV$p.value
+    
+    # if Chi-sq test insignif. and the runs test was significant
+    if((p_val > 0.05) & (runsTestPV < 0.05)) {
+      trendPlus<-10
+      cat="recurrent"
+    }
+    
+    # if chi-sq insignif. and the runs test insignif.
+    if((p_val > 0.05) & (runsTestPV > 0.05)){
+      trendPlus<-5
+      cat="random"
+    }
+    
+  }
+  
+  # for each species, record the summary statistics
   statSumm<-list("trendPlus"=trendPlus, "chiPval"=p_val, "runsPval"=runsTestPV, 
                  "trend"=trend, "bsline"=bsline, "category"=cat)
+  
   return(statSumm)
 } 
 ```
