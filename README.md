@@ -8,6 +8,8 @@ Sarah R. Supp, PI, supps@denison.edu; Denison University
 Maya J. Parker-Smith, Data Analyst, parkersmithm@denison.edu; Denison University (remote from Columbia, Missouri)
 
 ## Collaborators
+Nancy Tran, Denison University
+Biana Qiu, Denison University
 
 ## Data
 The data will be downloaded from the Konza Prairie Long-term ecological Research (LTER) site.
