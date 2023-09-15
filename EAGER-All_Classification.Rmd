@@ -16,6 +16,7 @@ fontsize: 12pt
 ---
 
 #  {.tabset .tabset-pills .tabset-fade}
+
 ```{r setup, include=FALSE}
 ## Clear environment 
 rm(list=ls())
@@ -34,24 +35,24 @@ library(incidence)
 library(vegan)
 library(goeveg)
 library(randtests)
+
 ```
 
-# NSF - EAGER: A novel investigation of population and community temporal trajectories leveraging experimental disturbances from the Konza Prairie Long-Term Ecological Research Network site
+# NSF - EAGER: A novel investigation of population and community temporal trajectories leveraging experimental disturbances from the Konza Prairie Long-Term Ecological Research Network site {.tabset}
 
 ##Functions
-This section is dedicated to the functions that will be applied to datasets. 
+This section is dedicated to the functions that will be applied to our datasets. 
 
 ###getTrends
 The "getTrends" function will classify each taxa's species from each watershed into distinct categories, which include: 
-- "Always_absent" <- though species was detected at other surrounding watersheds, it was never present at the specified watershed during the duration of the study
-- "Always_present" <- species at watershed is present in every year in which data was collected
-- "Random" <- species is detected sporadically for the duration of the study at watershed
-- "Recurrent" <- species is detected in consecutive years and is followed by the absence of the species for a period of time, in a distinct pattern
-- "Increasing" <- the presence of the species increases throughout the duration of the study (it isn't present during the beginning of the study, but appears towards the end of the study)
-- "Decreasing' <- the presence of the species decreases throughout the duration of the study (it is  present during the beginning of the study, but then disappears towards the end of the study)
+- **"Always_absent"** <- though species was detected at other surrounding watersheds, it was never present at the specified watershed during the duration of the study
+- **"Always_present"** <- species at watershed is present in every year in which data was collected
+- **"Random"** <- species is detected sporadically for the duration of the study at watershed
+- **"Recurrent"** <- species is detected in consecutive years and is followed by the absence of the species for a period of time, in a distinct pattern
+- **"Increasing"** <- the presence of the species increases throughout the duration of the study (it isn't present during the beginning of the study, but appears towards the end of the study)
+- **"Decreasing"** <- the presence of the species decreases throughout the duration of the study (it is  present during the beginning of the study, but then disappears towards the end of the study)
 
-```{r}
-
+```{r getTrends}
 
 getTrends <- function(x) {
   #input (x) is a single row of a matrix where the species are rows and the columns are each year with 1/0 values (1=present, 0=absent). 
@@ -81,10 +82,6 @@ getTrends <- function(x) {
     v <- sum(l)
   }
   
-  # identifies if the species was present (1) or absent(0)
-   # at the beginning of the timeseries
-   # for our study, we generally ignore the baseline
-  bsline <- x[1]
   
   # If all the values are 0, it is always absent
   if (tssum == 0) {
@@ -94,7 +91,7 @@ getTrends <- function(x) {
     runsTestPV <- NA
     trend <- NA
     trendPlus <- NA
-    cat <- "Always_absent"
+    cat <- "No change-always_absent"
   }
   
   # if all the values are 1, it is always present
@@ -105,7 +102,7 @@ getTrends <- function(x) {
     runsTestPV<-NA
     trend<-NA
     trendPlus<-NA
-    cat<-"Always_present"
+    cat<-"No change-always_present"
   }
   
   else {
@@ -136,8 +133,10 @@ getTrends <- function(x) {
     if(p_val > 0.05) trend<-0
     
     #conduct a runs test on the time-series
-    runsPV <- tseries::runs.test(as.factor(x), alternative="less")
+    runsPV <- tseries::runs.test(as.factor(x), alternative = "less")
     runsTestPV <- runsPV$p.value
+    if (is.nan(runsTestPV)) {
+      runsTestPV <- 2}
     
     # if Chi-sq test insignif. and the runs test was significant
     if((p_val > 0.05) & (runsTestPV < 0.05)) {
@@ -155,27 +154,141 @@ getTrends <- function(x) {
   
   # for each species, record the summary statistics
   statSumm <- tibble("chiPval"=p_val, "runsPval"=runsTestPV, 
-                 "trend"=trend, "bsline"=bsline, "category"=cat)
+                 "trend"=trend, "bsline"=bsline, "category"= as.factor(cat))
   
   return(statSumm)
 } 
 
 ```
 
-##Small-mammals (1992 - 2013)
+###Randomization function
+This is the original randomization function from Gotelli et al. to validate the accuracy of our classification functions. I need to go through this and make sure I understand what each step is.
+```{r randomization}
+## where t1 is the long form time series and p1 is the subset of species with the classification to be randomised
+
+### this first function takes account only of presence and absence
+
+getRandomisation<-function(t1, p1) {
+  
+  df<-data.frame()
+  nameRow<-c()
+  
+  m1<-as.data.frame(pivot_wider(t1, names_from=Year, values_from=Abundance))
+  m1[is.na(m1)]<-0
+  nameCol<-unique(t1$Year)
+  
+  for(i in 1:length(m1$Species)) {
+    x<-m1[i,]
+    sp<-as.vector(m1[i,1])
+    dird<-as.vector(unique(p1$Species))
+    if(sp %in% dird) {
+      nameRow<-c(nameRow, sp)
+      x<-x[-1]
+      x[x>0]<-1
+      y<-as.data.frame(t(x))[,1]
+      v<-sample(y[-1])
+      z<-c(y[1], v)
+      df<-rbind(df, z)
+    }
+    if(!sp %in% dird) {
+      nameRow<-c(nameRow, sp)
+      x<-x[-1]
+      x[x>0]<-1
+      y<-as.data.frame(t(x))[,1]
+      z<-y
+      df<-rbind(df, z)
+    }
+  }
+  
+  colnames(df)<-nameCol
+  rownames(df)<-nameRow
+ 
+  nameCR<-c("Species", nameCol)
+  names(df)<-nameCR
+  df2<-as.data.frame(t(df))
+  df3<-df2[-1,]
+  names(df3)
+  names(df3)<-nameRow
+  
+  return(df3)
+}
+
+### function to replace sample to shuffle weighted by abundance
+
+abun_shuffle <- function() {
+  
+  occur_shuf <- rep(0,length(occur)) # set up an empty vector
+  index <- seq_along(occur) # set up vector of indices
+  presence <- sample(x=index,size=sum(occur),prob=abun) # select index values 
+  occur_shuf[presence] <- 1 #assign occurrences
+  return(occur_shuf)
+} # end of abun_shuffle
+# -------------------------------------
+
+
+## revised randomisation function which now includes the vector of abundances for a time series
+
+getAbundRandomisation<-function(t1, p1, rf1) {
+  
+  df<-data.frame()
+  nameRow<-c()
+  
+  m1<-as.data.frame(pivot_wider(t1, names_from=Year, values_from=Abundance))
+  m1[is.na(m1)]<-0
+  nameCol<-unique(t1$Year)
+  
+  for(i in 1:length(m1$Species)) {
+    x<-m1[i,]
+    sp<-as.vector(m1[i,1])
+    dird<-as.vector(unique(p1$Species))
+    if(sp %in% dird) {
+      nameRow<-c(nameRow, sp)
+      x<-x[-1]
+      x[x>0]<-1
+      y<-as.data.frame(t(x))[,1]
+      v<-abun_shuffle(y[-1], rf1[-1])
+      z<-c(y[1], v)
+      df<-rbind(df, z)
+    }
+    if(!sp %in% dird) {
+      nameRow<-c(nameRow, sp)
+      x<-x[-1]
+      x[x>0]<-1
+      y<-as.data.frame(t(x))[,1]
+      z<-y
+      df<-rbind(df, z)
+    }
+  }
+  
+  colnames(df)<-nameCol
+  rownames(df)<-nameRow
+  
+  nameCR<-c("Species", nameCol)
+  names(df)<-nameCR
+  df2<-as.data.frame(t(df))
+  df3<-df2[-1,]
+  names(df3)
+  names(df3)<-nameRow
+  
+  return(df3)
+}
+```
+
+## Small-mammals (1992 - 2013) {.tabset}
 This section is dedicated to cleaning and classifying the species for the small-mammal trapping dataset. 
 
 Data was collected from 1981 to 2013, but we are only looking at data collected between 1992 to 2013 because bison weren't introduced to the bison plots until 1992.
 
-***
+---
+
 Watersheds included in the raw dataset: 
 1D, 4B, *4F*, 20B, N1B, N4D, N20B.
 *italicized* = *watersheds excluded in our analysis*
 
 Reasons for exclusion:
 *4F* = Removed to have equal representation of comparable treatments; there are 2 watersheds with the 4-year fire-interval + ungrazed treatment (4B and 4F), and only one watershed with the 4-year fire-interval + grazed treatment (N4D). We removed 4F because 4B is more commonly sampled in our other datasets. We did do a Bray-Curtis Dissimilarity test between 4F and 4B after standardizing for the total number of observations per watershed and found they were ~9% dissimilar/~91% similar regarding small-mammal population.
-***
 
+---
 
 Author: Donald Kaufman
 
@@ -186,6 +299,8 @@ Data code: CSM01
 File(s): 
 - CSM011.csv <- The counts of species observed during their sampling periods at each watershed from 1981 to 2013.
 - CSM012.csv <- Traits of the individual small mammals trapped, such as the mass, sex, relative age, pregnancy status, etc..
+
+---
 
 Summary of changes:
 - During winter 1981-1982, the Konza Prairie management committee shifted treatment boundaries, so our traplines in N00D were encompassed in the new boundaries of N01D. Therefore, we established two new traplines in another treatment unit (N00B) in spring 1982.
@@ -202,9 +317,11 @@ Summary of changes:
 - In May 1992, gates were opened between phase I and phase II of the bison area. N01B, N04D and N20B lie within the phase II area. 
 - All sampling periods from autumn 1981 through spring 1992 on these three treatment units occurred on traplines that had not been grazed by bison.
 
-###Small-mammals: Cleaning and organization
+---
+
+### Small-mammals: Cleaning and organization
 In this section, I read in the small-mammal data, check the data for errors, rename some columns and entries, choose the watersheds I want to further analyze, and separate the data from 1992 and onwards. 
-```{r}
+```{r smammals cleaning}
 #Seasonal summaries of small mammals on LTER traplines 
 smammals_raw <- read_csv("Datasets_EAGER/Small_mammals/knb-lter-knz.88.9_FourteenTraplines/CSM011.csv")
 
@@ -213,11 +330,11 @@ watershed_info <- read_excel("Datasets_EAGER/Other/Watershed Info.xlsx")
 
 
 #Separating the watershed/line column into two separate columns and creating a new dataset
-smammals <- separate(smammals_raw, `WATERSHED/LINE`, into = c("WATERSHED", "LINE"), sep = "-")
+smammals_all <- separate(smammals_raw, `WATERSHED/LINE`, into = c("WATERSHED", "LINE"), sep = "-")
 
 
 #Renaming columns just so that they're not all capitalized
-smammals <- smammals %>% rename("Watershed_name" = "WATERSHED", 
+smammals_all <- smammals_all %>% rename("Watershed_name" = "WATERSHED", 
                                 "Datacode" = "DATACODE",
                                 "Rectype" = "RECTYPE", 
                                 "Recyear" = "RECYEAR", 
@@ -225,7 +342,7 @@ smammals <- smammals %>% rename("Watershed_name" = "WATERSHED",
                                 "Line" = "LINE")
 
 #Shortening the names of the watersheds
-smammals$Watershed_name <- dplyr::recode(smammals$Watershed_name,
+smammals_all$Watershed_name <- dplyr::recode(smammals_all$Watershed_name,
                                        "004F" = "4F",
                                        "004B" = "4B",
                                        "001D" = "1D",
@@ -235,12 +352,12 @@ smammals$Watershed_name <- dplyr::recode(smammals$Watershed_name,
                                        "N04D" = "N4D")
 
 #Pivoting the table so that each species per year and watershed is a different row
-smammals_long <- pivot_longer(smammals, cols = 8:21, 
+smammals <- pivot_longer(smammals_all, cols = 8:21, 
                               names_to = "Species", 
                               values_to = "Count")
 
 #Renaming the species into their full names
-smammals_long$Species <- dplyr::recode(smammals_long$Species,
+smammals$Species <- dplyr::recode(smammals$Species,
                                      "Pm" = "Peromyscus_maniculatus",
                                      "Rmeg" = "Reithrodontomys_megalotis",
                                      "Sh" = "Sigmodon_hispidus",
@@ -257,35 +374,39 @@ smammals_long$Species <- dplyr::recode(smammals_long$Species,
                                      "Cp" = "Cryptotis_parva")
 
 #Separate the dataset from 1992 onwards since bison weren't introduced until then.
-smammals_long <- smammals_long %>% subset(.$Recyear >= 1992)
+smammals <- smammals %>% subset(.$Recyear >= 1992)
 
 
 #Since I likely won't differentiate the data based on the trap lines, I am summing the data based on just watershed
-smammals_long <- smammals_long %>% group_by(Recyear, Watershed_name, Species) %>% 
+smammals <- smammals %>% group_by(Recyear, Watershed_name, Species) %>% 
   reframe(Count = sum(Count))
 
 
 # Removing the 4F watershed to make sampling between all fire/grazing treatments equal (the 4 year fire interval with no grazing combination of disturbances has two watersheds represented, while all other combinations have just one).
-smammals_long <- smammals_long %>% subset(Watershed_name != "4F")
+smammals <- smammals %>% subset(Watershed_name != "4F")
 
+#Creating a table with the small mammal common names, to join to the main dataset and make referencing easier in plots
+smammals_commonnames <- tibble(Species = c("Blarina_hylophaga", "Chaetodipus_hispidus", "Cryptotis_parva", "Microtus_ochrogaster", "Mus_musculus", "Neotoma_floridana", "Peromyscus_leucopus", "Peromyscus_maniculatus", "Reithrodontomys_megalotis", "Reithrodontomys_montanus", "Sigmodon_hispidus", "Spermophilus_tridecemlineatus", "Synaptomys_cooperi", "Zapus_hudsonius"), Common_name = c("Elliot's short-tailed shrew", "Hispid pocket mouse", "North American least shrew", "Prairie vole", "House mouse", "Eastern woodrat", "White-footed mouse", "Deer mouse", "Western harvest mouse", "Plains harvest mouse", "Hispid cotton rat", "Thirteen-lined ground squirrel", "Southern bog lemming", "Meadow jumping mouse"))
+
+smammals <- left_join(smammals, smammals_commonnames, by = "Species")
 
 ```
 
-###Small-mammals: Presence/Absence & Classification
+### Small-mammals: Presence/Absence & Classification
 For this section, I am reorganizing the data to be able to format it into a presence/absence matrix. This matrix will then be ran through the getTrends function to get the classifications for each species at each watershed.
-```{r}
+```{r smammals pa}
 #Combining the species and watershed variables so that each species per watershed per year is a unique identifier
-smammals_long <- smammals_long %>% unite("Species.watershed", Species:Watershed_name, sep = ".")
+smammals<- smammals %>% unite("Species.watershed", Species:Watershed_name, sep = ".")
 
 #Pivoting the table so that each year is a column and each row is the 'species.watershed' variable
-smammals_years_wide <- smammals_long %>% 
+smammals_years_wide <- smammals %>% 
   pivot_wider(names_from = "Recyear", values_from = "Count")
 
 #Creating a separate species.watershed dataframe to add back to the dataset after standardization
-smammals_env <- smammals_years_wide[, 1]
+smammals_env <- smammals_years_wide[, 1:2]
 
 #Standardizing by presence/absence
-decostand_smammals_pa <- decostand(smammals_years_wide[, -(1)], "pa", na.rm = TRUE )
+decostand_smammals_pa <- decostand(smammals_years_wide[, -(1:2)], "pa", na.rm = TRUE )
 
 #Transforming the presence/absence data into a matrix so I can feed it to the function
 smammals_pa_matrix <- as.matrix(decostand_smammals_pa)
@@ -309,9 +430,12 @@ smammals_class_long <- smammals_class %>% pivot_longer(cols = "1992":"2013",
 
 ```
 
-###Small-mammals: Exploration plots
+### Small-mammals: Exploration plots
 This section is dedicated for exploratory plots to just get some inital visuals for the data. 
-```{r}
+```{r smammals plots}
+
+
+
 #Joining the watershed_info dataset with the actual small mammal dataset
 smammals_class_long <- left_join(smammals_class_long, watershed_info, by = "Watershed_name")
 
@@ -323,45 +447,106 @@ smammals_class_long <- smammals_class_long %>% mutate(Fire_interval = factor(Fir
                     Watershed_name = factor(Watershed_name))
 
 
+smammals_graphing <- smammals_class_long %>% dplyr::select(Recyear, Species, Common_name, category, Presence, Watershed_name, Fire_interval, Grazing)
+
+smammals_graphing <- smammals_graphing %>% unite("Disturbance treatment", 
+                                                     Fire_interval:Grazing, sep = "_", remove = FALSE)
+
 #Making the zeroes in the presence column into NAs for plotting (that way they don't show up on the graph)
-smammals_class_long$Presence[smammals_class_long$Presence == 0] <- NA
+smammals_graphing$Presence[smammals_class_long$Presence == 0] <- NA
 
 #Making sure the Recyear is coded as numeric 
-smammals_class_long <- smammals_class_long %>% mutate(Recyear = as.numeric(Recyear))
+smammals_graphing <- smammals_graphing %>% mutate(Recyear = as.numeric(Recyear))
 
 #Reordering the fire intervals for plotting
-smammals_class_long$Fire_interval <- factor(smammals_class_long$Fire_interval, 
+smammals_graphing$`Disturbance treatment` <- factor(smammals_graphing$`Disturbance treatment`,
+                                           levels = c("1_year_Ungrazed", "1_year_Bison", 
+                                                      "4_years_Ungrazed",  "4_years_Bison",
+                                                      "20_years_Ungrazed", "20_years_Bison"))
+
+smammals_graphing$Fire_interval <- factor(smammals_graphing$Fire_interval,
                                            levels = c("1_year", "4_years", "20_years"))
 #Reordering the grazing for plotting
-smammals_class_long$Grazing <- factor(smammals_class_long$Grazing,
+smammals_graphing$Grazing <- factor(smammals_graphing$Grazing,
                                      levels = c("Ungrazed", "Bison"))
 #Reordering the watersheds for plotting
-smammals_class_long$Watershed_name <- factor(smammals_class_long$Watershed_name,
+smammals_graphing$Watershed_name <- factor(smammals_graphing$Watershed_name,
                                         levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"))
 
+smammals_graphing$category <- factor(smammals_graphing$category,
+                                        levels = c("No change-always_absent", "No change-always_present", "Increasing", "Recurrent", "Random"))
+
 #Creating a graph to look at the classification by species and presence/absence by year
-smammals_class_long %>% ggplot(aes(x = Recyear, y = Presence, fill = category)) + 
+smammals_graphing %>% ggplot(aes(x = Recyear, y = Presence, fill = category)) + 
   geom_tile(width = .6, height = .6) + 
-  facet_grid(Species~Watershed_name, switch = "y") +
-  theme(text = element_text(size=7),
-        axis.text.x = element_text(angle=45, hjust=1, size =7),
-        axis.text.y = element_text(size=5),
-        strip.text.y.left = element_text(angle = 0, size = 3),
-        strip.text.x.top = element_text(size = 7)) +
-  geom_vline(xintercept = 2002.5, linetype= 3) +
+  facet_grid(Common_name~`Disturbance treatment`, switch = "y") +
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1, size =12),
+        axis.text.y = element_text(size=12),
+        strip.text.y.left = element_text(angle = 0, size = 10),
+        strip.text.x.top = element_text(size = 10)) +
+  geom_vline(xintercept = 2002.5, linetype= 2) +
+  coord_fixed(ratio = 5) +
   labs(x = "Year", y = "Presence") +
-  scale_fill_manual(values = c("NA", "black", "darkolivegreen4", "dodgerblue2", "darkorchid"))
+  scale_fill_manual(values = c("NA", "black", "darkolivegreen4", "darkorchid", "dodgerblue2"))
+
+smammals_pm <- smammals_graphing %>% filter(Species == "Peromyscus_maniculatus")
+
+smammals_pm %>% ggplot(aes(x = Recyear, y = Presence, fill = category)) + 
+  geom_tile(width = 0.6, height = 0.6) + 
+  facet_grid(Common_name~`Disturbance treatment`, switch = "y") +
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1, size =12),
+        axis.text.y = element_text(size=12),
+        strip.text.y.left = element_text(angle = 0, size = 10),
+        strip.text.x.top = element_text(size = 10)) +
+  geom_vline(xintercept = 2002.5, linetype= 2) +
+  labs(x = "Year", y = "Presence") +
+  scale_fill_manual(values = c("black", "dodgerblue2"))
+
+smammals_pl <- smammals_graphing %>% filter(Species == "Peromyscus_leucopus")
+
+smammals_pl %>% ggplot(aes(x = Recyear, y = Presence, fill = category)) + 
+  geom_tile(width = 0.6, height = 0.6) + 
+  facet_grid(Common_name~`Disturbance treatment`, switch = "y") +
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1, size =12),
+        axis.text.y = element_text(size=12),
+        strip.text.y.left = element_text(angle = 0, size = 10),
+        strip.text.x.top = element_text(size = 10)) +
+  geom_vline(xintercept = 2002.5, linetype= 2) +
+  labs(x = "Year", y = "Presence") +
+  scale_fill_manual(values = c("black", "dodgerblue2"))
+
+
+smammals_nf <- smammals_graphing %>% filter(Species == "Neotoma_floridana")
+
+smammals_nf %>% ggplot(aes(x = Recyear, y = Presence, fill = category)) + 
+  geom_tile(width = 0.6, height = 0.6) + 
+  facet_grid(Common_name~`Disturbance treatment`, switch = "y") +
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1, size =12),
+        axis.text.y = element_text(size=12),
+        strip.text.y.left = element_text(angle = 0, size = 10),
+        strip.text.x.top = element_text(size = 10)) +
+  geom_vline(xintercept = 2002.5, linetype= 2) +
+  labs(x = "Year", y = "Presence") +
+  scale_fill_manual(values = c("NA", "darkolivegreen4", "darkorchid", "dodgerblue2"))
+
 
 
 ```
 
 
-##Birds (1992 - 2009)
+## Birds (1992 - 2009) {.tabset}
 This section is dedicated to cleaning and analyzing the bird-sampling data set. 
 
 Data was collected from 1981 to 2009, but we are only looking at data collected between 1992 to 2009 because bison weren't introduced to the bison plots until 1992.
 
-***
+Censuses are conducted two times during the year: during the first two weeks of January as a measure of wintering populations, and during the first two weeks of June as a measure of breeding populations.
+
+---
+
 Watersheds included in the raw dataset: 
 1D, 4A, 4B, *4D*, 20B, *20C*, N1B, N4B, N4D, N20B, *R1B*, *R20A*, *LA*, *SA*, *GA*
 *italicized* = *watersheds excluded in our analysis* 
@@ -372,9 +557,9 @@ Reasons for exclusion:
 *R1B* = This watershed doesn't fit into the disturbance framework we are assessing; this watershed was burned every 20 years till 2000 and is now burned yearly.
 *R20A* = Similarly to watershed R1B, this doesn't fit into the disturbance framework we are assessing; this watershed was burned yearly up till 2000 and is now burned every 20 years.
 *LA, SA, GA* = These are not watersheds. They are gallery forest and forest edge areas located in lower King's Creek, north fork, and upper Shane's Creek at Konza. Since they are forest locations and don't fit into the disturbance framework we are assessing, we dropped them.
-***
 
-Censuses are conducted two times during the year: during the first two weeks of January as a measure of wintering populations, and during the first two weeks of June as a measure of breeding populations.
+---
+
 
 Data author: Alice Boyle
 
@@ -384,13 +569,17 @@ Data code: CBP01
 
 File(s): CBP011.csv <- The counts of species observed during their sampling periods at each watershed from 1981 to 2009.
 
+---
+
 Summary of changes up to 1993 (this is all that was included in the metadata): 
 - 1981: Transects were as presently located except no transect in N20B and there were transects in  N20C (now N01A), N20D (now part of N01B), N01C (now N02B), N01D (now part of N01B), and N04C (now N04B). 
 - 1982: Transects in N20C (N01A) and N01C (N02B) were dropped, N20D was maintained in what is now N01B. N01D became the second transect in what is now N01B, and N04C transect was maintained in what is now N04B. N20B was added. 
 - 1990: 004d became SA and transect was dropped.
 
-###Birds: Cleaning and organizing
-```{r}
+---
+
+### Birds: Cleaning and organizing
+```{r birds cleaning}
 #Read in and view bird data
 birds_raw <- read_csv("Datasets_EAGER/Birds/knb-lter-knz.26.12/CBP011.csv", show_col_types = FALSE)
 
@@ -474,12 +663,12 @@ birds <-  subset(birds, !(AOU_code %in% c("NONE", "VOID", "UNSP", "UNEM", "RSTO"
 birds$AOU_code <- dplyr::recode(birds$AOU_code,
                                 "eawp" = "EAWP")
 
-
+length(unique(birds$AOU_code))
 
 ```
 
-###Birds: Presence/Absence & Classification
-```{r}
+### Birds: Presence/Absence & Classification
+```{r birds pa}
 
 #Selecting the columns I want for further analysis 
 birds_group <- birds %>% group_by(Recyear, Watershed_name, AOU_code) %>% 
@@ -534,8 +723,8 @@ birds_class_long <- birds_class %>% pivot_longer(cols = "1992":"2009",
 
 ```
 
-###Birds: Exploration Plots
-```{r}
+### Birds: Exploration Plots
+```{r birds plots}
 
 #Joining the watershed_info dataset with the actual birds dataset
 birds_class_long <- left_join(birds_class_long, watershed_info, by = "Watershed_name")
@@ -582,12 +771,13 @@ birds_graphing %>% ggplot(aes(x = Recyear, y = Presence, fill = category)) +
 ```
 
 
-##Grasshoppers (2002 - 2020)
+## Grasshoppers (2002 - 2020) {.tabset}
 This section is dedicated to cleaning the grasshopper sweeping dataset. 
 
 Data was collected from 1982 to 2020, but we are only looking at data from 2002 to 2020 because sampling at the bison plots was suspended from 1985 - 2002.
 
-***
+---
+
 Watersheds included in the raw dataset: 
 *B*, *NB*, 1D, *2C*, *2D*, 4B, *4D*, 4F, *4G*, *10D*, 20B, *N1A*, N1B, N4A, N4D, *N20A*, N20B, *SpB*, *SuB*
 *italicized* = *watersheds excluded in our analysis*
@@ -604,7 +794,8 @@ Reasons for exclusion
 *N20A* = Similarly to N1A, we removed this watershed to have equal representation of comparable treatments; there are 2 watersheds with the 20-year fire-interval + grazed treatment (N20A and N20B), and only one watershed with the 20-year fire-interval + ungrazed treatment (20B). We removed N20A because N20B is more commonly sampled in our other datasets. We did do a Bray-Curtis Dissimilarity test between N20A and N20B after standardizing for the total number of observations per watershed and found they were ~16% dissimilar/ ~84% similar regarding grasshopper population.
 *SpB* = Not included because it doesn't fit into the disturbance framework we are assessing. This watershed is an experimental plot that is burned annually in the Spring and exists to compare how burning in different seasons can affect ecological processes. 
 *SuB* = Not included because it doesn't fit into the disturbance framework we are assessing. This watershed is an experimental plot that is burned annually in the Summer and exists to compare how burning in different seasons can affect ecological processes.
-***
+
+---
 
 Author: Anthony Joern
 
@@ -617,6 +808,7 @@ File(s):
 - CGR022.csv <- The species count data we will use for our classification and analysis. 
 - CGR023.csv <- Additional information on the individual grasshoppers caught, including the instar stage and sex. 
 
+---
 
 Summary of changes: 
 - 1982-1987: Sites were sampled at various earlier dates in addition to the late July-early August.
@@ -635,8 +827,10 @@ Summary of changes:
 - 2016: In years when SuB is burned, pre-burn and post-burn sweeps will be done. Timing for pre-burn will be mid-July and timing for post-burn will be mid-September. 
 - 2018: March 14. 004B – A was burned in a wildfire. A third sweep, “C”, will be done in the vicinity of pab011 FC until 2021 when 004b is scheduled to burn per “normal” schedule.
 
-###Grasshoppers: Cleaning and organizing
-```{r}
+---
+
+### Grasshoppers: Cleaning and organizing
+```{r grasshoppers cleaning}
 
 grasshoppers_raw <- read_csv("Datasets_EAGER/Grasshoppers/knb-lter-knz.29.20/CGR022.csv", show_col_types = FALSE) #This dataset is the grasshopper species counts from each set of sweeps
 grasshopper_families <- read_excel("Datasets_EAGER/Grasshoppers/Grasshopper_families.xlsx") #Dataset I created that records the families and suborders for each grasshopper genus in the dataset; I am going to only look at grasshoppers from the suborder Caelifera because those from the suborder Ensifera (family/genus: Oecanthinae, Gryllidae, and Tettigoniidae) were not counted until 2013.
@@ -812,10 +1006,11 @@ grasshoppers <- grasshoppers %>% subset(Genus != "Unknown")
 ##Removing the entries that aren't identified to species 
 grasshoppers <- grasshoppers %>% subset(Spp != "spp.")
 
+length(unique(grasshoppers$Spp_code))
 ```
 
-###Grasshoppers: Presence/Absence & Classification
-```{r}
+### Grasshoppers: Presence/Absence & Classification
+```{r grasshoppers pa}
 
 #Selecting the columns I want for further analysis 
 grasshoppers_group <- grasshoppers %>% 
@@ -873,8 +1068,8 @@ grasshoppers_class_long <- grasshoppers_class %>% pivot_longer(cols = "2002":"20
 
 ```
 
-###Grasshoppers: Exploration Plots
-```{r}
+### Grasshoppers: Exploration Plots
+```{r grasshoppers plots}
 
 grasshoppers_graphing <- grasshoppers_class_long
 
@@ -905,15 +1100,18 @@ grasshoppers_graphing %>% ggplot(aes(x = Recyear, y = Presence, fill = category)
         axis.text.y = element_text(size=5),
         strip.text.y.left = element_text(angle = 0, size = 3),
         strip.text.x.top = element_text(size = 7)) +
+   geom_vline(xintercept = 2011.5, linetype= 2) +
   scale_fill_manual(values = c("NA", "black", "dodgerblue2", "darkorchid", "firebrick3")) +
   labs(x = "Year", y = "Presence", fill = "Classification")
 
 ```
 
-##Plants (1992 - 2022)
+## Plants (1992 - 2022) {.tabset}
 This section is dedicated to cleaning and analyzing the plant species composition/cover dataset. 
 
 Data was collected from 1983 to 2022, but we are only looking at data collected between 1992 to 2022 because bison weren't introduced to the bison plots until 1992.
+
+---
 
 Watersheds included in the raw dataset: *1A*, *1C*, 1D, *2C*, *2D*, 4A, 4B, *4F*, *20A*, 20B, *20D*, *N1A*, N1B, *N2A*, *N2B*, N4A, N4D, *N20A*, N20B, *R1A*, *R1B*, *SpA*, *SpB*, *SuA*, *SuB*, *FA*, *WA*, *WB*
 
@@ -940,8 +1138,7 @@ Reasons:
 *WA* = Not included because it doesn't fit into the disturbance framework we are assessing. This watershed is an experimental plot that is burned annually in the Winter and exists to compare how burning in different seasons can affect ecological processes.
 *WB* = Not included because it doesn't fit into the disturbance framework we are assessing. This watershed is an experimental plot that is burned annually in the Winter and exists to compare how burning in different seasons can affect ecological processes.
 
-
-
+---
 
 Author: David Hartnett, Scott Collins, Zak Ratajczak
 
@@ -961,8 +1158,10 @@ Summary of changes:
 - The old 'D' transect was sampled from 1983 to 1987 and then abandoned when the bison fence was constructed. 
 - Thus, plots d1-d5 from 1983-1987 are NOT the same d1-d5 plots in subsequent years.
 
-###Plants: Cleaning and organizing
-```{r}
+---
+
+### Plants: Cleaning and organizing
+```{r plants cleaning}
 plants_raw <- read_csv("Datasets_EAGER/Plants/knb-lter-knz.69.21_SpeciesComposition/PVC021.csv")
 
 watershed_info <- read_excel("Datasets_EAGER/Other/Watershed Info.xlsx")
@@ -1035,10 +1234,12 @@ plants <- subset(plants,!(Genus_spp %in% c("annual_forb", "carex_spp.",
 plants$Genus_spp<- dplyr::recode(plants$Genus_spp,
                                  "Lithos_occid" = "lithos_occid")
 
+length(unique(plants$Genus_spp))
+
 ```
 
-###Plants: Presence/Absence & Classification
-```{r}
+### Plants: Presence/Absence & Classification
+```{r plants pa}
 #Selecting the columns I want for further analysis 
 plants_group <- plants %>% 
   group_by(Recyear, Genus_spp, Watershed_name) %>% 
@@ -1071,7 +1272,6 @@ decostand_plants_pa <- decostand(plants_years_wide[, -c(1)], "pa", na.rm = FALSE
 decostand_plants_pa[is.na(decostand_plants_pa)] <- 0
 
 
-
 #Transforming the presence/absence data into a matrix so I can feed it to the function
 plants_pa_matrix <- as.matrix(decostand_plants_pa)
 
@@ -1092,7 +1292,6 @@ plants_class <- plants_class %>% separate(Species.watershed, c("Genus", "Spp", "
 plants_class_long <- plants_class %>% pivot_longer(cols = "1992":"2022", 
                                                  names_to = "Recyear", 
                                                  values_to = "Presence")
-
 
 ```
 
