@@ -3,3 +3,14 @@
 .RData
 .Ruserdata
 .DS_Store
+Datasets_EAGER/Plants/.DS_Store
+Datasets_EAGER/Other/.DS_Store
+Datasets_EAGER/Other/.DS_Store
+*.shx
+*.shp
+*.sbx
+*.sbn
+*.prj
+*.dbf
+Datasets_EAGER/Abiotic/.DS_Store
+*.xml
