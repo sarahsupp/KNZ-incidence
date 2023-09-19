@@ -77,9 +77,9 @@ getTrends <- function(x) {
   
   # identifies when a change from a 0 to a 1 or vice versa happens
   for(k in 1:(tslen-1)) {
-    j <- abs(x[k+1] - x[k])
+    j <- x[k+1] - x[k]
     l <- c(l, j)
-    v <- sum(l)
+    v <- sum(abs(l))
   }
   
   
@@ -105,6 +105,7 @@ getTrends <- function(x) {
     cat<-"No change-always_present"
   }
   
+   #If the time series contains changes, then we do a chi-sq test to detect any directed change in the time series.
   else {
      
     #adds rownames to the z_x table
@@ -130,7 +131,7 @@ getTrends <- function(x) {
     }
     
     # Chi-squared test not significant
-    if(p_val > 0.05) trend<-0
+    if(p_val > 0.05) trend <- 0
     
     #conduct a runs test on the time-series
     runsPV <- tseries::runs.test(as.factor(x), alternative = "less")
@@ -153,8 +154,7 @@ getTrends <- function(x) {
   }
   
   # for each species, record the summary statistics
-  statSumm <- tibble("chiPval"=p_val, "runsPval"=runsTestPV, 
-                 "trend"=trend, "bsline"=bsline, "category"= as.factor(cat))
+  statSumm <- tibble("numyears" = tslen, "numpresent" = tssum, "chiPval"=p_val, "chi_fearly" = f_early, "chi_flate" = f_late, "runsPval"=runsTestPV, "numtransitions" = v, "trend"=trend, "category"= as.factor(cat))
   
   return(statSumm)
 } 
@@ -414,8 +414,8 @@ smammals_pa_matrix <- as.matrix(decostand_smammals_pa)
 #Applying the getTrends function to each row of the presence/absence matrix
 smammals_trends <- apply(smammals_pa_matrix, 1, getTrends)
 
-#Creating a table with the species.watershed and the Trends info. I excluded the bsline info.
-smammals_classification <- tibble((smammals_env), do.call(rbind,lapply(smammals_trends,(function(v){v[c(1,2,3,5)]}))))
+#Creating a table with the species.watershed and the Trends info. I excluded the bsline info. ADD INFO ABOUT WHAT THIS IS TAKING FROM 
+smammals_classification <- tibble((smammals_env), do.call(rbind,lapply(smammals_trends,(function(v){v[c(1,2,3,4,5,6,7,8,9)]}))))
 
 #Adding in the presence/absence per year data back in 
 smammals_class <- smammals_classification %>% add_column(decostand_smammals_pa, .before = "chiPval")
