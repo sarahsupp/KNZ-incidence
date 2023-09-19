@@ -19,7 +19,6 @@ fontsize: 12pt
 ## Clear environment 
 rm(list=ls())
 
-
 ##Libraries
 library(tidyverse)
 library(cowplot)
@@ -160,13 +159,21 @@ datecheck <- plantcomp4 %>% group_by(Date)%>% reframe(Cover = sum(Cover))
 ```{r}
 #This section is for checking the sampling amounts for certain variables/parameters
 
-plantcomp_group1 <- plantcomp3 %>% group_by(Recyear, Watershed_name, Genus_spp) %>% 
+plantcomp_group1 <- plantcomp1 %>% group_by(Recyear, Watershed_name, Genus_spp) %>% 
   reframe(Cover = sum(Cover))
 
 plantcomp_wide1 <- plantcomp_group1 %>% pivot_wider(names_from = Genus_spp, values_from = Cover)
 
-plantcomp_count1 <- plantcomp_wide1 %>% group_by(Watershed_name) %>% 
+plantcomp_count1 <- plantcomp_wide1 %>% group_by(Recyear, Watershed_name) %>% 
   summarise(total_count=n(),.groups = 'drop')
+
+
+plantcomp_count1 %>% ggplot(aes(x = Recyear, y = total_count, color = Watershed_name)) +
+  geom_point() +
+  facet_wrap(.~Watershed_name) +
+  theme(text = element_text(size=12),
+        axis.text.x = element_text(angle=45, hjust=1, size =12)) +
+   geom_vline(xintercept = 1992, linetype= 2)
 
 
 #After looking at the total number of times each watershed is sampled, I decided to cut watersheds 1A, 1C, 20A, 20D, 4F, N1A, and N20A. And keep watersheds 1D, 20B, 4A, 4B, N1A, N1B, N20A, N20B, N4A, and N4D
@@ -177,35 +184,35 @@ plantcomp4 <- plantcomp4 %>% subset(Watershed_name %in% c("1D", "20B", "4A",
                                                           "N4D"))
 
 #Checking the months the watershed were sampled in
-# plantcomp_group2 <- plantcomp4 %>% group_by(Recyear, Watershed_name, Genus_spp) %>% 
-#   reframe(Cover = sum(Cover))
-# 
-# plantcomp_wide2 <- plantcomp_group2 %>% pivot_wider(names_from = Genus_spp, values_from = Cover)
-# 
-# plantcomp_count2 <- plantcomp_wide2 %>% group_by(Recyear, Watershed_name) %>% 
-#   summarise(total_count=n(),.groups = 'drop')
-# 
-# 
-# plantcomp_count2 %>% ggplot(aes(x = Recyear, y = total_count)) + 
-#   geom_point() + 
-#   facet_wrap(.~Watershed_name) + 
-#   theme(text = element_text(size=12),
-#         axis.text.x = element_text(angle=45, hjust=1, size =7))
-# 
-# plantcomp_count2 %>% ggplot(aes(x = Recyear, y = total_count, color = Recmonth)) + 
-#   geom_point(position = "stack") + 
-#   facet_wrap(.~Watershed_name) + 
-#   theme(text = element_text(size=12),
-#         axis.text.x = element_text(angle=45, hjust=1, size =7))
-# 
-# 
-# plantcomp_group3 <- plantcomp5 %>% group_by(Recyear, Recmonth, Watershed_name, Genus_spp) %>% 
-#   reframe(Cover = sum(Cover))
-# 
-# plantcomp_wide3 <- plantcomp_group3 %>% pivot_wider(names_from = Genus_spp, values_from = Cover)
-# 
-# plantcomp_count3 <- plantcomp_wide3 %>% group_by(Watershed_name) %>% 
-#   summarise(total_count=n(),.groups = 'drop')
+plantcomp_group2 <- plantcomp4 %>% group_by(Recyear, Watershed_name, Genus_spp) %>%
+  reframe(Cover = sum(Cover))
+
+plantcomp_wide2 <- plantcomp_group2 %>% pivot_wider(names_from = Genus_spp, values_from = Cover)
+
+plantcomp_count2 <- plantcomp_wide2 %>% group_by(Recyear, Watershed_name) %>%
+  summarise(total_count=n(),.groups = 'drop')
+
+
+plantcomp_count2 %>% ggplot(aes(x = Recyear, y = total_count)) +
+  geom_point() +
+  facet_wrap(.~Watershed_name) +
+  theme(text = element_text(size=12),
+        axis.text.x = element_text(angle=45, hjust=1, size =7))
+
+plantcomp_count2 %>% ggplot(aes(x = Recyear, y = total_count, color = Recmonth)) +
+  geom_point(position = "stack") +
+  facet_wrap(.~Watershed_name) +
+  theme(text = element_text(size=12),
+        axis.text.x = element_text(angle=45, hjust=1, size =7))
+
+
+plantcomp_group3 <- plantcomp5 %>% group_by(Recyear, Recmonth, Watershed_name, Genus_spp) %>%
+  reframe(Cover = sum(Cover))
+
+plantcomp_wide3 <- plantcomp_group3 %>% pivot_wider(names_from = Genus_spp, values_from = Cover)
+
+plantcomp_count3 <- plantcomp_wide3 %>% group_by(Watershed_name) %>%
+  summarise(total_count=n(),.groups = 'drop')
 
 
 ```

@@ -71,6 +71,7 @@ All sampling periods from autumn 1981 through spring 1992 on these three treatme
 #Seasonal summaries of small mammals on LTER traplines 
 smammals_raw <- read_csv("Datasets_EAGER/Small_mammals/knb-lter-knz.88.9_FourteenTraplines/CSM011.csv")
 
+smammals_raw
 #Table including the watershed info for all watersheds
 watershed_info <- read_excel("Datasets_EAGER/Other/Watershed Info.xlsx")
 
@@ -142,6 +143,7 @@ smammals_long <- smammals_long %>% mutate(Fire_interval = factor(Fire_interval),
 #Separate the dataset from 1992 onwards. 
 smammals_long <- smammals_long %>% subset(.$Recyear >= 1992)
 
+smammals_long <- smammals_long %>% subset(Watershed_name != "4F")
 
 #Since I likely won't differentiate the data based on the trap lines, I am summing the data based on just watershed
 smammals_long <- smammals_long %>% group_by(Recyear, Watershed_name, 
@@ -225,6 +227,14 @@ smammals_long_pa <- smammals_long_pa %>% mutate(Species = factor(Species))
 
 ##Calculating persistence
 ```{r}
+
+smammals_years_wide %>% ggplot(aes(x = Species, y = Persistence, fill = Species)) + 
+  geom_col() +  
+  facet_grid(Watershed_name~.) +
+  theme(text = element_text(size=10))+
+  theme(axis.text.x = element_text(angle=45, hjust=1, size = 10)) 
+
+
 # find number of years in the dataset
 totalyears <- length(unique(smammals_long_pa$Recyear))
 
@@ -450,6 +460,7 @@ smammals_class$Classification <- factor(smammals_class$Classification,
 smammals_class$Presence[smammals_class$Presence == 0] <- NA
 #Making sure the Recyear is coded as numeric 
 smammals_class <- smammals_class %>% mutate(Recyear = as.numeric(Recyear))
+
 #Reordering the fire intervals for plotting
 smammals_class$Fire_interval <- factor(smammals_class$Fire_interval, 
                                            levels = c("1_year", "4_years", "20_years"))
@@ -464,12 +475,12 @@ smammals_class$Watershed_name <- factor(smammals_class$Watershed_name,
 smammals_class %>% ggplot(aes(x = Recyear, y = Presence, fill = Classification)) + 
   geom_tile(width = .6, height = .6) + 
   facet_grid(Species~Watershed_name, switch = "y") +
-  theme(text = element_text(size=7),
-        axis.text.x = element_text(angle=45, hjust=1, size =7),
-        axis.text.y = element_text(size=5),
-        strip.text.y.left = element_text(angle = 0, size = 3),
-        strip.text.x.top = element_text(size = 7)) +
-  geom_vline(xintercept = 2002.5, linetype= 3) +
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1, size =12),
+        axis.text.y = element_text(size=12),
+        strip.text.y.left = element_text(angle = 0, size = 10),
+        strip.text.x.top = element_text(size = 10)) +
+  geom_vline(xintercept = 2002.5, linetype= 2) +
   labs(x = "Year", y = "Presence") +
   scale_fill_manual(values = c("NA", "black", "dodgerblue2", "darkorchid", "darkolivegreen4", "firebrick3"))
 

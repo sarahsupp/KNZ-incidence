@@ -19,7 +19,6 @@ fontsize: 12pt
 ## Clear environment 
 rm(list=ls())
 
-
 ##Libraries
 library(tidyverse)
 library(cowplot)
