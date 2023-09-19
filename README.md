@@ -10,6 +10,9 @@ Maya J. Parker-Smith, Data Analyst, parkersmithm@denison.edu; Denison University
 
 ## Collaborators
 Nicholas Gotelli, Nicholas.Gotelli@uvm.edu; University of Vermont
+Nancy Tran, Denison University
+Biana Qiu, Denison University
+
 
 ## Data
 ### Folder: "Datasets-EAGER"
