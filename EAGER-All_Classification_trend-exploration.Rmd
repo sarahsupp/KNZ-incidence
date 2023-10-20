@@ -21,7 +21,6 @@ fontsize: 12pt
 ## Clear environment 
 rm(list=ls())
 
-
 ##Libraries
 library(tidyverse)
 library(cowplot)
@@ -91,7 +90,7 @@ getTrends <- function(x) {
     runsTestPV <- NA
     trend <- NA
     trendPlus <- NA
-    cat <- "No_change-almost_always_absent"
+    cat <- "No_change-absent"
   }
   
   # if all the values are 1, it is always present
@@ -102,7 +101,7 @@ getTrends <- function(x) {
     runsTestPV<-NA
     trend<-NA
     trendPlus<-NA
-    cat<-"No_change-almost_always_present"
+    cat<-"No_change-present"
   }
   
    #If the time series contains changes, then we do a chi-sq test to detect any directed change in the time series.
@@ -150,11 +149,10 @@ getTrends <- function(x) {
       trendPlus<-5
       cat="Random"
     }
-    
   }
   
   # for each species, record the summary statistics
-  statSumm <- tibble("numyears" = tslen, "numpresent" = tssum, "chiPval"=p_val, "chi_fearly" = f_early, "chi_flate" = f_late, "runsPval"=runsTestPV, "numtransitions" = v, "trend"=trend, "category"= as.factor(cat))
+  statSumm <- tibble("numyears" = tslen, "numpresent" = tssum, "chi_pval"=p_val, "chi_fearly" = f_early, "chi_flate" = f_late, "runs_pval"=runsTestPV, "numtransitions" = v, "trend"=trend, "category"= as.factor(cat))
   
   return(statSumm)
 } 
@@ -193,25 +191,25 @@ getTrends2.0 <- function(x) {
   
   
   # If all the values are 0, it is always absent
-  if (tssum-1==0|tssum == 0) {
+  if ((tssum-1==0)|tssum == 0) {
     p_val <- NA
     f_early <- NA
     f_late <- NA
     runsTestPV <- NA
     trend <- NA
     trendPlus <- NA
-    cat <- "No_change-almost_always_absent"
+    cat <- "No_change-absent"
   }
   
   # if all the values are 1, it is always present
-  else if (tslen+1==tssum|tslen==tssum) {
+  else if ((tslen+1==tssum)|tslen==tssum) {
     p_val <- NA
     f_early <- NA
     f_late <- NA
     runsTestPV<-NA
     trend<-NA
     trendPlus<-NA
-    cat<-"No_change-almost_always_present"
+    cat<-"No_change-present"
   }
   
    #If the time series contains changes, then we do a chi-sq test to detect any directed change in the time series.
@@ -263,7 +261,7 @@ getTrends2.0 <- function(x) {
   }
   
   # for each species, record the summary statistics
-  statSumm <- tibble("numyears" = tslen, "numpresent" = tssum, "chiPval"=p_val, "chi_fearly" = f_early, "chi_flate" = f_late, "runsPval"=runsTestPV, "numtransitions" = v, "trend"=trend, "category2.0"= as.factor(cat))
+  statSumm <- tibble("numyears" = tslen, "numpresent" = tssum, "chi_pval"=p_val, "chi_fearly" = f_early, "chi_flate" = f_late, "runs_pval"=runsTestPV, "numtransitions" = v, "trend"=trend, "category2.0"= as.factor(cat))
   
   return(statSumm)
 } 
@@ -272,7 +270,11 @@ getTrends2.0 <- function(x) {
 
 ### getTrends2.5
 ```{r getTrends2.5}
-getTrends2.5 <- function(x) {
+  #input (x) is a single row of a matrix where the species are rows and the columns are each year with 1/0 values (1=present, 0=absent). 
+  #So you need to iterate each row separately to get the results
+  # Output is a list with 6 items, that represents the classification results for a single species
+
+getTrends2.5<- function(x) {
   #input (x) is a single row of a matrix where the species are rows and the columns are each year with 1/0 values (1=present, 0=absent). 
   #So you need to iterate each row separately to get the results
   # Output is a list with 6 items, that represents the classification results for a single species
@@ -309,7 +311,7 @@ getTrends2.5 <- function(x) {
     runsTestPV <- NA
     trend <- NA
     trendPlus <- NA
-    cat <- "No_change-almost_always_absent"
+    cat <- "No_change-absent"
   }
   
   # if all the values are 1, it is always present
@@ -320,7 +322,7 @@ getTrends2.5 <- function(x) {
     runsTestPV<-NA
     trend<-NA
     trendPlus<-NA
-    cat<-"No_change-almost_always_present"
+    cat<-"No_change-present"
   }
   
    #If the time series contains changes, then we do a chi-sq test to detect any directed change in the time series.
@@ -361,25 +363,29 @@ getTrends2.5 <- function(x) {
     if((p_val > 0.05) & (runsTestPV < 0.05)) {
       trendPlus<-10
       cat="Recurrent"
-    } else if ((p_val > 0.05) & (runsTestPV > 0.05)){
+    }
+    
+    # if chi-sq insignif. and the runs test insignif.
+    if((p_val > 0.05) & (runsTestPV > 0.05)){
       trendPlus<-5
       cat="Random"
     }
+    
   }
   
   # for each species, record the summary statistics
   statSumm <- tibble("numyears" = tslen, "numpresent" = tssum, "chiPval"=p_val, "chi_fearly" = f_early, "chi_flate" = f_late, "runsPval"=runsTestPV, "numtransitions" = v, "trend"=trend, "category2.5"= as.factor(cat))
   
   return(statSumm)
-} 
+}
 
 ```
 
 ### getTrends3.0
 ```{r getTrends3.0}
 
-x<- c(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0)
-getTrends3.0 <- function(x) {
+
+getTrends3.0<- function(x) {
   #input (x) is a single row of a matrix where the species are rows and the columns are each year with 1/0 values (1=present, 0=absent). 
   #So you need to iterate each row separately to get the results
   # Output is a list with 6 items, that represents the classification results for a single species
@@ -398,13 +404,13 @@ getTrends3.0 <- function(x) {
   tssum <- sum(x)
  
   # create an empty vector to store results in for the next for loop
-   pachanges <- c()
+   l <- c()
   
   # identifies when a change from a 0 to a 1 or vice versa happens
   for(k in 1:(tslen-1)) {
-    yearsminusone <- x[k+1] - x[k]
-    pachanges <- c(pachanges, yearsminusone)
-    numtransitions <- sum(abs(pachanges))
+    j <- x[k+1] - x[k]
+    l <- c(l, j)
+    v <- sum(abs(l))
   }
   
   
@@ -416,16 +422,22 @@ getTrends3.0 <- function(x) {
     runsTestPV <- NA
     trend <- NA
     trendPlus <- NA
-    cat <- "No_change-almost_always_absent"
-  } else if ((tssum/tslen) >= 0.95) {
+    cat <- "No_change-absent"
+  }
+  
+  # if all the values are 1, it is always present
+  else if ((tssum/tslen) >= 0.95) {
     p_val <- NA
     f_early <- NA
     f_late <- NA
     runsTestPV<-NA
     trend<-NA
     trendPlus<-NA
-    cat<-"No_change-almost_always_present"
-  } else {
+    cat<-"No_change-present"
+  }
+  
+   #If the time series contains changes, then we do a chi-sq test to detect any directed change in the time series.
+  else {
      
     #adds rownames to the z_x table
     rownames(z_x) <- c("absent","present")
@@ -459,39 +471,120 @@ getTrends3.0 <- function(x) {
       runsTestPV <- 2}
     
     # if Chi-sq test insignif. and the runs test was significant
-    if((p_val > 0.05) & (runsTestPV < 0.05) & (numtransitions >= 2)) {
+    if((p_val > 0.05) & (runsTestPV < 0.05) & (v > 2)) {
       trendPlus<-10
       cat="Recurrent"
-    } else if ((p_val > 0.05) & (runsTestPV < 0.05) | ((runsTestPV > 0.05) & numtransitions < 2)){
+    }
+    
+    # if chi-sq insignif. and the runs test insignif.
+    if((p_val > 0.05) & (runsTestPV > 0.05)|(runsTestPV < 0.05) & (v<=2)){
       trendPlus<-5
       cat="Random"
     }
+    
   }
   
   # for each species, record the summary statistics
-statSumm <- tibble("numyears" = tslen, 
-                   "numpresent" = tssum, 
-                   "chiPval" = p_val, 
-                   "chi_fearly" = f_early, 
-                   "chi_flate" = f_late, 
-                   "runsPval" = runsTestPV, 
-                   "numtransitions" = numtransitions, 
-                   "trend" = trend, 
-                   "category3.0" = as.factor(cat))
+  statSumm <- tibble("numyears" = tslen, "numpresent" = tssum, "chiPval"=p_val, "chi_fearly" = f_early, "chi_flate" = f_late, "runsPval"=runsTestPV, "numtransitions" = v, "trend"=trend, "category3.0"= as.factor(cat))
   
   return(statSumm)
-} 
+}
+
 
 ```
-
 
 ###Randomization function
 This is the original randomization function from Gotelli et al. to validate the accuracy of our classification functions. I need to go through this and make sure I understand what each step is.
 ```{r randomization}
 ## where t1 is the long form time series and p1 is the subset of species with the classification to be randomised
 
-### this first function takes account only of presence and absence
 
+timeseries <- tibble(Year = c(1992, 1993, 1994, 
+                      1995, 1996, 1997, 
+                      1998, 1999, 2000, 
+                      2001, 2002, 2003, 
+                      2004, 2005, 2006, 
+                      2007, 2008, 2009, 
+                      2010, 2011, 2012, 
+                      2013, 
+                      1992, 1993, 1994, 
+                      1995, 1996, 1997, 
+                      1998, 1999, 2000, 
+                      2001, 2002, 2003, 
+                      2004, 2005, 2006, 
+                      2007, 2008, 2009, 
+                      2010, 2011, 2012, 
+                      2013), 
+             Presence = c(0,1,0,
+                           1,1,1,
+                           1,0,1,
+                           1,0,0,
+                           0,1,1,
+                           1,1,1,
+                           1,1,1,
+                           1, 
+                           1,1,0,
+                           1,1,1,
+                           1,0,1,
+                           1,1,1,
+                           1,1,1,
+                           1,1,1,
+                           1,1,1,
+                           1), 
+             Species = c("species1","species1","species1",
+                         "species1","species1","species1",
+                         "species1","species1","species1",
+                         "species1","species1","species1",
+                         "species1","species1","species1",
+                         "species1","species1","species1",
+                         "species1","species1","species1",
+                         "species1", 
+                         "species2","species2","species2",
+                         "species2","species2","species2",
+                         "species2","species2","species2",
+                         "species2","species2","species2",
+                         "species2","species2","species2",
+                         "species2","species2","species2",
+                         "species2","species2","species2",
+                         "species2"))
+
+p1 <- data.frame(Species = c("species1", "species2"))
+  
+### this first function takes account only of presence and absence
+Randomisation <- function(timeseries){
+  
+  df<- tibble()
+  nameRow <-c()
+  
+  timeseries_wide <- pivot_wider(timeseries, names_from = Year, values_from=Presence)
+  nameCol<-unique(timeseries$Year)
+  
+  for(i in 1:length(timeseries_wide$Species)){
+    x <- timeseries_wide[i,]
+    species <- as.vector(timeseries_wide[i,1])
+    dird <- as.vector(unique(timeseries$Species))
+    if (species %in% dird) {
+      nameRow <- c(nameRow, species)
+      x<-x[-1]
+      x[x>0]<-1
+      y<-tibble(t(x))[,1]
+      v<-sample(y[-1])
+      z<-c(y[1], v)
+      df<-rbind(df, z)
+    }
+    if(!sp %in% dird) {
+      nameRow<-c(nameRow, sp)
+      x<-x[-1]
+      x[x>0]<-1
+      y<-tibble(t(x))[,1]
+      z<-y
+      df<-rbind(df, z)
+    }
+  }
+  
+}
+  
+  
 getRandomisation<-function(t1, p1) {
   
   df<-data.frame()
@@ -652,6 +745,26 @@ smammals_raw <- read_csv("Datasets_EAGER/Small_mammals/knb-lter-knz.88.9_Fourtee
 #Table including the watershed info for all watersheds - this table will be used in subsequent taxa data
 watershed_info <- read_excel("Datasets_EAGER/Other/Watershed Info.xlsx")
 
+disturbance <- tibble(Watershed_name = c("N4A", 
+                                         "N4B", 
+                                         "N4D", 
+                                         "N1B", 
+                                         "4A", 
+                                         "4B",
+                                         "4F",
+                                         "20B",
+                                         "1D", 
+                                         "N20B"), 
+                     Disturbance = c("4year_Bison_A", 
+                                     "4year_Bison_B", 
+                                     "4year_Bison_D", 
+                                     "1year_Bison_B",
+                                     "4year_Ungrazed_A", 
+                                     "4year_Ungrazed_B",
+                                     "4year_Ungrazed_F",
+                                     "20year_Ungrazed_B", 
+                                     "1year_Ungrazed_D",
+                                     "20year_Bison_B"))
 
 #Separating the watershed/line column into two separate columns and creating a new dataset
 smammals_all <- separate(smammals_raw, `WATERSHED/LINE`, into = c("WATERSHED", "LINE"), sep = "-")
@@ -747,10 +860,11 @@ decostand_smammals_pa <- decostand(smammals_years_wide[, -(1:2)], "pa", na.rm = 
 smammals_pa_matrix <- as.matrix(decostand_smammals_pa)
 
 #Applying the getTrends function to each row of the presence/absence matrix
-smammals_trends <- apply(smammals_pa_matrix, 1, getTrends)
-smammals_trends2.0 <- apply(smammals_pa_matrix, 1, getTrends2.0)
-smammals_trends2.5 <- apply(smammals_pa_matrix, 1, getTrends2.5)
-smammals_trends3.0 <- apply(smammals_pa_matrix, 1, getTrends3.0)
+smammals_trends <- apply(smammals_pa_matrix, 1, FUN = getTrends)
+smammals_trends2.0 <- apply(smammals_pa_matrix, 1, FUN = getTrends2.0)
+smammals_trends2.5 <- apply(smammals_pa_matrix, 1, FUN = getTrends2.5)
+smammals_trends3.0 <- apply(smammals_pa_matrix, 1, FUN = getTrends3.0)
+
 
 #Creating a table with the species.watershed and the Trends info. I excluded the bsline info. ADD INFO ABOUT WHAT THIS IS TAKING FROM 
 smammals_classification <- tibble((smammals_env), do.call(rbind,lapply(smammals_trends,(function(v){v[c(1,2,3,4,5,6,7,8,9)]}))),
@@ -759,15 +873,19 @@ do.call(rbind,lapply(smammals_trends2.5,(function(v){v[c(9)]}))),
 do.call(rbind,lapply(smammals_trends3.0,(function(v){v[c(9)]}))))
 
 #Adding in the presence/absence per year data back in 
-smammals_class <- smammals_classification %>% add_column(decostand_smammals_pa, .before = "chiPval")
+smammals_class <- smammals_classification %>% add_column(decostand_smammals_pa, .before = "chi_pval")
 
 #Separating the species and watershed variable names for graphing later
 smammals_class <- smammals_class %>% separate(Species.watershed, c("Genus", "Spp", "Watershed_name")) %>% unite("Species", Genus:Spp, sep = "_")
+
+smammals_class <- left_join(smammals_class, disturbance, by = "Watershed_name")
 
 #Pivoting longer so that each row is now a year, species, watershed, etc.
 smammals_class_long <- smammals_class %>% pivot_longer(cols = "1992":"2013", 
                                                  names_to = "Recyear", 
                                                  values_to = "Presence")
+
+
 
 ```
 
@@ -776,20 +894,20 @@ This section is dedicated for exploratory plots to just get some inital visuals 
 ```{r smammals plots}
 
 #Joining the watershed_info dataset with the actual small mammal dataset
-smammals_class_long <- left_join(smammals_class_long, watershed_info, by = "Watershed_name")
+
 
 
 #Making variables factors
-smammals_class_long <- smammals_class_long %>% mutate(Fire_interval = factor(Fire_interval),
-                    Burn_season = factor(Burn_season),
-                    Grazing = factor(Grazing),
-                    Watershed_name = factor(Watershed_name))
+# smammals_class_long <- smammals_class_long %>% mutate(Fire_interval = factor(Fire_interval),
+#                     Burn_season = factor(Burn_season),
+#                     Grazing = factor(Grazing),
+#                     Watershed_name = factor(Watershed_name))
 
 
-smammals_graphing <- smammals_class_long %>% dplyr::select(Recyear, Species, Common_name, category, category2.0, category2.5, category3.0, Presence, Watershed_name, Fire_interval, Grazing)
+smammals_graphing <- smammals_class_long %>% dplyr::select(Recyear, Species, Common_name, category, category2.0, category2.5, category3.0, Presence, Watershed_name, Disturbance)
 
-smammals_graphing <- smammals_graphing %>% unite("Disturbance treatment", 
-                                                     Fire_interval:Grazing, sep = "_", remove = FALSE)
+# smammals_graphing <- smammals_graphing %>% unite("Disturbance treatment", 
+#                                                      Fire_interval:Grazing, sep = "_", remove = FALSE)
 
 #Making the zeroes in the presence column into NAs for plotting (that way they don't show up on the graph)
 smammals_graphing$Presence[smammals_class_long$Presence == 0] <- NA
@@ -798,31 +916,31 @@ smammals_graphing$Presence[smammals_class_long$Presence == 0] <- NA
 smammals_graphing <- smammals_graphing %>% mutate(Recyear = as.numeric(Recyear))
 
 #Reordering the fire intervals for plotting
-smammals_graphing$`Disturbance treatment` <- factor(smammals_graphing$`Disturbance treatment`,
-                                           levels = c("1_year_Ungrazed", "1_year_Bison", 
-                                                      "4_years_Ungrazed",  "4_years_Bison",
-                                                      "20_years_Ungrazed", "20_years_Bison"))
+smammals_graphing$Disturbance <- factor(smammals_graphing$Disturbance,
+                                           levels = c("1year_Ungrazed_D", "1year_Bison_B", 
+                                                      "4year_Ungrazed_B",  "4year_Bison_D",
+                                                      "20year_Ungrazed_B", "20year_Bison_B"))
 
-smammals_graphing$Fire_interval <- factor(smammals_graphing$Fire_interval,
-                                           levels = c("1_year", "4_years", "20_years"))
+# smammals_graphing$Fire_interval <- factor(smammals_graphing$Fire_interval,
+#                                            levels = c("1_year", "4_years", "20_years"))
 #Reordering the grazing for plotting
-smammals_graphing$Grazing <- factor(smammals_graphing$Grazing,
-                                     levels = c("Ungrazed", "Bison"))
+# smammals_graphing$Grazing <- factor(smammals_graphing$Grazing,
+#                                      levels = c("Ungrazed", "Bison"))
 #Reordering the watersheds for plotting
 smammals_graphing$Watershed_name <- factor(smammals_graphing$Watershed_name,
                                         levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"))
 
 smammals_graphing$category <- factor(smammals_graphing$category,
-                                        levels = c("No_change-almost_always_absent", "No_change-almost_always_present", "Increasing", "Recurrent", "Random"))
+                                        levels = c("No_change-absent", "No_change-present", "Increasing", "Recurrent", "Random"))
 
 smammals_graphing$category2.0 <- factor(smammals_graphing$category2.0,
-                                        levels = c("No_change-almost_always_absent", "No_change-almost_always_present", "Increasing", "Recurrent", "Random"))
+                                        levels = c("No_change-absent", "No_change-present", "Increasing", "Recurrent", "Random"))
 
 smammals_graphing$category2.5 <- factor(smammals_graphing$category2.5,
-                                        levels = c("No_change-almost_always_absent", "No_change-almost_always_present", "Increasing", "Recurrent", "Random"))
+                                        levels = c("No_change-absent", "No_change-present", "Increasing", "Recurrent", "Random"))
 
 smammals_graphing$category3.0 <- factor(smammals_graphing$category3.0,
-                                        levels = c("No_change-almost_always_absent", "No_change-almost_always_present", "Increasing", "Recurrent", "Random"))
+                                        levels = c("No_change-absent", "No_change-present", "Increasing", "Recurrent", "Random"))
 
 smammals_class_graphing <- smammals_classification %>% pivot_longer(cols = "category":"category3.0",
                                                                     names_to = "function_type",
@@ -830,11 +948,95 @@ smammals_class_graphing <- smammals_classification %>% pivot_longer(cols = "cate
 
 smammals_class_graphing <- smammals_class_graphing %>% group_by(function_type, classification) %>% dplyr::summarise(total_count=n(),.groups = 'drop')
 
+smammals_class_graphing <- smammals_class_graphing %>% mutate(Proportion = (total_count/84))
+
+smammals_class_graphing3.0 <- smammals_class_graphing %>% subset(function_type == "category3.0")
+
+smammals_class_graphing2.5 <- smammals_class_graphing %>% subset(function_type == "category2.5")
+
 smammals_class_graphing %>% ggplot(aes(x = classification, y = total_count, color = function_type, group = function_type)) + geom_point() + geom_line()
+
+
+smammals_class_graphing3.0$classification <- factor(smammals_class_graphing3.0$classification,
+                                        levels = c("No_change-absent", 
+                                                   "No_change-present", 
+                                                   "Recurrent", "Random", "Increasing"))
+
+smammals_class_graphing2.5$classification <- factor(smammals_class_graphing3.0$classification,
+                                        levels = c("No_change-absent", 
+                                                   "No_change-present", 
+                                                   "Recurrent", "Random", "Increasing"))
+
+smammals_idk <- smammals_class %>% group_by(Disturbance, category3.0) %>% dplyr::summarise(total_count=n(),.groups = 'drop') %>% mutate(Proportion = (total_count/14))
+
+smammals_idk <- smammals_class %>% group_by(Disturbance, category2.5) %>% dplyr::summarise(total_count=n(),.groups = 'drop') %>% mutate(Proportion = (total_count/14))
+
+smammals_idk$category3.0 <- factor(smammals_idk$category3.0,
+                                        levels = c("No_change-absent",
+                                                   "No_change-present", 
+                                                   "Recurrent", "Random", "Increasing"))
+
+smammals_graphing$category3.0 <- factor(smammals_graphing$category3.0,
+                                        levels = c("No_change-absent",
+                                                   "No_change-present", 
+                                                   "Recurrent", "Random", "Increasing"))
+
+smammals_idk$category3.0 <- factor(smammals_idk$category3.0,
+                                        levels = c("No_change-absent",
+                                                   "No_change-present", 
+                                                   "Recurrent", "Random", "Increasing"))
+
+smammals_idk$Disturbance<- factor(smammals_idk$Disturbance,
+                                        levels = c("1year_Ungrazed_D", "4year_Ungrazed_B", "20year_Ungrazed_B",  "1year_Bison_B", "4year_Bison_D", "20year_Bison_B"))
+
+unique(smammals_idk$Disturbance)
+
+smammals_idk %>% ggplot(aes(x = category3.0, y = Proportion, fill = category3.0)) + 
+  geom_col() + 
+  scale_fill_manual(values = c("lightgray","#000000", "#CC79A7", "#0072B2", "#009E73")) +
+  facet_wrap(.~Disturbance) +
+  theme_bw() +
+  theme(text = element_text(size=14), 
+        axis.text.x = element_text(angle=90, hjust=1)) +
+  labs(title= "Proportion of Small Mammals Species in Each Incidence Classification for Each Watershed", 
+       x = "Classification", 
+       y = "Proportion of Species", 
+       fill = "Classification")
+
+smammals_idk %>% ggplot(aes(x = Proportion, y = category2.5, fill = category3.0)) + 
+  geom_violin() + 
+  scale_fill_manual(values = c("gray","black", "darkorchid", "dodgerblue2", "darkolivegreen4")) +
+  theme(text = element_text(size=14))+
+  labs(title= "Proportion of Small Mammals Species in Each Incidence Classification for Each Watershed", 
+       x = "Classification", 
+       y = "Proportion of Species", 
+       fill = "Classification")
+
+smammals_class_graphing3.0 %>% ggplot(aes(x = classification, y = Proportion, fill = classification)) + geom_col() + scale_fill_manual(values = c("lightgray","#000000", "#CC79A7", "#0072B2", "#009E73")) +
+  theme_bw() +
+  theme(text = element_text(size=14), 
+        axis.text.x = element_text(angle=45, hjust=1)) +
+  labs(title= "Proportion of Small Mammals Species in Each Incidence Classification", 
+       x = "Classification", 
+       y = "Proportion of Species", 
+       fill = "Classifcation")
+
+smammals_class_graphing2.5 %>% ggplot(aes(x = classification, y = Proportion, fill = classification)) + geom_col() + scale_fill_manual(values = c("gray","black", "darkorchid", "dodgerblue2", "darkolivegreen4")) +
+  theme(text = element_text(size=14), 
+        axis.text.x = element_text(angle=45, hjust=1)) +
+  labs(title= "Proportion of Small Mammals Species in Each Incidence Classification", 
+       x = "Classification", 
+       y = "Proportion of Species", 
+       fill = "Classifcation")
+
+
+smammals_graphing_3.0 <- smammals_graphing %>% subset()
+
 
 smammals_idk <- smammals_classification %>% pivot_longer(cols=c("chi_fearly", "chi_flate"), names_to =  "Early_late", values_to = "Proportion")
 
-smammals_idk %>% ggplot(aes(x = Proportion, fill = Early_late)) + geom_density(alpha = 0.5) + facet_wrap(category~.) + labs(title="Difference in Early and Late Proportions for the Small Mammal Dataset")
+smammals_idk %>% ggplot(aes(x = Proportion, fill = Early_late)) + geom_density(alpha = 0.5) + facet_wrap(category~.) + labs(title="Difference in Early and Late Proportions for the Small Mammal Dataset") + scale_fill_manual(values = c("lightgreen", "red"))
+
 
 #Creating a graph to look at the classification by species and presence/absence by year
 smammals_graphing %>% ggplot(aes(x = Recyear, y = Presence, fill = category)) + 
@@ -848,7 +1050,7 @@ smammals_graphing %>% ggplot(aes(x = Recyear, y = Presence, fill = category)) +
   geom_vline(xintercept = 2002.5, linetype= 2) +
   coord_fixed(ratio = 5) +
   labs(x = "Year", y = "Presence") +
-  scale_fill_manual(values = c("NA", "black", "darkolivegreen4", "darkorchid", "dodgerblue2")) +
+  scale_fill_manual(values = c("NA", "black", "#009E73", "#CC79A7", "#0072B2")) +
   labs(title = "Small mammal classifcations with original getTrends function")
 
 smammals_graphing %>% ggplot(aes(x = Recyear, y = Presence, fill = category2.0)) + 
@@ -867,7 +1069,7 @@ smammals_graphing %>% ggplot(aes(x = Recyear, y = Presence, fill = category2.0))
 
 smammals_graphing %>% ggplot(aes(x = Recyear, y = Presence, fill = category2.5)) + 
   geom_tile(width = .6, height = .6) + 
-  facet_grid(Species~`Disturbance treatment`, switch = "y") +
+  facet_grid(Species~Disturbance, switch = "y") +
   theme(text = element_text(size=9),
         axis.text.x = element_text(angle=45, hjust=1, size =9),
         axis.text.y = element_text(size=12),
@@ -881,7 +1083,7 @@ smammals_graphing %>% ggplot(aes(x = Recyear, y = Presence, fill = category2.5))
 
 smammals_graphing %>% ggplot(aes(x = Recyear, y = Presence, fill = category3.0)) + 
   geom_tile(width = .6, height = .6) + 
-  facet_grid(Species~`Disturbance treatment`, switch = "y") +
+  facet_grid(Common_name~Disturbance, switch = "y") +
   theme(text = element_text(size=9),
         axis.text.x = element_text(angle=45, hjust=1, size =9),
         axis.text.y = element_text(size=12),
@@ -890,13 +1092,14 @@ smammals_graphing %>% ggplot(aes(x = Recyear, y = Presence, fill = category3.0))
   geom_vline(xintercept = 2002.5, linetype= 2) +
   coord_fixed(ratio = 5) +
   labs(x = "Year", y = "Presence") +
-  scale_fill_manual(values = c("lightgrey","black", "darkolivegreen4", "darkorchid", "dodgerblue2")) +
-  labs(title = "Small mammal classifcations with getTrends3.0 function")
+  scale_fill_manual(values = c("lightgray","black", "#CC79A7", "#0072B2","#009E73")) +
+  labs(title = "Small Mammal Classifcation by Species",
+       fill = "Classification")
 
 
-smammals_pm <- smammals_graphing %>% filter(Species == "Peromyscus_maniculatus")
+smammals_rm <- smammals_graphing %>% filter(Species == "Reithrodontomys_megalotis")
 
-smammals_pm %>% ggplot(aes(x = Recyear, y = Presence, fill = category)) + 
+smammals_rm %>% ggplot(aes(x = Recyear, y = Presence, fill = category3.0)) + 
   geom_tile(width = 0.6, height = 0.6) + 
   facet_grid(Common_name~`Disturbance treatment`, switch = "y") +
   theme(text = element_text(size=10),
@@ -905,12 +1108,28 @@ smammals_pm %>% ggplot(aes(x = Recyear, y = Presence, fill = category)) +
         strip.text.y.left = element_text(angle = 0, size = 10),
         strip.text.x.top = element_text(size = 10)) +
   geom_vline(xintercept = 2002.5, linetype= 2) +
+  coord_fixed(ratio = 5) +
+  labs(x = "Year", y = "Presence") +
+  scale_fill_manual(values = c("black", "dodgerblue2"))
+
+smammals_pm <- smammals_graphing %>% filter(Species == "Peromyscus_maniculatus")
+
+smammals_pm %>% ggplot(aes(x = Recyear, y = Presence, fill = category3.0)) + 
+  geom_tile(width = 0.6, height = 0.6) + 
+  facet_grid(Common_name~`Disturbance treatment`, switch = "y") +
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1, size =12),
+        axis.text.y = element_text(size=12),
+        strip.text.y.left = element_text(angle = 0, size = 10),
+        strip.text.x.top = element_text(size = 10)) +
+  geom_vline(xintercept = 2002.5, linetype= 2) +
+  coord_fixed(ratio = 5) +
   labs(x = "Year", y = "Presence") +
   scale_fill_manual(values = c("black", "dodgerblue2"))
 
 smammals_pl <- smammals_graphing %>% filter(Species == "Peromyscus_leucopus")
 
-smammals_pl %>% ggplot(aes(x = Recyear, y = Presence, fill = category)) + 
+smammals_pl %>% ggplot(aes(x = Recyear, y = Presence, fill = category3.0)) + 
   geom_tile(width = 0.6, height = 0.6) + 
   facet_grid(Common_name~`Disturbance treatment`, switch = "y") +
   theme(text = element_text(size=10),
@@ -919,13 +1138,14 @@ smammals_pl %>% ggplot(aes(x = Recyear, y = Presence, fill = category)) +
         strip.text.y.left = element_text(angle = 0, size = 10),
         strip.text.x.top = element_text(size = 10)) +
   geom_vline(xintercept = 2002.5, linetype= 2) +
+  coord_fixed(ratio = 5) +
   labs(x = "Year", y = "Presence") +
   scale_fill_manual(values = c("black", "dodgerblue2"))
 
 
-smammals_nf <- smammals_graphing %>% filter(Species == "Neotoma_floridana")
+smammals_bh <- smammals_graphing %>% filter(Species == "Blarina_hylophaga")
 
-smammals_nf %>% ggplot(aes(x = Recyear, y = Presence, fill = category)) + 
+smammals_bh %>% ggplot(aes(x = Recyear, y = Presence, fill = category3.0)) + 
   geom_tile(width = 0.6, height = 0.6) + 
   facet_grid(Common_name~`Disturbance treatment`, switch = "y") +
   theme(text = element_text(size=10),
@@ -934,10 +1154,78 @@ smammals_nf %>% ggplot(aes(x = Recyear, y = Presence, fill = category)) +
         strip.text.y.left = element_text(angle = 0, size = 10),
         strip.text.x.top = element_text(size = 10)) +
   geom_vline(xintercept = 2002.5, linetype= 2) +
-  labs(x = "Year", y = "Presence") +
-  scale_fill_manual(values = c("NA", "darkolivegreen4", "darkorchid", "dodgerblue2"))
+  coord_fixed(ratio = 5) +
+  labs(x = "Year", y = "Presence",
+       fill = "Classification") +
+  scale_fill_manual(values = c("darkorchid", "dodgerblue2"))
 
 
+smammals_bh <- smammals_graphing %>% filter(Species == "Blarina_hylophaga")
+
+smammals_bh %>% ggplot(aes(x = Recyear, y = Presence, fill = category3.0)) + 
+  geom_tile(width = 0.6, height = 0.6) + 
+  facet_grid(Common_name~`Disturbance treatment`, switch = "y") +
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1, size =12),
+        axis.text.y = element_text(size=12),
+        strip.text.y.left = element_text(angle = 0, size = 10),
+        strip.text.x.top = element_text(size = 10)) +
+  geom_vline(xintercept = 2002.5, linetype= 2) +
+  coord_fixed(ratio = 5) +
+  labs(x = "Year", y = "Presence",
+       fill = "Classification") +
+  scale_fill_manual(values = c("darkorchid", "dodgerblue2"))
+
+smammals_st <- smammals_graphing %>% filter(Species == "Spermophilus_tridecemlineatus")
+
+smammals_st %>% ggplot(aes(x = Recyear, y = Presence, fill = category3.0)) + 
+  geom_tile(width = 0.6, height = 0.6) + 
+  facet_grid(Common_name~`Disturbance treatment`, switch = "y") +
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1, size =12),
+        axis.text.y = element_text(size=12),
+        strip.text.y.left = element_text(angle = 0, size = 10),
+        strip.text.x.top = element_text(size = 10)) +
+  geom_vline(xintercept = 2002.5, linetype= 2) +
+  coord_fixed(ratio = 5) +
+  labs(x = "Year", y = "Presence",
+       fill = "Classification") +
+  scale_fill_manual(values = c("darkorchid", "dodgerblue2"))
+
+
+
+
+smammals_nf <- smammals_graphing %>% filter(Species == "Neotoma_floridana")
+smammals_nf$category3.0 <- factor(smammals_nf$category3.0,
+                                  levels = c("No_change-absent",
+                                                   "No_change-present", 
+                                                   "Recurrent", "Random", "Increasing"))
+
+smammals_nf %>% ggplot(aes(x = Recyear, y = Presence, fill = category3.0)) + 
+  geom_tile(width = 0.6, height = 0.6) + 
+  facet_grid(Common_name~Disturbance, switch = "y") +
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1, size =12),
+        axis.text.y = element_text(size=12),
+        strip.text.y.left = element_text(angle = 0, size = 10),
+        strip.text.x.top = element_text(size = 10)) +
+  geom_vline(xintercept = 2002.5, linetype= 2) +
+  coord_fixed(ratio = 5) +
+  labs(x = "Year", y = "Presence",
+       fill = "Classification") +
+  scale_fill_manual(values = c("NA", "#CC79A7", "#0072B2","#009E73"))
+
+
+
+
+smammals_class_graphing %>% ggplot(aes(x = classification, y = total_count, color = function_type, group = function_type)) + geom_point() + geom_line()
+
+smammals_class_graping %>% ggplot(aes(x = classification, y = total_count)) + 
+  stat_summary(fun.data=mean_sdl, fun.args = list(mult=1), 
+        geom="errorbar", color="black", width=0.2) + +
+  theme_bw() +
+  ylim(-.15, 1.15) +
+  theme(axis.text.x = element_text(angle=45, hjust=1))
 
 ```
 
@@ -1110,15 +1398,41 @@ birds_pa_matrix <- as.matrix(decostand_birds_pa)
 
 # Applying the getTrends function to each row of the presence/absence matrix
 birds_trends <- apply(birds_pa_matrix, 1, getTrends)
+birds_trends2.0 <- apply(birds_pa_matrix, 1, getTrends2.0)
+birds_trends2.5 <- apply(birds_pa_matrix, 1, getTrends2.5)
+birds_trends3.0 <- apply(birds_pa_matrix, 1, getTrends3.0)
+
+#Creating a table with the species.watershed and the Trends info. I excluded the bsline info. ADD INFO ABOUT WHAT THIS IS TAKING FROM 
+birds_classification <- tibble((birds_env), do.call(rbind,lapply(birds_trends,(function(v){v[c(1,2,3,4,5,6,7,8,9)]}))),
+do.call(rbind,lapply(birds_trends2.0,(function(v){v[c(9)]}))),
+do.call(rbind,lapply(birds_trends2.5,(function(v){v[c(9)]}))),
+do.call(rbind,lapply(birds_trends3.0,(function(v){v[c(9)]}))))
 
 #Creating a table with the species.watershed and the Trends info. I excluded the bsline info.
-birds_classification <- tibble((birds_env), do.call(rbind,lapply(birds_trends,(function(v){v[c(1,2,3,5)]}))))
 
 #Adding in the presence/absence per year data back in 
-birds_class <- birds_classification %>% add_column(decostand_birds_pa, .before = "chiPval")
+birds_class <- birds_classification %>% add_column(decostand_birds_pa, .before = "chi_pval")
 
 #Separating the species and watershed variable names for graphing later
 birds_class <- birds_class %>% separate(Species.watershed, c("AOU_code", "Watershed_name"))
+birds_class <- left_join(birds_class, disturbance, by = "Watershed_name")
+
+for(i in 1:nrow(birds_class)){
+   if (birds_class$AOU_code[i] == "EATO" & birds_class$Watershed_name[i] == "20B") {birds_class$category3.0[i] <- "Increasing"}
+  if (birds_class$AOU_code[i] == "EATO" & birds_class$Watershed_name[i] == "N20B") {birds_class$category3.0[i] <- "Increasing"}
+  if (birds_class$AOU_code[i] == "BGGN" & birds_class$Watershed_name[i] == "N4D") {birds_class$category3.0[i] <- "Increasing"}
+   if (birds_class$AOU_code[i] == "EAKI" & birds_class$Watershed_name[i] == "N20B") {birds_class$category3.0[i] <- "Decreasing"}
+  
+}
+
+birds_class3.0 <- birds_class %>% dplyr::select(AOU_code, Watershed_name, category3.0)
+
+birds_class3.0_increasing <- birds_class3.0 %>% subset(category3.0 == "Increasing")
+
+unique(birds_class3.0_increasing$AOU_code)
+
+birds_class3.0_decreasing <- birds_class3.0 %>% subset(category3.0 == "Decreasing")
+unique(birds_class3.0_decreasing$AOU_code)
 
 #Pivoting longer so that each row is now a year, species, watershed, etc.
 birds_class_long <- birds_class %>% pivot_longer(cols = "1992":"2009", 
@@ -1132,14 +1446,14 @@ birds_class_long <- birds_class %>% pivot_longer(cols = "1992":"2009",
 ```{r birds plots}
 
 #Joining the watershed_info dataset with the actual birds dataset
-birds_class_long <- left_join(birds_class_long, watershed_info, by = "Watershed_name")
+# birds_class_long <- left_join(birds_class_long, disturbance, by = "Watershed_name")
 
 #Converting some of the variables into factors
-birds_class_long <- birds_class_long %>% mutate(Fire_interval = factor(Fire_interval),
-                                  Burn_season = factor(Burn_season),
-                                  Grazing = factor(Grazing))
+# birds_class_long <- birds_class_long %>% mutate(Fire_interval = factor(Fire_interval),
+#                                   Burn_season = factor(Burn_season),
+#                                   Grazing = factor(Grazing))
 
-birds_graphing <- birds_class_long
+birds_graphing <- birds_class_long %>% dplyr::select(Recyear, AOU_code, category, category2.0, category2.5, category3.0, Presence, Watershed_name, Disturbance)
 
 #Making all presence = "0" inti NA's so they don't show up in theb graph
 birds_graphing$Presence[birds_graphing$Presence == 0] <- NA
@@ -1148,6 +1462,7 @@ birds_graphing$Presence[birds_graphing$Presence == 0] <- NA
 birds_graphing <- birds_graphing %>% mutate(Recyear = as.character(Recyear))
 birds_graphing <- birds_graphing %>% mutate(Recyear = as.numeric(Recyear))
 
+
 #Changing the order of the watersheds so that the grazing and non-grazing watersheds of the same burn interval are next to each other
 birds_graphing$Watershed_name <- factor(birds_graphing$Watershed_name,
                                 levels = c("1D", "N1B", "4A", 
@@ -1155,13 +1470,163 @@ birds_graphing$Watershed_name <- factor(birds_graphing$Watershed_name,
                                            "20B", "N20B"))
 
 
-birds_graphing$category <- factor(birds_graphing$category, 
-                               levels = c("Always_absent", "Always_present", 
-                                          "Random", "Recurrent", "Increasing", "Decreasing"))
+
+#Making the zeroes in the presence column into NAs for plotting (that way they don't show up on the graph)
+
+#Making sure the Recyear is coded as numeric 
+birds_graphing <- birds_graphing %>% mutate(Recyear = as.numeric(Recyear))
+
+#Reordering the fire intervals for plotting
+
+# 
+# birds_graphing$Fire_interval <- factor(birds_graphing$Fire_interval,
+#                                            levels = c("1_year", "4_years", "20_years"))
+#Reordering the grazing for plotting
+# birds_graphing$Grazing <- factor(birds_graphing$Grazing,
+#                                      levels = c("Ungrazed", "Bison"))
+#Reordering the watersheds for plotting
+
+birds_graphing$category <- factor(birds_graphing$category,
+                                        levels = c("No_change-absent", "No_change-present", "Increasing", "Decreasing", "Recurrent", "Random"))
+
+birds_graphing$category2.0 <- factor(birds_graphing$category2.0,
+                                        levels = c("No_change-absent", "No_change-present", "Increasing", "Decreasing", "Recurrent", "Random"))
+
+birds_graphing$category2.5 <- factor(birds_graphing$category2.5,
+                                        levels = c("No_change-absent", "No_change-present", "Increasing", "Decreasing", "Recurrent", "Random"))
+
+birds_graphing$category3.0 <- factor(birds_graphing$category3.0,
+                                        levels = c("No_change-absent", "No_change-present", "Increasing", "Decreasing", "Recurrent", "Random"))
+
+birds_class_graphing <- birds_classification %>% pivot_longer(cols = "category":"category3.0",
+                                                                    names_to = "function_type",
+                                                                    values_to = "classification")
+
+birds_class_graphing <- birds_class_graphing %>% group_by(function_type, classification) %>% dplyr::summarise(total_count=n(),.groups = 'drop') %>% mutate(Proportion = (total_count/648))
+
+birds_class_graphing3.0 <- birds_class_graphing %>% subset(function_type == "category3.0")
+
+birds_class_graphing3.0$classification <- factor(birds_class_graphing3.0$classification,
+                                        levels = c("No_change-absent", 
+                                                   "No_change-present", 
+                                                   "Recurrent", "Random", "Increasing", "Decreasing"))
+
+
+birds_class_graphing %>% ggplot(aes(x = classification, y = total_count, color = function_type, group = function_type)) + geom_point() + geom_line()
+
+birds_idk <- birds_class %>% group_by(Disturbance, category3.0) %>% dplyr::summarise(total_count=n(),.groups = 'drop') %>% mutate(Proportion = (total_count/81))
+
+birds_idk$category3.0 <- factor(birds_idk$category3.0,
+                                        levels = c("No_change-absent",
+                                                   "No_change-present", 
+                                                   "Recurrent", "Random", "Increasing", "Decreasing"))
+
+# 
+# birds_idk <- birds_classification %>% pivot_longer(cols=c("chi_fearly", "chi_flate"), names_to =  "Early_late", values_to = "Proportion")
+# 
+# birds_idk %>% ggplot(aes(x = Proportion, fill = Early_late)) + geom_density(alpha = 0.5) + facet_wrap(category~.) + labs(title="Difference in Early and Late Proportions for the Bird Dataset") + scale_fill_manual(values = c("lightgreen", "red"))
+birds_idk$Disturbance <- factor(birds_idk$Disturbance,
+                                levels = c("1year_Ungrazed_D", "4year_Ungrazed_A", "4year_Ungrazed_B", "20year_Ungrazed_B", "1year_Bison_B", "4year_Bison_B", "4year_Bison_D", "20year_Bison_B"))
+
+birds_idk %>% ggplot(aes(x = category3.0, y = Proportion, fill = category3.0)) + geom_col() + 
+  scale_fill_manual(values = c("lightgray","#000000", "#CC79A7", "#0072B2", "#009E73", "#D55E00")) +
+  theme_bw() +
+  facet_wrap(.~Disturbance, nrow=2, ncol=4) +
+  theme(text = element_text(size=14), 
+        axis.text.x = element_text(angle=90, hjust=1)) +
+  labs(title= "Proportion of Bird Species in Each Incidence Classification for Each Watershed", 
+       x = "Classification", 
+       y = "Proportion of Species", 
+       fill = "Classification")
+
+birds_class_graphing3.0 %>% ggplot(aes(x = classification, y = Proportion, fill = classification)) + geom_col() + scale_fill_manual(values = c("lightgray","#000000", "#CC79A7", "#0072B2", "#009E73", "#D55E00")) +
+  theme_bw() +
+  theme(text = element_text(size=14), 
+        axis.text.x = element_text(angle=45, hjust=1)) +
+  labs(title= "Proportion of Birds Species in Each Incidence Classification", 
+       x = "Classification", 
+       y = "Proportion of Species", 
+       fill = "Classifcation")
+
+
+#Creating a graph to look at the classification by species and presence/absence by year
+birds_graphing %>% ggplot(aes(x = Recyear, y = Presence, fill = category)) + geom_tile(width = .6, height = .6) + 
+  facet_grid(AOU_code~Disturbance, switch = "y") +
+  theme(text = element_text(size=9),
+        axis.text.x = element_text(angle=45, hjust=1, size =9),
+        axis.text.y = element_text(size=12),
+        strip.text.y.left = element_text(angle = 0, size = 9),
+        strip.text.x.top = element_text(size = 9)) +
+  labs(x = "Year", y = "Presence") +
+  scale_fill_manual(values = c("NA", "black", "darkolivegreen4", "firebrick", "darkorchid", "dodgerblue2")) +
+  labs(title = "Bird classifcations with original getTrends function")
+
+
+birds_graphing_directed <- birds_graphing %>% subset(AOU_code %in% c("INBU", "BARS", "EATO", "BGGN", "RNEP", "RWBL", "FISP", "EAKI"))
+
+birds_graphing_directed$Disturbance <- factor(birds_graphing_directed$Disturbance, 
+                                              levels = c("1year_Ungrazed_D", "1year_Bison_B", "4year_Ungrazed_A", "4year_Ungrazed_B", "4year_Bison_B", "4year_Bison_D", "20year_Ungrazed_B", "20year_Bison_B"))
+
+birds_graphing_directed$category3.0 <- factor(birds_graphing_directed$category3.0,
+                                                levels = c("No_change-absent", "No_change-present", "Recurrent", "Random", "Increasing", "Decreasing"))
+
+
+birds_graphing_increasing <- birds_graphing_directed %>% subset(AOU_code %in% c("INBU", "BARS", "EATO", "BGGN"))
+
+birds_graphing_decreasing <- birds_graphing_directed %>% subset(AOU_code %in% c("RNEP", "RWBL", "FISP", "EAKI"))
+
+birds_graphing_increasing$category3.0 <- factor(birds_graphing_increasing$category3.0,
+                                                levels = c("No_change-absent", "No_change-present", "Recurrent", "Random", "Increasing"))
+
+birds_graphing_decreasing$category3.0 <- factor(birds_graphing_decreasing$category3.0,
+                                                levels = c("No_change-absent", "No_change-present", "Recurrent", "Random", "Decreasing"))
+
+birds_graphing_directed %>% ggplot(aes(x = Recyear, y = Presence, fill = category3.0)) + geom_tile(width = .6, height = .6) + 
+  facet_grid(AOU_code~Disturbance, switch = "y") +
+  theme(text = element_text(size=9),
+        axis.text.x = element_text(angle=45, hjust=1, size =9),
+        axis.text.y = element_text(size=12),
+        strip.text.y.left = element_text(angle = 0, size = 9),
+        strip.text.x.top = element_text(size = 9)) +
+  labs(x = "Year", y = "Presence") +
+  coord_fixed(ratio = 5) +
+  geom_vline(xintercept = 2000.5, linetype= 2)+
+  scale_fill_manual(values = c("gray","#000000", "#CC79A7", "#0072B2","#009E73", "#D55E00")) +
+  labs(title = "Bird classifcations with getTrends3.0 function", 
+       fill = "Classification")
+
+birds_graphing_increasing %>% ggplot(aes(x = Recyear, y = Presence, fill = category3.0)) + geom_tile(width = .6, height = .6) + 
+  facet_grid(AOU_code~Disturbance, switch = "y") +
+  theme(text = element_text(size=9),
+        axis.text.x = element_text(angle=45, hjust=1, size =9),
+        axis.text.y = element_text(size=12),
+        strip.text.y.left = element_text(angle = 0, size = 9),
+        strip.text.x.top = element_text(size = 9)) +
+  labs(x = "Year", y = "Presence") +
+  coord_fixed(ratio = 5) +
+  geom_vline(xintercept = 2000.5, linetype= 2)+
+  scale_fill_manual(values = c("gray", "#0072B2", "#009E73")) +
+  labs(title = "Bird classifcations with getTrends3.0 function", 
+       fill = "Classification")
+
+birds_graphing_decreasing %>% ggplot(aes(x = Recyear, y = Presence, fill = category3.0)) + geom_tile(width = .6, height = .6) + 
+  facet_grid(AOU_code~Disturbance, switch = "y") +
+  theme(text = element_text(size=9),
+        axis.text.x = element_text(angle=45, hjust=1, size =9),
+        axis.text.y = element_text(size=12),
+        strip.text.y.left = element_text(angle = 0, size = 9),
+        strip.text.x.top = element_text(size = 9)) +
+  labs(x = "Year", y = "Presence") +
+  coord_fixed(ratio = 5) +
+  geom_vline(xintercept = 2000.5, linetype= 2)+
+  scale_fill_manual(values = c("gray","#000000", "#CC79A7", "#0072B2", "#D55E00")) +
+  labs(title = "Bird classifcations with getTrends3.0 function", 
+       fill = "Classification")
+
 
 birds_graphing %>% ggplot(aes(x = Recyear, y = Presence, fill = category)) + 
   geom_tile(width = .6, height = .6) + 
-  facet_grid(AOU_code~Watershed_name, switch = "y") +
+  facet_grid(AOU_code~Disturbance, switch = "y") +
   theme(text = element_text(size=7),
         axis.text.x = element_text(angle=45, hjust=1, size =7),
         axis.text.y = element_text(size=5),
@@ -1455,17 +1920,26 @@ grasshoppers_pa_matrix <- as.matrix(decostand_grasshoppers_pa)
 
 #Applying the getTrends function to each row of the presence/absence matrix
 grasshoppers_trends <- apply(grasshoppers_pa_matrix, 1, getTrends)
+grasshoppers_trends2.0 <- apply(grasshoppers_pa_matrix, 1, FUN = getTrends2.0)
+grasshoppers_trends2.5 <- apply(grasshoppers_pa_matrix, 1, FUN = getTrends2.5)
+grasshoppers_trends3.0 <- apply(grasshoppers_pa_matrix, 1, FUN = getTrends3.0)
+
 
 #Creating a table with the species.watershed and the Trends info. I excluded the bsline info.
-grasshoppers_classification <- tibble((grasshoppers_env), do.call(rbind,lapply(grasshoppers_trends,(function(v){v[c(1,2,3,5)]}))))
+grasshoppers_classification <- tibble((grasshoppers_env), do.call(rbind,lapply(grasshoppers_trends,(function(v){v[c(1,2,3,4,5,6,7,8,9)]}))),
+do.call(rbind,lapply(grasshoppers_trends2.0,(function(v){v[c(9)]}))),
+do.call(rbind,lapply(grasshoppers_trends2.5,(function(v){v[c(9)]}))),
+do.call(rbind,lapply(grasshoppers_trends3.0,(function(v){v[c(9)]}))))
+
 
 
 #Adding in the presence/absence per year data back in 
-grasshoppers_class <- grasshoppers_classification %>% add_column(decostand_grasshoppers_pa, .before = "chiPval")
+grasshoppers_class <- grasshoppers_classification %>% add_column(decostand_grasshoppers_pa, .before = "chi_pval")
 
 #Separating the species and watershed variable names for graphing later
 grasshoppers_class <- grasshoppers_class %>% separate(Species.watershed, c("Genus", "Spp", "Watershed_name")) %>% unite("Species", Genus:Spp, sep = "_")
 
+grasshoppers_class <- left_join(grasshoppers_class, disturbance, by = "Watershed_name")
 #Pivoting longer so that each row is now a year, species, watershed, etc.
 grasshoppers_class_long <- grasshoppers_class %>% pivot_longer(cols = "2002":"2020", 
                                                  names_to = "Recyear", 
@@ -1493,9 +1967,55 @@ grasshoppers_graphing$Watershed_name <- factor(grasshoppers_graphing$Watershed_n
 
 
 grasshoppers_graphing$category <- factor(grasshoppers_graphing$category, 
-                               levels = c("Always_absent", "Always_present", 
+                               levels = c("No_change-absent", "No_change-present", 
                                           "Random", "Recurrent", "Increasing", 
                                           "Decreasing"))
+
+grasshoppers_class_graphing <- grasshoppers_classification %>% pivot_longer(cols = "category":"category3.0",
+                                                                    names_to = "function_type",
+                                                                    values_to = "classification")
+
+
+grasshoppers_class_graphing <- grasshoppers_class_graphing %>% group_by(function_type, classification) %>% dplyr::summarise(total_count=n(),.groups = 'drop')
+
+grasshoppers_class_graphing <- grasshoppers_class_graphing %>% mutate(Proportion = (total_count/352))
+grasshoppers_class_graphing3.0 <- grasshoppers_class_graphing %>% subset(function_type == "category3.0")
+
+grasshoppers_class_graphing3.0$classification <- factor(grasshoppers_class_graphing3.0$classification,
+                                        levels = c("No_change-absent", 
+                                                   "No_change-present", 
+                                                   "Recurrent", "Random", "Increasing", "Decreasing"))
+
+grasshoppers_idk <- grasshoppers_class %>% group_by(Disturbance, category3.0) %>% dplyr::summarise(total_count=n(),.groups = 'drop') %>% mutate(Proportion = (total_count/44))
+
+grasshoppers_idk$category3.0 <- factor(grasshoppers_idk$category3.0,
+                                        levels = c("No_change-absent",
+                                                   "No_change-present", 
+                                                   "Recurrent", "Random", "Decreasing"))
+
+grasshoppers_idk$Disturbance <- factor(grasshoppers_idk$Disturbance,
+                                levels = c("1year_Ungrazed_D", "4year_Ungrazed_B", "4year_Ungrazed_F", "20year_Ungrazed_B", "1year_Bison_B", "4year_Bison_A", "4year_Bison_D", "20year_Bison_B"))
+
+
+grasshoppers_idk %>% ggplot(aes(x = category3.0, y = Proportion, fill = category3.0)) + geom_col() + 
+  scale_fill_manual(values = c("lightgray","#000000", "#CC79A7", "#0072B2", "#D55E00")) +
+  theme_bw() +
+  facet_wrap(.~Disturbance, nrow=2, ncol =4) +
+  theme(text = element_text(size=14), 
+        axis.text.x = element_text(angle=90, hjust=1)) +
+  labs(title= "Proportion of Grasshopper Species in Each Incidence Classification for Each Watershed", 
+       x = "Classification", 
+       y = "Proportion of Species", 
+       fill = "Classification")
+
+grasshoppers_class_graphing3.0 %>% ggplot(aes(x = classification, y = Proportion, fill = classification)) + geom_col() + scale_fill_manual(values = c("lightgray","#000000", "#CC79A7", "#0072B2", "#D55E00")) +
+  theme_bw() +
+  theme(text = element_text(size=14), 
+        axis.text.x = element_text(angle=45, hjust=1)) +
+  labs(title= "Proportion of Grasshoppers Species in Each Incidence Classification", 
+       x = "Classification", 
+       y = "Proportion of Species", 
+       fill = "Classifcation")
 
 grasshoppers_graphing %>% ggplot(aes(x = Recyear, y = Presence, fill = category)) + 
   geom_tile(width = .6, height = .6) + 
@@ -1508,6 +2028,26 @@ grasshoppers_graphing %>% ggplot(aes(x = Recyear, y = Presence, fill = category)
    geom_vline(xintercept = 2011.5, linetype= 2) +
   scale_fill_manual(values = c("NA", "black", "dodgerblue2", "darkorchid", "firebrick3")) +
   labs(x = "Year", y = "Presence", fill = "Classification")
+
+grasshoppers_melansang <- grasshoppers_graphing %>% subset(Species == "Melanoplus_sanguinipes")
+
+grasshoppers_melansang$Disturbance <- factor(grasshoppers_melansang$Disturbance,
+                                levels = c("1year_Ungrazed_D", "1year_Bison_B", "4year_Ungrazed_B", "4year_Ungrazed_F", "4year_Bison_A", "4year_Bison_D", "20year_Ungrazed_B", "20year_Bison_B"))
+grasshoppers_melansang$category3.0 <- factor(grasshoppers_melansang$category3.0, levels = c("No_change-absent","No_change-present", "Recurrent", "Random", "Decreasing"))
+
+grasshoppers_melansang %>% ggplot(aes(x = Recyear, y = Presence, fill = category3.0)) + 
+  geom_tile(width = .6, height = .6) + 
+  facet_grid(Species~Disturbance, switch = "y") +
+  theme(text = element_text(size=9),
+        axis.text.x = element_text(angle=45, hjust=1, size =9),
+        axis.text.y = element_text(size=12),
+        strip.text.y.left = element_text(angle = 0, size = 9),
+        strip.text.x.top = element_text(size = 9)) +
+   geom_vline(xintercept = 2011.5, linetype= 2) +
+  scale_fill_manual(values = c("#CC79A7", "#0072B2", "#D55E00")) +
+  coord_fixed(ratio=5) +
+  labs(x = "Year", y = "Presence", fill = "Classification")
+
 
 ```
 
@@ -1568,8 +2108,33 @@ Summary of changes:
 ### Plants: Cleaning and organizing
 ```{r plants cleaning}
 plants_raw <- read_csv("Datasets_EAGER/Plants/knb-lter-knz.69.21_SpeciesComposition/PVC021.csv")
+plant_traits <- read_excel("Datasets_EAGER/Plants/Plant-Traits.xlsx")
+plant_traits <- plant_traits[, 1:8]
+
+plant_traits$growth_form <- dplyr::recode(plant_traits$growth_form,
+                                          "p" = "perennial",
+                                          "a" = "annual", 
+                                          "b" = "biennial")
+plant_traits$life_form <- dplyr::recode(plant_traits$life_form,
+                                        "g" = "grass",
+                                        "s" = "sedge",
+                                        "m" = "monocot",
+                                        "f" = "forb",
+                                        "w" = "woody",
+                                        "c" = "cryptogram",
+                                        "o" = "other")
+
+plant_traits$origin <- dplyr::recode(plant_traits$origin,
+                                     "n" = "native",
+                                     "i" = "introduced")
+
+plant_traits <- plant_traits %>% rename("SpeCode" = "Konza_species_code") %>% mutate(SpeCode = factor(SpeCode))
+
+
+
 
 watershed_info <- read_excel("Datasets_EAGER/Other/Watershed Info.xlsx")
+
 
 unique(plants_raw$WaterShed)
 
@@ -1639,7 +2204,9 @@ plants <- subset(plants,!(Genus_spp %in% c("annual_forb", "carex_spp.",
 plants$Genus_spp<- dplyr::recode(plants$Genus_spp,
                                  "Lithos_occid" = "lithos_occid")
 
-length(unique(plants$Genus_spp))
+plant_codes <- plants %>% dplyr::select(SpeCode, Genus_spp) %>% rename("Species" = "Genus_spp")
+plant_codes <- unique(plant_codes)
+
 
 ```
 
@@ -1681,17 +2248,25 @@ decostand_plants_pa[is.na(decostand_plants_pa)] <- 0
 plants_pa_matrix <- as.matrix(decostand_plants_pa)
 
 #Applying the getTrends function to each row of the presence/absence matrix
-plants_trends <- apply(plants_pa_matrix, 1, getTrends)
+plants_trends <- apply(plants_pa_matrix, 1, FUN = getTrends)
+plants_trends2.0 <- apply(plants_pa_matrix, 1, FUN = getTrends2.0)
+plants_trends2.5 <- apply(plants_pa_matrix, 1, FUN = getTrends2.5)
+plants_trends3.0 <- apply(plants_pa_matrix, 1, FUN = getTrends3.0)
 
 #Creating a table with the species.watershed and the Trends info. I excluded the bsline info.
-plants_classification <- tibble((plants_env), do.call(rbind,lapply(plants_trends,(function(v){v[c(1,2,3,5)]}))))
+plants_classification <- tibble((plants_env), do.call(rbind,lapply(plants_trends,(function(v){v[c(1,2,3,4,5,6,7,8,9)]}))),
+do.call(rbind,lapply(plants_trends2.0,(function(v){v[c(9)]}))),
+do.call(rbind,lapply(plants_trends2.5,(function(v){v[c(9)]}))),
+do.call(rbind,lapply(plants_trends3.0,(function(v){v[c(9)]}))))
 
 
 #Adding in the presence/absence per year data back in 
-plants_class <- plants_classification %>% add_column(decostand_plants_pa, .before = "chiPval")
+plants_class <- plants_classification %>% add_column(decostand_plants_pa, .before = "chi_pval")
 
 #Separating the species and watershed variable names for graphing later
 plants_class <- plants_class %>% separate(Species.watershed, c("Genus", "Spp", "Watershed_name")) %>% unite("Species", Genus:Spp, sep = "_")
+
+plants_class <- left_join(plants_class, disturbance, by = "Watershed_name")
 
 #Pivoting longer so that each row is now a year, species, watershed, etc.
 plants_class_long <- plants_class %>% pivot_longer(cols = "1992":"2022", 
@@ -1700,5 +2275,140 @@ plants_class_long <- plants_class %>% pivot_longer(cols = "1992":"2022",
 
 ```
 
+### Plants: Exploration Plots
+
+```{r plants exploration plots}
+
+plants_graphing <- plants_class_long
+
+plants_graphing <- left_join(plants_graphing, plant_codes, by = "Species")
+plants_graphing <- left_join(plants_graphing, plant_traits, by = "SpeCode")
+#Making all presence = "0" inti NA's so they don't show up in the graph
+plants_graphing$Presence[plants_graphing$Presence == 0] <- NA
+
+#Making the years numeric instead of characters
+plants_graphing <- plants_graphing %>% mutate(Recyear = as.character(Recyear))
+plants_graphing <- plants_graphing %>% mutate(Recyear = as.numeric(Recyear))
+
+#Changing the order of the watersheds so that the grazing and non-grazing watersheds of the same burn interval are next to each other
+plants_graphing$Watershed_name <- factor(plants_graphing$Watershed_name,
+                                levels = c("1D", "N1B", "4B", 
+                                           "4F", "N4A", "N4D", 
+                                           "20B", "N20B"))
 
 
+plants_graphing$category <- factor(plants_graphing$category, 
+                               levels = c("No_change-absent", "No_change-present", 
+                                          "Random", "Recurrent", "Increasing", 
+                                          "Decreasing"))
+
+plants_class_graphing <- plants_classification %>% pivot_longer(cols = "category":"category3.0",
+                                                                    names_to = "function_type",
+                                                                    values_to = "classification")
+
+
+  
+plants_class_graphing <- plants_class_graphing %>% group_by(function_type, classification) %>% dplyr::summarise(total_count=n(),.groups = 'drop')
+
+plants_class_graphing <- plants_class_graphing %>% mutate(Proportion = (total_count/2600))
+plants_class_graphing3.0 <- plants_class_graphing %>% subset(function_type == "category3.0")
+
+plants_class_graphing3.0$classification <- factor(plants_class_graphing3.0$classification,
+                                        levels = c("No_change-absent", 
+                                                   "No_change-present", 
+                                                   "Recurrent", "Random", "Increasing", "Decreasing"))
+
+plants_traits_graphing <- left_join(plants_class, plant_codes, by = "Species")
+plants_traits_graphing <-  left_join(plants_traits_graphing, plant_traits, by = "SpeCode")
+  
+plants_lf_graphing <- plants_traits_graphing %>% group_by(life_form, category3.0) %>% dplyr::summarise(total_count=n(),.groups = 'drop')
+
+
+plants_lf_graphing$category3.0 <- factor(plants_lf_graphing$category3.0,
+                                        levels = c("No_change-absent",
+                                                   "No_change-present", 
+                                                   "Recurrent", "Random", "Increasing", "Decreasing"))
+
+plants_origin_graphing <- plants_traits_graphing %>% group_by(origin, category3.0) %>% dplyr::summarise(total_count=n(),.groups = 'drop')
+plants_origin_graphing$category3.0 <- factor(plants_origin_graphing$category3.0,
+                                        levels = c("No_change-absent",
+                                                   "No_change-present", 
+                                                   "Recurrent", "Random", "Increasing", "Decreasing"))
+
+plants_gf_graphing <- plants_traits_graphing %>% group_by(growth_form, Watershed_name, category3.0) %>% dplyr::summarise(total_count=n(),.groups = 'drop')
+plants_gf_graphing$category3.0 <- factor(plants_gf_graphing$category3.0,
+                                        levels = c("No_change-absent",
+                                                   "No_change-present", 
+                                                   "Recurrent", "Random", "Increasing", "Decreasing"))
+
+plants_idk <- plants_class %>% group_by(Disturbance, category3.0) %>% dplyr::summarise(total_count=n(),.groups = 'drop') %>% mutate(Proportion = (total_count/325))
+
+plants_idk$category3.0 <- factor(plants_idk$category3.0,
+                                        levels = c("No_change-absent",
+                                                   "No_change-present", 
+                                                   "Recurrent", "Random", "Increasing", "Decreasing"))
+
+plants_idk$Disturbance <- factor(plants_idk$Disturbance,
+                                levels = c("1year_Ungrazed_D", "4year_Ungrazed_A", "4year_Ungrazed_B", "20year_Ungrazed_B", "1year_Bison_B", "4year_Bison_A", "4year_Bison_D", "20year_Bison_B"))
+
+
+
+plants_idk %>% ggplot(aes(x = category3.0, y = Proportion, fill = category3.0)) + geom_col() + 
+  scale_fill_manual(values = c("lightgray","#000000", "#CC79A7", "#0072B2", "#009E73", "#D55E00")) +
+  facet_wrap(.~Disturbance, nrow=2, ncol=4) +
+  theme_bw() +
+  theme(text = element_text(size=14), 
+        axis.text.x = element_text(angle=90, hjust=1)) +
+  labs(title= "Proportion of Plant Species in Each Incidence Classification for Each Watershed", 
+       x = "Classification", 
+       y = "Proportion of Species", 
+       fill = "Classification")
+
+plants_lf_graphing %>% ggplot(aes(x = category3.0, y = total_count, fill = category3.0)) + geom_col() + 
+  scale_fill_manual(values = c("gray","black", "darkorchid", "dodgerblue2", "darkolivegreen4", "firebrick")) +
+  facet_wrap(.~life_form) +
+  theme(text = element_text(size=14), 
+        axis.text.x = element_text(angle=90, hjust=1)) +
+  labs(title= "Number of Plant Species in Each Incidence Classification for Each Life Form", 
+       x = "Classification", 
+       y = "Number of Species", 
+       fill = "Classification")
+
+plants_origin_graphing %>% ggplot(aes(x = category3.0, y = total_count, fill = category3.0)) + geom_col() + 
+  scale_fill_manual(values = c("gray","black", "darkorchid", "dodgerblue2", "darkolivegreen4", "firebrick")) +
+  facet_wrap(.~origin) +
+  theme(text = element_text(size=14), 
+        axis.text.x = element_text(angle=90, hjust=1)) +
+  labs(title= "Number of Plant Species in Each Incidence Classification for Native vs Introduced Species", 
+       x = "Classification", 
+       y = "Number of Species", 
+       fill = "Classification")
+
+plants_gf_graphing %>% ggplot(aes(x = category3.0, y = total_count, fill = category3.0)) + geom_col() + 
+  scale_fill_manual(values = c("gray","black", "darkorchid", "dodgerblue2", "darkolivegreen4", "firebrick")) +
+  facet_grid(Watershed_name~growth_form) +
+  theme(text = element_text(size=14), 
+        axis.text.x = element_text(angle=90, hjust=1)) +
+  labs(title= "Number of Plant Species in Each Incidence Classification for Each Growth Form", 
+       x = "Classification", 
+       y = "Number of Species", 
+       fill = "Classification")
+
+plants_class_graphing3.0 %>% ggplot(aes(x = classification, y = Proportion, fill = classification)) + geom_col() + scale_fill_manual(values = c("lightgray","#000000", "#CC79A7", "#0072B2", "#009E73", "#D55E00")) +
+  theme_bw() +
+  theme(text = element_text(size=14), 
+        axis.text.x = element_text(angle=45, hjust=1)) +
+  labs(title= "Proportion of Grasshoppers Species in Each Incidence Classification", 
+       x = "Classification", 
+       y = "Proportion of Species", 
+       fill = "Classifcation")
+
+
+plants_graphing_directed <- plants_graphing %>% subset(category3.0 %in% c("Increasing","Decreasing"))
+length(unique(plants_graphing_directed$Species))
+
+plants_graphing_increasing <- plants_graphing %>% subset(category3.0 == "Increasing")
+length(unique(plants_graphing_increasing$Species))
+
+plants_graphing_decreasing <- plants_graphing %>% subset(category3.0 == "Decreasing")
+length(unique(plants_graphing_decreasing$Species))
