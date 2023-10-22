@@ -46,10 +46,11 @@ This section is dedicated to the functions that will be applied to our datasets.
 The "getTrends" function will classify each taxa's species from each watershed into distinct categories, which include: 
 - **"Always_absent"** <- though species was detected at other surrounding watersheds, it was never present at the specified watershed during the duration of the study
 - **"Always_present"** <- species at watershed is present in every year in which data was collected
-- **"Random"** <- species is detected sporadically for the duration of the study at watershed
-- **"Recurrent"** <- species is detected in consecutive years and is followed by the absence of the species for a period of time, in a distinct pattern
 - **"Increasing"** <- the presence of the species increases throughout the duration of the study (it isn't present during the beginning of the study, but appears towards the end of the study)
 - **"Decreasing"** <- the presence of the species decreases throughout the duration of the study (it is  present during the beginning of the study, but then disappears towards the end of the study)
+- **"Random"** <- species is detected sporadically for the duration of the study at watershed
+- **"Recurrent"** <- species is detected in consecutive years and is followed by the absence of the species for a period of time, in a distinct pattern
+
 
 ```{r getTrends}
 
@@ -81,7 +82,6 @@ getTrends <- function(x) {
     v <- sum(abs(l))
   }
   
-  
   # If all the values are 0, it is always absent
   if (tssum == 0) {
     p_val <- NA
@@ -96,8 +96,8 @@ getTrends <- function(x) {
   # if all the values are 1, it is always present
   else if (tslen == tssum) {
     p_val <- NA
-    f_early <- NA
-    f_late <- NA
+    f_early <- 0.5
+    f_late <- 0.5
     runsTestPV<-NA
     trend<-NA
     trendPlus<-NA
@@ -124,35 +124,39 @@ getTrends <- function(x) {
       cat = "Decreasing"
     }
     
-    if((f_early < f_late) & (p_val <= 0.05)) {
+    else if((f_early < f_late) & (p_val <= 0.05)) {
       trend <- 1
       cat = "Increasing"
     }
     
-    # Chi-squared test not significant
-    if(p_val > 0.05) trend <- 0
+    # Chi-squared test not significant, and it wasn't always present or absent
+    else {
+      trend <- 0
     
-    #conduct a runs test on the time-series
-    runsPV <- tseries::runs.test(as.factor(x), alternative = "less")
-    runsTestPV <- runsPV$p.value
-    if (is.nan(runsTestPV)) {
-      runsTestPV <- 2}
+      #conduct a runs test on the time-series
+      runsPV <- tseries::runs.test(as.factor(x), alternative = "less")
+      runsTestPV <- runsPV$p.value
+      if (is.nan(runsTestPV)) {
+        runsTestPV <- 2 #mark as insignificant in case of nan value for pvalue
+        }
     
-    # if Chi-sq test insignif. and the runs test was significant
-    if((p_val > 0.05) & (runsTestPV < 0.05)) {
-      trendPlus<-10
-      cat="Recurrent"
-    }
+      # if Chi-sq test insignif. and the runs test was significant
+      if((p_val > 0.05) & (runsTestPV < 0.05)) {
+        trendPlus <- 10
+        cat="Recurrent"
+      }
     
-    # if chi-sq insignif. and the runs test insignif.
-    if((p_val > 0.05) & (runsTestPV > 0.05)){
-      trendPlus<-5
-      cat="Random"
+     # if Chi-sq insignif. and the runs test insignif.
+      else if((p_val > 0.05) & (runsTestPV > 0.05)){
+        trendPlus <- 5
+        cat="Random"
+      }
     }
   }
-  
   # for each species, record the summary statistics
-  statSumm <- tibble("numyears" = tslen, "numpresent" = tssum, "chi_pval"=p_val, "chi_fearly" = f_early, "chi_flate" = f_late, "runs_pval"=runsTestPV, "numtransitions" = v, "trend"=trend, "category"= as.factor(cat))
+  statSumm <- tibble("numyears" = tslen, "numpresent" = tssum, "chi_pval"=p_val, 
+                     "chi_fearly" = f_early, "chi_flate" = f_late, "runs_pval"=runsTestPV,
+                     "numtransitions" = v, "trend"=trend, "category"= as.factor(cat))
   
   return(statSumm)
 } 
@@ -382,10 +386,11 @@ getTrends2.5<- function(x) {
 ```
 
 ### getTrends3.0
+This version of the function has the stipulations for 'nearly always present' >=95% years present, 'nearly always absent' <=5% years present, and for recurrent category requires at least 2 blocks of time when it is present
 ```{r getTrends3.0}
 
 
-getTrends3.0<- function(x) {
+getTrends3.0 <- function(x) {
   #input (x) is a single row of a matrix where the species are rows and the columns are each year with 1/0 values (1=present, 0=absent). 
   #So you need to iterate each row separately to get the results
   # Output is a list with 6 items, that represents the classification results for a single species
@@ -394,27 +399,25 @@ getTrends3.0<- function(x) {
   time <- rep("late", length(x))
   time[1:(round(length(x)/2))] <- "early"
   
-  # make a table that tells you how many 0s and 1s are in the early and the late halves of the time series
+  # make a table that tells you how many 0s and 1s are in the early and the late halves of the time series, label rownames as absent and present
   z_x <- table(x,time)
+  rownames(z_x) <- c("absent","present")
   
   #find the time-series length (number of years)
   tslen <- length(x)
 
   # counts the number of years the species was present
   tssum <- sum(x)
- 
-  # create an empty vector to store results in for the next for loop
-   l <- c()
   
   # identifies when a change from a 0 to a 1 or vice versa happens
+   l <- c()   # create an empty vector to store results in for the next for loop
   for(k in 1:(tslen-1)) {
     j <- x[k+1] - x[k]
     l <- c(l, j)
-    v <- sum(abs(l))
+    v <- sum(abs(l)) #what if x starts and ends with a 1?
   }
   
-  
-  # If all the values are 0, it is always absent
+  # If most of the values are 0 (>=95% years), it is "no change" absent
   if ((tssum/tslen) <= 0.05) {
     p_val <- NA
     f_early <- NA
@@ -425,22 +428,19 @@ getTrends3.0<- function(x) {
     cat <- "No_change-absent"
   }
   
-  # if all the values are 1, it is always present
+  # if most of the values are 1 (>=95% of all years), it is "no change" present
   else if ((tssum/tslen) >= 0.95) {
     p_val <- NA
-    f_early <- NA
-    f_late <- NA
+    f_early <- z_x["present","early"] / sum(z_x[,1]) 
+    f_late <- z_x["present","late"] / sum(z_x[,2])
     runsTestPV<-NA
     trend<-NA
     trendPlus<-NA
     cat<-"No_change-present"
   }
   
-   #If the time series contains changes, then we do a chi-sq test to detect any directed change in the time series.
+   #If the time series contains changes, then we do a chi-sq test to detect directed change
   else {
-     
-    #adds rownames to the z_x table
-    rownames(z_x) <- c("absent","present")
     
     # get p value for the chi-squared test
     p_val <- chisq.test(z_x)$p.val
@@ -451,41 +451,44 @@ getTrends3.0<- function(x) {
     f_early <- z_x["present","early"] / sum(z_x[,1]) 
     f_late <- z_x["present","late"] / sum(z_x[,2])
    
-    if((f_early > f_late) & (p_val <= 0.05)) {
+    if ((f_early > f_late) & (p_val <= 0.05)) {
       trend <- -1
       cat = "Decreasing"
     }
     
-    if((f_early < f_late) & (p_val <= 0.05)) {
+    else if ((f_early < f_late) & (p_val <= 0.05)) {
       trend <- 1
       cat = "Increasing"
     }
     
     # Chi-squared test not significant
-    if(p_val > 0.05) trend <- 0
-    
-    #conduct a runs test on the time-series
-    runsPV <- tseries::runs.test(as.factor(x), alternative = "less")
-    runsTestPV <- runsPV$p.value
-    if (is.nan(runsTestPV)) {
-      runsTestPV <- 2}
-    
-    # if Chi-sq test insignif. and the runs test was significant
-    if((p_val > 0.05) & (runsTestPV < 0.05) & (v > 2)) {
-      trendPlus<-10
-      cat="Recurrent"
-    }
-    
-    # if chi-sq insignif. and the runs test insignif.
-    if((p_val > 0.05) & (runsTestPV > 0.05)|(runsTestPV < 0.05) & (v<=2)){
-      trendPlus<-5
-      cat="Random"
-    }
-    
+    else {
+      trend <- 0
+      
+      #conduct a runs test on the time-series
+      runsPV <- tseries::runs.test(as.factor(x), alternative = "less")
+      runsTestPV <- runsPV$p.value
+      if (is.nan(runsTestPV)) {
+        runsTestPV <- 2
+      }
+      
+      # if Chi-sq test insignif. and the runs test was significant
+      # AND it was present in at least TWO blocks of time
+      if((p_val > 0.05) & (runsTestPV < 0.05) & (v > 2)) {
+        trendPlus <- 10
+        cat = "Recurrent"
+      }
+      
+      # if chi-sq insignif. and the runs test insignif.
+      else if((p_val > 0.05) & (runsTestPV > 0.05) | (runsTestPV < 0.05) & (v <= 2)){
+        trendPlus <- 5
+        cat = "Random"
+      }
+    }#end else for ns chisq
   }
   
   # for each species, record the summary statistics
-  statSumm <- tibble("numyears" = tslen, "numpresent" = tssum, "chiPval"=p_val, "chi_fearly" = f_early, "chi_flate" = f_late, "runsPval"=runsTestPV, "numtransitions" = v, "trend"=trend, "category3.0"= as.factor(cat))
+  statSumm <- tibble("numyears" = tslen, "numpresent" = tssum, "chiPval"=p_val, "chi_fearly" = f_early, "chi_flate" = f_late, "runsPval"=runsTestPV, "numtransitions" = v, "trend" = trend, "category3.0"= as.factor(cat))
   
   return(statSumm)
 }
