@@ -389,7 +389,6 @@ getTrends2.5<- function(x) {
 This version of the function has the stipulations for 'nearly always present' >=95% years present, 'nearly always absent' <=5% years present, and for recurrent category requires at least 2 blocks of time when it is present
 ```{r getTrends3.0}
 
-
 getTrends3.0 <- function(x) {
   #input (x) is a single row of a matrix where the species are rows and the columns are each year with 1/0 values (1=present, 0=absent). 
   #So you need to iterate each row separately to get the results
@@ -403,11 +402,12 @@ getTrends3.0 <- function(x) {
   z_x <- table(x,time)
   rownames(z_x) <- c("absent","present")
   
-  #find the time-series length (number of years)
+  # find the time-series length (number of years)
   tslen <- length(x)
-
   # counts the number of years the species was present
   tssum <- sum(x)
+  # calculate proportion of years species was present
+  tsprop <- tssum/tslen
   
   # identifies when a change from a 0 to a 1 or vice versa happens
    l <- c()   # create an empty vector to store results in for the next for loop
@@ -488,11 +488,10 @@ getTrends3.0 <- function(x) {
   }
   
   # for each species, record the summary statistics
-  statSumm <- tibble("numyears" = tslen, "numpresent" = tssum, "chiPval"=p_val, "chi_fearly" = f_early, "chi_flate" = f_late, "runsPval"=runsTestPV, "numtransitions" = v, "trend" = trend, "category3.0"= as.factor(cat))
+  statSumm <- tibble("numyears" = tslen, "numpresent" = tssum, "percyears" = tsprop, "chiPval"=p_val, "chi_fearly" = f_early, "chi_flate" = f_late, "runsPval"=runsTestPV, "numtransitions" = v, "trend" = trend, "category3.0"= as.factor(cat))
   
   return(statSumm)
 }
-
 
 ```
 
@@ -500,7 +499,6 @@ getTrends3.0 <- function(x) {
 This is the original randomization function from Gotelli et al. to validate the accuracy of our classification functions. I need to go through this and make sure I understand what each step is.
 ```{r randomization}
 ## where t1 is the long form time series and p1 is the subset of species with the classification to be randomised
-
 
 timeseries <- tibble(Year = c(1992, 1993, 1994, 
                       1995, 1996, 1997, 
