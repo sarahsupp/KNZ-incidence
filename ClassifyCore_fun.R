@@ -80,7 +80,10 @@ return(list(dist=dist,bin=bin))
 cat("using built in defaults ----","\n")
 print(bin_beta()) # test with defaults
 
-# Examples. Suppose we have a species that occurs in only 1 of the 18 samples you have from Konza. It seems reasonable that this should be classified as a "rare" species. We will use 20% and 80% as the arbitrary cutpoints for rare,intermediate, and common species. We will try the strict and relaxed criteria for the test:
+# Examples. Suppose we have a species that occurs in only 1 of the 18 samples you have from Konza. 
+# It seems reasonable that this should be classified as a "rare" species. 
+# We will use 20% and 80% as the arbitrary cutpoints for rare,intermediate, and common species. 
+# We will try the strict and relaxed criteria for the test:
 
 pars <- list(
   low_cut = 0.10,

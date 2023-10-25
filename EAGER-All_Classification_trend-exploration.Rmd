@@ -46,10 +46,11 @@ This section is dedicated to the functions that will be applied to our datasets.
 The "getTrends" function will classify each taxa's species from each watershed into distinct categories, which include: 
 - **"Always_absent"** <- though species was detected at other surrounding watersheds, it was never present at the specified watershed during the duration of the study
 - **"Always_present"** <- species at watershed is present in every year in which data was collected
-- **"Random"** <- species is detected sporadically for the duration of the study at watershed
-- **"Recurrent"** <- species is detected in consecutive years and is followed by the absence of the species for a period of time, in a distinct pattern
 - **"Increasing"** <- the presence of the species increases throughout the duration of the study (it isn't present during the beginning of the study, but appears towards the end of the study)
 - **"Decreasing"** <- the presence of the species decreases throughout the duration of the study (it is  present during the beginning of the study, but then disappears towards the end of the study)
+- **"Random"** <- species is detected sporadically for the duration of the study at watershed
+- **"Recurrent"** <- species is detected in consecutive years and is followed by the absence of the species for a period of time, in a distinct pattern
+
 
 ```{r getTrends}
 
@@ -83,7 +84,6 @@ getTrends <- function(x) {
     v <- sum(abs(l))
   }
   
-  
   # If all the values are 0, it is always absent
   if (tssum == 0) {
     p_val <- NA
@@ -98,8 +98,8 @@ getTrends <- function(x) {
   # if all the values are 1, it is always present
   else if (tslen == tssum) {
     p_val <- NA
-    f_early <- NA
-    f_late <- NA
+    f_early <- 0.5
+    f_late <- 0.5
     runsTestPV<-NA
     trend<-NA
     trendPlus<-NA
@@ -126,35 +126,39 @@ getTrends <- function(x) {
       cat = "Decreasing"
     }
     
-    if((f_early < f_late) & (p_val <= 0.05)) {
+    else if((f_early < f_late) & (p_val <= 0.05)) {
       trend <- 1
       cat = "Increasing"
     }
     
-    # Chi-squared test not significant
-    if(p_val > 0.05) trend <- 0
+    # Chi-squared test not significant, and it wasn't always present or absent
+    else {
+      trend <- 0
     
-    #conduct a runs test on the time-series
-    runsPV <- tseries::runs.test(as.factor(x), alternative = "less")
-    runsTestPV <- runsPV$p.value
-    if (is.nan(runsTestPV)) {
-      runsTestPV <- 2}
+      #conduct a runs test on the time-series
+      runsPV <- tseries::runs.test(as.factor(x), alternative = "less")
+      runsTestPV <- runsPV$p.value
+      if (is.nan(runsTestPV)) {
+        runsTestPV <- 2 #mark as insignificant in case of nan value for pvalue
+        }
     
-    # if Chi-sq test insignif. and the runs test was significant
-    if((p_val > 0.05) & (runsTestPV < 0.05)) {
-      trendPlus<-10
-      cat="Recurrent"
-    }
+      # if Chi-sq test insignif. and the runs test was significant
+      if((p_val > 0.05) & (runsTestPV < 0.05)) {
+        trendPlus <- 10
+        cat="Recurrent"
+      }
     
-    # if chi-sq insignif. and the runs test insignif.
-    if((p_val > 0.05) & (runsTestPV > 0.05)){
-      trendPlus<-5
-      cat="Random"
+     # if Chi-sq insignif. and the runs test insignif.
+      else if((p_val > 0.05) & (runsTestPV > 0.05)){
+        trendPlus <- 5
+        cat="Random"
+      }
     }
   }
-  
   # for each species, record the summary statistics
-  statSumm <- tibble("numyears" = tslen, "numpresent" = tssum, "chi_pval"=p_val, "chi_fearly" = f_early, "chi_flate" = f_late, "runs_pval"=runsTestPV, "numtransitions" = v, "trend"=trend, "category"= as.factor(cat))
+  statSumm <- tibble("numyears" = tslen, "numpresent" = tssum, "chi_pval"=p_val, 
+                     "chi_fearly" = f_early, "chi_flate" = f_late, "runs_pval"=runsTestPV,
+                     "numtransitions" = v, "trend"=trend, "category"= as.factor(cat))
   
   return(statSumm)
 } 
@@ -384,10 +388,10 @@ getTrends2.5<- function(x) {
 ```
 
 ### getTrends3.0
+This version of the function has the stipulations for 'nearly always present' >=95% years present, 'nearly always absent' <=5% years present, and for recurrent category requires at least 2 blocks of time when it is present
 ```{r getTrends3.0}
 
-
-getTrends3.0<- function(x) {
+getTrends3.0 <- function(x) {
   #input (x) is a single row of a matrix where the species are rows and the columns are each year with 1/0 values (1=present, 0=absent). 
   #So you need to iterate each row separately to get the results
   # Output is a list with 6 items, that represents the classification results for a single species
@@ -396,28 +400,23 @@ getTrends3.0<- function(x) {
   time <- rep("late", length(x))
   time[1:(round(length(x)/2))] <- "early"
   
-  # make a table that tells you how many 0s and 1s are in the early and the late halves of the time series
-  z_x <- table(x,time)
-  
-  #find the time-series length (number of years)
+  # find the time-series length (number of years)
   tslen <- length(x)
-
   # counts the number of years the species was present
   tssum <- sum(x)
- 
-  # create an empty vector to store results in for the next for loop
-   l <- c()
+  # calculate proportion of years species was present
+  tsprop <- tssum/tslen
   
   # identifies when a change from a 0 to a 1 or vice versa happens
+   l <- c()   # create an empty vector to store results in for the next for loop
   for(k in 1:(tslen-1)) {
     j <- x[k+1] - x[k]
     l <- c(l, j)
-    v <- sum(abs(l))
+    v <- sum(abs(l)) #what if x starts and ends with a 1?
   }
   
-  
-  # If all the values are 0, it is always absent
-  if ((tssum/tslen) <= 0.05) {
+  # If most of the values are 0 (>=95% years), it is "no change" absent
+  if (tsprop <= 0.05) {
     p_val <- NA
     f_early <- NA
     f_late <- NA
@@ -427,22 +426,25 @@ getTrends3.0<- function(x) {
     cat <- "No_change-absent"
   }
   
-  # if all the values are 1, it is always present
-  else if ((tssum/tslen) >= 0.95) {
+  # if most of the values are 1 (>=95% of all years), it is "no change" present
+  else if (tsprop >= 0.95) {
+    
+    # make a table that tells you how many 0s and 1s are in the early and the late halves
+    # of the time series, label rownames as absent and present
+    z_x <- table(x, time)
+    rownames(z_x) <- c("absent","present")
+    
     p_val <- NA
-    f_early <- NA
-    f_late <- NA
+    f_early <- z_x["present","early"] / sum(z_x[,1]) 
+    f_late <- z_x["present","late"] / sum(z_x[,2])
     runsTestPV<-NA
     trend<-NA
     trendPlus<-NA
     cat<-"No_change-present"
   }
   
-   #If the time series contains changes, then we do a chi-sq test to detect any directed change in the time series.
+   #If the time series contains changes, then we do a chi-sq test to detect directed change
   else {
-     
-    #adds rownames to the z_x table
-    rownames(z_x) <- c("absent","present")
     
     # get p value for the chi-squared test
     p_val <- chisq.test(z_x)$p.val
@@ -453,45 +455,47 @@ getTrends3.0<- function(x) {
     f_early <- z_x["present","early"] / sum(z_x[,1]) 
     f_late <- z_x["present","late"] / sum(z_x[,2])
    
-    if((f_early > f_late) & (p_val <= 0.05)) {
+    if ((f_early > f_late) & (p_val <= 0.05)) {
       trend <- -1
       cat = "Decreasing"
     }
     
-    if((f_early < f_late) & (p_val <= 0.05)) {
+    else if ((f_early < f_late) & (p_val <= 0.05)) {
       trend <- 1
       cat = "Increasing"
     }
     
     # Chi-squared test not significant
-    if(p_val > 0.05) trend <- 0
-    
-    #conduct a runs test on the time-series
-    runsPV <- tseries::runs.test(as.factor(x), alternative = "less")
-    runsTestPV <- runsPV$p.value
-    if (is.nan(runsTestPV)) {
-      runsTestPV <- 2}
-    
-    # if Chi-sq test insignif. and the runs test was significant
-    if((p_val > 0.05) & (runsTestPV < 0.05) & (v > 2)) {
-      trendPlus<-10
-      cat="Recurrent"
-    }
-    
-    # if chi-sq insignif. and the runs test insignif.
-    if((p_val > 0.05) & (runsTestPV > 0.05)|(runsTestPV < 0.05) & (v<=2)){
-      trendPlus<-5
-      cat="Random"
-    }
-    
+    else {
+      trend <- 0
+      
+      #conduct a runs test on the time-series
+      runsPV <- tseries::runs.test(as.factor(x), alternative = "less")
+      runsTestPV <- runsPV$p.value
+      if (is.nan(runsTestPV)) {
+        runsTestPV <- 2
+      }
+      
+      # if Chi-sq test insignif. and the runs test was significant
+      # AND it was present in at least TWO blocks of time
+      if((p_val > 0.05) & (runsTestPV < 0.05) & (v > 2)) {
+        trendPlus <- 10
+        cat = "Recurrent"
+      }
+      
+      # if chi-sq insignif. and the runs test insignif.
+      else if((p_val > 0.05) & (runsTestPV > 0.05) | (runsTestPV < 0.05) & (v <= 2)){
+        trendPlus <- 5
+        cat = "Random"
+      }
+    }#end else for ns chisq
   }
   
   # for each species, record the summary statistics
-  statSumm <- tibble("numyears" = tslen, "numpresent" = tssum, "chiPval"=p_val, "chi_fearly" = f_early, "chi_flate" = f_late, "runsPval"=runsTestPV, "numtransitions" = v, "trend"=trend, "category3.0"= as.factor(cat))
+  statSumm <- tibble("numyears" = tslen, "numpresent" = tssum, "percyears" = tsprop, "chiPval"=p_val, "chi_fearly" = f_early, "chi_flate" = f_late, "runsPval"=runsTestPV, "numtransitions" = v, "trend" = trend, "category3.0"= as.factor(cat))
   
   return(statSumm)
 }
-
 
 ```
 
@@ -625,7 +629,6 @@ apply(smammals_pa_matrix, 1, FUN = getTrends3.0)
 This is the original randomization function from Gotelli et al. to validate the accuracy of our classification functions. I need to go through this and make sure I understand what each step is.
 ```{r randomization}
 ## where t1 is the long form time series and p1 is the subset of species with the classification to be randomised
-
 
 timeseries <- tibble(Year = c(1992, 1993, 1994, 
                       1995, 1996, 1997, 
@@ -824,11 +827,14 @@ This section is dedicated to cleaning and classifying the species for the small-
 
 Data was collected from 1981 to 2013, but we are only looking at data collected between 1992 to 2013 because bison weren't introduced to the bison plots until 1992.
 
+There are more recent small mammal data available at Konza Prairie, but there was a gap in the data starting in 2013, along with an observer change.
+
 ---
 
 Watersheds included in the raw dataset: 
-1D, 4B, *4F*, 20B, N1B, N4D, N20B.
+1D, 4B, *4F*, 20B, N1B, N4D, N20B
 *italicized* = *watersheds excluded in our analysis*
+- for all watersheds, the number is the fire interval; N = native grazers (bison)
 
 Reasons for exclusion:
 *4F* = Removed to have equal representation of comparable treatments; there are 2 watersheds with the 4-year fire-interval + ungrazed treatment (4B and 4F), and only one watershed with the 4-year fire-interval + grazed treatment (N4D). We removed 4F because 4B is more commonly sampled in our other datasets. We did do a Bray-Curtis Dissimilarity test between 4F and 4B after standardizing for the total number of observations per watershed and found they were ~9% dissimilar/~91% similar regarding small-mammal population.
@@ -951,17 +957,20 @@ smammals <- smammals %>% group_by(Recyear, Watershed_name, Species) %>%
 smammals <- smammals %>% subset(Watershed_name != "4F")
 
 #Creating a table with the small mammal common names, to join to the main dataset and make referencing easier in plots
-smammals_commonnames <- tibble(Species = c("Blarina_hylophaga", "Chaetodipus_hispidus", "Cryptotis_parva", 
-                                           "Microtus_ochrogaster", "Mus_musculus", "Neotoma_floridana", 
+smammals_commonnames <- tibble(Species = c("Blarina_hylophaga", "Chaetodipus_hispidus",
+                                           "Cryptotis_parva", 
+                                           "Microtus_ochrogaster",
+                                           "Mus_musculus", "Neotoma_floridana",
                                            "Peromyscus_leucopus", "Peromyscus_maniculatus", 
-                                           "Reithrodontomys_megalotis", "Reithrodontomys_montanus", 
-                                           "Sigmodon_hispidus", "Spermophilus_tridecemlineatus", 
+                                           "Reithrodontomys_megalotis", "Reithrodontomys_montanus",
+                                           "Sigmodon_hispidus", "Spermophilus_tridecemlineatus",
                                            "Synaptomys_cooperi", "Zapus_hudsonius"), 
-                               Common_name = c("Elliot's short-tailed shrew", "Hispid pocket mouse", 
-                                               "North American least shrew", "Prairie vole", 
-                                               "House mouse", "Eastern woodrat", "White-footed mouse", 
-                                               "Deer mouse", "Western harvest mouse", "Plains harvest mouse", 
-                                               "Hispid cotton rat", "Thirteen-lined ground squirrel", 
+                               Common_name = c("Elliot's short-tailed shrew", "Hispid pocket mouse",
+                                               "North American least shrew", "Prairie vole",
+                                               "House mouse", "Eastern woodrat",
+                                               "White-footed mouse","Deer mouse",
+                                               "Western harvest mouse", "Plains harvest mouse",
+                                               "Hispid cotton rat", "Thirteen-lined ground squirrel",
                                                "Southern bog lemming", "Meadow jumping mouse"))
 
 smammals <- left_join(smammals, smammals_commonnames, by = "Species")
@@ -969,7 +978,7 @@ smammals <- left_join(smammals, smammals_commonnames, by = "Species")
 ```
 
 ### Small-mammals: Presence/Absence & Classification
-For this section, I am reorganizing the data to be able to format it into a presence/absence matrix. This matrix will then be ran through the getTrends function to get the classifications for each species at each watershed.
+For this section, I am reorganizing the data to be able to format it into a presence/absence matrix. This matrix will then be ran through the getTrends3.0 function to get the classifications for each species at each watershed.
 ```{r smammals pa}
 #Combining the species and watershed variables so that each species per watershed per year is a unique identifier
 smammals<- smammals %>% unite("Species.watershed", Species:Watershed_name, sep = ".")
@@ -991,7 +1000,7 @@ smammals_pa_matrix <- as.matrix(decostand_smammals_pa)
 smammals_trends <- apply(smammals_pa_matrix, 1, FUN = getTrends)
 smammals_trends2.0 <- apply(smammals_pa_matrix, 1, FUN = getTrends2.0)
 smammals_trends2.5 <- apply(smammals_pa_matrix, 1, FUN = getTrends2.5)
-smammals_trends3.0 <- apply(smammals_pa_matrix, 1, FUN = getTrends3.0)
+smammals_trends3.0 <- apply(smammals_pa_matrix, 1, FUN = getTrends3.0) #oops, now get a dimnames error, sorry!
 
 
 #Creating a table with the species.watershed and the Trends info. I excluded the bsline info. ADD INFO ABOUT WHAT THIS IS TAKING FROM 
@@ -1059,50 +1068,68 @@ smammals_graphing$Watershed_name <- factor(smammals_graphing$Watershed_name,
                                         levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"))
 
 smammals_graphing$category <- factor(smammals_graphing$category,
-                                        levels = c("No_change-absent", "No_change-present", "Increasing", "Recurrent", "Random"))
+                                     levels = c("No_change-absent", "No_change-present",
+                                                "Increasing", "Recurrent", "Random"))
 
 smammals_graphing$category2.0 <- factor(smammals_graphing$category2.0,
-                                        levels = c("No_change-absent", "No_change-present", "Increasing", "Recurrent", "Random"))
+                                        levels = c("No_change-absent", "No_change-present",
+                                                   "Increasing", "Recurrent", "Random"))
 
 smammals_graphing$category2.5 <- factor(smammals_graphing$category2.5,
-                                        levels = c("No_change-absent", "No_change-present", "Increasing", "Recurrent", "Random"))
+                                        levels = c("No_change-absent", "No_change-present",
+                                                   "Increasing", "Recurrent", "Random"))
 
 smammals_graphing$category3.0 <- factor(smammals_graphing$category3.0,
-                                        levels = c("No_change-absent", "No_change-present", "Increasing", "Recurrent", "Random"))
+                                        levels = c("No_change-absent", "No_change-present",
+                                                   "Increasing", "Recurrent", "Random"))
 
 smammals_class_graphing <- smammals_classification %>% pivot_longer(cols = "category":"category3.0",
                                                                     names_to = "function_type",
                                                                     values_to = "classification")
 
-smammals_class_graphing <- smammals_class_graphing %>% group_by(function_type, classification) %>% dplyr::summarise(total_count=n(),.groups = 'drop')
+smammals_class_graphing <- smammals_class_graphing %>% 
+  group_by(function_type, classification) %>% 
+  dplyr::summarise(total_count=n(),.groups = 'drop')
 
-smammals_class_graphing <- smammals_class_graphing %>% mutate(Proportion = (total_count/84))
+smammals_class_graphing <- smammals_class_graphing %>% 
+  mutate(Proportion = (total_count/84))
 
-smammals_class_graphing3.0 <- smammals_class_graphing %>% subset(function_type == "category3.0")
+smammals_class_graphing3.0 <- smammals_class_graphing %>% 
+  subset(function_type == "category3.0")
 
-smammals_class_graphing2.5 <- smammals_class_graphing %>% subset(function_type == "category2.5")
+smammals_class_graphing2.5 <- smammals_class_graphing %>% 
+  subset(function_type == "category2.5")
 
-smammals_class_graphing %>% ggplot(aes(x = classification, y = total_count, color = function_type, group = function_type)) + geom_point() + geom_line()
+smammals_class_graphing %>% 
+  ggplot(aes(x = classification, y = total_count, color = function_type, group = function_type)) +
+  geom_point() + 
+  geom_line()
 
 
 smammals_class_graphing3.0$classification <- factor(smammals_class_graphing3.0$classification,
-                                        levels = c("No_change-absent", 
-                                                   "No_change-present", 
+                                                    levels = c("No_change-absent", 
+                                                   "No_change-present",
                                                    "Recurrent", "Random", "Increasing"))
 
 smammals_class_graphing2.5$classification <- factor(smammals_class_graphing3.0$classification,
-                                        levels = c("No_change-absent", 
+                                                    levels = c("No_change-absent", 
                                                    "No_change-present", 
                                                    "Recurrent", "Random", "Increasing"))
 
-smammals_idk <- smammals_class %>% group_by(Disturbance, category3.0) %>% dplyr::summarise(total_count=n(),.groups = 'drop') %>% mutate(Proportion = (total_count/14))
+smammals_idk <- smammals_class %>% 
+  group_by(Disturbance, category3.0) %>% 
+  dplyr::summarise(total_count=n(),.groups = 'drop') %>% 
+  mutate(Proportion = (total_count/14))
 
-smammals_idk <- smammals_class %>% group_by(Disturbance, category2.5) %>% dplyr::summarise(total_count=n(),.groups = 'drop') %>% mutate(Proportion = (total_count/14))
+smammals_idk <- smammals_class %>% 
+  group_by(Disturbance, category2.5) %>% 
+  dplyr::summarise(total_count=n(),.groups = 'drop') %>% 
+  mutate(Proportion = (total_count/14))
 
 smammals_idk$category3.0 <- factor(smammals_idk$category3.0,
-                                        levels = c("No_change-absent",
-                                                   "No_change-present", 
-                                                   "Recurrent", "Random", "Increasing"))
+                                   levels = c("No_change-absent",
+                                              "No_change-present",
+                                              "Recurrent", "Random", "Increasing"))
 
 smammals_graphing$category3.0 <- factor(smammals_graphing$category3.0,
                                         levels = c("No_change-absent",
@@ -1114,12 +1141,15 @@ smammals_idk$category3.0 <- factor(smammals_idk$category3.0,
                                                    "No_change-present", 
                                                    "Recurrent", "Random", "Increasing"))
 
-smammals_idk$Disturbance<- factor(smammals_idk$Disturbance,
-                                        levels = c("1year_Ungrazed_D", "4year_Ungrazed_B", "20year_Ungrazed_B",  "1year_Bison_B", "4year_Bison_D", "20year_Bison_B"))
+smammals_idk$Disturbance <- factor(smammals_idk$Disturbance,
+                                        levels = c("1year_Ungrazed_D", "4year_Ungrazed_B",
+                                                   "20year_Ungrazed_B",  "1year_Bison_B",
+                                                   "4year_Bison_D", "20year_Bison_B"))
 
 unique(smammals_idk$Disturbance)
 
-smammals_idk %>% ggplot(aes(x = category3.0, y = Proportion, fill = category3.0)) + 
+smammals_idk %>% 
+  ggplot(aes(x = category3.0, y = Proportion, fill = category3.0)) + 
   geom_col() + 
   scale_fill_manual(values = c("lightgray","#000000", "#CC79A7", "#0072B2", "#009E73")) +
   facet_wrap(.~Disturbance) +
@@ -1131,7 +1161,8 @@ smammals_idk %>% ggplot(aes(x = category3.0, y = Proportion, fill = category3.0)
        y = "Proportion of Species", 
        fill = "Classification")
 
-smammals_idk %>% ggplot(aes(x = Proportion, y = category2.5, fill = category3.0)) + 
+smammals_idk %>% 
+  ggplot(aes(x = Proportion, y = category2.5, fill = category3.0)) + 
   geom_violin() + 
   scale_fill_manual(values = c("gray","black", "darkorchid", "dodgerblue2", "darkolivegreen4")) +
   theme(text = element_text(size=14))+
@@ -1140,7 +1171,10 @@ smammals_idk %>% ggplot(aes(x = Proportion, y = category2.5, fill = category3.0)
        y = "Proportion of Species", 
        fill = "Classification")
 
-smammals_class_graphing3.0 %>% ggplot(aes(x = classification, y = Proportion, fill = classification)) + geom_col() + scale_fill_manual(values = c("lightgray","#000000", "#CC79A7", "#0072B2", "#009E73")) +
+smammals_class_graphing3.0 %>% 
+  ggplot(aes(x = classification, y = Proportion, fill = classification)) + 
+  geom_col() + 
+  scale_fill_manual(values = c("lightgray","#000000", "#CC79A7", "#0072B2", "#009E73")) +
   theme_bw() +
   theme(text = element_text(size=14), 
         axis.text.x = element_text(angle=45, hjust=1)) +
@@ -1149,7 +1183,10 @@ smammals_class_graphing3.0 %>% ggplot(aes(x = classification, y = Proportion, fi
        y = "Proportion of Species", 
        fill = "Classifcation")
 
-smammals_class_graphing2.5 %>% ggplot(aes(x = classification, y = Proportion, fill = classification)) + geom_col() + scale_fill_manual(values = c("gray","black", "darkorchid", "dodgerblue2", "darkolivegreen4")) +
+smammals_class_graphing2.5 %>% 
+  ggplot(aes(x = classification, y = Proportion, fill = classification)) + 
+  geom_col() + 
+  scale_fill_manual(values = c("gray","black", "darkorchid", "dodgerblue2", "darkolivegreen4")) +
   theme(text = element_text(size=14), 
         axis.text.x = element_text(angle=45, hjust=1)) +
   labs(title= "Proportion of Small Mammals Species in Each Incidence Classification", 
@@ -1161,13 +1198,21 @@ smammals_class_graphing2.5 %>% ggplot(aes(x = classification, y = Proportion, fi
 smammals_graphing_3.0 <- smammals_graphing %>% subset()
 
 
-smammals_idk <- smammals_classification %>% pivot_longer(cols=c("chi_fearly", "chi_flate"), names_to =  "Early_late", values_to = "Proportion")
+smammals_idk <- smammals_classification %>% 
+  pivot_longer(cols=c("chi_fearly", "chi_flate"), 
+               names_to =  "Early_late", 
+               values_to = "Proportion")
 
-smammals_idk %>% ggplot(aes(x = Proportion, fill = Early_late)) + geom_density(alpha = 0.5) + facet_wrap(category~.) + labs(title="Difference in Early and Late Proportions for the Small Mammal Dataset") + scale_fill_manual(values = c("lightgreen", "red"))
+smammals_idk %>% 
+  ggplot(aes(x = Proportion, fill = Early_late)) + 
+  geom_density(alpha = 0.5) + facet_wrap(category~.) + 
+  labs(title="Difference in Early and Late Proportions for the Small Mammal Dataset") +
+  scale_fill_manual(values = c("lightgreen", "red"))
 
 
 #Creating a graph to look at the classification by species and presence/absence by year
-smammals_graphing %>% ggplot(aes(x = Recyear, y = Presence, fill = category)) + 
+smammals_graphing %>% 
+  ggplot(aes(x = Recyear, y = Presence, fill = category)) + 
   geom_tile(width = .6, height = .6) + 
   facet_grid(Species~`Disturbance treatment`, switch = "y") +
   theme(text = element_text(size=9),
@@ -1181,7 +1226,8 @@ smammals_graphing %>% ggplot(aes(x = Recyear, y = Presence, fill = category)) +
   scale_fill_manual(values = c("NA", "black", "#009E73", "#CC79A7", "#0072B2")) +
   labs(title = "Small mammal classifcations with original getTrends function")
 
-smammals_graphing %>% ggplot(aes(x = Recyear, y = Presence, fill = category2.0)) + 
+smammals_graphing %>% 
+  ggplot(aes(x = Recyear, y = Presence, fill = category2.0)) + 
   geom_tile(width = .6, height = .6) + 
   facet_grid(Species~`Disturbance treatment`, switch = "y") +
   theme(text = element_text(size=9),
@@ -1195,7 +1241,8 @@ smammals_graphing %>% ggplot(aes(x = Recyear, y = Presence, fill = category2.0))
   scale_fill_manual(values = c("lightgrey","black", "darkolivegreen4", "darkorchid", "dodgerblue2")) +
   labs(title = "Small mammal classifcations with getTrends2.0 function")
 
-smammals_graphing %>% ggplot(aes(x = Recyear, y = Presence, fill = category2.5)) + 
+smammals_graphing %>% 
+  ggplot(aes(x = Recyear, y = Presence, fill = category2.5)) + 
   geom_tile(width = .6, height = .6) + 
   facet_grid(Species~Disturbance, switch = "y") +
   theme(text = element_text(size=9),
@@ -1209,7 +1256,8 @@ smammals_graphing %>% ggplot(aes(x = Recyear, y = Presence, fill = category2.5))
   scale_fill_manual(values = c("lightgrey","black", "darkolivegreen4", "darkorchid", "dodgerblue2")) +
   labs(title = "Small mammal classifcations with getTrends2.5 function")
 
-smammals_graphing %>% ggplot(aes(x = Recyear, y = Presence, fill = category3.0)) + 
+smammals_graphing %>% 
+  ggplot(aes(x = Recyear, y = Presence, fill = category3.0)) + 
   geom_tile(width = .6, height = .6) + 
   facet_grid(Common_name~Disturbance, switch = "y") +
   theme(text = element_text(size=9),
@@ -1225,9 +1273,11 @@ smammals_graphing %>% ggplot(aes(x = Recyear, y = Presence, fill = category3.0))
        fill = "Classification")
 
 
-smammals_rm <- smammals_graphing %>% filter(Species == "Reithrodontomys_megalotis")
+smammals_rm <- smammals_graphing %>% 
+  filter(Species == "Reithrodontomys_megalotis")
 
-smammals_rm %>% ggplot(aes(x = Recyear, y = Presence, fill = category3.0)) + 
+smammals_rm %>% 
+  ggplot(aes(x = Recyear, y = Presence, fill = category3.0)) + 
   geom_tile(width = 0.6, height = 0.6) + 
   facet_grid(Common_name~`Disturbance treatment`, switch = "y") +
   theme(text = element_text(size=10),
@@ -1240,9 +1290,11 @@ smammals_rm %>% ggplot(aes(x = Recyear, y = Presence, fill = category3.0)) +
   labs(x = "Year", y = "Presence") +
   scale_fill_manual(values = c("black", "dodgerblue2"))
 
-smammals_pm <- smammals_graphing %>% filter(Species == "Peromyscus_maniculatus")
+smammals_pm <- smammals_graphing %>% 
+  filter(Species == "Peromyscus_maniculatus")
 
-smammals_pm %>% ggplot(aes(x = Recyear, y = Presence, fill = category3.0)) + 
+smammals_pm %>% 
+  ggplot(aes(x = Recyear, y = Presence, fill = category3.0)) + 
   geom_tile(width = 0.6, height = 0.6) + 
   facet_grid(Common_name~`Disturbance treatment`, switch = "y") +
   theme(text = element_text(size=10),
@@ -1255,9 +1307,11 @@ smammals_pm %>% ggplot(aes(x = Recyear, y = Presence, fill = category3.0)) +
   labs(x = "Year", y = "Presence") +
   scale_fill_manual(values = c("black", "dodgerblue2"))
 
-smammals_pl <- smammals_graphing %>% filter(Species == "Peromyscus_leucopus")
+smammals_pl <- smammals_graphing %>% 
+  filter(Species == "Peromyscus_leucopus")
 
-smammals_pl %>% ggplot(aes(x = Recyear, y = Presence, fill = category3.0)) + 
+smammals_pl %>% 
+  ggplot(aes(x = Recyear, y = Presence, fill = category3.0)) + 
   geom_tile(width = 0.6, height = 0.6) + 
   facet_grid(Common_name~`Disturbance treatment`, switch = "y") +
   theme(text = element_text(size=10),
@@ -1271,9 +1325,11 @@ smammals_pl %>% ggplot(aes(x = Recyear, y = Presence, fill = category3.0)) +
   scale_fill_manual(values = c("black", "dodgerblue2"))
 
 
-smammals_bh <- smammals_graphing %>% filter(Species == "Blarina_hylophaga")
+smammals_bh <- smammals_graphing %>% 
+  filter(Species == "Blarina_hylophaga")
 
-smammals_bh %>% ggplot(aes(x = Recyear, y = Presence, fill = category3.0)) + 
+smammals_bh %>% 
+  ggplot(aes(x = Recyear, y = Presence, fill = category3.0)) + 
   geom_tile(width = 0.6, height = 0.6) + 
   facet_grid(Common_name~`Disturbance treatment`, switch = "y") +
   theme(text = element_text(size=10),
@@ -1288,9 +1344,11 @@ smammals_bh %>% ggplot(aes(x = Recyear, y = Presence, fill = category3.0)) +
   scale_fill_manual(values = c("darkorchid", "dodgerblue2"))
 
 
-smammals_bh <- smammals_graphing %>% filter(Species == "Blarina_hylophaga")
+smammals_bh <- smammals_graphing %>% 
+  filter(Species == "Blarina_hylophaga")
 
-smammals_bh %>% ggplot(aes(x = Recyear, y = Presence, fill = category3.0)) + 
+smammals_bh %>% 
+  ggplot(aes(x = Recyear, y = Presence, fill = category3.0)) + 
   geom_tile(width = 0.6, height = 0.6) + 
   facet_grid(Common_name~`Disturbance treatment`, switch = "y") +
   theme(text = element_text(size=10),
@@ -1304,9 +1362,11 @@ smammals_bh %>% ggplot(aes(x = Recyear, y = Presence, fill = category3.0)) +
        fill = "Classification") +
   scale_fill_manual(values = c("darkorchid", "dodgerblue2"))
 
-smammals_st <- smammals_graphing %>% filter(Species == "Spermophilus_tridecemlineatus")
+smammals_st <- smammals_graphing %>% 
+  filter(Species == "Spermophilus_tridecemlineatus")
 
-smammals_st %>% ggplot(aes(x = Recyear, y = Presence, fill = category3.0)) + 
+smammals_st %>% 
+  ggplot(aes(x = Recyear, y = Presence, fill = category3.0)) + 
   geom_tile(width = 0.6, height = 0.6) + 
   facet_grid(Common_name~`Disturbance treatment`, switch = "y") +
   theme(text = element_text(size=10),
@@ -1321,15 +1381,16 @@ smammals_st %>% ggplot(aes(x = Recyear, y = Presence, fill = category3.0)) +
   scale_fill_manual(values = c("darkorchid", "dodgerblue2"))
 
 
+smammals_nf <- smammals_graphing %>% 
+  filter(Species == "Neotoma_floridana")
 
-
-smammals_nf <- smammals_graphing %>% filter(Species == "Neotoma_floridana")
 smammals_nf$category3.0 <- factor(smammals_nf$category3.0,
-                                  levels = c("No_change-absent",
-                                                   "No_change-present", 
-                                                   "Recurrent", "Random", "Increasing"))
+                                  levels = c("No_change-absent", 
+                                             "No_change-present", 
+                                             "Recurrent", "Random", "Increasing"))
 
-smammals_nf %>% ggplot(aes(x = Recyear, y = Presence, fill = category3.0)) + 
+smammals_nf %>% 
+  ggplot(aes(x = Recyear, y = Presence, fill = category3.0)) + 
   geom_tile(width = 0.6, height = 0.6) + 
   facet_grid(Common_name~Disturbance, switch = "y") +
   theme(text = element_text(size=10),
@@ -1346,9 +1407,13 @@ smammals_nf %>% ggplot(aes(x = Recyear, y = Presence, fill = category3.0)) +
 
 
 
-smammals_class_graphing %>% ggplot(aes(x = classification, y = total_count, color = function_type, group = function_type)) + geom_point() + geom_line()
+smammals_class_graphing %>% 
+  ggplot(aes(x = classification, y = total_count, color = function_type, group = function_type)) + 
+  geom_point() + 
+  geom_line()
 
-smammals_class_graping %>% ggplot(aes(x = classification, y = total_count)) + 
+smammals_class_graping %>% 
+  ggplot(aes(x = classification, y = total_count)) + 
   stat_summary(fun.data=mean_sdl, fun.args = list(mult=1), 
         geom="errorbar", color="black", width=0.2) + +
   theme_bw() +
