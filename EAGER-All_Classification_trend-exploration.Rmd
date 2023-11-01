@@ -54,7 +54,6 @@ The "getTrends" function will classify each taxa's species from each watershed i
 
 ```{r getTrends}
 
-x<- c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
 
 getTrends <- function(x) {
   #input (x) is a single row of a matrix where the species are rows and the columns are each year with 1/0 values (1=present, 0=absent). 
@@ -162,8 +161,9 @@ getTrends <- function(x) {
   
   return(statSumm)
 } 
-
 ```
+
+
 
 ### getTrends2.0
 ```{r getTrends2.0}
@@ -271,8 +271,9 @@ getTrends2.0 <- function(x) {
   
   return(statSumm)
 } 
-
 ```
+
+
 
 ### getTrends2.5
 ```{r getTrends2.5}
@@ -385,13 +386,247 @@ getTrends2.5<- function(x) {
   return(statSumm)
 }
 
+apply(smammals_pa_matrix, 1, FUN = getTrends2.5)
 ```
+
+
+```{r getTrends2.5}
+  #input (x) is a single row of a matrix where the species are rows and the columns are each year with 1/0 values (1=present, 0=absent). 
+  #So you need to iterate each row separately to get the results
+  # Output is a list with 6 items, that represents the classification results for a single species
+
+getTrends3.0_test<- function(x) {
+  #input (x) is a single row of a matrix where the species are rows and the columns are each year with 1/0 values (1=present, 0=absent). 
+  #So you need to iterate each row separately to get the results
+  # Output is a list with 6 items, that represents the classification results for a single species
+  
+  #create an object the same length as x that defines early vs late years
+  time <- rep("late", length(x))
+  time[1:(round(length(x)/2))] <- "early"
+  
+  # make a table that tells you how many 0s and 1s are in the early and the late halves of the time series
+  z_x <- table(x,time)
+  
+  #find the time-series length (number of years)
+  tslen <- length(x)
+
+  # counts the number of years the species was present
+  tssum <- sum(x)
+ 
+  # create an empty vector to store results in for the next for loop
+   l <- c()
+  
+  # identifies when a change from a 0 to a 1 or vice versa happens
+  for(k in 1:(tslen-1)) {
+    j <- x[k+1] - x[k]
+    l <- c(l, j)
+    v <- sum(abs(l))
+  }
+  
+  
+  # If all the values are 0, it is always absent
+  if ((tssum/tslen) <= 0.05) {
+    p_val <- NA
+    f_early <- NA
+    f_late <- NA
+    runsTestPV <- NA
+    trend <- NA
+    trendPlus <- NA
+    cat <- "No_change-absent"
+  }
+  
+  # if all the values are 1, it is always present
+  else if ((tssum/tslen) >= 0.95) {
+    p_val <- NA
+    f_early <- NA
+    f_late <- NA
+    runsTestPV<-NA
+    trend<-NA
+    trendPlus<-NA
+    cat<-"No_change-present"
+  }
+  
+   #If the time series contains changes, then we do a chi-sq test to detect any directed change in the time series.
+  else {
+     
+    #adds rownames to the z_x table
+    rownames(z_x) <- c("absent","present")
+    
+    # get p value for the chi-squared test
+    p_val <- chisq.test(z_x)$p.val
+    
+    # get early and late fractions
+    # for each the early and the late parts of the time series:
+    #    the number of years it was present divided by the number of years
+    f_early <- z_x["present","early"] / sum(z_x[,1]) 
+    f_late <- z_x["present","late"] / sum(z_x[,2])
+   
+    if((f_early > f_late) & (p_val <= 0.05)) {
+      trend <- -1
+      cat = "Decreasing"
+    }
+    
+    if((f_early < f_late) & (p_val <= 0.05)) {
+      trend <- 1
+      cat = "Increasing"
+    }
+    
+    # Chi-squared test not significant
+    if(p_val > 0.05) trend <- 0
+    
+    #conduct a runs test on the time-series
+    runsPV <- tseries::runs.test(as.factor(x), alternative = "less")
+    runsTestPV <- runsPV$p.value
+    if (is.nan(runsTestPV)) {
+      runsTestPV <- 2}
+    
+    # if Chi-sq test insignif. and the runs test was significant
+    if((p_val > 0.05) & (runsTestPV < 0.05)) {
+      trendPlus<-10
+      cat="Recurrent"
+    }
+    
+    # if chi-sq insignif. and the runs test insignif.
+    if((p_val > 0.05) & (runsTestPV > 0.05)){
+      trendPlus<-5
+      cat="Random"
+    }
+    
+  }
+  
+  # for each species, record the summary statistics
+  statSumm <- tibble("numyears" = tslen, "numpresent" = tssum, "chiPval"=p_val, "chi_fearly" = f_early, "chi_flate" = f_late, "runsPval"=runsTestPV, "numtransitions" = v, "trend"=trend, "category2.5"= as.factor(cat))
+  
+  return(statSumm)
+}
+
+apply(smammals_pa_matrix, 1, FUN = getTrends2.5)
+```
+
+### getTrends3.0_test
+```{r getTrends3.0_test}
+
+x<- c(0,1,0,0,1,1,1,1,0,0,1,1,1,1,1,1,0,0,0,0,0)
+
+getTrends3.0_test<- function(x) {
+  #input (x) is a single row of a matrix where the species are rows and the columns are each year with 1/0 values (1=present, 0=absent). 
+  #So you need to iterate each row separately to get the results
+  # Output is a list with 6 items, that represents the classification results for a single species
+  
+  #create an object the same length as x that defines early vs late years
+  time <- rep("late", length(x))
+  time[1:(round(length(x)/2))] <- "early"
+  
+  # make a table that tells you how many 0s and 1s are in the early and the late halves of the time series
+  z_x <- table(x,time)
+  
+  #find the time-series length (number of years)
+  tslen <- length(x)
+
+  # counts the number of years the species was present
+  tssum <- sum(x)
+  
+  # calculate proportion of years species was present
+  tsprop <- (tssum)/(tslen)
+ 
+  # create an empty vector to store results in for the next for loop
+   l <- c()
+  
+  # identifies when a change from a 0 to a 1 or vice versa happens
+  for(k in 1:(tslen-1)) {
+    j <- x[k+1] - x[k]
+    l <- c(l, j)
+    v <- sum(abs(l))
+  }
+  
+  
+  # If all the values are 0, it is always absent
+  if (tsprop <= 0.05) {
+    p_val <- NA
+    f_early <- NA
+    f_late <- NA
+    runsTestPV <- NA
+    trend <- NA
+    trendPlus <- NA
+    cat <- "No_change-absent"
+  } else if (tsprop >= 0.95) {
+    p_val <- NA
+    f_early <- NA
+    f_late <- NA
+    runsTestPV<-NA
+    trend<-NA
+    trendPlus<-NA
+    cat<-"No_change-present"
+  } else {
+     
+    #adds rownames to the z_x table
+    rownames(z_x) <- c("absent","present")
+    
+    # get p value for the chi-squared test
+    p_val <- chisq.test(z_x)$p.val
+    
+    # get early and late fractions
+    # for each the early and the late parts of the time series:
+    #    the number of years it was present divided by the number of years
+    f_early <- z_x["present","early"] / sum(z_x[,1]) 
+    f_late <- z_x["present","late"] / sum(z_x[,2])
+   
+    if((f_early > f_late) & (p_val <= 0.05)) {
+      trend <- -1
+      cat = "Decreasing"
+    } else if((f_early < f_late) & (p_val <= 0.05)) {
+      trend <- 1
+      cat = "Increasing"
+    } else {
+    trend <- 0
+    
+    #conduct a runs test on the time-series
+    runsPV <- tseries::runs.test(as.factor(x), alternative = "less")
+    runsTestPV <- runsPV$p.value
+    if (is.nan(runsTestPV)) {
+      runsTestPV <- 2}
+    
+    # if Chi-sq test insignif. and the runs test was significant
+    if((p_val > 0.05) & (runsTestPV < 0.05)) {
+      trendPlus<-10
+      cat="Recurrent"
+    } else if((p_val > 0.05) & (runsTestPV > 0.05) | (runsTestPV < 0.05) & (v <= 2)){
+      trendPlus<-5
+      cat="Random"
+    }
+    }
+  }
+
+  
+  # for each species, record the summary statistics
+statSumm <- tibble("numyears" = tslen, 
+                   "numpresent" = tssum,
+                   "percyears" = tsprop,
+                   "chiPval" = p_val, 
+                   "chi_fearly" = f_early, 
+                   "chi_flate" = f_late, 
+                   "runsPval" = runsTestPV, 
+                   "numtransitions" = v, 
+                   "trend" = trend, 
+                   "category3.0_test" = as.factor(cat))
+  
+  return(statSumm)
+}
+
+apply(smammals_pa_matrix, 1, FUN = getTrends3.0_test)
+
+
+```
+
 
 ### getTrends3.0
 This version of the function has the stipulations for 'nearly always present' >=95% years present, 'nearly always absent' <=5% years present, and for recurrent category requires at least 2 blocks of time when it is present
 ```{r getTrends3.0}
 
-getTrends3.0 <- function(x) {
+x<- c(1,0,1,1,1,0,0,0,0,0,1,1,1,1,0,0,0,1,1,0,0)
+getTrends3.0_test(x)
+
+getTrends3.0_test <- function(x) {
   #input (x) is a single row of a matrix where the species are rows and the columns are each year with 1/0 values (1=present, 0=absent). 
   #So you need to iterate each row separately to get the results
   # Output is a list with 6 items, that represents the classification results for a single species
@@ -497,18 +732,12 @@ getTrends3.0 <- function(x) {
   return(statSumm)
 }
 
+
+
 ```
 
 
-
 ```{r}
-
-x<- matrix(c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-         1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-         0,0,1,1,1,0,0,1,1,0,0,0,0,0,1,1,1,1,
-         1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1),
-       nrow=4, ncol=18)
-x
 
 getTrends3.0<- function(x) {
   #input (x) is a single row of a matrix where the species are rows and the columns are each year with 1/0 values (1=present, 0=absent). 
@@ -630,57 +859,6 @@ This is the original randomization function from Gotelli et al. to validate the 
 ```{r randomization}
 ## where t1 is the long form time series and p1 is the subset of species with the classification to be randomised
 
-timeseries <- tibble(Year = c(1992, 1993, 1994, 
-                      1995, 1996, 1997, 
-                      1998, 1999, 2000, 
-                      2001, 2002, 2003, 
-                      2004, 2005, 2006, 
-                      2007, 2008, 2009, 
-                      2010, 2011, 2012, 
-                      2013, 
-                      1992, 1993, 1994, 
-                      1995, 1996, 1997, 
-                      1998, 1999, 2000, 
-                      2001, 2002, 2003, 
-                      2004, 2005, 2006, 
-                      2007, 2008, 2009, 
-                      2010, 2011, 2012, 
-                      2013), 
-             Presence = c(0,1,0,
-                           1,1,1,
-                           1,0,1,
-                           1,0,0,
-                           0,1,1,
-                           1,1,1,
-                           1,1,1,
-                           1, 
-                           1,1,0,
-                           1,1,1,
-                           1,0,1,
-                           1,1,1,
-                           1,1,1,
-                           1,1,1,
-                           1,1,1,
-                           1), 
-             Species = c("species1","species1","species1",
-                         "species1","species1","species1",
-                         "species1","species1","species1",
-                         "species1","species1","species1",
-                         "species1","species1","species1",
-                         "species1","species1","species1",
-                         "species1","species1","species1",
-                         "species1", 
-                         "species2","species2","species2",
-                         "species2","species2","species2",
-                         "species2","species2","species2",
-                         "species2","species2","species2",
-                         "species2","species2","species2",
-                         "species2","species2","species2",
-                         "species2","species2","species2",
-                         "species2"))
-
-p1 <- data.frame(Species = c("species1", "species2"))
-  
 ### this first function takes account only of presence and absence
 Randomisation <- function(timeseries){
   
@@ -822,7 +1000,7 @@ getAbundRandomisation<-function(t1, p1, rf1) {
 }
 ```
 
-## Small-mammals (1992 - 2013) {.tabset}
+##Small-mammals (1992 - 2013) {.tabset}
 This section is dedicated to cleaning and classifying the species for the small-mammal trapping dataset. 
 
 Data was collected from 1981 to 2013, but we are only looking at data collected between 1992 to 2013 because bison weren't introduced to the bison plots until 1992.
@@ -1000,7 +1178,8 @@ smammals_pa_matrix <- as.matrix(decostand_smammals_pa)
 smammals_trends <- apply(smammals_pa_matrix, 1, FUN = getTrends)
 smammals_trends2.0 <- apply(smammals_pa_matrix, 1, FUN = getTrends2.0)
 smammals_trends2.5 <- apply(smammals_pa_matrix, 1, FUN = getTrends2.5)
-smammals_trends3.0 <- apply(smammals_pa_matrix, 1, FUN = getTrends3.0) #oops, now get a dimnames error, sorry!
+smammals_trends3.0 <- apply(smammals_pa_matrix, 1, FUN = getTrends3.0_test)
+ #oops, now get a dimnames error, sorry!
 
 
 #Creating a table with the species.watershed and the Trends info. I excluded the bsline info. ADD INFO ABOUT WHAT THIS IS TAKING FROM 
@@ -1008,6 +1187,9 @@ smammals_classification <- tibble((smammals_env), do.call(rbind,lapply(smammals_
 do.call(rbind,lapply(smammals_trends2.0,(function(v){v[c(9)]}))),
 do.call(rbind,lapply(smammals_trends2.5,(function(v){v[c(9)]}))),
 do.call(rbind,lapply(smammals_trends3.0,(function(v){v[c(9)]}))))
+
+smammals_classification <- tibble((smammals_env), do.call(rbind,lapply(smammals_trends3.0,(function(v){v[c(1,2,3,4,5,6,7,8,9,10)]}))))
+
 
 #Adding in the presence/absence per year data back in 
 smammals_class <- smammals_classification %>% add_column(decostand_smammals_pa, .before = "chi_pval")
@@ -1593,13 +1775,15 @@ birds_pa_matrix <- as.matrix(decostand_birds_pa)
 birds_trends <- apply(birds_pa_matrix, 1, getTrends)
 birds_trends2.0 <- apply(birds_pa_matrix, 1, getTrends2.0)
 birds_trends2.5 <- apply(birds_pa_matrix, 1, getTrends2.5)
-birds_trends3.0 <- apply(birds_pa_matrix, 1, getTrends3.0)
+birds_trends3.0 <- apply(birds_pa_matrix, 1, getTrends3.0_test)
 
 #Creating a table with the species.watershed and the Trends info. I excluded the bsline info. ADD INFO ABOUT WHAT THIS IS TAKING FROM 
 birds_classification <- tibble((birds_env), do.call(rbind,lapply(birds_trends,(function(v){v[c(1,2,3,4,5,6,7,8,9)]}))),
 do.call(rbind,lapply(birds_trends2.0,(function(v){v[c(9)]}))),
 do.call(rbind,lapply(birds_trends2.5,(function(v){v[c(9)]}))),
 do.call(rbind,lapply(birds_trends3.0,(function(v){v[c(9)]}))))
+
+birds_classification <- tibble((birds_env), do.call(rbind,lapply(birds_trends3.0,(function(v){v[c(1,2,3,4,5,6,7,8,9,10)]}))))
 
 #Creating a table with the species.watershed and the Trends info. I excluded the bsline info.
 
