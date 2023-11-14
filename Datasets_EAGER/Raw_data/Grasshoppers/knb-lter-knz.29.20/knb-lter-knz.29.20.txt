@@ -1,0 +1,1826 @@
+
+  
+    
+      uid=KNZ,o=LTER,dc=ecoinformatics,dc=org
+      all
+    
+    
+      public
+      read
+    
+  
+  
+    doi:10.6073/pasta/7b44d641e3a49e5251a468d0bfa90bd3CGR02
+    CGR02 Sweep sampling of Grasshoppers on Konza Prairie LTER watersheds
+    
+      Anthony Joern
+      			116 Ackert Hall, Division of Biology, Kansas State University
+			Manhattan, KS 66506  US
+      402-472-2724
+      402-472-2083
+      ajoern@ksu.edu
+    
+    
+      Konza LTER
+      http://www.konza.ksu.edu/
+    
+    2023-01-16
+    
+      
+        
+          Sweep samples were taken for grasshoppers (Acrididae) at two sites for each of 14 Konza Prairie LTER watersheds. Samples are taken in late July to early August. At each site on each occasion, 10 sets of 20 sweeps (200 sweeps total) are taken. Stored data include for each site on each occasion: total number of each species (all instars combined) collected and total number for each instar for each species (200 sweeps combined).
+        
+      
+    
+    
+      Disturbance
+      Populations
+      Core Areas
+    
+    
+      Consumers
+      Section
+    
+    
+      Acrididae
+      Consumers
+      grasshoppers
+      insects
+      Kansas
+      LTER-KNZ
+      Konza Prairie
+      Konza Prairie Biological Station
+      species composition
+      species
+      sweep sampling
+      relative abundance
+      prairie
+      Station Keywords
+    
+    
+      
+        Data Policies
+        
+          Data Use Agreements: The Intellectual Rights within the metadata associated with each KNZ data set determines the exact data and metadata use agreement between the data user and the KNZ LTER site. KNZ LTER data and metadata may be released under the license: CC BY - Attribution (https://creativecommons.org/licenses/by/4.0/). This license lets others distribute, remix, tweak, and build upon KNZ work (even commercially), as long as the KNZ program is credited for the original creation. Alternatively, some KNZ LTER data and metadata may be released into the public domain: CC0 - No Rights Reserved (https://creativecommons.org/share-your-work/public-domain/cc0/). CC0 states that data are placed in the public domain, so that others may freely build upon, enhance and reuse the works for any purposes without restriction under copyright or database law. In either case, users of KNZ data are referred to the following guidelines: "The consumer of these data ("Data User" herein) has an ethical obligation to cite it appropriately in any publication that results from its use. The Data User should realize that these data may be actively used by others for ongoing research and that coordination may be necessary to prevent duplicate publication. The Data User is urged to contact the authors of these data if any questions about methodology or results occur. Where appropriate, the Data User is encouraged to consider collaboration or coauthorship with the authors. The Data User should realize that misinterpretation of data may occur if used out of context of the original study. While substantial efforts are made to ensure the accuracy of data and associated documentation, complete accuracy of data sets cannot be guaranteed. All data are made available "as is." The Data User should be aware, however, that data are updated periodically and it is the responsibility of the Data User to check for new versions of the data. The data authors and the repository where these data were obtained shall not be liable for damages resulting from any use or misinterpretation of the data. Thank you".
+        
+      
+    
+    
+      
+        http://lter.konza.ksu.edu/content/cgr02-sweep-sampling-grasshoppers-konza-prairie-lter-watersheds
+      
+    
+    https://doi.org/10.6073/pasta/7b44d641e3a49e5251a468d0bfa90bd3
+      
+        2D: Ungrazed and scheduled prescribed burned every 2 years in the spring
+        
+          -96.5606
+          -96.5534
+          39.0841
+          39.0731
+        
+      
+      
+        1D: Ungrazed and scheduled prescribed burned annually in the spring.
+        
+          -96.5658
+          -96.5594
+          39.0841
+          39.0732
+        
+      
+      
+        N20B: Year-long grazing by bison and scheduled prescribed burned every 20 years in the spring.
+        
+          -96.5801
+          -96.561
+          39.0922
+          39.0815
+        
+      
+      
+        N1B : Year-long grazing by bison and scheduled prescribed burned annually in the spring.
+        
+          -96.5793
+          -96.5634
+          39.088
+          39.0746
+        
+      
+      
+        SuB: Ungrazed and scheduled prescribed burned every 2 years in the summer
+        
+          -96.5694
+          -96.565
+          39.0768
+          39.0712
+        
+      
+      
+        4F: Ungrazed and scheduled prescribed burned every 4 years in the spring
+        
+          -96.5733
+          -96.5691
+          39.0766
+          39.0711
+        
+      
+      
+        20B: Ungrazed and scheduled prescribed burned every 20 years in the spring.
+        
+          -96.5808
+          -96.5741
+          39.0758
+          39.0693
+        
+      
+      
+        N4D : Year-long grazing by bison and scheduled prescribed burned every 4 years in the spring.
+        
+          -96.59
+          -96.5768
+          39.0896
+          39.0701
+        
+      
+      
+        2C: Ungrazed and scheduled prescribed burned every 2 years in the spring.
+        
+          -96.5846
+          -96.5772
+          39.0725
+          39.0667
+        
+      
+      
+        SpB: Ungrazed and scheduled prescribed burned annually in the spring.
+        
+          -96.5913
+          -96.5838
+          39.0756
+          39.0669
+        
+      
+      
+        4B: Ungrazed and scheduled prescribed burned every 4 years in the spring
+        
+          -96.6035
+          -96.5924
+          39.0802
+          39.0712
+        
+      
+      
+        4A: Ungrazed and scheduled prescribed burned every 4 years in the spring
+        
+          -96.6093
+          -96.6017
+          39.0773
+          39.0731
+        
+      
+      
+        N1A: Year-long grazing by bison and scheduled prescribed burned annually in the spring.
+        
+          -96.5969
+          -96.5834
+          39.0993
+          39.0879
+        
+      
+      
+        N20A: Year-long grazing by bison and scheduled prescribed burned every 20 years in the spring.
+        
+          -96.6044
+          -96.5929
+          39.1021
+          39.0885
+        
+      
+      
+        
+          
+            1982-04-01
+          
+          
+            2020-12-31
+          
+        
+      
+    
+    
+      
+        Long-term monitoring of dynamics of species composition and abundances in grasshopper assemblages associated with varying frequency of fire.
+      
+    
+    
+      
+        
+          ongoing
+        
+      
+    
+    
+      Konza LTER
+      			Division of Biology
+			Manhattan, KS 66506  US
+      785-532-6729
+      knzlter@ksu.edu
+      http://lter.konza.ksu.edu
+    
+    
+    Environmental Data Initiativeinfo@edirepository.orghttps://edirepository.org0330j0z60Environmental Data Initiative
+    
+      
+        
+          
+            
+              Location of Sampling Stations:Two replicate sites per treatment. All sites are on upland (Florence) soils. In order from east to west: Ungrazed: 002D A:grid V-26, B:U-24; 001D A:T-24, B:R-27; 0SuB A: R-27, B:Q-28; 004F A:Q-28, B:P-28; 020B A:O-28, B:N-28; 002C A:L-29, B:L-31; 0SpB A:K-29, B:J-28; 004B A:H-28,B:F-27. Grazed: N20B A:S-24, B:P-2; N01B A:S-25, B:P-23; N04D A:L-28, B:K-28; N04A A:G-25, B:F-26; N01A A:G-19, B:G-21; N20A A:G-20, B:E-19 Frequency of Sampling: All sites are sampled twice (approximately 1 week apart) in late July to early August. Variable Measured: Number of individuals (categorized by instar) for individual grasshopper species. Methods: Sampling is done by sweeping with canvas beating nets 38 cm in diameter. A sample of 200 sweeps (ten sets of 20 sweeps each) is taken at each site on each occasion. A sweep is taken at each step by traversing an arc of 180o with the net through the top layer of vegetation. After 20 such sweeps, the contents of the net are emptied into plastic bags. Air is squeezed out and samples are kept on ice until they can be frozen. Samples will be sorted and identified to species and instar. At this time, all 'other' insects are also kept. All samples are taken between 1000 and 1500 hours on clear, calm warm days: cloud cover should be less than 50%, winds less than 24km/hr (15 mph), and ambient air temperature should be 25-40oC. Sweeping effectiveness varies with site and season on Konza Prairie (e.g. sweeping is less effective on unburned prairie than on burned prairie). However, sweeping does provide good estimates of relative abundances of individual species present at any one place and time on both burned and unburned prairie. For more information, consult: Evans, E.W., R.A. Rogers, and D.J. Opfermann. 1983. Sampling grasshoppers (Orthoptera: Acrididae) on burned and unburned tall grass prairie: night trapping vs. sweeping. Environmental Entomology 12: 1449-1454. Weather measurements are taken at each watershed before sweeps are completed. These measurements are recorded as CGR021. Time is recorded on a 24-hour scale, along with five wind speeds taken at 30 second intervals 5 feet above the ground. *Cloud coverage that is directly overhead is estimated by eye and recorded. Wind speed and temperature are collected in miles per hour and Fahrenheit using a WindMate 200 (occasionally temperature is taken from truck's thermometer). These numbers are then converted to metric units in excel when the data is being entered. For wind speed all five measurements are entered, then averaged, and finally converted to kilometers per hour. Temperatures is entered as Fahrenheit and converted to Celsius. All conversions are computed in excel using the existing formulas. The previous machine used to measure wind speed had a limit of detection of 5 mph. If the wind was blowing but could not register on the machine, then it was recorded as less than 5. However, in order to compute an average these measurements were entered as 2.5 mph. Also cloud coverage is sometimes recorded as less than 5% or as a range of percentages but when the data is entered the largest recorded number is used. (Ex. Recorded as less than 5%, Entered as 5; Recorded as 10-15%, Entered as 15) *For the years 1983 - 2011 wind speeds were not always collected in this manner, instead measurements were taken at 5 second intervals or only one speed was recorded. However, the purpose of the weather information is to determine whether or not samples could be collected within the weather parameters as described above. Once collection has begun, and due to variable conditions on the prairie, the judgment of the research tech is employed to determine adequate collection conditions. (Maps of all grasshopper sites available in Appendix M, contact site IM if needed). Summary of All Changes: 1982-1987: Sites were sampled at various earlier dates in addition to the late July-early August. 1985: Sweeping was restricted to all sites being sampled (twice, on different dates) in late July and early August. Additional watersheds (002D, 004D (now 0SpB), 004F AND 010D (now 0SuB) were added to the sampling regime for early August to provide more long-term data on the influence of fire frequency on grasshoppers. Sampling on watersheds to be grazed (N01B, N04D, and N20B) was discontinued. 1986: Watershed 004G (now 00WB) was temporarily added. Sampling in June and early July was reduced to watersheds 001D, 004D, 010D and 020B only; too few grasshoppers are collected by sweeping in the first half of the summer for all watersheds to merit sampling. 1987: Sampling in June and early July was restricted to sites 001D, 002C, 004B and 004F. 1994: Fire regime changed for 004D (became 0SpB) and 010D (became 0SuB). In the years when 0SuB is burned the sweeps are done 2 weeks earlier than normal. The summer burn is conducted on the first water appropriate day in late July to early August. 1996: Wildfire in February, burned 004F, 0SuB, 001D and 002D. 1998: 0SuB done earlier than other sites (mid-July) under the mistaken idea that the summer burns were to occur this year. 2002: Grazed (bison) transects were added in N01A, N01B, N04A, N04D, N20A and N02B. An older version of the methods manual indicates that 3 lowland (Tully) sites were once done. Locations were: 001D A: T-28; 004B A: G-28; B: S-28; B: F-28; 020B A: N-29; B: N-29 2011: WindMate 200 replaced previous machine used for checking wind speeds. The previous machine had limit of detection of 5mph. WindMate 200 specifications: Temperature -20 oC to 158 oF accuracy +1.8 oC to 89 mph accuracy +3%. 2013: Beginning with this year, Oecanthinae spp., Gryllidae spp., Tettigoniidae spp., are being added to our list. These are not new species to Konza. We are adding them to the official listing because they are related and ecologically similar. 2016: In years when SuB is burned, pre-burn and post-burn sweeps will be done. Timing for pre-burn will be mid-July and timing for post-burn will be mid-September. 2018: March 14. 004B – A was burned in a wildfire. A third sweep, “C”, will be done in the vicinity of pab011 FC until 2021 when 004b is scheduled to burn per “normal” schedule. For additional metadata information see: http://lter.konza.ksu.edu/sites/default/files/DC.pdf For additional methods information see: http://lter.konza.ksu.edu/sites/default/files/MM.pdf
+            
+          
+        
+      
+    
+    
+      LTER: Manipulating drivers to assess grassland resilience
+      
+        Jesse Nippert
+        Principal Investigator
+      
+      NSF: DEB-2025849      
+      
+        LTER: Long-Term Research on Grassland Dynamics- Assessing Mechanisms of Sensitivity and Resilience to Global Change
+        
+          Jesse Nippert
+          Principal Investigator
+        
+        
+          John Blair
+          Principal Investigator
+        
+        NSF: DEB-1440484
+            
+      
+        Konza Prairie LTER VI: Grassland Dynamics and Long-Term Trajectories of Change
+        
+          John Blair
+          Principal Investigator
+        
+        NSF: DEB-0823341
+          
+      
+        Konza Prairie LTER V: Long-Term Research on Grassland Dynamics and Global Change
+        
+          John Blair
+          Principal Investigator
+        
+        NSF: DEB-0218210
+         
+      
+        Long-Term Ecological Research in Tallgrass Prairie: The Konza Prairie LTER Program
+        
+          Alan Knapp
+          Principal Investigator
+        
+        NSF: DEB-9632851
+        
+      
+        Fire, Grazing, and Climatic Interactions in Tallgrass Prairie
+        
+          Alan Knapp
+          Principal Investigator
+        
+        NSF: DEB-9011662
+      
+      
+        The Role of Fire and Other Disturbances in Determining Ecosystem Processes and Patterns in the Konza Prairie, Kansas
+        
+          Donald Kaufman
+          Principal Investigator
+        
+        NSF: DEB-8514327
+      
+      
+        Long-Term Ecological Research in Tallgrass Prairie
+        
+          Richard Marzolf
+          Principal Investigator
+        
+        NSF: DEB-8012166
+         
+    
+    
+      CGR021
+      Data was recorded on the environmental variables for grasshopper sampling at each site including soil type, windy speed, ground temperature, relative humidity, and cloudy cover.
+      
+        CGR021.csv
+        87765
+        7173eb6423d5b9cfc4d080466a4e36eb
+        052ff0c7637f7470e4cbe1fd680a4ec620b2e378
+        
+          
+            1
+            \r\n
+            column
+            
+              ,
+              "
+            
+          
+        
+        
+          
+            https://pasta.lternet.edu/package/data/eml/knb-lter-knz/29/20/aaa7b3b477019f6bb96f47a9a6ae8943
+          
+        
+      
+      
+        
+          DataCode
+          DataCode
+          Dataset code
+          string
+          
+            
+              
+                
+                  Dataset code
+                
+              
+            
+          
+        
+        
+          RecType
+          RecType
+          Record type
+          string
+          
+            
+              
+                
+                  Record type
+                
+              
+            
+          
+        
+        
+          RecYear
+          RecYear
+          Year of record
+          
+            
+              
+                Year (YYYY)
+              
+              
+                real
+              
+            
+          
+        
+        
+          RecMonth
+          RecMonth
+          Month of record
+          date
+          
+            
+              MM
+            
+          
+        
+        
+          RecDay
+          RecDay
+          Day of record
+          date
+          
+            
+              DD
+            
+          
+        
+        
+          Watershed
+          Watershed
+          watershed
+          string
+          
+            
+              
+                
+                  watershed
+                
+              
+            
+          
+        
+        
+          Soiltype
+          Soiltype
+          soil type
+          string
+          
+            
+              
+                
+                  soil type
+                
+              
+            
+          
+        
+        
+          Repsite
+          Repsite
+          replicate site for a treatment
+          string
+          
+            
+              
+                
+                  
+                    A
+                    replicate site A for treatment
+                  
+                  
+                    B
+                    replicate site B for treatment
+                  
+                
+              
+            
+          
+        
+        
+          RecTime
+          RecTime
+          time sampling began
+          date
+          
+            
+              hh:mm:ss
+            
+          
+        
+        
+          Wind
+          Wind
+          wind speed at astart of sampling; mean of 5 measurements taken at 30 second intervals; 5' above ground
+          
+            
+              
+                kilometersPerHour
+              
+              
+                real
+              
+            
+          
+          
+            .
+            Missing or Not Measured
+          
+          
+            blank
+            Missing or Not Measured
+          
+        
+        
+          AirTemp
+          AirTemp
+          aire temperature at start of sampling
+          
+            
+              
+                celsius
+              
+              1
+              
+                real
+              
+            
+          
+          
+            .
+            Missing or Not Measured
+          
+          
+            Blank
+            Missing or Not Measured
+          
+        
+        
+          Relhum
+          Relhum
+          relative humidity at ground level in shade at outset of sampling determined by wet/dry bulb psychrometer
+          
+            
+              
+                percentage
+              
+              
+                real
+              
+            
+          
+          
+            blank
+            Missing or Not Measured
+          
+        
+        
+          Cloudcov
+          Cloudcov
+          % cloud cover directly overhead at start of sampling -- estimated by eye
+          
+            
+              
+                percentage
+              
+              1
+              
+                real
+              
+            
+          
+          
+            .
+            Missing or Not Measured
+          
+          
+            Blank
+            Missing or Not Measured
+          
+        
+      
+      1932
+    
+    
+      CGR022
+      Data on the individual number of each grasshopper species in each set. 10 sets were designed at each site and 20 sweeps were taken in each set.
+      
+        CGR022.csv
+        1088578
+        38c60621cb8512be2265a676abcae20a
+        ce332237f795971107066589985604f632172000
+        
+          
+            1
+            \r\n
+            column
+            
+              ,
+              "
+            
+          
+        
+        
+          
+            https://pasta.lternet.edu/package/data/eml/knb-lter-knz/29/20/3fb352e2478f776517f7e880fe31b808
+          
+        
+      
+      
+        
+          DataCode
+          DataCode
+          Dataset code
+          string
+          
+            
+              
+                
+                  Dataset code
+                
+              
+            
+          
+        
+        
+          RecType
+          RecType
+          Record type
+          string
+          
+            
+              
+                
+                  Record type
+                
+              
+            
+          
+        
+        
+          RecYear
+          RecYear
+          Year of record
+          
+            
+              
+                Year (YYYY)
+              
+              
+                real
+              
+            
+          
+        
+        
+          RecMonth
+          RecMonth
+          Month of record
+          date
+          
+            
+              MM
+            
+          
+        
+        
+          RecDay
+          RecDay
+          Day of record
+          date
+          
+            
+              DD
+            
+          
+        
+        
+          Watershed
+          Watershed
+          watershed
+          string
+          
+            
+              
+                
+                  watershed
+                
+              
+            
+          
+        
+        
+          Soiltype
+          Soiltype
+          soil type (tully or florence)
+          string
+          
+            
+              
+                
+                  soil type (tully or florence)
+                
+              
+            
+          
+        
+        
+          Repsite
+          Repsite
+          replication site for a watershed/soil
+          string
+          
+            
+              
+                
+                  
+                    A
+                    replicate site A for treatment
+                  
+                  
+                    B
+                    replicate site B for treatment
+                  
+                
+              
+            
+          
+        
+        
+          Spcode
+          Spcode
+          species code
+          string
+          
+            
+              
+                
+                  
+                    1
+                    brachystol magna
+                  
+                  
+                    10
+                    melanoplus scudderi
+                  
+                  
+                    11
+                    melanoplus sanguinip
+                  
+                  
+                    12
+                    melanoplus femurrubr
+                  
+                  
+                    13
+                    melanoplus packardii
+                  
+                  
+                    14
+                    melanoplus different
+                  
+                  
+                    15
+                    melanoplus keel luri
+                  
+                  
+                    16
+                    melanoplus bivittatu
+                  
+                  
+                    17
+                    melanoplus confusus
+                  
+                  
+                    18
+                    melanoplus species
+                  
+                  
+                    2
+                    schistocer lineata
+                  
+                  
+                    25
+                    eritettix simplex
+                  
+                  
+                    26
+                    syrbula admirabil
+                  
+                  
+                    27
+                    orphulella speciosa
+                  
+                  
+                    28
+                    mermiria picta
+                  
+                  
+                    29
+                    mermiria bivittata
+                  
+                  
+                    3
+                    paratylotr brunneri
+                  
+                  
+                    30
+                    opeia obscura
+                  
+                  
+                    31
+                    pseudopoma brachypte
+                  
+                  
+                    32
+                    boopedon auriventr
+                  
+                  
+                    33
+                    boopedon nubilum
+                  
+                  
+                    34
+                    boopedon gracile
+                  
+                  
+                    35
+                    ageneotett deorum
+                  
+                  
+                    36
+                    mermiria species
+                  
+                  
+                    4
+                    hypochlora alba
+                  
+                  
+                    45
+                    chortophag viridifas
+                  
+                  
+                    46
+                    dissosteir carolina
+                  
+                  
+                    47
+                    arphia xanthopte
+                  
+                  
+                    48
+                    arphia simplex
+                  
+                  
+                    49
+                    arphia conspersa
+                  
+                  
+                    5
+                    campylacan olivacea
+                  
+                  
+                    50
+                    hadrotetti trifascia
+                  
+                  
+                    51
+                    hippiscus rugosus
+                  
+                  
+                    52
+                    pardalopho apiculata
+                  
+                  
+                    53
+                    pardalopho haldemani
+                  
+                  
+                    54
+                    pardalopho species
+                  
+                  
+                    55
+                    arphia species
+                  
+                  
+                    6
+                    hesperotet speciosus
+                  
+                  
+                    7
+                    hesperotet viridis
+                  
+                  
+                    8
+                    hesperotet species
+                  
+                  
+                    9
+                    phoetaliot nebrascen
+                  
+                  
+                    90
+                    unknown
+                  
+                  
+                    95
+                    total
+                  
+                
+              
+            
+          
+          
+            blank
+            Missing or Not Measured
+          
+        
+        
+          Species
+          Species
+          abbreviated name of species
+          string
+          
+            
+              
+                
+                  
+                    1
+                    brachystol magna
+                  
+                  
+                    10
+                    melanoplus scudderi
+                  
+                  
+                    11
+                    melanoplus sanguinip
+                  
+                  
+                    12
+                    melanoplus femurrubr
+                  
+                  
+                    13
+                    melanoplus packardii
+                  
+                  
+                    14
+                    melanoplus different
+                  
+                  
+                    15
+                    melanoplus keel luri
+                  
+                  
+                    16
+                    melanoplus bivittatu
+                  
+                  
+                    17
+                    melanoplus confusus
+                  
+                  
+                    18
+                    melanoplus species
+                  
+                  
+                    2
+                    schistocer lineata
+                  
+                  
+                    25
+                    eritettix simplex
+                  
+                  
+                    26
+                    syrbula admirabil
+                  
+                  
+                    27
+                    orphulella speciosa
+                  
+                  
+                    28
+                    mermiria picta
+                  
+                  
+                    29
+                    mermiria bivittata
+                  
+                  
+                    3
+                    paratylotr brunneri
+                  
+                  
+                    30
+                    opeia obscura
+                  
+                  
+                    31
+                    pseudopoma brachypte
+                  
+                  
+                    32
+                    boopedon auriventr
+                  
+                  
+                    33
+                    boopedon nubilum
+                  
+                  
+                    34
+                    boopedon gracile
+                  
+                  
+                    35
+                    ageneotett deorum
+                  
+                  
+                    36
+                    mermiria species
+                  
+                  
+                    4
+                    hypochlora alba
+                  
+                  
+                    45
+                    chortophag viridifas
+                  
+                  
+                    46
+                    dissosteir carolina
+                  
+                  
+                    47
+                    arphia xanthopte
+                  
+                  
+                    48
+                    arphia simplex
+                  
+                  
+                    49
+                    arphia conspersa
+                  
+                  
+                    5
+                    campylacan olivacea
+                  
+                  
+                    50
+                    hadrotetti trifascia
+                  
+                  
+                    51
+                    hippiscus rugosus
+                  
+                  
+                    52
+                    pardalopho apiculata
+                  
+                  
+                    53
+                    pardalopho haldemani
+                  
+                  
+                    54
+                    pardalopho species
+                  
+                  
+                    55
+                    arphia species
+                  
+                  
+                    6
+                    hesperotet speciosus
+                  
+                  
+                    7
+                    hesperotet viridis
+                  
+                  
+                    8
+                    hesperotet species
+                  
+                  
+                    9
+                    phoetaliot nebrascen
+                  
+                  
+                    90
+                    unknown
+                  
+                  
+                    95
+                    total
+                  
+                
+              
+            
+          
+        
+        
+          S1
+          S1
+          number of individuals in sample 1
+          
+            
+              
+                number
+              
+              
+                real
+              
+            
+          
+          
+            Blank
+            Missing or Not Measured
+          
+        
+        
+          S2
+          S2
+          number of individuals in sample 2
+          
+            
+              
+                number
+              
+              1
+              
+                real
+              
+            
+          
+          
+            Blank
+            Missing or Not Measured
+          
+        
+        
+          S3
+          S3
+          number of individuals in sample 3
+          
+            
+              
+                number
+              
+              1
+              
+                real
+              
+            
+          
+          
+            Blank
+            Missing or Not Measured
+          
+        
+        
+          S4
+          S4
+          number of individuals in sample 4
+          
+            
+              
+                number
+              
+              1
+              
+                real
+              
+            
+          
+          
+            Blank
+            Missing or Not Measured
+          
+        
+        
+          S5
+          S5
+          number of individuals in sample 5
+          
+            
+              
+                number
+              
+              1
+              
+                real
+              
+            
+          
+          
+            1
+            Missing or Not Measured
+          
+        
+        
+          S6
+          S6
+          number of individuals in sample 6
+          
+            
+              
+                number
+              
+              1
+              
+                real
+              
+            
+          
+          
+            Blank
+            Missing or Not Measured
+          
+        
+        
+          S7
+          S7
+          number of individuals in sample 7
+          
+            
+              
+                number
+              
+              1
+              
+                real
+              
+            
+          
+          
+            Blank
+            Missing or Not Measured
+          
+        
+        
+          S8
+          S8
+          number of individuals in sample 8
+          
+            
+              
+                number
+              
+              1
+              
+                real
+              
+            
+          
+          
+            blank
+            Missing or Not Measured
+          
+        
+        
+          S9
+          S9
+          number of individuals in sample 9
+          
+            
+              
+                number
+              
+              1
+              
+                real
+              
+            
+          
+          
+            blank
+            Missing or Not Measured
+          
+        
+        
+          S10
+          S10
+          number of individuals in sample 10
+          
+            
+              
+                number
+              
+              1
+              
+                real
+              
+            
+          
+          
+            Blank
+            Missing or Not Measured
+          
+        
+        
+          Total
+          Total
+          total number of individual/all samples
+          
+            
+              
+                number
+              
+              1
+              
+                real
+              
+            
+          
+        
+        
+          Comments
+          Comments
+          Comments
+          string
+          
+            
+              
+                
+                  Comments
+                
+              
+            
+          
+        
+      
+      16133
+    
+    
+      CGR023
+      Data was recorded on the individual number of instar and adult stage. Instars were classified into first, second, third, fourth, and fifth stage. Adult was identified with sex (male and female).
+      
+        CGR023.csv
+        952178
+        237caf07ac7d9b96ea39d9e8aa805708
+        79cdf01040ec9b8102fddb85ad71b57ab98e3565
+        
+          
+            1
+            \r\n
+            column
+            
+              ,
+              "
+            
+          
+        
+        
+          
+            https://pasta.lternet.edu/package/data/eml/knb-lter-knz/29/20/98a5bc89f50cee4ae3c173ffc2802fe8
+          
+        
+      
+      
+        
+          DataCode
+          DataCode
+          Dataset code
+          string
+          
+            
+              
+                
+                  Dataset code
+                
+              
+            
+          
+        
+        
+          RecType
+          RecType
+          Record type
+          string
+          
+            
+              
+                
+                  Record type
+                
+              
+            
+          
+        
+        
+          RecYear
+          RecYear
+          Year of record
+          
+            
+              
+                Year (YYYY)
+              
+              
+                real
+              
+            
+          
+        
+        
+          RecMonth
+          RecMonth
+          Month of record
+          date
+          
+            
+              MM
+            
+          
+        
+        
+          RecDay
+          RecDay
+          Day of record
+          date
+          
+            
+              DD
+            
+          
+        
+        
+          Watershed
+          Watershed
+          watershed
+          string
+          
+            
+              
+                
+                  watershed
+                
+              
+            
+          
+        
+        
+          Soiltype
+          Soiltype
+          soil type
+          string
+          
+            
+              
+                
+                  soil type
+                
+              
+            
+          
+        
+        
+          Repsite
+          Repsite
+          replication site for a treatment
+          string
+          
+            
+              
+                
+                  
+                    A
+                    replicate site A for treatment
+                  
+                  
+                    B
+                    replicate site B for treatment
+                  
+                
+              
+            
+          
+        
+        
+          Spcode
+          Spcode
+          species code
+          string
+          
+            
+              
+                
+                  
+                    1
+                    brachystol magna
+                  
+                  
+                    10
+                    melanoplus scudderi
+                  
+                  
+                    11
+                    melanoplus sanguinip
+                  
+                  
+                    12
+                    melanoplus femurrubr
+                  
+                  
+                    13
+                    melanoplus packardii
+                  
+                  
+                    14
+                    melanoplus different
+                  
+                  
+                    15
+                    melanoplus keel luri
+                  
+                  
+                    16
+                    melanoplus bivittatu
+                  
+                  
+                    17
+                    melanoplus confusus
+                  
+                  
+                    18
+                    melanoplus species
+                  
+                  
+                    2
+                    schistocer lineata
+                  
+                  
+                    25
+                    eritettix simplex
+                  
+                  
+                    26
+                    syrbula admirabil
+                  
+                  
+                    27
+                    orphulella speciosa
+                  
+                  
+                    28
+                    mermiria picta
+                  
+                  
+                    29
+                    mermiria bivittata
+                  
+                  
+                    3
+                    paratylotr brunneri
+                  
+                  
+                    30
+                    opeia obscura
+                  
+                  
+                    31
+                    pseudopoma brachypte
+                  
+                  
+                    32
+                    boopedon auriventr
+                  
+                  
+                    33
+                    boopedon nubilum
+                  
+                  
+                    34
+                    boopedon gracile
+                  
+                  
+                    35
+                    ageneotett deorum
+                  
+                  
+                    36
+                    mermiria species
+                  
+                  
+                    4
+                    hypochlora alba
+                  
+                  
+                    45
+                    chortophag viridifas
+                  
+                  
+                    46
+                    dissosteir carolina
+                  
+                  
+                    47
+                    arphia xanthopte
+                  
+                  
+                    48
+                    arphia simplex
+                  
+                  
+                    49
+                    arphia conspersa
+                  
+                  
+                    5
+                    campylacan olivacea
+                  
+                  
+                    50
+                    hadrotetti trifascia
+                  
+                  
+                    51
+                    hippiscus rugosus
+                  
+                  
+                    52
+                    pardalopho apiculata
+                  
+                  
+                    53
+                    pardalopho haldemani
+                  
+                  
+                    54
+                    pardalopho species
+                  
+                  
+                    55
+                    arphia species
+                  
+                  
+                    6
+                    hesperotet speciosus
+                  
+                  
+                    7
+                    hesperotet viridis
+                  
+                  
+                    8
+                    hesperotet species
+                  
+                  
+                    9
+                    phoetaliot nebrascen
+                  
+                  
+                    90
+                    unknown
+                  
+                  
+                    95
+                    total
+                  
+                
+              
+            
+          
+        
+        
+          Species
+          Species
+          abbreviated species name
+          string
+          
+            
+              
+                
+                  abbreviated species name
+                
+              
+            
+          
+        
+        
+          FirstInstar
+          FirstInstar
+          number of individuals 1st instar
+          
+            
+              
+                number
+              
+              
+                real
+              
+            
+          
+          
+            blank
+            Missing or Not Measured
+          
+        
+        
+          SecThirdInstar
+          SecThirdInstar
+          number of individual 2nd & 3rd instars
+          
+            
+              
+                number
+              
+              1
+              
+                real
+              
+            
+          
+          
+            Blank
+            Missing or Not Measured
+          
+        
+        
+          ForthInstar
+          ForthInstar
+          number of individuals 4th instar
+          
+            
+              
+                number
+              
+              1
+              
+                real
+              
+            
+          
+          
+            Blank
+            Missing or Not Measured
+          
+        
+        
+          FifthInstar
+          FifthInstar
+          number of individuals 5th instar
+          
+            
+              
+                number
+              
+              1
+              
+                real
+              
+            
+          
+          
+            Blank
+            Missing or Not Measured
+          
+        
+        
+          Female
+          Female
+          number of individuals of adult female
+          
+            
+              
+                number
+              
+              1
+              
+                real
+              
+            
+          
+          
+            Blank
+            Missing or Not Measured
+          
+        
+        
+          Male
+          Male
+          number of individuals of adult male
+          
+            
+              
+                number
+              
+              1
+              
+                real
+              
+            
+          
+          
+            blank
+            Missing or Not Measured
+          
+        
+        
+          Total
+          Total
+          total number of individuals/all samples
+          
+            
+              
+                number
+              
+              1
+              
+                real
+              
+            
+          
+        
+        
+          Comments
+          Comments
+          Comments
+          string
+          
+            
+              
+                
+                  Comments
+                
+              
+            
+          
+        
+      
+      15263
+    
+  
+  
+    
+      
+        
+          
+        
+        
+          
+        
+      
+    
+  

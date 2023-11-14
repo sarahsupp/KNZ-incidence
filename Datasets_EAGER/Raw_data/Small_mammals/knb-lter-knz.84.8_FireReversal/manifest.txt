@@ -1,0 +1,6 @@
+Manifest file for knb-lter-knz.84.8-4c9184f37cff01bcdc32dc486ec36961.zip created on Fri Feb 17 15:24:48 MST 2023
+CSM051.csv (6408 bytes)
+CSM052.csv (494913 bytes)
+knb-lter-knz.84.8.xml (71431 bytes)
+knb-lter-knz.84.8.txt (48321 bytes)
+knb-lter-knz.84.8.report.xml (50705 bytes)

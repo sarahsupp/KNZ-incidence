@@ -1,5 +1,0 @@
-Manifest file for knb-lter-knz.55.14-4c9184f37cff01bcdc32dc486ec36961.zip created on Fri Feb 17 15:31:56 MST 2023
-PAB011.csv (272819 bytes)
-knb-lter-knz.55.14.xml (34621 bytes)
-knb-lter-knz.55.14.txt (21558 bytes)
-knb-lter-knz.55.14.report.xml (33312 bytes)

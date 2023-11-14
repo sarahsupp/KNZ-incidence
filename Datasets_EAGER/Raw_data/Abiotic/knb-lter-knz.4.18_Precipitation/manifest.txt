@@ -1,0 +1,5 @@
+Manifest file for knb-lter-knz.4.18-4c9184f37cff01bcdc32dc486ec36961.zip created on Fri Feb 17 15:40:56 MST 2023
+APT011.csv (1018813 bytes)
+knb-lter-knz.4.18.xml (25610 bytes)
+knb-lter-knz.4.18.txt (14459 bytes)
+knb-lter-knz.4.18.report.xml (30570 bytes)

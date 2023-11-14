@@ -1,0 +1,129 @@
+---
+title: "E0_AllTaxaDatasetsRawToClean"
+author: "Maya Parker-Smith"
+date: "2023-11-13"
+output: html_document
+  html_document:
+    smart: no
+    theme: flatly
+    float: yes
+    css: "style.css"    
+editor_options: 
+  chunk_output_type: console
+mainfont: Arial
+mathfont: Arial
+fontsize: 12pt
+---
+Creates tabs in the HTML document
+#  {.tabset .tabset-pills .tabset-fade}
+
+
+```{r setup, include=FALSE}
+#Clear environment
+rm(list=ls())
+
+#Read in necessary libraries
+library(tidyverse)
+```
+
+## Small-mammals (1992 - 2013) {.tabset}
+Small-mammal data from this specific file was collected from 1981 to 2013, but we are only looking at data collected between 1992 to 2013 due to bison not being present on all grazed plots until 1992. 
+
+In the following section, I read in the small-mammal data, check the data for errors, rename some columns and entries, choose the watersheds I want to further analyze, and separate the data from 1992 and onwards. 
+
+```{r smammals cleaning}
+
+#Seasonal summaries of small mammals on LTER traplines 
+raw_smammals <- read_csv("Datasets_EAGER/Small_mammals/knb-lter-knz.88.9_FourteenTraplines/CSM011.csv")
+
+#Table including the watershed info for all watersheds - this table will be used in subsequent taxa data
+watershed_info <- read_excel("Datasets_EAGER/Other/Watershed Info.xlsx")
+
+
+#Separating the watershed/line column into two separate columns and creating a new dataset
+smammals_all <- separate(raw_smammals, `WATERSHED/LINE`, into = c("WATERSHED", "LINE"), sep = "-")
+
+
+#Renaming columns just so that they're not all capitalized
+smammals_all <- smammals_all %>% rename("Watershed_name" = "WATERSHED", 
+                                "Datacode" = "DATACODE",
+                                "Rectype" = "RECTYPE", 
+                                "Recyear" = "RECYEAR", 
+                                "Season" = "SEASON", 
+                                "Line" = "LINE")
+
+#Shortening the names of the watersheds
+smammals_all$Watershed_name <- dplyr::recode(smammals_all$Watershed_name,
+                                       "004F" = "4F",
+                                       "004B" = "4B",
+                                       "001D" = "1D",
+                                       "020B" = "20B",
+                                       "N20B" = "N20B",
+                                       "N01B" = "N1B",
+                                       "N04D" = "N4D")
+
+#Pivoting the table so that each species per year and watershed is a different row
+smammals <- pivot_longer(smammals_all, cols = 8:21, 
+                              names_to = "Species", 
+                              values_to = "Count")
+
+#Renaming the species into their full names
+smammals$Species <- dplyr::recode(smammals$Species,
+                                     "Pm" = "Peromyscus_maniculatus",
+                                     "Rmeg" = "Reithrodontomys_megalotis",
+                                     "Sh" = "Sigmodon_hispidus",
+                                     "Bh" = "Blarina_hylophaga",
+                                     "Rmon" = "Reithrodontomys_montanus",
+                                     "St" = "Spermophilus_tridecemlineatus",
+                                     "Mo" = "Microtus_ochrogaster",
+                                     "Pl" = "Peromyscus_leucopus",
+                                     "Ch" = "Chaetodipus_hispidus",
+                                     "Mm" = "Mus_musculus",
+                                     "Nf" = "Neotoma_floridana",
+                                     "Sc" = "Synaptomys_cooperi",
+                                     "Zh" = "Zapus_hudsonius",
+                                     "Cp" = "Cryptotis_parva")
+
+#Separate the dataset from 1992 onwards since bison weren't introduced until then.
+smammals <- smammals %>% subset(.$Recyear >= 1992)
+
+
+#Since I won't differentiate the data based on the trap lines, I am summing the data based on just watershed
+smammals <- smammals %>% group_by(Recyear, Watershed_name, Species) %>% 
+  reframe(Count = sum(Count))
+
+
+# Removing the 4F watershed to make sampling between all fire/grazing treatments equal (the 4 year fire interval with no grazing combination of disturbances has two watersheds represented, while all other combinations have just one).
+smammals <- smammals %>% subset(Watershed_name != "4F")
+
+
+#Creating a table with the small mammal common names, to join to the main dataset and make referencing easier in plots
+smammals_commonnames <- tibble(Species = c("Blarina_hylophaga", "Chaetodipus_hispidus",
+                                           "Cryptotis_parva", "Microtus_ochrogaster",
+                                           "Mus_musculus", "Neotoma_floridana",
+                                           "Peromyscus_leucopus", "Peromyscus_maniculatus",
+                                           "Reithrodontomys_megalotis", "Reithrodontomys_montanus",
+                                           "Sigmodon_hispidus", "Spermophilus_tridecemlineatus",
+                                           "Synaptomys_cooperi", "Zapus_hudsonius"), 
+                               Common_name = c("Elliot's short-tailed shrew", "Hispid pocket mouse", 
+                                               "North American least shrew", "Prairie vole", 
+                                               "House mouse", "Eastern woodrat", 
+                                               "White-footed mouse", "Deer mouse", 
+                                               "Western harvest mouse", "Plains harvest mouse", 
+                                               "Hispid cotton rat", "Thirteen-lined ground squirrel",
+                                               "Southern bog lemming", "Meadow jumping mouse"))
+
+#Joining the common names data table to the main dataset
+smammals <- left_join(smammals, smammals_commonnames, by = "Species")
+
+#Writing the cleaned smammals dataset to the 'Cleaned_data' folder in the directory
+write_csv(smammals, "~/Documents/GitHub/KNZ-incidence/Datasets_EAGER/Cleaned_data/smammals.csv")
+
+```
+
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+
