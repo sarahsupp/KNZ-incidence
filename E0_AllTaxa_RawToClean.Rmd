@@ -1,8 +1,8 @@
 ---
-title: "E0_AllTaxaDatasetsRawToClean"
+title: "E0_AllTaxa_RawToClean"
 author: "Maya Parker-Smith"
 date: "2023-11-13"
-output: html_document
+output:
   html_document:
     smart: no
     theme: flatly
@@ -17,6 +17,8 @@ fontsize: 12pt
 Creates tabs in the HTML document
 #  {.tabset .tabset-pills .tabset-fade}
 
+# Raw to Clean Code for All Taxa
+This Rmarkdown file is for cleaning the raw taxa datasets for the NSF-EAGER species classification project. We read in the raw data for all 4 taxa we are assessing (small-mammals, grasshoppers, birds, and plants) and clean them to be ready for analysis.
 
 ```{r setup, include=FALSE}
 #Clear environment
@@ -24,6 +26,9 @@ rm(list=ls())
 
 #Read in necessary libraries
 library(tidyverse)
+
+#Table including the watershed info for all watersheds - this table will be used in subsequent taxa data
+watershed_info <- read_excel("Datasets/Other/Watershed_info.xlsx")
 ```
 
 ## Small-mammals (1992 - 2013) {.tabset}
@@ -34,10 +39,7 @@ In the following section, I read in the small-mammal data, check the data for er
 ```{r smammals cleaning}
 
 #Seasonal summaries of small mammals on LTER traplines 
-raw_smammals <- read_csv("Datasets_EAGER/Small_mammals/knb-lter-knz.88.9_FourteenTraplines/CSM011.csv")
-
-#Table including the watershed info for all watersheds - this table will be used in subsequent taxa data
-watershed_info <- read_excel("Datasets_EAGER/Other/Watershed Info.xlsx")
+raw_smammals <- read_csv("Datasets/Raw_data/Small_mammals/knb-lter-knz.88.9_FourteenTraplines/CSM011.csv")
 
 
 #Separating the watershed/line column into two separate columns and creating a new dataset
@@ -88,10 +90,6 @@ smammals$Species <- dplyr::recode(smammals$Species,
 smammals <- smammals %>% subset(.$Recyear >= 1992)
 
 
-#Since I won't differentiate the data based on the trap lines, I am summing the data based on just watershed
-smammals <- smammals %>% group_by(Recyear, Watershed_name, Species) %>% 
-  reframe(Count = sum(Count))
-
 
 # Removing the 4F watershed to make sampling between all fire/grazing treatments equal (the 4 year fire interval with no grazing combination of disturbances has two watersheds represented, while all other combinations have just one).
 smammals <- smammals %>% subset(Watershed_name != "4F")
@@ -116,14 +114,373 @@ smammals_commonnames <- tibble(Species = c("Blarina_hylophaga", "Chaetodipus_his
 #Joining the common names data table to the main dataset
 smammals <- left_join(smammals, smammals_commonnames, by = "Species")
 
-#Writing the cleaned smammals dataset to the 'Cleaned_data' folder in the directory
-write_csv(smammals, "~/Documents/GitHub/KNZ-incidence/Datasets_EAGER/Cleaned_data/smammals.csv")
+#Writing the cleaned smammals dataset to the 'Cleaned_data' folder in the project directory
+write_csv(smammals, "Datasets/E0_cleaned_data/E0_smammals.csv")
 
 ```
 
+##  Grasshoppers (2002 - 2020) {.tabset}
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+Grasshopper data from this specific file was collected from 1982 to 2020, but we are only looking at data from 2002 to 2020 because sampling at the bison plots was suspended from 1985 - 2002.
+
+In the following section, I read in the grasshopper data, check the data for errors, rename some columns and entries, choose the watersheds I want to further analyze, and separate the data from 2002 and onwards.
+
+```{r grasshoppers cleaning}
+
+#Reading in the raw data; this dataset is the grasshopper species counts from each set of sweeps
+raw_grasshoppers <- read_csv("Datasets/Raw_data/Grasshoppers/knb-lter-knz.29.20/CGR022.csv", show_col_types = FALSE) 
+
+grasshopper_families <- read_excel("Datasets/Other/Grasshopper_families.xlsx") #Dataset I created that records the families and suborders for each grasshopper genus in the dataset; I am going to only look at grasshoppers from the suborder Caelifera because those from the suborder Ensifera (family/genus: Oecanthinae, Gryllidae, and Tettigoniidae) were not counted until 2013.
+
+#Changing the classifcations of the some of the variables for later analysis and creating a new dataset
+grasshoppers_all <- raw_grasshoppers %>% mutate(WATERSHED = factor(WATERSHED),
+                                                SPECIES = factor(SPECIES),
+                                                SPCODE = factor(SPCODE),
+                                                RECYEAR = as.numeric(RECYEAR))
+
+#Checking the number of unique names for the species to check for misspellings
+sort(unique(grasshoppers_all$SPECIES))
+##There are capitalizations in some but not others and there are some unknowns. I'll have to rename many of these to have them be consistent.
+
+#Recoding some of the species to make it consistent
+grasshoppers_all$SPECIES <- dplyr::recode(grasshoppers_all$SPECIES,
+                                "ageneotett deorum" = "Ageneotettix deorum",
+                                "arphia conspersa" = "Arphia conspersa",
+                                "arphia simplex" = "Arphia simplex",
+                                "arphia species" = "Arphia spp.",
+                                "arphia spp." = "Arphia spp.",
+                                "arphia xanthopte" = "Arphia xanthoptera",
+                                "boopedon auriventr" = "Boopedon auriventris",
+                                "boopedon gracile" = "Boopedon gracile",
+                                "boopedon nubilum" = "Boopedon nubilum",
+                                "brachystol magna" = "Brachystola magna", 
+                                "campylacan olivacea" = "Campylacantha olivacea",
+                                "chortophag viridifas" = "Chortophaga viridifasciata",
+                                "encoptolop sordidus" = "Encoptolophus sordidus",
+                                "encoptolop spp." = "Encoptolophus spp.",
+                                "Encoptolphus spp." = "Encoptolophus spp.",
+                                "encoptolop subgracil" = "Encoptolophus subgracilis",
+                                "eritettix simplex" = "Eritettix simplex",
+                                "hadrotetti trifascia" = "Hadrotettix trifasciatus",
+                                "hesperotet species" = "Hesperotettix spp.",
+                                "hesperotet speciosus" = "Hesperotettix speciosus",
+                                "hesperotet spp." = "Hesperotettix spp.",
+                                "hesperotet viridis" = "Hesperotettix viridis",
+                                "hippiscus rugosus" = "Hippiscus rugosus",
+                                "hypochlora alba" = "Hypochlora alba",
+                                "melanoplus angustipe" = "Melanoplus angustipennis",
+                                "melanoplus bivittatu" = "Melanoplus bivittatus",
+                                "melanoplus confusus" = "Melanoplus confusus",
+                                "melanoplus different" = "Melanoplus differentialis",
+                                "melanoplus femurrubr" = "Melanoplus femurrubrum",
+                                "melanoplus foedus" = "Melanoplus foedus",
+                                "melanoplus keeleri" = "Melanoplus keeleri",
+                                "melanoplus occidenta" = "Melanoplus occidentalis",
+                                "melanoplus packardii" = "Melanoplus packardii",
+                                "melanoplus sanguinip" = "Melanoplus sanguinipes",
+                                "melanoplus scudderi" = "Melanoplus scudderi",
+                                "melanoplus species" = "Melanoplus spp.",
+                                "melanoplus spp." = "Melanoplus spp.",
+                                "mermiria bivitatta" = "Mermiria bivittata",
+                                "mermiria bivittata" = "Mermiria bivittata",
+                                "mermiria picta" = "Mermiria picta",
+                                "mermiria species" = "Mermiria spp.",
+                                "mermiria spp." = "Mermiria spp.",
+                                "oedipodinae" = "Oedipodinae spp.",
+                                "opeia obscura" = "Opeia obscura",
+                                "orphulella speciosa" = "Orphulella speciosa",
+                                "orphullela speciosa" = "Orphulella speciosa",
+                                "paratylota brunneri" = "Paratylotropidia brunneri",
+                                "paratylotr brunneri" = "Paratylotropidia brunneri",
+                                "pardalopho haldemani" = "Pardalophora haldemani",
+                                "pardalopho apiculata" = "Pardalophora apiculata",
+                                "pardalopho species" = "Pardalophora spp.",
+                                "pardalopho spp." = "Pardalophora spp.",
+                                "phoetaliot nebrascen" = "Phoetaliotes nebrascensis",
+                                "pseudopoma brachypte" = "Pseudopomala brachyptera",
+                                "Pseuodopomala brachyptera" = "Pseudopomala brachyptera",
+                                "psoloessa delicatul" = "Psoloessa delicatula",
+                                "schistocer lineata" = "Schistocerca lineata",
+                                "schistocer obscura" = "Schistocerca obscura",
+                                "syrbula admirabil" = "Syrbula admirabilis",
+                                "unknown" = "Unknown",
+                                "xanthippus corallipe" = "Xanthippus corallipes")
+
+###After some exploration, I found that Hippiscus rugosa and Hippiscus ocelote are the same thing, so I will change everything to Hippiscus ocelote.
+grasshoppers_all$SPECIES <- dplyr::recode(grasshoppers_all$SPECIES,
+                                      "Hippiscus rugosus" = "Hippiscus ocelote")
+
+
+#Checking the watershed names to look for misspellings 
+sort(unique(grasshoppers_all$WATERSHED))
+##There are weird capitalizations for these too... I'll have to go through and clean and also consolidate based on the metadata
+
+#Renaming watersheds to make it consistent
+grasshoppers_all$WATERSHED <- dplyr::recode(grasshoppers_all$WATERSHED,
+                                  "001d" = "1D",
+                                  "004b" = "4B",
+                                  "000b" = "B",
+                                  "n04a" = "N4A",
+                                  "n01b" = "N1B",
+                                  "n04d" = "N4D",
+                                  "n00b" = "NB",
+                                  "002d" = "2D", 
+                                  "004d" = "4D",
+                                  "004f" = "4F",
+                                  "010d" = "10D",
+                                  "004g" = "4G",
+                                  "002c" = "2C",
+                                  "0sub" = "SuB",
+                                  "020b" = "20B",
+                                  "0spb" = "SpB",
+                                  "n20a" = "N20A",
+                                  "n20b" = "N20B",
+                                  "n01a" = "N1A",
+                                  "N20B" = "N20B",
+                                  "002D" = "2D",
+                                  "N01B" = "N1B",
+                                  "001D" = "1D",
+                                  "N04D" = "N4D",
+                                  "004F" = "4F",
+                                  "002C" = "2C",
+                                  "020B" = "20B",
+                                  "0SUB" = "SuB",
+                                  "0SPB" = "SpB",
+                                  "004B" = "4B",
+                                  "N01A" = "N1A",
+                                  "N04A" = "N4A",
+                                  "N20A" = "N20A")
+
+##Then consolidating watersheds based on the metadata
+grasshoppers_all$WATERSHED <- dplyr::recode(grasshoppers_all$WATERSHED,
+                                   "B" = "20B",
+                                   "NB" = "N20B",
+                                   "2D" = "SpB",
+                                   "4D" = "SpB",
+                                   "10D" = "SuB",
+                                   "4G" = "WB")
+
+###Also, some of the species names aren't correctly matched with their spp code, so I will fix that
+ for(i in 1:nrow(grasshoppers_all)){
+   if (grasshoppers_all$SPECIES[i] == "Oecanthinae spp."){grasshoppers_all$SPCODE[i] <- "56"}
+   if (grasshoppers_all$SPECIES[i] == "Tettigoniidae spp."){grasshoppers_all$SPCODE[i] <- "59"}
+   if (grasshoppers_all$SPECIES[i] == "Gryllidae spp."){grasshoppers_all$SPCODE[i] <- "58"}
+   if (grasshoppers_all$SPECIES[i] == "Melanoplus femurrubrum"){grasshoppers_all$SPCODE[i] <- "12"}
+ }
+
+
+##Since the bison grazed plots weren't sampled until 2002, I am removing all data pre-2002
+grasshoppers <- grasshoppers_all %>% subset(.$RECYEAR >= 2002)
+
+#Renaming the columns so they're not all capitalized
+grasshoppers <- grasshoppers %>% rename("Watershed_name" = "WATERSHED",
+                              "Recyear" = "RECYEAR",
+                              "Recmonth" = "RECMONTH",
+                              "Recday" = "RECDAY",
+                              "Species" = "SPECIES",
+                              "Total" = "TOTAL",
+                              "Soil_type" = "SOILTYPE",
+                              "Repsite" = "REPSITE",
+                              "Spp_code" = "SPCODE")
+
+
+#Only selecting the watersheds I will use for further analysis
+grasshoppers <- grasshoppers %>%
+  subset(Watershed_name %in% c("1D", "20B", "4B", 
+                               "4F", "N1B", "N4A", 
+                               "N4D", "N20B")) 
+
+#Separating the genus and spp and creating new columns. This is to add in the family and suborder info and also to easily remove entries that are not identified down to species.
+grasshoppers <- grasshoppers %>% separate(Species, c("Genus", "Spp"), sep = " ", remove = FALSE)
+
+
+##This is where I am adding in the other dataset that has the family and suborder info and then only selecting those from the suborder Caelifera since suborder Ensifera are katydids and crickets and most were not counted until 2013
+grasshoppers <- left_join(grasshoppers, grasshopper_families, by = "Genus")
+grasshoppers <- grasshoppers %>% subset(Suborder == "Caelifera")
+
+##Removing unknowns from the dataset
+grasshoppers <- grasshoppers %>% subset(Genus != "Unknown")
+
+##Removing the entries that aren't identified to species 
+grasshoppers <- grasshoppers %>% subset(Spp != "spp.")
+
+#Writing the cleaned grasshoppers dataset to the 'Cleaned_data' folder in the project directory
+write_csv(grasshoppers, "Datasets/E0_cleaned_data/E0_grasshoppers.csv")
+
+```
+## Birds (1992 - 2009) {.tabset}
+
+Bird sampling data for this specific file was collected from 1981 to 2009, but we are only looking at data collected between 1992 to 2009 due to bison not being present on all grazed plots until 1992. 
+
+In the following section, I read in the bird data, check the data for errors, rename some columns and entries, choose the watersheds I want to further analyze, and separate the data from 1992 and onwards.
+
+```{r birds cleaning}
+
+#Read in raw bird data; each individual bird is its own row (so the count is always only one)
+raw_birds <- read_csv("Datasets/Raw_data/Birds/knb-lter-knz.26.12/CBP011.csv", show_col_types = FALSE)
+
+
+#Changing classifications and names of columns
+birds_all <- raw_birds %>% mutate(RECMONTH = factor(RECMONTH),
+                          RECDAY = factor(RECDAY),
+                          SEASON = factor(SEASON),
+                          TRANSNUM = factor(TRANSNUM),
+                          SPECNAME = factor(SPECNAME),
+                          AOUCODE = factor(AOUCODE),
+                          COMMONNAME = factor(COMMONNAME),
+                          DISTANCE = as.numeric(DISTANCE),
+                          COUNT = as.numeric(COUNT),
+                          SEX = factor(SEX),
+                          STATUS = factor(STATUS),
+                          COMMENTS = as.character(COMMENTS))
+
+#Renaming the columns so they're not all capitalized
+birds_all <- birds_all %>% rename("Watershed_name" = "WATERSHED",
+                          "Datacode" = "DATACODE",
+                          "Recyear" = "RECYEAR",
+                          "Recmonth" = "RECMONTH",
+                          "Recday" = "RECDAY",
+                          "Season" = "SEASON",
+                          "Transect" = "TRANSNUM",
+                          "Observation_number" = "OBSNUM",
+                          "Species" = "SPECNAME",
+                          "AOU_code" = "AOUCODE",
+                          "Common_name" = "COMMONNAME",
+                          "Distance" = "DISTANCE",
+                          "Count" = "COUNT",
+                          "Sex" = "SEX",
+                          "Status" = "STATUS",
+                          "Comments" = "COMMENTS",
+                          "Time" = "TIME",
+                          "Duration" = "DURATION",
+                          "Observer" = "OBSERVER")
+
+#Renaming the watersheds to make the names shorter
+birds_all$Watershed_name <- dplyr::recode(birds_all$Watershed_name,
+                                       "N04D" = "N4D",
+                                       "N04B" = "N4B",
+                                       "004B" = "4B",
+                                       "004A" = "4A",
+                                       "004D" = "4D",
+                                       "N01B" = "N1B",
+                                       "001D" = "1D",
+                                       "R20A" = "R20A",
+                                       "R01B" = "R1B",
+                                       "020C" = "20C",
+                                       "020B" = "20B",
+                                       "L00A" = "LA",
+                                       "S00A" = "SA",
+                                       "G00A" = "GA",
+                                       "N20B" = "N20B")
+
+
+#I need to separate the dataset from 1992 onwards. 
+birds <- birds_all %>% subset(.$Recyear >= 1992)
+
+
+#Selecting only the watersheds I want for further analysis
+birds <- birds %>% subset(Watershed_name %in% c("1D", "4A", "4B", 
+                                                "20B", "N1B", "N4B", 
+                                                "N4D", "N20B"))
+
+##This transect is being removed to not duplicate the number of observations at a single watershed; watershed N1B has two transects (6, 10) and all other watersheds just have one transect.
+###I did do a Bray-Curtis dissimilarity test on the two different transects to make sure they were similar enough, and it looks like they are about 23% dissimilar (~77% similar)
+birds <-  birds %>% subset(Transect != "10")
+
+#Checking the lengths of the species (the 'species' variable has a lot more entries, but they are duplicates with naming variations when looking at the matching common names. So I'll use the AOU code instead.)
+length(unique(birds$Species))
+length(unique(birds$AOU_code))
+
+#Also removing observations that are unspecified
+birds <- subset(birds, !(AOU_code %in% c("NONE", "VOID", "UNSP", "UNEM", "RSTO")))
+
+#Renaming this one all lowercase entry since all other entries are all uppercase
+birds$AOU_code <- dplyr::recode(birds$AOU_code,
+                                "eawp" = "EAWP")
+
+#Writing the cleaned birds dataset to the 'Cleaned_data' folder in the project directory
+write_csv(birds, "Datasets/E0_cleaned_data/E0_birds.csv")
+
 ```
 
+## Plants (1992 - 2022) {.tabset}
 
+Plant composition data was collected from 1983 to 2022, but we are only looking at data collected between 1992 to 2022 due to bison not being present on all grazed plots until 1992. 
+
+In the following section, I read in the plant data, check the data for errors, rename some columns and entries, choose the watersheds I want to further analyze, and separate the data from 1992 and onwards.
+
+```{r plants cleaning}
+#Read in the raw plant composition data
+raw_plants <- read_csv("Datasets/Raw_data/Plants/knb-lter-knz.69.21_SpeciesComposition/PVC021.csv")
+
+
+plants_all <- raw_plants %>% mutate(WaterShed = factor(WaterShed),
+                                Transect = factor(Transect),
+                                Plot = factor(Plot),
+                                SpeCode = factor(SpeCode))
+
+#Combining the genus and species column and creating a new column, but also keeping the separate Genus and Spp columns
+plants_all <- unite(plants_all, "Genus_spp", AB_genus:AB_species, sep = "_", remove = FALSE)
+
+#Renaming the watersheds to make everything consistent
+plants_all$WaterShed <- dplyr::recode(plants_all$WaterShed,
+                                "001c" = "1C",
+                                "001d" = "1D",
+                                "004b" = "4B",
+                                "020b" = "20B",
+                                "n01b" = "N1B",
+                                "n04d" = "N4D",
+                                "n20b" = "N20B",
+                                "002c" = "2C",
+                                "002d" = "2D",
+                                "004a" = "4A",
+                                "004f" = "4F",
+                                "n04a" = "N4A",
+                                "n20a" = "N20A",
+                                "020d" = "20D",
+                                "n01a" = "N1A",
+                                "00wb" = "WB",
+                                "0spa" = "SpA",
+                                "0spb" = "SpB",
+                                "00fa" = "FA",
+                                "00fb" = "FB",
+                                "00wa" = "WA",
+                                "0sua" = "SuA",
+                                "0sub" = "SuB",
+                                "001a" = "1A",
+                                "020a" = "20A",
+                                "r01a" = "R1A",
+                                "r01b" = "R1B",
+                                "r20a" = "R20A",
+                                "r20b" = "R20B",
+                                "n02a" = "N2A",
+                                "n02b" = "N2B")
+
+#Renaming some variables so there aren't weird capitalizations in the middle of the words
+plants_all <- plants_all %>% rename("Watershed_name" = "WaterShed",
+                                    "Recyear" = "RecYear",
+                                    "Recmonth" = "RecMonth",
+                                    "Recday" = "RecDay")
+
+#Removing data pre-1992 since bison weren't introduced until then
+plants <- plants_all %>% subset(.$Recyear >= 1992)
+
+#Selecting only the watersheds and I will use for further analysis
+plants <- plants %>%
+  subset(Watershed_name %in% c("1D", "4A", "4B", 
+                               "20B", "N1B", "N4A", 
+                               "N4D", "N20B")) 
+
+#Removing the observations that aren't identified down to species
+plants <- subset(plants,!(Genus_spp %in% c("annual_forb", "carex_spp.", 
+                                           "cyperu_spp.", "euphor_spp.", 
+                                           "symphy_spp.")))
+
+#There is one entry in Genus_spp that is capitalized, so I am changing it to match everything else
+plants$Genus_spp<- dplyr::recode(plants$Genus_spp,
+                                 "Lithos_occid" = "lithos_occid")
+
+
+write_csv(plants, "Datasets/E0_cleaned_data/E0_plants.csv")
+
+```
