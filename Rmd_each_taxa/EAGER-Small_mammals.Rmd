@@ -20,7 +20,10 @@ fontsize: 12pt
 ## Clear environment 
 rm(list=ls())
 
+read.delim()
+read_exce
 
+""
 ##Libraries
 library(tidyverse)
 library(cowplot)

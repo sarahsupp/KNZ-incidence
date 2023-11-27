@@ -316,7 +316,7 @@ grasshoppers <- grasshoppers_raw %>% mutate(RECTYPE = factor(RECTYPE),
 problems(grasshoppers_raw)
 #Checking the number of unique names for different variables to then compare to the metadata
 unique(grasshoppers$SPECIES)
-##Oh lord... theres capitalizations in some but not others and there are some unknowns. I'll have to alphabetize it and go through to see if there are multiple spellings for the same species
+##Oh lord... there's capitalizations in some but not others and there are some unknowns. I'll have to alphabetize it and go through to see if there are multiple spellings for the same species
 
 unique(grasshoppers$WATERSHED)
 #There is weird capitalizations for these too... I'll have to go through and clean and probably get rid of some
@@ -475,7 +475,6 @@ Looking at the amount of time data was collected for each watershed, in each yea
 
 grasshoppers_2_group <- grasshoppers_2 %>% group_by(Recyear, Recmonth, Watershed_name, Species) %>% 
   dplyr::summarise(Total = sum(Total))
-
 
 
 #Making each species a different column so then we can count the number of times data was collected at each watershed in each year
@@ -776,8 +775,6 @@ plant_comp1$WaterShed <- recode(plant_comp1$WaterShed,
 ##grouping by the variables that we are interested in
 plant_comp1_group <- plant_comp1 %>% group_by(RecYear, RecMonth, WaterShed, Genus_spp) %>% 
   dplyr::summarise(Cover = sum(Cover))
-
-
 
 
 ##pivoting the dataset wider so that each species is a column
