@@ -438,10 +438,10 @@ Summary of changes:
 In this section, I read in the small-mammal data, check the data for errors, rename some columns and entries, choose the watersheds I want to further analyze, and separate the data from 1992 and onwards. 
 ```{r smammals cleaning}
 #Seasonal summaries of small mammals on LTER traplines 
-smammals_raw <- read_csv("Datasets_EAGER/Small_mammals/knb-lter-knz.88.9_FourteenTraplines/CSM011.csv")
+smammals_raw <- read_csv("Datasets_EAGER/Raw_data/Small_mammals/knb-lter-knz.88.9_FourteenTraplines/CSM011.csv")
 
 #Table including the watershed info for all watersheds - this table will be used in subsequent taxa data
-watershed_info <- read_excel("Datasets_EAGER/Other/Watershed Info.xlsx")
+watershed_info <- read_excel("Datasets_EAGER/Other/Watershed_info.xlsx")
 
 
 #Separating the watershed/line column into two separate columns and creating a new dataset
@@ -511,7 +511,7 @@ smammals <- left_join(smammals, smammals_commonnames, by = "Species")
 For this section, I am reorganizing the data to be able to format it into a presence/absence matrix. This matrix will then be ran through the getTrends function to get the classifications for each species at each watershed.
 ```{r smammals pa}
 #Combining the species and watershed variables so that each species per watershed per year is a unique identifier
-smammals<- smammals %>% unite("Species.watershed", Species:Watershed_name, sep = ".", remove = FALSE)
+smammals <- smammals %>% unite("Species.watershed", Species:Watershed_name, sep = ".", remove = FALSE)
 
 #Pivoting the table so that each year is a column and each row is the 'species.watershed' variable
 smammals_years_wide <- smammals %>% 
@@ -562,7 +562,8 @@ smammals_sprich %>% ggplot(aes(x = Recyear, y = Richness)) + geom_point() + face
         axis.text.x = element_text(angle=45, hjust=1, size =10)) +
   labs(title = "Small Mammals Species Richness per Year and Watershed")
 
-lm()
+
+lm(Richness ~ (Recyear * Watershed_name), data = smammals_sprich) %>% summary()
 
 ```
 
@@ -692,7 +693,6 @@ Reasons for exclusion:
 
 ---
 
-
 Data author: Alice Boyle
 
 ZIP file: knb-lter-knz.26.12
@@ -713,7 +713,7 @@ Summary of changes up to 1993 (this is all that was included in the metadata):
 ### Birds: Cleaning and organizing
 ```{r birds cleaning}
 #Read in and view bird data
-birds_raw <- read_csv("Datasets_EAGER/Birds/knb-lter-knz.26.12/CBP011.csv", show_col_types = FALSE)
+birds_raw <- read_csv("Datasets_EAGER/Raw_data/Birds/knb-lter-knz.26.12/CBP011.csv", show_col_types = FALSE)
 
 unique(birds_raw$WATERSHED)
 
@@ -820,14 +820,14 @@ birds_years_wide <- birds_wide %>% pivot_longer(cols = -c(1:2),
               values_from = "Count")
 
 #Combining the variables of species and watershed to create a unique identifier for each row 
-birds_years_wide <- birds_years_wide %>% unite("Species.watershed", Species:Watershed_name, sep = ".")
+birds_years_wide <- birds_years_wide %>% unite("Species.watershed", Species:Watershed_name, sep = ".", remove = FALSE)
 
 
 #Creating a separate species.watershed dataframe to add back to the dataset after standardization
-birds_env <- birds_years_wide[, 1]
+birds_env <- birds_years_wide[, 1:3]
 
 #Standardizing by presence/absence
-decostand_birds_pa <- decostand(birds_years_wide[, -c(1)], "pa", na.rm = FALSE)
+decostand_birds_pa <- decostand(birds_years_wide[, -c(1:3)], "pa", na.rm = FALSE)
 #Making all NA's zeroes; NA's are entries in which no data was collected, thus are absent/0
 decostand_birds_pa[is.na(decostand_birds_pa)] <- 0
 
@@ -852,6 +852,24 @@ birds_class_long <- birds_class %>% pivot_longer(cols = "1992":"2009",
                                                  names_to = "Recyear", 
                                                  values_to = "Presence")
 
+#Species richness calculation
+birds_sprich <- decostand_birds_pa %>% add_column(birds_env) %>% pivot_longer(cols = "1992":"2009",
+                                                                                       names_to = "Recyear",
+                                                                                       values_to = "Presence")
+
+birds_sprich <- birds_sprich %>% mutate(Recyear = as.numeric(Recyear),
+                                              Watershed_name = factor(Watershed_name))
+birds_sprich$Watershed_name <- factor(birds_sprich$Watershed_name,
+                                        levels = c("1D", "N1B", "4A", 
+                                           "4B", "N4B", "N4D", 
+                                           "20B", "N20B"))
+
+birds_sprich <- birds_sprich %>% group_by(Watershed_name, Recyear) %>% reframe(Richness = sum(Presence))
+
+
+birds_sprich %>% ggplot(aes(x = Recyear, y = Richness)) + geom_point() + facet_wrap(.~Watershed_name) + geom_smooth(method = "lm", se = FALSE) + theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1, size =10)) +
+  labs(title = "Birds Species Richness per Year and Watershed")
 
 ```
 
@@ -964,8 +982,8 @@ Summary of changes:
 ### Grasshoppers: Cleaning and organizing
 ```{r grasshoppers cleaning}
 
-grasshoppers_raw <- read_csv("Datasets_EAGER/Grasshoppers/knb-lter-knz.29.20/CGR022.csv", show_col_types = FALSE) #This dataset is the grasshopper species counts from each set of sweeps
-grasshopper_families <- read_excel("Datasets_EAGER/Grasshoppers/Grasshopper_families.xlsx") #Dataset I created that records the families and suborders for each grasshopper genus in the dataset; I am going to only look at grasshoppers from the suborder Caelifera because those from the suborder Ensifera (family/genus: Oecanthinae, Gryllidae, and Tettigoniidae) were not counted until 2013.
+grasshoppers_raw <- read_csv("Datasets_EAGER/Raw_data/Grasshoppers/knb-lter-knz.29.20/CGR022.csv", show_col_types = FALSE) #This dataset is the grasshopper species counts from each set of sweeps
+grasshopper_families <- read_excel("Datasets_EAGER/Other/Grasshopper_families.xlsx") #Dataset I created that records the families and suborders for each grasshopper genus in the dataset; I am going to only look at grasshoppers from the suborder Caelifera because those from the suborder Ensifera (family/genus: Oecanthinae, Gryllidae, and Tettigoniidae) were not counted until 2013.
 
 #Changing the classifcations of the some of the variables for later analysis and creating a new dataset
 grasshoppers_all <- grasshoppers_raw %>% mutate(WATERSHED = factor(WATERSHED),
@@ -1138,7 +1156,6 @@ grasshoppers <- grasshoppers %>% subset(Genus != "Unknown")
 ##Removing the entries that aren't identified to species 
 grasshoppers <- grasshoppers %>% subset(Spp != "spp.")
 
-length(unique(grasshoppers$Spp_code))
 ```
 
 ### Grasshoppers: Presence/Absence & Classification
@@ -1164,14 +1181,14 @@ grasshoppers_years_wide <- grasshoppers_wide %>% pivot_longer(cols = -c(1:2),
 
 #Combining the species and watershed variables to create a unique identifier for each row
 grasshoppers_years_wide <- grasshoppers_years_wide %>% 
-  unite("Species.watershed", Species:Watershed_name, sep = ".")
+  unite("Species.watershed", Species:Watershed_name, sep = ".", remove = FALSE)
 
 #Creating a separate species.watershed dataframe to add back to the dataset after standardization
-grasshoppers_env <- grasshoppers_years_wide[, 1]
+grasshoppers_env <- grasshoppers_years_wide[, 1:3]
 
 
 #Standardizing by presence/absence
-decostand_grasshoppers_pa <- decostand(grasshoppers_years_wide[, -c(1)], "pa", na.rm = FALSE)
+decostand_grasshoppers_pa <- decostand(grasshoppers_years_wide[, -c(1:3)], "pa", na.rm = FALSE)
 #Making all NA's zeroes; NA's are entries in which no data was collected, thus are absent/0
 decostand_grasshoppers_pa[is.na(decostand_grasshoppers_pa)] <- 0
 
@@ -1197,6 +1214,26 @@ grasshoppers_class <- grasshoppers_class %>% separate(Species.watershed, c("Genu
 grasshoppers_class_long <- grasshoppers_class %>% pivot_longer(cols = "2002":"2020", 
                                                  names_to = "Recyear", 
                                                  values_to = "Presence")
+
+#Species richness calculation
+grasshoppers_sprich <- decostand_grasshoppers_pa %>% add_column(grasshoppers_env) %>% pivot_longer(cols = "2002":"2020",
+                                                                                       names_to = "Recyear",
+                                                                                       values_to = "Presence")
+
+grasshoppers_sprich <- grasshoppers_sprich %>% mutate(Recyear = as.numeric(Recyear),
+                                              Watershed_name = factor(Watershed_name))
+grasshoppers_sprich$Watershed_name <- factor(grasshoppers_sprich$Watershed_name,
+                                        levels = c("1D", "N1B", "4B", 
+                                           "4F", "N4A", "N4D", 
+                                           "20B", "N20B"))
+
+grasshoppers_sprich <- grasshoppers_sprich %>% group_by(Watershed_name, Recyear) %>% reframe(Richness = sum(Presence))
+
+
+grasshoppers_sprich %>% ggplot(aes(x = Recyear, y = Richness)) + geom_point() + facet_wrap(.~Watershed_name) + geom_smooth(method = "lm", se = FALSE) + theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1, size =10)) +
+  labs(title = "Grasshoppers Species Richness per Year and Watershed")
+
 
 ```
 
@@ -1294,9 +1331,9 @@ Summary of changes:
 
 ### Plants: Cleaning and organizing
 ```{r plants cleaning}
-plants_raw <- read_csv("Datasets_EAGER/Plants/knb-lter-knz.69.21_SpeciesComposition/PVC021.csv")
+plants_raw <- read_csv("Datasets_EAGER/Raw_data/Plants/knb-lter-knz.69.21_SpeciesComposition/PVC021.csv")
 
-watershed_info <- read_excel("Datasets_EAGER/Other/Watershed Info.xlsx")
+watershed_info <- read_excel("Datasets_EAGER/Other/Watershed_info.xlsx")
 
 unique(plants_raw$WaterShed)
 
@@ -1392,14 +1429,14 @@ plants_years_wide <- plants_wide %>% pivot_longer(cols = -c(1:2),
 
 #Combining the species and watershed variables to create a unique identifier for each row
 plants_years_wide <- plants_years_wide %>% 
-  unite("Species.watershed", Species:Watershed_name, sep = ".")
+  unite("Species.watershed", Species:Watershed_name, sep = ".", remove = FALSE)
 
 #Creating a separate species.watershed dataframe to add back to the dataset after standardization
-plants_env <- plants_years_wide[, 1]
+plants_env <- plants_years_wide[, 1:3]
 
 
 #Standardizing by presence/absence
-decostand_plants_pa <- decostand(plants_years_wide[, -c(1)], "pa", na.rm = FALSE)
+decostand_plants_pa <- decostand(plants_years_wide[, -c(1:3)], "pa", na.rm = FALSE)
 #Making all NA's zeroes; NA's are entries in which no data was collected, thus are absent/0
 decostand_plants_pa[is.na(decostand_plants_pa)] <- 0
 
@@ -1424,6 +1461,27 @@ plants_class <- plants_class %>% separate(Species.watershed, c("Genus", "Spp", "
 plants_class_long <- plants_class %>% pivot_longer(cols = "1992":"2022", 
                                                  names_to = "Recyear", 
                                                  values_to = "Presence")
+
+
+#Species richness calculation
+plants_sprich <- decostand_plants_pa %>% add_column(plants_env) %>% pivot_longer(cols = "1992":"2022",
+                                                                                       names_to = "Recyear",
+                                                                                       values_to = "Presence")
+
+plants_sprich <- plants_sprich %>% mutate(Recyear = as.numeric(Recyear),
+                                              Watershed_name = factor(Watershed_name))
+# grasshoppers_sprich$Watershed_name <- factor(grasshoppers_sprich$Watershed_name,
+#                                         levels = c("1D", "N1B", "4B", 
+#                                            "4F", "N4A", "N4D", 
+#                                            "20B", "N20B"))
+
+plants_sprich <- plants_sprich %>% group_by(Watershed_name, Recyear) %>% reframe(Richness = sum(Presence))
+
+
+plants_sprich %>% ggplot(aes(x = Recyear, y = Richness)) + geom_point() + facet_wrap(.~Watershed_name) + geom_smooth(method = "lm", se = FALSE) + theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1, size =10)) +
+  labs(title = "Plant Species Richness per Year and Watershed")
+
 
 ```
 

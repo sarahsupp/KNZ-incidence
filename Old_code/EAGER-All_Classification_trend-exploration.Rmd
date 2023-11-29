@@ -503,10 +503,10 @@ getTrends3.0_test<- function(x) {
 apply(smammals_pa_matrix, 1, FUN = getTrends2.5)
 ```
 
-### getTrends3.0_test
+### getTrends3.0
+This version of the function has the stipulations for 'nearly always present' >=95% years present, 'nearly always absent' <=5% years present, and for recurrent category requires at least 2 blocks of time when it is present
 ```{r getTrends3.0_test}
 
-x<- c(0,1,0,0,1,1,1,1,0,0,1,1,1,1,1,1,0,0,0,0,0)
 
 getTrends3.0_test<- function(x) {
   #input (x) is a single row of a matrix where the species are rows and the columns are each year with 1/0 values (1=present, 0=absent). 
@@ -517,6 +517,7 @@ getTrends3.0_test<- function(x) {
   time <- rep("late", length(x))
   time[1:(round(length(x)/2))] <- "early"
   
+  #NOTE: I ended up placing the z_x table back at the top of the function because I was having a hard time getting it to run without it.
   # make a table that tells you how many 0s and 1s are in the early and the late halves of the time series
   z_x <- table(x,time)
   
@@ -550,7 +551,8 @@ getTrends3.0_test<- function(x) {
     trendPlus <- NA
     cat <- "No_change-absent"
   } else if (tsprop >= 0.95) {
-    p_val <- NA
+    # if most of the values are 1 (>=95% of all years), it is "no change" present
+     p_val <- NA
     f_early <- NA
     f_late <- NA
     runsTestPV<-NA
@@ -558,7 +560,7 @@ getTrends3.0_test<- function(x) {
     trendPlus<-NA
     cat<-"No_change-present"
   } else {
-     
+    #If the time series contains changes, then we do a chi-sq test to detect directed change
     #adds rownames to the z_x table
     rownames(z_x) <- c("absent","present")
     
@@ -578,6 +580,7 @@ getTrends3.0_test<- function(x) {
       trend <- 1
       cat = "Increasing"
     } else {
+    # Chi-squared test not significant
     trend <- 0
     
     #conduct a runs test on the time-series
@@ -586,15 +589,13 @@ getTrends3.0_test<- function(x) {
     if (is.nan(runsTestPV)) {
       runsTestPV <- 2}
     
-    # if Chi-sq test insignif. and the runs test was significant
-    if((p_val > 0.05) & (runsTestPV < 0.05)) {
-      trendPlus<-10
+    # if Chi-sq test insignif. and the runs test was significant AND it was present in at least TWO blocks of time
+    if((p_val > 0.05) & (runsTestPV < 0.05) & (v > 2)) {
       cat="Recurrent"
     } else if((p_val > 0.05) & (runsTestPV > 0.05) | (runsTestPV < 0.05) & (v <= 2)){
-      trendPlus<-5
       cat="Random"
-    }
-    }
+      }
+    } #end else for ns chisq
   }
 
   

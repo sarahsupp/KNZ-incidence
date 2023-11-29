@@ -39,7 +39,7 @@ In the following section, I read in the small-mammal data, check the data for er
 ```{r smammals cleaning}
 
 #Seasonal summaries of small mammals on LTER traplines 
-raw_smammals <- read_csv("Datasets/Raw_data/Small_mammals/knb-lter-knz.88.9_FourteenTraplines/CSM011.csv")
+raw_smammals <- read_csv("Datasets/Raw_data/Small_mammals/CSM011.csv")
 
 
 #Separating the watershed/line column into two separate columns and creating a new dataset
@@ -128,9 +128,9 @@ In the following section, I read in the grasshopper data, check the data for err
 ```{r grasshoppers cleaning}
 
 #Reading in the raw data; this dataset is the grasshopper species counts from each set of sweeps
-raw_grasshoppers <- read_csv("Datasets/Raw_data/Grasshoppers/knb-lter-knz.29.20/CGR022.csv", show_col_types = FALSE) 
+raw_grasshoppers <- read_csv("Datasets/Raw_data/Grasshoppers/CGR022.csv", show_col_types = FALSE) 
 
-grasshopper_families <- read_excel("Datasets/Other/Grasshopper_families.xlsx") #Dataset I created that records the families and suborders for each grasshopper genus in the dataset; I am going to only look at grasshoppers from the suborder Caelifera because those from the suborder Ensifera (family/genus: Oecanthinae, Gryllidae, and Tettigoniidae) were not counted until 2013.
+grasshopper_families <- read_excel("Datasets/Grasshoppers/Grasshopper_families.xlsx") #Dataset I created that records the families and suborders for each grasshopper genus in the dataset; I am going to only look at grasshoppers from the suborder Caelifera because those from the suborder Ensifera (family/genus: Oecanthinae, Gryllidae, and Tettigoniidae) were not counted until 2013.
 
 #Changing the classifcations of the some of the variables for later analysis and creating a new dataset
 grasshoppers_all <- raw_grasshoppers %>% mutate(WATERSHED = factor(WATERSHED),
@@ -317,7 +317,7 @@ In the following section, I read in the bird data, check the data for errors, re
 ```{r birds cleaning}
 
 #Read in raw bird data; each individual bird is its own row (so the count is always only one)
-raw_birds <- read_csv("Datasets/Raw_data/Birds/knb-lter-knz.26.12/CBP011.csv", show_col_types = FALSE)
+raw_birds <- read_csv("Datasets/Raw_data/CBP011.csv", show_col_types = FALSE)
 
 
 #Changing classifications and names of columns
@@ -411,7 +411,7 @@ In the following section, I read in the plant data, check the data for errors, r
 
 ```{r plants cleaning}
 #Read in the raw plant composition data
-raw_plants <- read_csv("Datasets/Raw_data/Plants/knb-lter-knz.69.21_SpeciesComposition/PVC021.csv")
+raw_plants <- read_csv("Datasets/Raw_data/Plants/PVC021.csv")
 
 
 plants_all <- raw_plants %>% mutate(WaterShed = factor(WaterShed),
@@ -480,7 +480,7 @@ plants <- subset(plants,!(Genus_spp %in% c("annual_forb", "carex_spp.",
 plants$Genus_spp<- dplyr::recode(plants$Genus_spp,
                                  "Lithos_occid" = "lithos_occid")
 
-
+#Writing the cleaned plants dataset to the 'Cleaned_data' folder in the project directory
 write_csv(plants, "Datasets/E0_cleaned_data/E0_plants.csv")
 
 ```
