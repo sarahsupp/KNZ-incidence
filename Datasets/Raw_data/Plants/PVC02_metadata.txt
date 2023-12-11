@@ -1,0 +1,681 @@
+
+  
+    
+      uid=KNZ,o=LTER,dc=ecoinformatics,dc=org
+      all
+    
+    
+      public
+      read
+    
+  
+  
+    doi:10.6073/pasta/c1b5f26681469ccf302d2212a5212703PVC02
+    PVC02 Plant species composition on selected watersheds at Konza Prairie
+    
+      David Hartnett
+      			116 Ackert Hall, Division of Biology, Kansas State University
+			Manhattan, KS 66506  US
+      785-532-5925
+      785-532-6653
+      dchart@ksu.edu
+    
+    
+      Scott Collins
+      			Department of Biology, University of New Mexico
+			Albuquerque, NM 87131  US
+      505-277-6303
+      scollins@sevilleta.unm.edu
+      http://orcid.org/0000-0002-0193-2892
+    
+    
+      Zak Ratajczak
+      			116 Ackert Hall, Division of Biology, Kansas State University
+			Manhattan, KS 66506  US
+      518-424-8354
+      zarata@ksu.edu
+      https://zaratajczak.wixsite.com/zak-ratajczak
+      http://orcid.org/0000-0002-4675-5738
+    
+    
+      Konza LTER
+      http://www.konza.ksu.edu/
+    
+    2023-01-17
+    
+      
+        
+         Canopy coverage and frequency were recorded in 20 circular 10 sq m plots. Six treatments were sampled, three ungrazed and three to grazed by native grazers. In each case one of the three watersheds was unburned, another burned annually in April, the third burned every four years in April. In each treatment two soils were sampled: a lower-slope deep fertile nonrocky soil (tully silty clay loam), and a shallow rocky soil (florence cherty silt loam) on level to gently sloping ridges. In 1983 another ungrazed annual burn area '1c' was added 'both tully and florence soils' because original area '1d' appeared aberrant.
+        
+      
+    
+    
+      Primary Production
+      Disturbance
+      Core Areas
+    
+    
+      Producers
+      Section
+    
+    
+      aboveground biomass
+      ANPP
+      biodiversity
+      canopy coverage
+      community composition
+      Konza Prairie
+      LTER
+      plant cover
+      species
+      plant species composition
+      Station Keywords
+    
+    
+      
+        Data Policies
+        
+        Data Use Agreements: The Intellectual Rights within the metadata associated with each KNZ data set determines the exact data and metadata use agreement between the data user and the KNZ LTER site. KNZ LTER data and metadata may be released under the license: CC BY - Attribution (https://creativecommons.org/licenses/by/4.0/). This license lets others distribute, remix, tweak, and build upon KNZ work (even commercially), as long as the KNZ program is credited for the original creation. Alternatively, some KNZ LTER data and metadata may be released into the public domain: CC0 - No Rights Reserved (https://creativecommons.org/share-your-work/public-domain/cc0/). CC0 states that data are placed in the public domain, so that others may freely build upon, enhance and reuse the works for any purposes without restriction under copyright or database law. In either case, users of KNZ data are referred to the following guidelines: "The consumer of these data ("Data User" herein) has an ethical obligation to cite it appropriately in any publication that results from its use. The Data User should realize that these data may be actively used by others for ongoing research and that coordination may be necessary to prevent duplicate publication. The Data User is urged to contact the authors of these data if any questions about methodology or results occur. Where appropriate, the Data User is encouraged to consider collaboration or coauthorship with the authors. The Data User should realize that misinterpretation of data may occur if used out of context of the original study. While substantial efforts are made to ensure the accuracy of data and associated documentation, complete accuracy of data sets cannot be guaranteed. All data are made available "as is." The Data User should be aware, however, that data are updated periodically and it is the responsibility of the Data User to check for new versions of the data. The data authors and the repository where these data were obtained shall not be liable for damages resulting from any use or misinterpretation of the data. Thank you".
+        
+      
+    
+    
+      
+        http://lter.konza.ksu.edu/content/pvc02-plant-species-composition-selected-watersheds-konza-prairie
+      
+    
+    https://doi.org/10.6073/pasta/c1b5f26681469ccf302d2212a5212703
+      
+        FA: Ungrazed and scheduled prescribed burned annually in the fall (November).
+        
+          -96.5825
+          -96.5764
+          39.0738
+          39.0681
+        
+      
+      
+        SuB: Ungrazed and scheduled prescribed burned every 2 years in the summer
+        
+          -96.5694
+          -96.565
+          39.0768
+          39.0712
+        
+      
+      
+        N4A: Year-long grazing by bison and scheduled prescribed burned every 4 years in the spring
+        
+          -96.6139
+          -96.5979
+          39.0845
+          39.0761
+        
+      
+      
+        R1A: Ungrazed and scheduled unburned through 2000, scheduled prescribed burned annually in the spring beginning 2001.
+        
+          -96.6147
+          -96.6066
+          39.077
+          39.067
+        
+      
+      
+        2D: Ungrazed and scheduled prescribed burned every 2 years in the spring
+        
+          -96.5606
+          -96.5534
+          39.0841
+          39.0731
+        
+      
+      
+        WB: Ungrazed and scheduled prescribed burned annually in the winter (February).
+        
+          -96.5678
+          -96.5639
+          39.0739
+          39.0687
+        
+      
+      
+        N20B: Year-long grazing by bison and scheduled prescribed burned every 20 years in the spring.
+        
+          -96.5801
+          -96.561
+          39.0922
+          39.0815
+        
+      
+      
+        N1A: Year-long grazing by bison and scheduled prescribed burned annually in the spring.
+        
+          -96.5969
+          -96.5834
+          39.0993
+          39.0879
+        
+      
+      
+        1D: Ungrazed and scheduled prescribed burned annually in the spring.
+        
+          -96.5658
+          -96.5594
+          39.0841
+          39.0732
+        
+      
+      
+        R1B: Ungrazed and scheduled unburned through 2000, scheduled prescribed burned annually in the spring beginning 2001
+        
+          -96.5579
+          -96.5481
+          39.0792
+          39.0731
+        
+      
+      
+        SpA: Ungrazed and scheduled prescribed burned annually in the spring.
+        
+          -96.5956
+          -96.5881
+          39.0784
+          39.0683
+        
+      
+      
+        SpB: Ungrazed and scheduled prescribed burned annually in the spring.
+        
+          -96.5913
+          -96.5838
+          39.0756
+          39.0669
+        
+      
+      
+        WA: Ungrazed and scheduled prescribed burned annually in the winter (February).
+        
+          -96.5766
+          -96.5728
+          39.0747
+          39.0694
+        
+      
+      
+        20B: Ungrazed and scheduled prescribed burned every 20 years in the spring.
+        
+          -96.5808
+          -96.5741
+          39.0758
+          39.0693
+        
+      
+      
+        4A: Ungrazed and scheduled prescribed burned every 4 years in the spring
+        
+          -96.6093
+          -96.6017
+          39.0773
+          39.0731
+        
+      
+      
+        4F: Ungrazed and scheduled prescribed burned every 4 years in the spring
+        
+          -96.5733
+          -96.5691
+          39.0766
+          39.0711
+        
+      
+      
+        SuA: Ungrazed and scheduled prescribed burned every 2 years in the summer.
+        
+          -96.5739
+          -96.5648
+          39.0697
+          39.066
+        
+      
+      
+        N1B : Year-long grazing by bison and scheduled prescribed burned annually in the spring.
+        
+          -96.5793
+          -96.5634
+          39.088
+          39.0746
+        
+      
+      
+        N20A: Year-long grazing by bison and scheduled prescribed burned every 20 years in the spring.
+        
+          -96.6044
+          -96.5929
+          39.1021
+          39.0885
+        
+      
+      
+        N4D : Year-long grazing by bison and scheduled prescribed burned every 4 years in the spring.
+        
+          -96.59
+          -96.5768
+          39.0896
+          39.0701
+        
+      
+      
+        
+          
+            1983-04-01
+          
+          
+            2022-12-12
+          
+        
+      
+    
+    
+      
+        To determine long-term changes in canopy cover, frequency, richness, and diversity in watersheds from different burn treatments in grazed and ungrazed watersheds.
+      
+    
+    
+      
+        
+         ongoing
+        
+      
+    
+    
+      Konza LTER
+      			Division of Biology
+			Manhattan, KS 66506  US
+      785-532-6729
+      knzlter@ksu.edu
+      http://lter.konza.ksu.edu
+    
+    
+    Environmental Data Initiativeinfo@edirepository.orghttps://edirepository.org0330j0z60Environmental Data Initiative
+    
+      
+        
+          
+            
+            Location of Sampling Stations: Plant composition is determined on upland topographic locations (Florence soils), lowland topographic locations (Tully soils), and slope locations. Maps of sampling locations are available as following PVC Map. Sampling History: Collection of plant composition data began in 1983 in watersheds 1c, 1d, 4b, 20b, N1b, N4d, and N20b. Since then, numerous other watersheds have been added and an annual plant census is currently conducted in:1d, 2c, 2d, 4a, 4b, 20b, N1a, N1b, N4a, N4d, N20a, N20b, Fa, Fb, Wa, Wb, Spa, Spb, Sua, Sub, R1a, R1b, R20a, R20b. Sampling in the eight seasonally burned watersheds began in 1994. Four reversal watersheds were established in 2001 in which 1a became R20a, 20a became R1a, 1c became R20b, and 20d became R20b. Only Florence soils (f) are sampled in 2c and 2d, whereas only Tully soils (t) are sampled in R1a and R20a. Sampling on slope sites (s) in 1d, 1c, 4a, 4b, 20b, 20d, N4a, N4d, N20a, and N20b were conducted from 1991-2001, but are currently sampled only in the bison-grazed watersheds. Frequency of Sampling: Initially, plots were surveyed 3 times each year. Beginning in 1991, however, sampling frequency was changed to twice a year (late-May to Mid-June for the spring census, and August to early-September for the summer census). Generally, cool-season species are sampled in the spring census whereas warm-season species are sampled in the summer census when they are more developed. Variable Measured: Canopy covers of all vascular plant species in each plot are estimated. Methods: In each watershed, four 50-m long transects (A, B, C, and D) were established on each topographic position. In each transect, five evenly spaced, permanently marked plots are located (n = 20 plots for each topographic position in a watershed). A surveyor’s pin with a 1.78 m long chain is placed in the conduit marking each plot. Canopy cover of all vascular plant species in a 10-m2 circular area within each conduit are estimated using a modified Daubenmire cover scale (Bailey and Poulton, 1968. Ecology 49:1-13). Form of Data Output: Raw data contains the cover class value for each species detected in the plot. For species that are sampled on both census dates, the highest cover class of each plot is used for analyses. Percentage cover for each species is computed by averaging the mid-points of the cover classes for the 20 plots.The presence or absence of a species in the 20 plots can be used to estimate frequency of occurrence. Summary of All Changes: Pasture c01b was called Texas Hog (thp) in 2009. Vegetation species composition from 1983. The transects were permanently layed out in the current format of 4 transects (A-D), each with 5 plots. Transect E only occurred on watershed N20B florence in 1986 and 1987. This transect is the same as the current transect D for this watershed and soil type. The old transect D was abandoned in 1987 prior to bison reintroduction. Seven cover classes were used to estimate species canopy coverage. 1 - 0-1% cover; 2 - 2-5% cover; 3 - 5-25% cover; 4 - 25-50% cover; 5 - 50-75%; 6 - 75-95% cover; 7 - 95-100% cover. (Note: for the watershed r20b, no data were collected in the transect A and B in the fall of 2011 due to wildfire occurred.) Transect 'E' occurred only on the N20b florence site in 1986 and 1987 and was renamed the new 'transect' in 1988. The old 'D' transect was sampled from 1983 to 1987 and then abandoned when the bison fence was constructed. Thus, plots d1-d5 from 1983-1987 are NOT the same d1-d5 plots in subsequent years. Codes used in the data set: t = tully (lowland) soil; f = florence (upland) soil; s = slopes For list of Species codes used, please check (2022updated) species list (PDF), or species list in Excel version For the PVC Experiment Map, please check PVC map For additional metadata information see: http://lter.konza.ksu.edu/sites/default/files/DC.pdf For additional methods information see: http://lter.konza.ksu.edu/sites/default/files/MM.pdf
+            
+          
+        
+      
+    
+    
+      LTER: Manipulating drivers to assess grassland resilience
+      
+        Jesse Nippert
+        Principal Investigator
+      
+      NSF: DEB-2025849      
+      
+        LTER: Long-Term Research on Grassland Dynamics- Assessing Mechanisms of Sensitivity and Resilience to Global Change
+        
+          Jesse Nippert
+          Principal Investigator
+        
+        
+          John Blair
+          Principal Investigator
+        
+        NSF: DEB-1440484
+            
+      
+        Konza Prairie LTER VI: Grassland Dynamics and Long-Term Trajectories of Change
+        
+          John Blair
+          Principal Investigator
+        
+        NSF: DEB-0823341
+          
+      
+        Konza Prairie LTER V: Long-Term Research on Grassland Dynamics and Global Change
+        
+          John Blair
+          Principal Investigator
+        
+        NSF: DEB-0218210
+         
+      
+        Long-Term Ecological Research in Tallgrass Prairie: The Konza Prairie LTER Program
+        
+          Alan Knapp
+          Principal Investigator
+        
+        NSF: DEB-9632851
+        
+      
+        Fire, Grazing, and Climatic Interactions in Tallgrass Prairie
+        
+          Alan Knapp
+          Principal Investigator
+        
+        NSF: DEB-9011662
+      
+      
+        The Role of Fire and Other Disturbances in Determining Ecosystem Processes and Patterns in the Konza Prairie, Kansas
+        
+          Donald Kaufman
+          Principal Investigator
+        
+        NSF: DEB-8514327
+      
+      
+        Long-Term Ecological Research in Tallgrass Prairie
+        
+          Richard Marzolf
+          Principal Investigator
+        
+        NSF: DEB-8012166
+         
+    
+    
+      PVC021
+      Vegetation species composition from 1983. The transects were permanently layed out in the current format of 4 transects (A-D), each with 5 plots. Transect E only occurred on watershed N20B florence in 1986 and 1987. This transect is the same as the current transect D for this watershed and soil type. The old transect D was abandoned in 1987 prior to bison reintroduction. Seven cover classes were used to estimate species canopy coverage. 1 - 0-1% cover; 2 - 2-5% cover; 3 - 5-25% cover; 4 - 25-50% cover; 5 - 50-75%; 6 - 75-95% cover; 7 - 95-100% cover. (Note: for the watershed r20b, no data were collected in the transect A & B in the fall of 2011 due to wildfire occurred.)
+      
+        PVC021.csv
+        42728148
+        295a749040f5ad33efbc77cc8880a016
+        b5e382d308996435240d9a98df300eef3897e88d
+        
+          
+            1
+            \r\n
+            column
+            
+              ,
+              "
+            
+          
+        
+        
+          
+            https://pasta.lternet.edu/package/data/eml/knb-lter-knz/69/21/63768b48f41e790a40e7fa4f9267c3a2
+          
+        
+      
+      
+        
+          DataCode
+          DataCode
+          Dataset code
+          string
+          
+            
+              
+                
+                  Dataset code
+                
+              
+            
+          
+        
+        
+          RecType
+          RecType
+          Record type
+          
+            
+              
+                number
+              
+              
+                real
+              
+            
+          
+        
+        
+          RecYear
+          RecYear
+          Year of record
+          
+            
+              
+                Year (YYYY)
+              
+              
+                real
+              
+            
+          
+        
+        
+          RecMonth
+          RecMonth
+          Month of record
+          
+            
+              
+                number
+              
+              
+                real
+              
+            
+          
+        
+        
+          RecDay
+          RecDay
+          Day of record
+          
+            
+              
+                number
+              
+              
+                real
+              
+            
+          
+        
+        
+          WaterShed
+          WaterShed
+          Watershed of treatment
+          string
+          
+            
+              
+                
+                  Watershed of treatment
+                
+              
+            
+          
+        
+        
+          SoilType
+          SoilType
+          Soil type in which data were collected
+          string
+          
+            
+              
+                
+                  
+                    t
+                    tully soils
+                  
+                  
+                    f
+                    florence soils
+                  
+                
+              
+            
+          
+        
+        
+          Transect
+          Transect
+          Transect of A-E
+          string
+          
+            
+              
+                
+                  Transect of A-E
+                
+              
+            
+          
+        
+        
+          Plot
+          Plot
+          Plot number 1-5
+          
+            
+              
+                number
+              
+              
+                real
+              
+            
+          
+        
+        
+          SpeCode
+          SpeCode
+          Species code
+          
+            
+              
+                number
+              
+              
+                real
+              
+            
+          
+        
+        
+          AB_genus
+          AB_genus
+          Abbreviation of genus
+          string
+          
+            
+              
+                
+                  Abbreviation of genus
+                
+              
+            
+          
+        
+        
+          AB_species
+          AB_species
+          Abbreviation of species
+          string
+          
+            
+              
+                
+                  Abbreviation of species
+                
+              
+            
+          
+        
+        
+          Cover
+          Cover
+          cover class
+          string
+          
+            
+              
+                
+                  
+                    1
+                    0-1% cover
+                  
+                  
+                    2
+                    1-5% cover
+                  
+                  
+                    3
+                    5-25% cover
+                  
+                  
+                    4
+                    25-50% cover
+                  
+                  
+                    5
+                    50-75% cover
+                  
+                  
+                    6
+                    75-95% cover
+                  
+                  
+                    7
+                    95-100% cover
+                  
+                
+              
+            
+          
+        
+        
+          Pid
+          Pid
+          Personnel id who collected the data
+          
+            
+              
+                number
+              
+              
+                real
+              
+            
+          
+          
+            blank
+            Missing or Not Measured
+          
+        
+        
+          Comments
+          Comments
+          Comments
+          string
+          
+            
+              
+                
+                  Comments
+                
+              
+            
+          
+        
+      
+      842483
+    
+  
+  
+    
+      
+        
+          
+        
+      
+    
+  

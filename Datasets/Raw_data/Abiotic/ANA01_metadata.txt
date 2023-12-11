@@ -1,0 +1,837 @@
+
+  
+    
+      uid=KNZ,o=LTER,dc=ecoinformatics,dc=org
+      all
+    
+    
+      public
+      read
+    
+  
+  
+    doi:10.6073/pasta/d4b780067882f3872b1ce507f6eefb13ANA01
+    ANA01 Weekly, seasonal and annual measurement of precipitation volume and chemistry collected as part of the National Atmospheric Deposition Program at Konza Prairie
+    
+      John Blair
+      			116 Ackert Hall, Division of Biology, Kansas State University
+			Manhattan, KS 66506  US
+      785-532-7065
+      785-532-6653
+      jblair@ksu.edu
+      http://orcid.org/0000-0003-0072-0721
+    
+    
+      Konza LTER
+      http://www.konza.ksu.edu/
+    
+    2023-01-16
+    
+      
+        
+Data set contains results of chemical analysis of wetfall samples collected on Konza Prairie. Analysis is done by the Central Analytical Lab (CAL), Champaign, IL as part of the National Atmospheric Deposition Program (NADP). NADP data products available on the NADP/NTN web site (nadp.slh.wisc.edu/data/NTN/) include: Annual Data Summaries, Semiannual Data Reports, Annual and Seasonal Averages, Monthly Averages, and Weekly data. Konza Prairie LTER archives and provides the weekly data in electronic form.
+        
+      
+    
+    
+      Inorganic Nutrients
+      Climate/Hydrology
+      Core Areas
+    
+    
+      Abiotic
+      Section
+    
+    
+      Ca
+      Cl
+      conductance
+      K
+      Kansas
+      LTER-KNZ
+      Konza Prairie
+      Konza Prairie Biological Station
+      Mg
+      Na
+      NADP
+      NH4
+      NO3
+      pH
+      precipitation chemistry
+      precipitation
+      prairie
+      SO4
+      wetfall
+      Station Keywords
+    
+    
+      
+        Data Policies
+        
+Data Use Agreements: The Intellectual Rights within the metadata associated with each KNZ data set determines the exact data and metadata use agreement between the data user and the KNZ LTER site. KNZ LTER data and metadata may be released under the license: CC BY - Attribution (https://creativecommons.org/licenses/by/4.0/). This license lets others distribute, remix, tweak, and build upon KNZ work (even commercially), as long as the KNZ program is credited for the original creation. Alternatively, some KNZ LTER data and metadata may be released into the public domain: CC0 - No Rights Reserved (https://creativecommons.org/share-your-work/public-domain/cc0/). CC0 states that data are placed in the public domain, so that others may freely build upon, enhance and reuse the works for any purposes without restriction under copyright or database law. In either case, users of KNZ data are referred to the following guidelines: "The consumer of these data ("Data User" herein) has an ethical obligation to cite it appropriately in any publication that results from its use. The Data User should realize that these data may be actively used by others for ongoing research and that coordination may be necessary to prevent duplicate publication. The Data User is urged to contact the authors of these data if any questions about methodology or results occur. Where appropriate, the Data User is encouraged to consider collaboration or coauthorship with the authors. The Data User should realize that misinterpretation of data may occur if used out of context of the original study. While substantial efforts are made to ensure the accuracy of data and associated documentation, complete accuracy of data sets cannot be guaranteed. All data are made available "as is." The Data User should be aware, however, that data are updated periodically and it is the responsibility of the Data User to check for new versions of the data. The data authors and the repository where these data were obtained shall not be liable for damages resulting from any use or misinterpretation of the data. Thank you".
+        
+      
+    
+    
+      
+        http://lter.konza.ksu.edu/content/ana01-weekly-seasonal-and-annual-measurement-precipitation-volume-and-chemistry-collected
+      
+    
+    https://doi.org/10.6073/pasta/d4b780067882f3872b1ce507f6eefb13
+      
+        HQC : Ungrazed and scheduled prescribed burned annually in the spring.
+        
+          -96.6149
+          -96.6087
+          39.103
+          39.0995
+        
+      
+      
+        
+          
+            1982-08-17
+          
+          
+            2019-04-23
+          
+        
+      
+    
+    
+      
+Collect wetfall and precipitation for analysis of atmospheric input of nutrients to tallgrass prairie.
+      
+    
+    
+      
+        ongoing
+        
+      
+    
+    
+      Konza LTER
+      			Division of Biology
+			Manhattan, KS 66506  US
+      785-532-6729
+      knzlter@ksu.edu
+      http://lter.konza.ksu.edu
+    
+    
+    Environmental Data Initiativeinfo@edirepository.orghttps://edirepository.org0330j0z60Environmental Data Initiative
+    
+      
+        
+          
+            
+Location of Sampling Stations: Headquarters weather station (HQC). Frequency of Sampling: Weekly, continuous from August 17, 1982. Variables Measured at KSU laboratory: Amount of precipitation (inches/week), checked against headquarters weighing rain gauge (Ott Pluvio2). Variables Measured at Central Analytical Laboratory (CAL), Illinois State Water Survey, Champaign, IL: Conductivity of precipitation (mS/cm); pH of precipitation; Concentrations of the following ions (mg/1): SO4, NO3, NH4, Cl, PO4, Na, K, Ca, and Mg. Methods: The Aerochem Metrics Wet/Dry collector is equipped with a movable lid and a precipitation sensor that electronically signals the lid to uncover a 'wet' side bucket during precipitation events and recover the wet side when precipitation ceases. Every week (Tuesdays), the wet side bucket is replaced with a clean bucket. The previous week's wet bucket is fitted with a clean lid and transported back to campus in a plastic bag and transporting box. On campus, the bucket, lid and contents are weighed. A weekly field form records time and date aon and off, a daily precipitation record of amounts, information about sample contamination and equipment operation. The sample is carefully transferred into a cleaned 1 liter polyethylene bottle (provided by CAL) and then shipped to Central Analytical laboratory (CAL) along with the field form. This procedure is followed every week regardless of the amount of precipitation collected. An example of the field form is shown in Appendix F. More detailed instructions concerning bucket changing, and pH and conductivity determinations are available in the NADP Field Operators Manual located in Bushnell Rm 215. Used collection supplies (lids and buckets) are collected for six weeks and then returned to CAL for cleaned replacements. Every four weeks, the dry side bucket is also changed and replaced with a clean bucket. No analysis of dryfall is currently done by NADP. As of April 1992, we have requested regular updates of data for our site from the NADP/NTN Coordination Office. Routine Maintenance: Weekly, the precipitation sensor should be checked for proper operation (if touched, or if a drop of water is placed on the sensor, the lid should move to uncover the wet side bucket). Also, the sensor and moveable lid should be cleaned monthly using distilled water and fine stiff brush. The underside of the lid should be cleaned each month, using a clean Kimwipe and distilled water. The top of the lid should also be kept clean and free of snow or ice accumulation. During freezing weather, rain/ice storms may cause the lid to freeze to either bucket. The frozen lid must be broken free as soon as possible to avoid burning out the motor on the sampler and to assure the quality of the precipitation sample collected. Finally, once a year, the foam underside of the lid should be changed. A new seal will be shipped from NADP automatically. Before onset of winter, the backup DC battery supply (located in black plastic box on the ground below the collector) should be removed and taken to KSU Vehicle Maintenance to be 'load-tested' for voltage. This was installed on 8-29-91 to provide improved continuation of electrical supply and to protect the collection equipment. The battery is routinely changed every 2 years. Approximately every two to three years NADP will arrange for an inspector to survey the site, calibrate the rain gauges, and observe the operator to determine necessary changes in operations. Last site visit was April 4, 2017. Note: Missing data are signified with the ".". Summary of All Changes: Starting January 26, 1993, a one-year study to compare two week collections of precipitation to the on-going weekly collections was initiated at our site. Data was  provided in the same manner as the existing set. The two-week sampling study ended on April 4, 1995. January 04, 2005: pH and conductivity no longer measured at KSU (field pH and field conductivity on data reports and summaries). April 1, 2011: Daily precipitation amounts now measured by Ott Pluvio² rain gauge at headquarters weather station. January 01, 2017: Starting Jan 01, 2013, We don't provide the seasonal total data (ANA012), which can be calculated from the weekly data or downloaded form NADP. For additional metadata information see: http://lter.konza.ksu.edu/sites/default/files/DC.pdf For additional methods information see: http://lter.konza.ksu.edu/sites/default/files/MM.pdf
+            
+          
+        
+      
+    
+    
+      LTER: Manipulating drivers to assess grassland resilience
+      
+        Jesse Nippert
+        Principal Investigator
+      
+      NSF: DEB-2025849      
+      
+        LTER: Long-Term Research on Grassland Dynamics- Assessing Mechanisms of Sensitivity and Resilience to Global Change
+        
+          Jesse Nippert
+          Principal Investigator
+        
+        
+          John Blair
+          Principal Investigator
+        
+        NSF: DEB-1440484
+            
+      
+        Konza Prairie LTER VI: Grassland Dynamics and Long-Term Trajectories of Change
+        
+          John Blair
+          Principal Investigator
+        
+        NSF: DEB-0823341
+          
+      
+        Konza Prairie LTER V: Long-Term Research on Grassland Dynamics and Global Change
+        
+          John Blair
+          Principal Investigator
+        
+        NSF: DEB-0218210
+         
+      
+        Long-Term Ecological Research in Tallgrass Prairie: The Konza Prairie LTER Program
+        
+          Alan Knapp
+          Principal Investigator
+        
+        NSF: DEB-9632851
+        
+      
+        Fire, Grazing, and Climatic Interactions in Tallgrass Prairie
+        
+          Alan Knapp
+          Principal Investigator
+        
+        NSF: DEB-9011662
+      
+      
+        The Role of Fire and Other Disturbances in Determining Ecosystem Processes and Patterns in the Konza Prairie, Kansas
+        
+          Donald Kaufman
+          Principal Investigator
+        
+        NSF: DEB-8514327
+      
+      
+        Long-Term Ecological Research in Tallgrass Prairie
+        
+          Richard Marzolf
+          Principal Investigator
+        
+        NSF: DEB-8012166
+         
+    
+    
+      ANA011
+      Monthly precipitation-weighted mean concentrations
+      
+        ANA011.csv
+        297128
+        1bbfe2bc839315843c5ff9eaf3e06cf8
+        6fb921b19d2a2beedb82af1f61effdb1f9495c61
+        
+          
+            1
+            \r\n
+            column
+            
+              ,
+              "
+            
+          
+        
+        
+          
+            https://pasta.lternet.edu/package/data/eml/knb-lter-knz/3/14/b1c3ccbacd4df99e6398ec59ae69f89c
+          
+        
+      
+      
+        
+          calcode
+          calcode
+          Alpha-numeric site identification code, first two characters of which are the abbreviation of the state in which the site is located (Konza Prairie Cal code is KS31).
+          string
+          
+            
+              
+                
+                  Alpha-numeric site identification code, first two characters of which are the abbreviation of the state in which the site is located (Konza Prairie Cal code is KS31).
+                
+              
+            
+          
+        
+        
+          dateOn
+          dateOn
+          Date sample bucket was installed on the collector, reported in Greenwich mean time (GMT) (yyyymmdd)
+          date
+          
+            
+              YYYY-MM-DD
+            
+          
+        
+        
+          dateOff
+          dateOff
+          Date sample bucket was removed from the collector, reported in Greenwich mean time (GMT) (yymmdd)
+          date
+          
+            
+              YYYY-MM-DD
+            
+          
+        
+        
+          limitCA
+          limitCA
+          Limit of Detection Symbol for CA
+          
+            
+              
+                number
+              
+              
+                real
+              
+            
+          
+          
+            blank
+            Missing or Not Measured
+          
+        
+        
+          conCA
+          conCA
+          Ca concentration
+          
+            
+              
+                milligramsPerLiter
+              
+              0.01
+              
+                real
+              
+            
+          
+          
+            .
+            Missing or Not Measured
+          
+        
+        
+          limitMg
+          limitMg
+          Limit of detection symbol for Mg
+          
+            
+              
+                number
+              
+              
+                real
+              
+            
+          
+          
+            blank
+            Missing or Not Measured
+          
+        
+        
+          conMg
+          conMg
+          Mg concentration
+          
+            
+              
+                milligramsPerLiter
+              
+              0.001
+              
+                real
+              
+            
+          
+          
+            .
+            Missing or Not Measured
+          
+        
+        
+          limitK
+          limitK
+          Limitof detection symbol for K
+          
+            
+              
+                number
+              
+              
+                real
+              
+            
+          
+          
+            blank
+            Missing or Not Measured
+          
+        
+        
+          conK
+          conK
+          K concentration
+          
+            
+              
+                milligramsPerLiter
+              
+              0.001
+              
+                real
+              
+            
+          
+          
+            .
+            Missing or Not Measured
+          
+        
+        
+          limitNa
+          limitNa
+          Limite of detection symbol for Na
+          
+            
+              
+                number
+              
+              
+                real
+              
+            
+          
+          
+            blank
+            Missing or Not Measured
+          
+        
+        
+          conNa
+          conNa
+          Na concentration
+          
+            
+              
+                milligramsPerLiter
+              
+              0.001
+              
+                real
+              
+            
+          
+          
+            .
+            Missing or Not Measured
+          
+        
+        
+          limitNH4
+          limitNH4
+          Limit of detection symbol for NH4
+          
+            
+              
+                number
+              
+              
+                real
+              
+            
+          
+          
+            blank
+            Missing or Not Measured
+          
+        
+        
+          conNH4
+          conNH4
+          NH4 concentration
+          
+            
+              
+                milligramsPerLiter
+              
+              0.01
+              
+                real
+              
+            
+          
+          
+            .
+            Missing or Not Measured
+          
+        
+        
+          limitNO3
+          limitNO3
+          limit ofdetection symbol for NO3
+          
+            
+              
+                number
+              
+              
+                real
+              
+            
+          
+          
+            blank
+            Missing or Not Measured
+          
+        
+        
+          conNO3
+          conNO3
+          NO3 concentration
+          
+            
+              
+                milligramsPerLiter
+              
+              0.01
+              
+                real
+              
+            
+          
+          
+            .
+            Missing or Not Measured
+          
+        
+        
+          limitCl
+          limitCl
+          limit of detection symbol for Cl
+          
+            
+              
+                number
+              
+              
+                real
+              
+            
+          
+          
+            blank
+            Missing or Not Measured
+          
+        
+        
+          conCl
+          conCl
+          Cl concentration
+          
+            
+              
+                milligramsPerLiter
+              
+              0.01
+              
+                real
+              
+            
+          
+          
+            .
+            Missing or Not Measured
+          
+        
+        
+          limitSO4
+          limitSO4
+          limit of detection symbol for SO4
+          
+            
+              
+                number
+              
+              
+                real
+              
+            
+          
+          
+            blank
+            Missing or Not Measured
+          
+        
+        
+          conSO4
+          conSO4
+          SO4 concentration
+          
+            
+              
+                milligramsPerLiter
+              
+              0.01
+              
+                real
+              
+            
+          
+          
+            .
+            Missing or Not Measured
+          
+        
+        
+          labpH
+          labpH
+          pH of precipitation sample as measured at CAL
+          
+            
+              
+                number
+              
+              
+                real
+              
+            
+          
+          
+            .
+            Missing or Not Measured
+          
+        
+        
+          fieldpH
+          fieldpH
+          pH of the precipitation sample as measured on site (Bushnell Hall)
+          
+            
+              
+                number
+              
+              
+                real
+              
+            
+          
+          
+            .
+            Missing or Not Measured
+          
+        
+        
+          pHFV
+          pHFV
+          field pH indicator
+          string
+          
+            
+              
+                
+                  field pH indicator
+                
+              
+            
+          
+        
+        
+          labConduct
+          labConduct
+          conductivity of the percipitation sample as measured at CAL
+          
+            
+              
+                microSiemensPerCentimeter
+              
+              0.1
+              
+                real
+              
+            
+          
+          
+            .
+            Missing or Not Measured
+          
+        
+        
+          fieldConduct
+          fieldConduct
+          conductivity of the precipitation sample as measured on site (Bushnell Hall)
+          
+            
+              
+                microSiemensPerCentimeter
+              
+              0.1
+              
+                real
+              
+            
+          
+          
+            .
+            Missing or Not Measured
+          
+        
+        
+          conductFV
+          conductFV
+          field conductance value indicator
+          
+            
+              
+                microSiemensPerCentimeter
+              
+              
+                real
+              
+            
+          
+          
+            .
+            Missing or Not Measured
+          
+        
+        
+          sampVolume
+          sampVolume
+          volume of sample captured by the sample bucket in milliters
+          
+            
+              
+                milliliter
+              
+              0.1
+              
+                real
+              
+            
+          
+          
+            .
+            Missing or Not Measured
+          
+        
+        
+          prcpRG
+          prcpRG
+          precipitation amount as measured by the rain gauge in millimeters. Trace amounts are indicated by -7.00
+          
+            
+              
+                millimeter
+              
+              
+                real
+              
+            
+          
+          
+            .
+            Missing or Not Measured
+          
+        
+        
+          subPPT
+          subPPT
+          precipitation amount used by NADP/NTN in calculating weighted-mean concentrations, depositions and precipitation totals.
+          
+            
+              
+                millimeter
+              
+              0.001
+              
+                real
+              
+            
+          
+        
+        
+          labType
+          labType
+          A code indicating the condition of the sample upon arrival at CAL
+          string
+          
+            
+              
+                
+                  A code indicating the condition of the sample upon arrival at CAL
+                
+              
+            
+          
+        
+        
+          valCode
+          valCode
+          A code which indicated whether a sample is considered valid according to NADP/NTN data validation rules.
+          string
+          
+            
+              
+                
+                  
+                    0
+                    invalid sample
+                  
+                  
+                    d
+                    valid dry collection period
+                  
+                  
+                    t
+                    valid trace sample
+                  
+                  
+                    w
+                    valid sample of lab type w
+                  
+                  
+                    wa
+                    valid sample of lab type wa
+                  
+                
+              
+            
+          
+        
+        
+          invalCode
+          invalCode
+          A code which indicated whether a sample is considered invalid according to NADP/NTN data validation rules.
+          string
+          
+            
+              
+                
+                  A code which indicated whether a sample is considered invalid according to NADP/NTN data validation rules.
+                
+              
+            
+          
+        
+        
+          notes
+          notes
+          Coded summary of the CAL screening codes and remarks written on the Field Observer Report Form by field personnel, CAL staff, and coordination office staff.
+          string
+          
+            
+              
+                
+                  Coded summary of the CAL screening codes and remarks written on the Field Observer Report Form by field personnel, CAL staff, and coordination office staff.
+                
+              
+            
+          
+        
+      
+      1867
+    
+  
+  
+    
+      
+        
+          
+        
+        
+          Derivative of the standard SI unit of electrical conductance (specific conductance).
+        
+      
+    
+  
