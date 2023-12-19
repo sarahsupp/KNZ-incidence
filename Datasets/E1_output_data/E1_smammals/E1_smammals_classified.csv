@@ -1,53 +1,53 @@
 Species,Watershed_name,Common_name,numyears,numpresent,percyears,1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,chiPval,chi_fearly,chi_flate,runsPval,numtransitions,trend,classification
 Blarina_hylophaga,1D,Elliot's short-tailed shrew,22,14,0.6363636363636364,1,1,0,1,1,1,1,1,0,1,0,0,1,0,0,1,1,1,1,1,0,0,0.6576191766011901,0.7272727272727273,0.5454545454545454,0.2876978177404397,9,0,Random
 Chaetodipus_hispidus,1D,Hispid pocket mouse,22,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,0,NA,No_change-absent
-Cryptotis_parva,1D,North American least shrew,22,2,0.09090909090909091,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0.4583176941330795,0.18181818181818182,0,0.17313641414478192,3,0,Random
+Cryptotis_parva,1D,North American least shrew,22,2,0.09090909090909091,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,3,NA,Rare
 Microtus_ochrogaster,1D,Prairie vole,22,10,0.45454545454545453,0,1,1,0,0,0,1,0,0,0,0,1,1,0,0,1,1,1,0,1,1,0,0.19895893109240237,0.2727272727272727,0.6363636363636364,0.34432511390263826,10,0,Random
-Mus_musculus,1D,House mouse,22,1,0.045454545454545456,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,2,NA,No_change-absent
+Mus_musculus,1D,House mouse,22,1,0.045454545454545456,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,2,NA,Rare
 Neotoma_floridana,1D,Eastern woodrat,22,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,0,NA,No_change-absent
 Peromyscus_leucopus,1D,White-footed mouse,22,6,0.2727272727272727,0,1,0,0,0,1,1,1,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0.6321424221485428,0.36363636363636365,0.18181818181818182,0.3424301840860956,8,0,Random
 Peromyscus_maniculatus,1D,Deer mouse,22,22,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,NA,NA,NA,NA,0,NA,No_change-present
 Reithrodontomys_megalotis,1D,Western harvest mouse,22,13,0.5909090909090909,1,1,1,0,1,0,1,1,0,0,1,0,1,0,1,1,1,1,0,0,1,0,1,0.6363636363636364,0.5454545454545454,0.8576644805494112,13,0,Random
 Reithrodontomys_montanus,1D,Plains harvest mouse,22,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,0,NA,No_change-absent
 Sigmodon_hispidus,1D,Hispid cotton rat,22,6,0.2727272727272727,1,0,0,0,0,0,0,0,0,0,1,0,0,1,0,1,0,1,0,1,0,0,0.6321424221485428,0.18181818181818182,0.36363636363636365,0.8976455033305815,11,0,Random
-Spermophilus_tridecemlineatus,1D,Thirteen-lined ground squirrel,22,2,0.09090909090909091,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.4583176941330795,0.18181818181818182,0,0.7047792056758471,4,0,Random
+Spermophilus_tridecemlineatus,1D,Thirteen-lined ground squirrel,22,2,0.09090909090909091,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,4,NA,Rare
 Synaptomys_cooperi,1D,Southern bog lemming,22,3,0.13636363636363635,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0.18181818181818182,0.09090909090909091,0.12232949847844306,4,0,Random
 Zapus_hudsonius,1D,Meadow jumping mouse,22,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,0,NA,No_change-absent
 Blarina_hylophaga,20B,Elliot's short-tailed shrew,22,13,0.5909090909090909,1,1,0,1,1,0,1,1,0,0,0,1,1,1,0,1,1,0,1,1,0,0,1,0.5454545454545454,0.6363636363636364,0.5653696810900551,11,0,Random
 Chaetodipus_hispidus,20B,Hispid pocket mouse,22,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,0,NA,No_change-absent
 Cryptotis_parva,20B,North American least shrew,22,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,0,NA,No_change-absent
 Microtus_ochrogaster,20B,Prairie vole,22,19,0.8636363636363636,1,1,1,0,0,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,0.8181818181818182,0.9090909090909091,0.12232949847844306,4,0,Random
-Mus_musculus,20B,House mouse,22,1,0.045454545454545456,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,2,NA,No_change-absent
+Mus_musculus,20B,House mouse,22,1,0.045454545454545456,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,2,NA,Rare
 Neotoma_floridana,20B,Eastern woodrat,22,8,0.36363636363636365,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,1,1,0.0019194644992197596,0,0.7272727272727273,0.41896295530632555,3,1,Increasing
 Peromyscus_leucopus,20B,White-footed mouse,22,22,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,NA,NA,NA,NA,0,NA,No_change-present
 Peromyscus_maniculatus,20B,Deer mouse,22,15,0.6818181818181818,1,1,0,1,1,1,1,0,1,0,1,1,0,1,1,1,1,1,1,0,0,0,1,0.7272727272727273,0.6363636363636364,0.39098244340240584,9,0,Random
 Reithrodontomys_megalotis,20B,Western harvest mouse,22,21,0.9545454545454546,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,NA,NA,NA,NA,1,NA,No_change-present
 Reithrodontomys_montanus,20B,Plains harvest mouse,22,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,0,NA,No_change-absent
 Sigmodon_hispidus,20B,Hispid cotton rat,22,15,0.6818181818181818,1,1,0,1,0,0,0,1,1,0,1,1,1,1,1,1,1,1,0,0,1,1,0.35994210247514724,0.5454545454545454,0.8181818181818182,0.2164756019630574,8,0,Random
-Spermophilus_tridecemlineatus,20B,Thirteen-lined ground squirrel,22,2,0.09090909090909091,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.4583176941330795,0.18181818181818182,0,4.771583697469075e-5,1,0,Random
+Spermophilus_tridecemlineatus,20B,Thirteen-lined ground squirrel,22,2,0.09090909090909091,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,1,NA,Rare
 Synaptomys_cooperi,20B,Southern bog lemming,22,5,0.22727272727272727,0,1,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,1,0,0,1,0.2727272727272727,0.18181818181818182,0.13613780161735298,6,0,Random
 Zapus_hudsonius,20B,Meadow jumping mouse,22,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,0,NA,No_change-absent
 Blarina_hylophaga,4B,Elliot's short-tailed shrew,22,13,0.5909090909090909,1,1,0,1,1,1,0,1,0,0,0,1,0,0,0,1,1,1,1,1,1,0,1,0.5454545454545454,0.6363636363636364,0.22944081148725978,9,0,Random
 Chaetodipus_hispidus,4B,Hispid pocket mouse,22,3,0.13636363636363635,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,0,0,0,1,0.09090909090909091,0.18181818181818182,0.7897184925736138,6,0,Random
-Cryptotis_parva,4B,North American least shrew,22,2,0.09090909090909091,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0.09090909090909091,0.09090909090909091,0.7047792056758471,4,0,Random
+Cryptotis_parva,4B,North American least shrew,22,2,0.09090909090909091,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,4,NA,Rare
 Microtus_ochrogaster,4B,Prairie vole,22,14,0.6363636363636364,0,1,1,0,0,1,1,1,0,0,1,1,1,0,0,1,1,1,1,0,1,1,0.6576191766011901,0.5454545454545454,0.7272727272727273,0.2876978177404397,9,0,Random
-Mus_musculus,4B,House mouse,22,2,0.09090909090909091,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.4583176941330795,0.18181818181818182,0,0.7047792056758471,4,0,Random
+Mus_musculus,4B,House mouse,22,2,0.09090909090909091,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,4,NA,Rare
 Neotoma_floridana,4B,Eastern woodrat,22,7,0.3181818181818182,1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,1,1,0,0,0,0,0.06710788204818692,0.09090909090909091,0.5454545454545454,0.010546155307753992,5,0,Recurrent
-Peromyscus_leucopus,4B,White-footed mouse,22,20,0.9090909090909091,1,1,1,0,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0.9090909090909091,0.9090909090909091,0.7047792056758471,4,0,Random
-Peromyscus_maniculatus,4B,Deer mouse,22,20,0.9090909090909091,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0.4583176941330795,1,0.8181818181818182,4.771583697469075e-5,1,0,Random
+Peromyscus_leucopus,4B,White-footed mouse,22,20,0.9090909090909091,1,1,1,0,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,NA,NA,NA,NA,4,NA,No_change-present
+Peromyscus_maniculatus,4B,Deer mouse,22,20,0.9090909090909091,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,NA,NA,NA,NA,1,NA,No_change-present
 Reithrodontomys_megalotis,4B,Western harvest mouse,22,21,0.9545454545454546,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,NA,NA,NA,NA,2,NA,No_change-present
 Reithrodontomys_montanus,4B,Plains harvest mouse,22,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,0,NA,No_change-absent
 Sigmodon_hispidus,4B,Hispid cotton rat,22,12,0.5454545454545454,1,0,0,0,0,1,0,1,1,1,1,1,1,0,1,1,0,1,0,0,1,0,1,0.5454545454545454,0.5454545454545454,0.5159808414704137,11,0,Random
 Spermophilus_tridecemlineatus,4B,Thirteen-lined ground squirrel,22,7,0.3181818181818182,1,1,0,1,1,1,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0.06710788204818692,0.5454545454545454,0.09090909090909091,0.010546155307753992,5,0,Recurrent
 Synaptomys_cooperi,4B,Southern bog lemming,22,8,0.36363636363636365,0,1,1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,0,1,1,0,0.65761917660119,0.45454545454545453,0.2727272727272727,0.15055102310612908,8,0,Random
-Zapus_hudsonius,4B,Meadow jumping mouse,22,1,0.045454545454545456,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,2,NA,No_change-absent
+Zapus_hudsonius,4B,Meadow jumping mouse,22,1,0.045454545454545456,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,2,NA,Rare
 Blarina_hylophaga,N1B,Elliot's short-tailed shrew,22,9,0.4090909090909091,1,1,0,1,0,0,0,1,0,0,0,0,0,0,0,1,1,1,1,1,0,0,1,0.36363636363636365,0.45454545454545453,0.049884242180641074,7,0,Recurrent
 Chaetodipus_hispidus,N1B,Hispid pocket mouse,22,6,0.2727272727272727,0,0,0,1,0,0,1,0,0,0,0,0,1,0,0,1,0,1,0,1,0,0,0.6321424221485428,0.18181818181818182,0.36363636363636365,0.9660958587071325,12,0,Random
 Cryptotis_parva,N1B,North American least shrew,22,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,0,NA,No_change-absent
 Microtus_ochrogaster,N1B,Prairie vole,22,11,0.5,1,1,1,1,0,0,0,1,0,0,0,0,1,0,0,1,1,1,1,0,1,0,1,0.45454545454545453,0.5454545454545454,0.19109646115255968,9,0,Random
-Mus_musculus,N1B,House mouse,22,1,0.045454545454545456,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,1,NA,No_change-absent
+Mus_musculus,N1B,House mouse,22,1,0.045454545454545456,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,1,NA,Rare
 Neotoma_floridana,N1B,Eastern woodrat,22,11,0.5,0,0,0,0,0,0,0,0,1,1,1,1,1,0,1,1,1,1,1,1,0,0,0.08808151166218992,0.2727272727272727,0.7272727272727273,0.001112165631212164,4,0,Recurrent
-Peromyscus_leucopus,N1B,White-footed mouse,22,20,0.9090909090909091,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,0.4583176941330795,1,0.8181818181818182,0.007720160533487253,2,0,Random
+Peromyscus_leucopus,N1B,White-footed mouse,22,20,0.9090909090909091,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,NA,NA,NA,NA,2,NA,No_change-present
 Peromyscus_maniculatus,N1B,Deer mouse,22,22,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,NA,NA,NA,NA,0,NA,No_change-present
 Reithrodontomys_megalotis,N1B,Western harvest mouse,22,12,0.5454545454545454,0,1,1,1,0,0,1,1,1,0,0,1,0,1,0,1,1,1,1,0,0,0,1,0.5454545454545454,0.5454545454545454,0.34432511390263826,10,0,Random
 Reithrodontomys_montanus,N1B,Plains harvest mouse,22,3,0.13636363636363635,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,1,0.09090909090909091,0.18181818181818182,0.7897184925736138,6,0,Random
@@ -60,26 +60,26 @@ Chaetodipus_hispidus,N20B,Hispid pocket mouse,22,3,0.13636363636363635,0,0,0,0,0
 Cryptotis_parva,N20B,North American least shrew,22,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,0,NA,No_change-absent
 Microtus_ochrogaster,N20B,Prairie vole,22,11,0.5,0,1,1,0,0,1,1,1,0,0,1,1,1,0,0,1,1,1,0,0,0,0,1,0.5454545454545454,0.45454545454545453,0.09496362659619695,8,0,Random
 Mus_musculus,N20B,House mouse,22,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,0,NA,No_change-absent
-Neotoma_floridana,N20B,Eastern woodrat,22,2,0.09090909090909091,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0.4583176941330795,0,0.18181818181818182,0.7047792056758471,4,0,Random
+Neotoma_floridana,N20B,Eastern woodrat,22,2,0.09090909090909091,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,NA,NA,NA,NA,4,NA,Rare
 Peromyscus_leucopus,N20B,White-footed mouse,22,21,0.9545454545454546,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,NA,NA,NA,NA,1,NA,No_change-present
 Peromyscus_maniculatus,N20B,Deer mouse,22,22,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,NA,NA,NA,NA,0,NA,No_change-present
 Reithrodontomys_megalotis,N20B,Western harvest mouse,22,17,0.7727272727272727,0,1,1,1,0,1,1,1,1,0,1,1,1,1,0,1,1,1,1,1,1,0,1,0.7272727272727273,0.8181818181818182,0.568808972561399,8,0,Random
-Reithrodontomys_montanus,N20B,Plains harvest mouse,22,1,0.045454545454545456,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,2,NA,No_change-absent
+Reithrodontomys_montanus,N20B,Plains harvest mouse,22,1,0.045454545454545456,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,2,NA,Rare
 Sigmodon_hispidus,N20B,Hispid cotton rat,22,6,0.2727272727272727,0,1,0,0,1,1,0,0,1,0,0,0,0,0,1,0,0,1,0,0,0,0,0.6321424221485428,0.36363636363636365,0.18181818181818182,0.7612159906282363,10,0,Random
 Spermophilus_tridecemlineatus,N20B,Thirteen-lined ground squirrel,22,9,0.4090909090909091,1,1,0,1,1,1,0,1,0,0,0,0,0,0,0,1,0,1,0,0,1,0,0.38580056450828254,0.5454545454545454,0.2727272727272727,0.5653696810900551,11,0,Random
-Synaptomys_cooperi,N20B,Southern bog lemming,22,1,0.045454545454545456,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,2,NA,No_change-absent
+Synaptomys_cooperi,N20B,Southern bog lemming,22,1,0.045454545454545456,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,2,NA,Rare
 Zapus_hudsonius,N20B,Meadow jumping mouse,22,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,0,NA,No_change-absent
 Blarina_hylophaga,N4D,Elliot's short-tailed shrew,22,15,0.6818181818181818,1,1,0,1,1,1,1,0,0,0,0,1,1,1,0,1,1,1,1,1,1,0,0.35994210247514724,0.5454545454545454,0.8181818181818182,0.0982576075417424,7,0,Random
 Chaetodipus_hispidus,N4D,Hispid pocket mouse,22,5,0.22727272727272727,0,0,0,0,0,0,0,0,0,1,1,0,0,1,0,0,0,1,1,0,0,0,1,0.18181818181818182,0.2727272727272727,0.13613780161735298,6,0,Random
 Cryptotis_parva,N4D,North American least shrew,22,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,0,NA,No_change-absent
 Microtus_ochrogaster,N4D,Prairie vole,22,12,0.5454545454545454,0,1,1,0,1,1,1,1,1,0,0,1,1,0,0,1,1,1,0,0,0,0,0.6685241388865246,0.6363636363636364,0.45454545454545453,0.09988625787460073,8,0,Random
-Mus_musculus,N4D,House mouse,22,2,0.09090909090909091,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0.4583176941330795,0,0.18181818181818182,0.007720160533487253,2,0,Random
+Mus_musculus,N4D,House mouse,22,2,0.09090909090909091,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,NA,NA,NA,NA,2,NA,Rare
 Neotoma_floridana,N4D,Eastern woodrat,22,12,0.5454545454545454,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,0,1,1,1,0,0.03228435391076687,0.2727272727272727,0.8181818181818182,0.41896295530632555,4,1,Increasing
 Peromyscus_leucopus,N4D,White-footed mouse,22,22,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,NA,NA,NA,NA,0,NA,No_change-present
 Peromyscus_maniculatus,N4D,Deer mouse,22,22,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,NA,NA,NA,NA,0,NA,No_change-present
-Reithrodontomys_megalotis,N4D,Western harvest mouse,22,20,0.9090909090909091,1,1,1,1,1,1,1,1,1,0,1,1,1,1,0,1,1,1,1,1,1,1,1,0.9090909090909091,0.9090909090909091,0.7047792056758471,4,0,Random
+Reithrodontomys_megalotis,N4D,Western harvest mouse,22,20,0.9090909090909091,1,1,1,1,1,1,1,1,1,0,1,1,1,1,0,1,1,1,1,1,1,1,NA,NA,NA,NA,4,NA,No_change-present
 Reithrodontomys_montanus,N4D,Plains harvest mouse,22,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,0,NA,No_change-absent
 Sigmodon_hispidus,N4D,Hispid cotton rat,22,10,0.45454545454545453,0,1,0,1,1,0,1,1,1,0,1,1,0,0,0,0,0,1,0,0,0,1,0.19895893109240237,0.6363636363636364,0.2727272727272727,0.5159808414704137,11,0,Random
 Spermophilus_tridecemlineatus,N4D,Thirteen-lined ground squirrel,22,6,0.2727272727272727,1,1,1,1,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0.150962319760251,0.45454545454545453,0.09090909090909091,0.018766041599129486,5,0,Recurrent
-Synaptomys_cooperi,N4D,Southern bog lemming,22,1,0.045454545454545456,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,2,NA,No_change-absent
+Synaptomys_cooperi,N4D,Southern bog lemming,22,1,0.045454545454545456,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,2,NA,Rare
 Zapus_hudsonius,N4D,Meadow jumping mouse,22,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,NA,NA,NA,NA,0,NA,No_change-absent

@@ -130,7 +130,7 @@ In the following section, I read in the grasshopper data, check the data for err
 #Reading in the raw data; this dataset is the grasshopper species counts from each set of sweeps
 raw_grasshoppers <- read_csv("Datasets/Raw_data/Grasshoppers/CGR022.csv", show_col_types = FALSE) 
 
-grasshopper_families <- read_excel("Datasets/Grasshoppers/Grasshopper_families.xlsx") #Dataset I created that records the families and suborders for each grasshopper genus in the dataset; I am going to only look at grasshoppers from the suborder Caelifera because those from the suborder Ensifera (family/genus: Oecanthinae, Gryllidae, and Tettigoniidae) were not counted until 2013.
+grasshopper_families <- read_excel("Datasets/Raw_data/Grasshoppers/Grasshopper_families.xlsx") #Dataset I created that records the families and suborders for each grasshopper genus in the dataset; I am going to only look at grasshoppers from the suborder Caelifera because those from the suborder Ensifera (family/genus: Oecanthinae, Gryllidae, and Tettigoniidae) were not counted until 2013.
 
 #Changing the classifcations of the some of the variables for later analysis and creating a new dataset
 grasshoppers_all <- raw_grasshoppers %>% mutate(WATERSHED = factor(WATERSHED),
@@ -296,6 +296,9 @@ grasshoppers <- grasshoppers %>% separate(Species, c("Genus", "Spp"), sep = " ",
 
 ##This is where I am adding in the other dataset that has the family and suborder info and then only selecting those from the suborder Caelifera since suborder Ensifera are katydids and crickets and most were not counted until 2013
 grasshoppers <- left_join(grasshoppers, grasshopper_families, by = "Genus")
+
+view(grasshoppers %>% subset(Suborder == "Ensifera")) 
+
 grasshoppers <- grasshoppers %>% subset(Suborder == "Caelifera")
 
 ##Removing unknowns from the dataset
@@ -304,8 +307,10 @@ grasshoppers <- grasshoppers %>% subset(Genus != "Unknown")
 ##Removing the entries that aren't identified to species 
 grasshoppers <- grasshoppers %>% subset(Spp != "spp.")
 
+
 #Writing the cleaned grasshoppers dataset to the 'Cleaned_data' folder in the project directory
 write_csv(grasshoppers, "Datasets/E0_cleaned_data/E0_grasshoppers.csv")
+
 
 ```
 ## Birds (1992 - 2009) {.tabset}
@@ -317,7 +322,7 @@ In the following section, I read in the bird data, check the data for errors, re
 ```{r birds cleaning}
 
 #Read in raw bird data; each individual bird is its own row (so the count is always only one)
-raw_birds <- read_csv("Datasets/Raw_data/CBP011.csv", show_col_types = FALSE)
+raw_birds <- read_csv("Datasets/Raw_data/Birds/CBP011.csv", show_col_types = FALSE)
 
 
 #Changing classifications and names of columns
@@ -400,6 +405,7 @@ birds$AOU_code <- dplyr::recode(birds$AOU_code,
 
 #Writing the cleaned birds dataset to the 'Cleaned_data' folder in the project directory
 write_csv(birds, "Datasets/E0_cleaned_data/E0_birds.csv")
+
 
 ```
 
