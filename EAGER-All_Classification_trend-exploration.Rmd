@@ -444,6 +444,12 @@ getTrends3.0 <- function(x) {
    #If the time series contains changes, then we do a chi-sq test to detect directed change
   else {
     
+    # make a table that tells you how many 0s and 1s are in the early and the late halves
+    # of the time series, label rownames as absent and present
+    # FIXME: Ideally this chunk of code should not be repeated
+    z_x <- table(x, time)
+    rownames(z_x) <- c("absent","present")
+    
     # get p value for the chi-squared test
     p_val <- chisq.test(z_x)$p.val
     
@@ -872,7 +878,7 @@ smammals_pa_matrix <- as.matrix(decostand_smammals_pa)
 smammals_trends <- apply(smammals_pa_matrix, 1, FUN = getTrends)
 smammals_trends2.0 <- apply(smammals_pa_matrix, 1, FUN = getTrends2.0)
 smammals_trends2.5 <- apply(smammals_pa_matrix, 1, FUN = getTrends2.5)
-smammals_trends3.0 <- apply(smammals_pa_matrix, 1, FUN = getTrends3.0) #oops, now get a dimnames error, sorry!
+smammals_trends3.0 <- apply(smammals_pa_matrix, 1, FUN = getTrends3.0) #FIXME: oops, now get a dimnames error, sorry! Has something to do with the apply function and how it works
 
 
 #Creating a table with the species.watershed and the Trends info. I excluded the bsline info. ADD INFO ABOUT WHAT THIS IS TAKING FROM 
