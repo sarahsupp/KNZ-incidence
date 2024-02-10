@@ -23,7 +23,11 @@ Links to each raw dataset will be provided below.
   - This RMarkdown takes the raw datasets from all taxa (located in the "/Datasets/Raw_data"" folders) and prepares them for analysis. The cleaned data is saved in a new folder ("/Datasets/E0_cleaned_data").
   
 - *"E1_AllTaxa_Analysis.Rmd"*
-  - This RMarkdown takes the cleaned data from all taxa (located in the "/Datasets/E0_cleaned_data") and runs them through the classification function, conducts dissimilarity tests between watersheds, and calculates species richness. The output tables are saved in a new folder ("/Datasets/E1_output_data"). 
+  - This RMarkdown takes the cleaned data from all taxa (located in the "/Datasets/E0_cleaned_data") and runs them through the classification function, conducts dissimilarity tests between watersheds and years (plus, creates plots for them), and calculates species richness. The output tables are saved in a new folder ("/Datasets/E1_output_data"). 
+  
+- *"E2_AllTaxa_Plots"*
+  - This RMarkdown takes the analyzed data and creates plots from them. The output for these plots are saved into a new folder ("/Plots").
+  - Note: the code for the Jaccard dissimilarity plots are located in the "E1_AllTaxa_Analysis.Rmd" file, not this one. 
 
 
 ### Folder: "Datasets"

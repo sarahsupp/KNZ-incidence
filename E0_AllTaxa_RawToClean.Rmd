@@ -291,14 +291,12 @@ grasshoppers <- grasshoppers %>%
                                "N4D", "N20B")) 
 
 #Separating the genus and spp and creating new columns. This is to add in the family and suborder info and also to easily remove entries that are not identified down to species.
-grasshoppers <- grasshoppers %>% separate(Species, c("Genus", "Spp"), sep = " ", remove = FALSE)
+grasshoppers <- grasshoppers %>% 
+  separate(Species, c("Genus", "Spp"), sep = " ", remove = FALSE)
 
 
 ##This is where I am adding in the other dataset that has the family and suborder info and then only selecting those from the suborder Caelifera since suborder Ensifera are katydids and crickets and most were not counted until 2013
 grasshoppers <- left_join(grasshoppers, grasshopper_families, by = "Genus")
-
-view(grasshoppers %>% subset(Suborder == "Ensifera")) 
-
 grasshoppers <- grasshoppers %>% subset(Suborder == "Caelifera")
 
 ##Removing unknowns from the dataset
