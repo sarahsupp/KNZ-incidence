@@ -58,7 +58,7 @@ Thus, plots d1-d5 from 1983-1987 are NOT the same d1-d5 plots in subsequent year
 
 ```{r}
 
-plantcomp_raw <- read_csv("Datasets_EAGER/Plants/knb-lter-knz.69.21_SpeciesComposition/PVC021.csv")
+plantcomp_raw <- read_csv("Datasets/Raw_data/Plants/PVC021.csv")
 
 watershed_info <- read_excel("Datasets_EAGER/Other/Watershed Info.xlsx")
 

@@ -1,0 +1,1398 @@
+
+    
+        
+            uid=KNZ,o=LTER,dc=ecoinformatics,dc=org
+            all
+        
+        
+            public
+            read
+        
+    
+    
+        doi:10.6073/pasta/d04abc9a9fe89a58e96d0764bee5bcf1CSM01
+         CSM01 Seasonal summary of numbers of small mammals on 14 LTER traplines in prairie
+            habitats at Konza Prairie 
+        
+            Donald Kaufman
+            			 116 Ackert Hall, Division of Biology, Kansas State University 
+			Manhattan, KS 66506  US
+            785-539-6622
+            785-532-6653
+            dwkaufma@ksu.edu
+        
+        
+            Konza LTER
+            http://www.konza.ksu.edu/
+        
+        2023-01-16
+        
+            
+                
+                     Data set contains seasonal summaries (spring and autumn) of the
+                        number of individuals of each species of small mammal captured (relative
+                        abundance) on each grassland trapline. Each record contains year, season,
+                        trapline and number of individuals captured of each species. These live trap
+                        records are based on daily captures during two 4-day trapping periods in
+                        spring (late February to early April) and autumn (early October to
+                        mid-November) for each of 14 permanent traplines established on seven
+                        fire-grazing treatments (two traplines per treatment). These seven
+                        fire-grazing treatments include three sites that are grazed by bison (1
+                        unburned, 1 annual burn and 1 4-year burn) and four sites that are not
+                        grazed by bison (1 unburned, 1 annual burn and 2 4-year burn).
+                    
+                
+            
+        
+        
+            Disturbance
+            Populations
+            Core Areas
+        
+        
+            Consumers
+            Section
+        
+        
+            Consumers
+            Kansas
+            LTER-KNZ
+            Konza Prairie
+            Konza Prairie Biological Station
+            mammals
+            species composition
+            spring fire
+            relative abundance
+            prairie
+            shrews
+            small mammals
+            rodents
+            Station Keywords
+        
+        
+            
+                Data Policies
+                
+                     Data Use Agreements: The Intellectual Rights within the metadata
+                        associated with each KNZ data set determines the exact data and metadata use
+                        agreement between the data user and the KNZ LTER site. KNZ LTER data and
+                        metadata may be released under the license: CC BY - Attribution
+                        (https://creativecommons.org/licenses/by/4.0/). This license lets others
+                        distribute, remix, tweak, and build upon KNZ work (even commercially), as
+                        long as the KNZ program is credited for the original creation.
+                        Alternatively, some KNZ LTER data and metadata may be released into the
+                        public domain: CC0 - No Rights Reserved
+                        (https://creativecommons.org/share-your-work/public-domain/cc0/). CC0 states
+                        that data are placed in the public domain, so that others may freely build
+                        upon, enhance and reuse the works for any purposes without restriction under
+                        copyright or database law. In either case, users of KNZ data are referred to
+                        the following guidelines: "The consumer of these data ("Data User" herein)
+                        has an ethical obligation to cite it appropriately in any publication that
+                        results from its use. The Data User should realize that these data may be
+                        actively used by others for ongoing research and that coordination may be
+                        necessary to prevent duplicate publication. The Data User is urged to
+                        contact the authors of these data if any questions about methodology or
+                        results occur. Where appropriate, the Data User is encouraged to consider
+                        collaboration or coauthorship with the authors. The Data User should realize
+                        that misinterpretation of data may occur if used out of context of the
+                        original study. While substantial efforts are made to ensure the accuracy of
+                        data and associated documentation, complete accuracy of data sets cannot be
+                        guaranteed. All data are made available "as is." The Data User should be
+                        aware, however, that data are updated periodically and it is the
+                        responsibility of the Data User to check for new versions of the data. The
+                        data authors and the repository where these data were obtained shall not be
+                        liable for damages resulting from any use or misinterpretation of the data.
+                        Thank you". 
+                
+            
+        
+        
+            
+                
+                    http://lter.konza.ksu.edu/content/csm01-seasonal-summary-numbers-small-mammals-14-lter-traplines-prairie-habitats-konza
+                
+            
+        
+        https://doi.org/10.6073/pasta/d04abc9a9fe89a58e96d0764bee5bcf1
+            
+                 4B: Ungrazed and scheduled prescribed burned every 4 years
+                    in the spring 
+                
+                    -96.6035
+                    -96.5924
+                    39.0802
+                    39.0712
+                
+            
+            
+                 4F: Ungrazed and scheduled prescribed burned every 4 years
+                    in the spring 
+                
+                    -96.5733
+                    -96.5691
+                    39.0766
+                    39.0711
+                
+            
+            
+                 N4D : Year-long grazing by bison and scheduled prescribed
+                    burned every 4 years in the spring. 
+                
+                    -96.59
+                    -96.5768
+                    39.0896
+                    39.0701
+                
+            
+            
+                 N20B: Year-long grazing by bison and scheduled prescribed
+                    burned every 20 years in the spring. 
+                
+                    -96.5801
+                    -96.561
+                    39.0922
+                    39.0815
+                
+            
+            
+                 1D: Ungrazed and scheduled prescribed burned annually in the
+                    spring. 
+                
+                    -96.5658
+                    -96.5594
+                    39.0841
+                    39.0732
+                
+            
+            
+                 20B: Ungrazed and scheduled prescribed burned every 20 years
+                    in the spring. 
+                
+                    -96.5808
+                    -96.5741
+                    39.0758
+                    39.0693
+                
+            
+            
+                 N1B : Year-long grazing by bison and scheduled prescribed
+                    burned annually in the spring. 
+                
+                    -96.5793
+                    -96.5634
+                    39.088
+                    39.0746
+                
+            
+            
+                
+                    
+                        1981-10-20
+                    
+                    
+                        2013-03-20
+                    
+                
+            
+        
+        
+            
+                 Determine temporal and spatial patterns of relative abundance of
+                    rodent and shrew populations and composition of assemblages of small mammals in
+                    tallgrass prairie as well as to determine the effects of weather patterns,
+                    occurrence of fire, frequency of fire, topographic features and bison grazing on
+                    populations and communities of small mammals. 
+            
+        
+        
+            
+                
+                    complete
+                
+            
+        
+        
+            Konza LTER
+            			Division of Biology
+			Manhattan, KS 66506  US
+            785-532-6729
+            knzlter@ksu.edu
+            http://lter.konza.ksu.edu
+        
+        
+        Environmental Data Initiativeinfo@edirepository.orghttps://edirepository.org0330j0z60Environmental Data Initiative
+        
+            
+                
+                    
+                        
+                             Location of Sampling Stations: Ungrazed, unburned -
+                                020B; Grazed, unburned - N20B; Ungrazed, annual burn - 001D; Grazed,
+                                annual burn - N01B; Ungrazed, 4 yr. burn - 004B, 004F; Grazed, 4 yr.
+                                burn - N04D Frequency of Sampling: All sites are sampled in autumn
+                                (early October to mid-November) after most reproduction by small
+                                mammals has occurred and before winter stress is significant and in
+                                spring (late February to early April) before fire has occurred on
+                                those sites to be burned that year to estimate both early spring
+                                abundance and winter survival (difference in relative abundance
+                                between autumn and spring). Variable Measured: Numbers of
+                                individuals for each species of small mammal captured are recorded
+                                on each trapline. Sex, reproductive condition and capture location
+                                of each individual are recorded at each capture. Age, based on
+                                pelage characteristics, is recorded for the two species of
+                                Peromyscus at each capture. Body mass of an individual is recorded
+                                only at the first capture in each trapping period. Methods:
+                                Traplines: Small mammals are trapped on two permanent traplines in
+                                each of seven treatment units. trapline consists of 20 stations with
+                                an inter-station distance of 15 m and terminal stations (1 and 20)
+                                at least 50 m from the boundary of the treatment unit. When
+                                possible, each trapline was placed so that station 1 was in upland
+                                (shallow soil) and station 20 in lowland prairie (deeper soil), and
+                                so the two traplines within a treatment unit would include about 16
+                                stations in upland, 8 stations across limestone outcrops and 16
+                                stations in lowland. Because of the topographic goals, the two
+                                traplines within a treatment unit are not replicates of each other
+                                and the topographic goals were not always achieved. Stations 1, 5,
+                                10, 15 and 20 on each trapline are marked with stakes of galvanized
+                                conduit. All stations are marked with fluorescent orange plastic
+                                surveyor flags at least once per year. Trapping Procedures: Small
+                                mammals are trapped for 4 consecutive nights per trapline during
+                                each trapping period. Two large Sherman live traps (7.6 by 8.9 by
+                                22.9 cm) are placed within 1 m of the surveyor flag or conduit at
+                                each station. Traps are baited with a mixture of high-quality creamy
+                                peanut butter (e.g., Jif) and oatmeal (Quaker old-fashioned
+                                oatmeal). The mixture is rolled into a small ball (1.5-2.0 cm in
+                                diameter) and wrapped in a 10-cm square of weighing paper. The bait
+                                is suspended in the trap by closing the back door of the trap on the
+                                twisted end of the weighing paper. Polyester fiberfill (5 g) is
+                                compressed by a #8 rubber band and used as nesting material in each
+                                trap in spring and autumn sampling periods. This nesting material
+                                reduces trap mortality in inclement weather. With the nest material
+                                and a large amount of bait in each trap, mammals typically are in
+                                good condition at the time that trap are checked in all types of
+                                weather. In the event that more than 50% of the traps are closed
+                                overnight without an individual captured (e.g., due to strong winds
+                                or other weather events such as heavy rain, deer licking traps or
+                                raccoons or crows setting off traps), traps are set for additional
+                                nights until < 50% of traps per night are closed without captures
+                                on that trapline. Small rocks are placed on traps in habitats that
+                                have little cover (e.g., on grazing lawns created by bison) to
+                                reduce problems due to wind. During the two trapping sessions each
+                                season, bison are removed from the phase II area of the bison
+                                enclosures to avoid damage to traps (e.g., stepping or rolling on
+                                them) and impacts on trap effectiveness (bison nuzzling or licking
+                                traps) and to ensure safety of field personnel. All traps are
+                                checked early each morning, but after the end of the nocturnal
+                                activity period. Seven traplines are run simultaneously, one in each
+                                treatment, followed by the setting of the next series of traplines
+                                in the next week. The first trapline to be trapped in each treatment
+                                unit is selected at random by using a random number generator. The
+                                time of trapping in each season is selected by attempting to place
+                                the dark phase of the moon (no moon) in the middle of the two
+                                sampling periods. A battery-powered mustache clipper is used to clip
+                                a line of fur on each captured animals to indicate that that
+                                individuals has been captured in the current trapping period. The
+                                position clipped is as follows: on the right shoulder (first set of
+                                traplines in a spring sampling period), left shoulder (second set of
+                                traplines in a spring sampling period), right rump (first set of
+                                traplines in an autumn sampling period) and left rump (second set of
+                                traplines in an autumn sampling period). This method of marking
+                                allows an investigator to count an individual only once within a
+                                trapline during a trapping period. Further, three species of rodents
+                                (Peromyscus maniculatus, P. leucopus and Neotoma floridana) are
+                                marked with an ear tag (#1 monel fingerling tags) in each ear in
+                                addition to fur clipping to track movements of individuals among
+                                treatment units that are related to fire or to invasion of woody
+                                vegetation. Species, sex and reproductive condition of individual
+                                small mammals, trap station and any unusual features (e.g., the
+                                presence of ticks, fleas or bot fly larvae, variation in color
+                                pattern such as stars or blazes) are recorded at each capture of an
+                                individual in each trapping period. Body mass is recorded during the
+                                first capture of an individual on a trapline. Reproductive
+                                information recorded for males is the presence or absence of scrotal
+                                testes. Pregnancy is determined by palpation of the abdomen of
+                                females; no effort is made to assess the number of embryos. Presence
+                                or absence of conspicuous mammae also is recorded. Conspicuous
+                                mammae indicate that the female has been reproductively active and
+                                is nursing or has nursed offspring. Individuals are weighed to
+                                nearest 0.5 g for those weighing < 50 g and nearest 1 g for those
+                                weighing > 50 g by using Pesola balances of an appropriate size.
+                                Form of Data Output: The total number of mammals captured by species
+                                by trapline forms the database CSM01. Summary of All Changes: In
+                                autumn 1981, two traplines were established in each of ten
+                                experimental fire treatments (001D, 004B, 004D, 004F, 004G, 010A,
+                                000B, N01D, N04D and N00D). Live-trap surveys were conducted in
+                                spring, summer and autumn; small mammals were marked by toe-clipping
+                                procedures. During winter 1981-1982, the Konza Prairie management
+                                committee shifted treatment boundaries to create watershed units for
+                                those treatment areas that drained into Kings Creek. Because of that
+                                decision, our traplines in N00D were encompassed in the new
+                                boundaries of N01D. Therefore, we established two new traplines in
+                                another treatment unit (N00B) in spring 1982. Also, the experimental
+                                designation for N01D was changed to N01B. During spring, summer and
+                                autumn 1982, surveys were conducted using 22 traplines; use of the
+                                two traplines in N00D was discontinued before the spring 1983
+                                survey. Data for small mammals captured in N00D for spring, summer
+                                and autumn sampling periods in 1982 are found in CSM06. From spring
+                                1983 through summer 1984, censuses were conducted using two
+                                traplines in each of ten treatments (001D, 004B, 004D, 004F, 004G,
+                                010A, 000B, N01B, N04D and N00B). In autumn 1984, four new traplines
+                                were established with two traplines in 002C and two in 002D (24
+                                total sampling lines). Four more traplines were added in autumn 1985
+                                with two in 010D and two in 001A (28 total sampling lines). After
+                                1987, summer sampling was discontinued because of the intensive
+                                labor required to close traps in the morning and open traps in late
+                                afternoon each day on each trapline in each trapping period. All
+                                data for small mammals captured in summer trapping periods are found
+                                in CSM06. In 1988, Konza Prairie management committee changed
+                                unburned research treatments to treatments with a 20-year frequency
+                                of occurrence of fire and, therefore, 000B and N00B became 020B and
+                                N20B, respectively. The treatment units (N01B and N04D) remained
+                                unburned from 1968 until spring 1988 when annual burning was
+                                initiated on N01B and the 4-year cycle was initiated on N04D. Spring
+                                fires occurred after our trapping session in these and other
+                                treatment units. N20B was not burned in 1988, but it had been burned
+                                in 1980. Before the spring sampling period in 1989, the number of
+                                traplines sampled was reduced from 28 traplines to 14; the 14
+                                traplines remaining included two traplines in each of seven
+                                experimental treatments (001D, 004B, 004F, 020B, N01B, N04D and
+                                N20B). Selection of these 14 traplines was based on the goal of
+                                maintaining the sampling of small mammals in annual, 4- year and
+                                20-year burn treatments in both ungrazed prairie (001D, 004B and
+                                020B, respectively) and in the same fire treatments in prairie
+                                grazed by bison (N01B, N04D and N20B). In addition, a second
+                                ungrazed 4-year fire treatment (004F) was continued to help monitor
+                                climatic effects on small mammals in prairie experiencing periodic
+                                fires. Data for small mammals captured on traplines that were
+                                discontinued (001A, 002C, 002D, 004D, 004G, 010A and 010D) can be
+                                found in CSM06. In autumn 1990, we started clipping hair at the
+                                first capture of a small mammal in each season in exchange for the
+                                more invasive clipping of <= 1 digit per foot, which had been
+                                used since 1981 to identify individuals. Hair clipping allowed
+                                enumeration of the number of different individuals per species
+                                captured along each trapline, which was all that was required for
+                                maintenance of the CSM01 data set. In autumn 2008, we started
+                                ear-tagging deer mice, white- footed mice and eastern woodrats to
+                                gain more information about how new fire treatments near the 14 core
+                                traplines and how the invasion of woody vegetation was affecting
+                                movements of these three species. In May 1992, gates were opened
+                                between phase I and phase II of the bison area. N01B, N04D and N20B
+                                lie within the phase II area. All sampling periods from autumn 1981
+                                through spring 1992 on these three treatment units occurred on
+                                traplines that had not been grazed by bison. For additional metadata
+                                information see:
+                                http://lter.konza.ksu.edu/sites/default/files/DC.pdf For additional
+                                methods information see:
+                                http://lter.konza.ksu.edu/sites/default/files/MM.pdf
+                            
+                        
+                    
+                
+            
+        
+        
+                LTER: Long-Term Research on Grassland Dynamics- Assessing Mechanisms of Sensitivity and Resilience to Global Change
+                
+                    Jesse Nippert
+                    Principal Investigator
+                
+                
+                    John Blair
+                    Principal Investigator
+                
+                NSF: DEB-1440484
+            
+                Konza Prairie LTER VI: Grassland Dynamics and Long-Term Trajectories of Change
+                
+                    John Blair
+                    Principal Investigator
+                
+                NSF: DEB-0823341
+                
+            
+                Konza Prairie LTER V: Long-Term Research on Grassland Dynamics and Global Change
+                
+                    John Blair
+                    Principal Investigator
+                
+                NSF: DEB-0218210
+               
+            
+                Long-Term Ecological Research in Tallgrass Prairie: The Konza Prairie LTER Program
+                
+                    Alan Knapp
+                    Principal Investigator
+                
+                NSF: DEB-9632851
+              
+            
+                Fire, Grazing, and Climatic Interactions in Tallgrass Prairie
+                
+                    Alan Knapp
+                    Principal Investigator
+                
+                NSF: DEB-9011662
+            
+            
+                The Role of Fire and Other Disturbances in Determining Ecosystem Processes and Patterns in the Konza Prairie, Kansas
+                
+                    Donald Kaufman
+                    Principal Investigator
+                
+                NSF: DEB-8514327
+            
+            
+                Long-Term Ecological Research in Tallgrass Prairie
+                
+                    Richard Marzolf
+                    Principal Investigator
+                
+                NSF: DEB-8012166
+               
+        
+        
+            CSM011
+             Seasonal summaries of small mammals on LTER traplines 
+            
+                CSM011.csv
+                50130
+                b058353622cf24c922f0207f2eb01b10
+                834015f182eb0780c9489a7d08db28e0096359c7
+                
+                    
+                        1
+                        \r\n
+                        column
+                        
+                            ,
+                            "
+                        
+                    
+                
+                
+                    
+                        https://pasta.lternet.edu/package/data/eml/knb-lter-knz/88/9/1ced8529601926470f68c1d5eb708350
+                    
+                
+            
+            
+                
+                    DataCode
+                    DataCode
+                    Dataset code
+                    string
+                    
+                        
+                            
+                                
+                                    Dataset code
+                                
+                            
+                        
+                    
+                
+                
+                    RecType
+                    RecType
+                    Record type
+                    string
+                    
+                        
+                            
+                                
+                                    Record type
+                                
+                            
+                        
+                    
+                
+                
+                    RecYear
+                    RecYear
+                    Year of sample
+                    
+                        
+                            
+                                Year (YYYY)
+                            
+                            
+                                real
+                            
+                        
+                    
+                
+                
+                    Season
+                    Season
+                    Season of capture
+                    string
+                    
+                        
+                            
+                                
+                                    
+                                        AU
+                                        Autumn
+                                    
+                                    
+                                        SP
+                                        Spring
+                                    
+                                
+                            
+                        
+                    
+                
+                
+                    Trapline
+                    Trapline
+                    Trapline of capture
+                    string
+                    
+                        
+                            
+                                
+                                    
+                                        E
+                                        East
+                                    
+                                    
+                                        W
+                                        West
+                                    
+                                    
+                                        N
+                                        North
+                                    
+                                    
+                                        S
+                                        South
+                                    
+                                
+                            
+                        
+                    
+                
+                
+                    Pm
+                    Pm
+                    Relative abundance of Peromyscus
+                        maniculatus
+                    
+                        
+                            
+                                number
+                            
+                            1
+                            
+                                real
+                            
+                        
+                    
+                
+                
+                    Rmeg
+                    Rmeg
+                    Relative abundance of Reithrodontomys
+                        megalotis
+                    
+                        
+                            
+                                number
+                            
+                            1
+                            
+                                real
+                            
+                        
+                    
+                
+                
+                    Sh
+                    Sh
+                    Relative abundance of Sigmodon
+                        hispidus
+                    
+                        
+                            
+                                number
+                            
+                            1
+                            
+                                real
+                            
+                        
+                    
+                
+                
+                    Bh
+                    Bh
+                    Relative abundance of Blarina
+                        hylophaga
+                    
+                        
+                            
+                                number
+                            
+                            1
+                            
+                                real
+                            
+                        
+                    
+                
+                
+                    Rmon
+                    Rmon
+                    Relative abundance of Reithrodontomys
+                        montanus
+                    
+                        
+                            
+                                number
+                            
+                            1
+                            
+                                real
+                            
+                        
+                    
+                
+                
+                    St
+                    St
+                     Relative abundance of Spermophilus tridecemlineatus 
+                    
+                        
+                            
+                                number
+                            
+                            1
+                            
+                                real
+                            
+                        
+                    
+                
+                
+                    Mo
+                    Mo
+                    Relative abundance of Microtus
+                        ochrogaster
+                    
+                        
+                            
+                                number
+                            
+                            1
+                            
+                                real
+                            
+                        
+                    
+                
+                
+                    Pl
+                    Pl
+                    Relative abundance of Peromyscus
+                        leucopus
+                    
+                        
+                            
+                                number
+                            
+                            1
+                            
+                                real
+                            
+                        
+                    
+                
+                
+                    Ch
+                    Ch
+                    Relative abundance of Chaetodipus
+                        hispidus
+                    
+                        
+                            
+                                number
+                            
+                            1
+                            
+                                real
+                            
+                        
+                    
+                
+                
+                    Mm
+                    Mm
+                    Relative abundance of Mus musculus
+                    
+                        
+                            
+                                number
+                            
+                            1
+                            
+                                real
+                            
+                        
+                    
+                
+                
+                    Nf
+                    Nf
+                    Relative abundance of Neotoma
+                        floridana
+                    
+                        
+                            
+                                number
+                            
+                            1
+                            
+                                real
+                            
+                        
+                    
+                
+                
+                    Sc
+                    Sc
+                    Relative abundance of Synaptomys
+                        cooperi
+                    
+                        
+                            
+                                number
+                            
+                            1
+                            
+                                real
+                            
+                        
+                    
+                
+                
+                    Zh
+                    Zh
+                    Relative abundance of Zapus hudsonius
+                    
+                        
+                            
+                                number
+                            
+                            1
+                            
+                                real
+                            
+                        
+                    
+                
+                
+                    Cp
+                    Cp
+                    Relative abundance of Cryptotis parva
+                    
+                        
+                            
+                                number
+                            
+                            1
+                            
+                                real
+                            
+                        
+                    
+                
+                
+                    Mp
+                    Mp
+                    Relative abundance of Microtus
+                        pinetorum
+                    
+                        
+                            
+                                number
+                            
+                            1
+                            
+                                real
+                            
+                        
+                    
+                
+            
+            894
+        
+        
+            CSM012
+             csm012 Data is for small mammal individual records. 
+            
+                CSM012.csv
+                2049650
+                2eea24f81b0cc10504cc748800617c0e
+                6c4e1a68ad453dcbb5e874e47057cd1dbc1a95d8
+                
+                    
+                        1
+                        \r\n
+                        column
+                        
+                            ,
+                        
+                    
+                
+                
+                    
+                        https://pasta.lternet.edu/package/data/eml/knb-lter-knz/88/9/8df39abc51964f3a160447bce70bba18
+                    
+                
+            
+            
+                
+                    DataCode
+                    DataCode
+                    Dataset code
+                    string
+                    
+                        
+                            
+                                
+                                    Dataset code
+                                
+                            
+                        
+                    
+                
+                
+                    RecType
+                    RecType
+                    Record type
+                    string
+                    
+                        
+                            
+                                
+                                    Record type
+                                
+                            
+                        
+                    
+                
+                
+                    Recyear
+                    Recyear
+                    Year of sample
+                    
+                        
+                            
+                                Year(YYYY)
+                            
+                            
+                                real
+                            
+                        
+                    
+                
+                
+                    Season
+                    Season
+                    Season of capture
+                    string
+                    
+                        
+                            
+                                
+                                    
+                                        sp
+                                        spring
+                                    
+                                    
+                                        su
+                                        summer
+                                    
+                                    
+                                        au
+                                        autumn
+                                    
+                                
+                            
+                        
+                    
+                
+                
+                    RecMonth
+                    RecMonth
+                    Month of data collected
+                    string
+                    
+                        
+                            
+                                
+                                    Month of data collected
+                                
+                            
+                        
+                    
+                
+                
+                    Recday
+                    Recday
+                    Day of data collected
+                    string
+                    
+                        
+                            
+                                
+                                    Day of data collected
+                                
+                            
+                        
+                    
+                
+                
+                    TrapDay
+                    TrapDay
+                    Trap Day
+                    string
+                    
+                        
+                            
+                                
+                                    Trap Day
+                                
+                            
+                        
+                    
+                
+                
+                    Watershed
+                    Watershed
+                    Watershed
+                    string
+                    
+                        
+                            
+                                
+                                    
+                                        010a
+                                        10a
+                                    
+                                    
+                                        001d
+                                        1d
+                                    
+                                    
+                                        004f
+                                        4f
+                                    
+                                    
+                                        004g
+                                        4g
+                                    
+                                    
+                                        004b
+                                        4b
+                                    
+                                    
+                                        004d
+                                        4d
+                                    
+                                    
+                                        000b
+                                        ub
+                                    
+                                    
+                                        n01d
+                                        n1d
+                                    
+                                    
+                                        n00d
+                                        nud
+                                    
+                                    
+                                        n04d
+                                        n4d
+                                    
+                                    
+                                        n04b
+                                        xp
+                                    
+                                    
+                                        n01a
+                                        g
+                                    
+                                    
+                                        n02b
+                                        l1
+                                    
+                                    
+                                        k04a
+                                        n-brome
+                                    
+                                    
+                                        l2
+                                        l2
+                                    
+                                    
+                                        s-brome
+                                        s-brome
+                                    
+                                
+                            
+                        
+                    
+                
+                
+                    Line
+                    Line
+                     Line of data collected (E, W, N, S, except L1=L, L2=L,
+                        XP=X and G=G) 
+                    string
+                    
+                        
+                            
+                                
+                                     Line of data collected (E, W, N, S, except L1=L,
+                                        L2=L, XP=X and G=G) 
+                                
+                            
+                        
+                    
+                
+                
+                    Sta
+                    Sta
+                    The numbered tag on rebar adjacent to the
+                        trap
+                    
+                        
+                            
+                                number
+                            
+                            
+                                real
+                            
+                        
+                    
+                    
+                        blank
+                        Missing or Not Measured
+                    
+                
+                
+                    Species
+                    Species
+                     The Two/four letter code used to identify species, please
+                        see csm011 for species name. code for 'X' means none of the animal was
+                        captured in the trap. 
+                    string
+                    
+                        
+                            
+                                
+                                     The Two/four letter code used to identify species,
+                                        please see csm011 for species name. code for 'X' means none
+                                        of the animal was captured in the trap. 
+                                
+                            
+                        
+                    
+                
+                
+                    Sex
+                    Sex
+                    Gender of animal (M or F)
+                    string
+                    
+                        
+                            
+                                
+                                    Gender of animal (M or F)
+                                
+                            
+                        
+                    
+                
+                
+                    Age
+                    Age
+                    Estimated animal's age
+                    string
+                    
+                        
+                            
+                                
+                                    
+                                        a
+                                        adult
+                                    
+                                    
+                                        j
+                                        juvenile
+                                    
+                                
+                            
+                        
+                    
+                
+                
+                    Preg
+                    Preg
+                    Pregnant status of the animal
+                    string
+                    
+                        
+                            
+                                
+                                    
+                                        0
+                                        non-pregnant
+                                    
+                                    
+                                        1
+                                        pregnant
+                                    
+                                
+                            
+                        
+                    
+                
+                
+                    Cond
+                    Cond
+                    Scrotal status of the animal
+                    string
+                    
+                        
+                            
+                                
+                                    
+                                        1
+                                        scrotal
+                                    
+                                    
+                                        2
+                                        was scrotal
+                                    
+                                    
+                                        3
+                                        non-scrotal
+                                    
+                                    
+                                        4
+                                        mammae conspicuous
+                                    
+                                    
+                                        5
+                                        was mammae conspicuous
+                                    
+                                    
+                                        6
+                                        mammae non-conspicious
+                                    
+                                
+                            
+                        
+                    
+                
+                
+                    Mass
+                    Mass
+                    Weight determined to nearest gram
+                    
+                        
+                            
+                                gram
+                            
+                            
+                                real
+                            
+                        
+                    
+                    
+                        blank
+                        Missing or Not Measured
+                    
+                
+                
+                    Status
+                    Status
+                    Animal alive or not.
+                    string
+                    
+                        
+                            
+                                
+                                    
+                                        a
+                                        alive in trap
+                                    
+                                    
+                                        d
+                                        dead in trap
+                                    
+                                    
+                                        e
+                                        escaped before marked or before number was
+                                            read
+                                    
+                                    
+                                        n
+                                        indicates new animal
+                                    
+                                
+                            
+                        
+                    
+                
+                
+                    ToeClip
+                    ToeClip
+                    Position of Toe Clip
+                    string
+                    
+                        
+                            
+                                
+                                    Position of Toe Clip
+                                
+                            
+                        
+                    
+                
+                
+                    HairClip
+                    HairClip
+                    position of Hair Clip
+                    string
+                    
+                        
+                            
+                                
+                                    position of Hair Clip
+                                
+                            
+                        
+                    
+                
+                
+                    REarTag
+                    REarTag
+                    Right side of of Ear Tag located
+                    string
+                    
+                        
+                            
+                                
+                                    Right side of of Ear Tag located
+                                
+                            
+                        
+                    
+                
+                
+                    LEarTag
+                    LEarTag
+                    Left side of of Ear Tag located
+                    string
+                    
+                        
+                            
+                                
+                                    Left side of of Ear Tag located
+                                
+                            
+                        
+                    
+                
+                
+                    TailLength
+                    TailLength
+                     The length from the distal portion of the pelvis to the
+                        last vertebra of the tail 
+                    
+                        
+                            
+                                millimeter
+                            
+                            
+                                real
+                            
+                        
+                    
+                    
+                        blank
+                        Missing or Not Measured
+                    
+                
+                
+                    HindFoot
+                    HindFoot
+                    Hind Foot length
+                    
+                        
+                            
+                                millimeter
+                            
+                            
+                                real
+                            
+                        
+                    
+                    
+                        blank
+                        Missing or Not Measured
+                    
+                
+                
+                    comments
+                    comments
+                    A special information related to an
+                        observation
+                    string
+                    
+                        
+                            
+                                
+                                    A special information related to an
+                                        observation
+                                
+                            
+                        
+                    
+                
+                
+                    TakenBy
+                    TakenBy
+                    Who was taken the observation
+                    string
+                    
+                        
+                            
+                                
+                                    Who was taken the observation
+                                
+                            
+                        
+                    
+                
+            
+            30708
+        
+    
+    
+        
+            
+                
+                    
+                
+                
+                    
+                
+            
+        
+    

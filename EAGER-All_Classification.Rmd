@@ -48,10 +48,12 @@ The "getTrends" function will classify each taxa's species from each watershed i
 - **"Always_absent"** <- though species was detected at other surrounding watersheds, it was never present at the specified watershed during the duration of the study
 - **"Always_present"** <- species at watershed is present in every year in which data was collected
 - **"Random"** <- species is detected sporadically for the duration of the study at watershed
-- **"Recurrent"** <- species is detected in consecutive years and is followed by the absence of the species for a period of time, in a distinct pattern
+- **"Recurrent"** <- species is detected in consecutive years and is followed by the absence of the species for a period of time, in a distinct pattern. Species must at least two instances of presences followed by absences. 
 - **"Increasing"** <- the presence of the species increases throughout the duration of the study (it isn't present during the beginning of the study, but appears towards the end of the study)
 - **"Decreasing"** <- the presence of the species decreases throughout the duration of the study (it is  present during the beginning of the study, but then disappears towards the end of the study)
 
+###getTrends original function 
+This is the original getTrends function without our added changes for the always-present, always-absent, and recurrent categories. 
 ```{r getTrends}
 
 getTrends <- function(x) {
@@ -64,7 +66,7 @@ getTrends <- function(x) {
   time[1:(round(length(x)/2))] <- "early"
   
   # make a table that tells you how many 0s and 1s are in the early and the late halves of the time series
-  z_x <- table(x,time)
+  cont_table <- table(x,time)
   
   #find the time-series length (number of years)
   tslen <- length(x)
@@ -135,7 +137,7 @@ getTrends <- function(x) {
     
     #conduct a runs test on the time-series
     runsPV <- tseries::runs.test(as.factor(x), alternative = "less")
-    runsTestPV <- runsPV$p.value
+    runs.p_val <- runsPV$p.value
     if (is.nan(runsTestPV)) {
       runsTestPV <- 2}
     
@@ -161,6 +163,119 @@ getTrends <- function(x) {
 
 ```
 
+### getTrends3.0
+This version of the function has the stipulations for 'nearly always present' >=95% years present, 'nearly always absent' <=5% years present, and for recurrent category requires at least 2 blocks of time when it is present. I also renamed some variables for clarity.
+```{r getTrends3.0}
+
+
+getTrends3.0<- function(x) {
+  #input (x) is a single row of a matrix where the species are rows and the columns are each year with 1/0 values (1=present, 0=absent). 
+  #So you need to iterate each row separately to get the results
+  # Output is a list with 6 items, that represents the classification results for a single species
+  
+  #create an object the same length as x that defines early vs late years
+  time <- rep("late", length(x))
+  time[1:(round(length(x)/2))] <- "early"
+  
+  #NOTE: I ended up placing the z_x table back at the top of the function because I was having a hard time getting it to run without it.
+  # make a table that tells you how many 0s and 1s are in the early and the late halves of the time series
+  z_x <- table(x,time)
+  
+  #find the time-series length (number of years)
+  tslen <- length(x)
+
+  # counts the number of years the species was present
+  tssum <- sum(x)
+  
+  # calculate proportion of years species was present
+  tsprop <- (tssum)/(tslen)
+ 
+  # create an empty vector to store results in for the next for loop
+   l <- c()
+  
+  # identifies when a change from a 0 to a 1 or vice versa happens
+  for(k in 1:(tslen-1)) {
+    j <- x[k+1] - x[k]
+    l <- c(l, j)
+    v <- sum(abs(l))
+  }
+  
+  # If all the values are 0, it is always absent
+  if (tsprop <= 0.05) {
+    p_val <- NA
+    f_early <- NA
+    f_late <- NA
+    runsTestPV <- NA
+    trend <- NA
+    trendPlus <- NA
+    cat <- "No_change-absent"
+  } else if (tsprop >= 0.95) {
+    # if most of the values are 1 (>=95% of all years), it is "no change" present
+    p_val <- NA
+    f_early <- NA
+    f_late <- NA
+    runsTestPV<-NA
+    trend<-NA
+    trendPlus<-NA
+    cat<-"No_change-present"
+  } else {
+    #If the time series contains changes, then we do a chi-sq test to detect directed change
+    #adds rownames to the z_x table
+    rownames(z_x) <- c("absent","present")
+    
+    # get p value for the chi-squared test
+    p_val <- chisq.test(z_x)$p.val
+    
+    # get early and late fractions
+    # for each the early and the late parts of the time series:
+    #    the number of years it was present divided by the number of years
+    f_early <- z_x["present","early"] / sum(z_x[,1]) 
+    f_late <- z_x["present","late"] / sum(z_x[,2])
+   
+    if((f_early > f_late) & (p_val <= 0.05)) {
+      trend <- -1
+      cat = "Decreasing"
+    } else if((f_early < f_late) & (p_val <= 0.05)) {
+      trend <- 1
+      cat = "Increasing"
+    } else {
+    # Chi-squared test not significant
+    trend <- 0
+    
+    #conduct a runs test on the time-series
+    runsPV <- tseries::runs.test(as.factor(x), alternative = "less")
+    runsTestPV <- runsPV$p.value
+    if (is.nan(runsTestPV)) {
+      runsTestPV <- 2}
+    # if Chi-sq test insignif. and the runs test was significant AND it was present in at least TWO blocks of time
+    if((p_val > 0.05) & (runsTestPV < 0.05) & (v > 2)) {
+      cat="Recurrent"
+    } else if((p_val > 0.05) & (runsTestPV > 0.05) | (runsTestPV < 0.05) & (v <= 2)){
+      cat="Random"
+      }
+    } #end else for ns chisq
+  }
+
+  
+  # for each species, record the summary statistics
+statSumm <- tibble("numyears" = tslen, 
+                   "numpresent" = tssum,
+                   "percyears" = tsprop,
+                   "chiPval" = p_val, 
+                   "chi_fearly" = f_early, 
+                   "chi_flate" = f_late, 
+                   "runsPval" = runsTestPV, 
+                   "numtransitions" = v, 
+                   "trend" = trend, 
+                   "category3.0_test" = as.factor(cat))
+  
+  return(statSumm)
+}
+
+apply(smammals_pa_matrix, 1, FUN = getTrends3.0)
+
+
+```
 ###Randomization function
 This is the original randomization function from Gotelli et al. to validate the accuracy of our classification functions. I need to go through this and make sure I understand what each step is.
 ```{r randomization}
@@ -323,10 +438,10 @@ Summary of changes:
 In this section, I read in the small-mammal data, check the data for errors, rename some columns and entries, choose the watersheds I want to further analyze, and separate the data from 1992 and onwards. 
 ```{r smammals cleaning}
 #Seasonal summaries of small mammals on LTER traplines 
-smammals_raw <- read_csv("Datasets_EAGER/Small_mammals/knb-lter-knz.88.9_FourteenTraplines/CSM011.csv")
+smammals_raw <- read_csv("Datasets_EAGER/Raw_data/Small_mammals/knb-lter-knz.88.9_FourteenTraplines/CSM011.csv")
 
 #Table including the watershed info for all watersheds - this table will be used in subsequent taxa data
-watershed_info <- read_excel("Datasets_EAGER/Other/Watershed Info.xlsx")
+watershed_info <- read_excel("Datasets_EAGER/Other/Watershed_info.xlsx")
 
 
 #Separating the watershed/line column into two separate columns and creating a new dataset
@@ -396,26 +511,26 @@ smammals <- left_join(smammals, smammals_commonnames, by = "Species")
 For this section, I am reorganizing the data to be able to format it into a presence/absence matrix. This matrix will then be ran through the getTrends function to get the classifications for each species at each watershed.
 ```{r smammals pa}
 #Combining the species and watershed variables so that each species per watershed per year is a unique identifier
-smammals<- smammals %>% unite("Species.watershed", Species:Watershed_name, sep = ".")
+smammals <- smammals %>% unite("Species.watershed", Species:Watershed_name, sep = ".", remove = FALSE)
 
 #Pivoting the table so that each year is a column and each row is the 'species.watershed' variable
 smammals_years_wide <- smammals %>% 
   pivot_wider(names_from = "Recyear", values_from = "Count")
 
 #Creating a separate species.watershed dataframe to add back to the dataset after standardization
-smammals_env <- smammals_years_wide[, 1:2]
+smammals_env <- smammals_years_wide[, 1:4]
 
 #Standardizing by presence/absence
-decostand_smammals_pa <- decostand(smammals_years_wide[, -(1:2)], "pa", na.rm = TRUE )
+decostand_smammals_pa <- decostand(smammals_years_wide[, -(1:4)], "pa", na.rm = TRUE )
 
 #Transforming the presence/absence data into a matrix so I can feed it to the function
 smammals_pa_matrix <- as.matrix(decostand_smammals_pa)
 
 #Applying the getTrends function to each row of the presence/absence matrix
-smammals_trends <- apply(smammals_pa_matrix, 1, getTrends)
+smammals_trends <- apply(smammals_pa_matrix, 1, getTrends3.0)
 
 #Creating a table with the species.watershed and the Trends info. I excluded the bsline info. ADD INFO ABOUT WHAT THIS IS TAKING FROM 
-smammals_classification <- tibble((smammals_env), do.call(rbind,lapply(smammals_trends,(function(v){v[c(1,2,3,4,5,6,7,8,9)]}))))
+smammals_classification <- tibble((smammals_env), do.call(rbind,lapply(smammals_trends,(function(v){v[c(1,2,3,4,5,6,7,8,9,10)]}))))
 
 #Adding in the presence/absence per year data back in 
 smammals_class <- smammals_classification %>% add_column(decostand_smammals_pa, .before = "chiPval")
@@ -428,29 +543,47 @@ smammals_class_long <- smammals_class %>% pivot_longer(cols = "1992":"2013",
                                                  names_to = "Recyear", 
                                                  values_to = "Presence")
 
+
+
+#Species richness calculation
+smammals_sprich <- decostand_smammals_pa %>% add_column(smammals_env) %>% pivot_longer(cols = "1992":"2013",
+                                                                                       names_to = "Recyear",
+                                                                                       values_to = "Presence")
+
+smammals_sprich <- smammals_sprich %>% mutate(Recyear = as.numeric(Recyear),
+                                              Watershed_name = factor(Watershed_name))
+smammals_sprich$Watershed_name <- factor(smammals_sprich$Watershed_name,
+                                        levels = c("1D", "4B", "20B", "N1B","N4D", "N20B"))
+
+smammals_sprich <- smammals_sprich %>% group_by(Watershed_name, Recyear) %>% reframe(Richness = sum(Presence))
+
+
+smammals_sprich %>% ggplot(aes(x = Recyear, y = Richness)) + geom_point() + facet_wrap(.~Watershed_name) + geom_smooth(method = "lm", se = FALSE) + theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1, size =10)) +
+  labs(title = "Small Mammals Species Richness per Year and Watershed")
+
+
+lm(Richness ~ (Recyear * Watershed_name), data = smammals_sprich) %>% summary()
+
 ```
 
 ### Small-mammals: Exploration plots
 This section is dedicated for exploratory plots to just get some inital visuals for the data. 
 ```{r smammals plots}
 
-
-
 #Joining the watershed_info dataset with the actual small mammal dataset
 smammals_class_long <- left_join(smammals_class_long, watershed_info, by = "Watershed_name")
 
 
 #Making variables factors
-smammals_class_long <- smammals_class_long %>% mutate(Fire_interval = factor(Fire_interval),
-                    Burn_season = factor(Burn_season),
-                    Grazing = factor(Grazing),
+smammals_class_long <- smammals_class_long %>% mutate(Grazing = factor(Grazing),
                     Watershed_name = factor(Watershed_name))
 
 
-smammals_graphing <- smammals_class_long %>% dplyr::select(Recyear, Species, Common_name, category, Presence, Watershed_name, Fire_interval, Grazing)
+smammals_graphing <- smammals_class_long %>% dplyr::select(Recyear, Species, Common_name, category3.0_test, Presence, Watershed_name)
 
-smammals_graphing <- smammals_graphing %>% unite("Disturbance treatment", 
-                                                     Fire_interval:Grazing, sep = "_", remove = FALSE)
+# smammals_graphing <- smammals_graphing %>% unite("Disturbance treatment", 
+#                                                      Fire_interval:Grazing, sep = "_", remove = FALSE)
 
 #Making the zeroes in the presence column into NAs for plotting (that way they don't show up on the graph)
 smammals_graphing$Presence[smammals_class_long$Presence == 0] <- NA
@@ -459,27 +592,27 @@ smammals_graphing$Presence[smammals_class_long$Presence == 0] <- NA
 smammals_graphing <- smammals_graphing %>% mutate(Recyear = as.numeric(Recyear))
 
 #Reordering the fire intervals for plotting
-smammals_graphing$`Disturbance treatment` <- factor(smammals_graphing$`Disturbance treatment`,
-                                           levels = c("1_year_Ungrazed", "1_year_Bison", 
-                                                      "4_years_Ungrazed",  "4_years_Bison",
-                                                      "20_years_Ungrazed", "20_years_Bison"))
-
-smammals_graphing$Fire_interval <- factor(smammals_graphing$Fire_interval,
-                                           levels = c("1_year", "4_years", "20_years"))
-#Reordering the grazing for plotting
-smammals_graphing$Grazing <- factor(smammals_graphing$Grazing,
-                                     levels = c("Ungrazed", "Bison"))
+# smammals_graphing$`Disturbance treatment` <- factor(smammals_graphing$`Disturbance treatment`,
+#                                            levels = c("1_year_Ungrazed", "1_year_Bison", 
+#                                                       "4_years_Ungrazed",  "4_years_Bison",
+#                                                       "20_years_Ungrazed", "20_years_Bison"))
+# 
+# smammals_graphing$Fire_interval <- factor(smammals_graphing$Fire_interval,
+#                                            levels = c("1_year", "4_years", "20_years"))
+# #Reordering the grazing for plotting
+# smammals_graphing$Grazing <- factor(smammals_graphing$Grazing,
+#                                      levels = c("Ungrazed", "Bison"))
 #Reordering the watersheds for plotting
 smammals_graphing$Watershed_name <- factor(smammals_graphing$Watershed_name,
                                         levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"))
 
-smammals_graphing$category <- factor(smammals_graphing$category,
-                                        levels = c("No change-always_absent", "No change-always_present", "Increasing", "Recurrent", "Random"))
+smammals_graphing$category <- factor(smammals_graphing$category3.0_test,
+                                        levels = c("No_change-absent", "No_change-present", "Increasing", "Recurrent", "Random"))
 
 #Creating a graph to look at the classification by species and presence/absence by year
 smammals_graphing %>% ggplot(aes(x = Recyear, y = Presence, fill = category)) + 
   geom_tile(width = .6, height = .6) + 
-  facet_grid(Common_name~`Disturbance treatment`, switch = "y") +
+  facet_grid(Common_name~Watershed_name, switch = "y") +
   theme(text = element_text(size=10),
         axis.text.x = element_text(angle=45, hjust=1, size =12),
         axis.text.y = element_text(size=12),
@@ -560,7 +693,6 @@ Reasons for exclusion:
 
 ---
 
-
 Data author: Alice Boyle
 
 ZIP file: knb-lter-knz.26.12
@@ -581,7 +713,7 @@ Summary of changes up to 1993 (this is all that was included in the metadata):
 ### Birds: Cleaning and organizing
 ```{r birds cleaning}
 #Read in and view bird data
-birds_raw <- read_csv("Datasets_EAGER/Birds/knb-lter-knz.26.12/CBP011.csv", show_col_types = FALSE)
+birds_raw <- read_csv("Datasets_EAGER/Raw_data/Birds/knb-lter-knz.26.12/CBP011.csv", show_col_types = FALSE)
 
 unique(birds_raw$WATERSHED)
 
@@ -688,14 +820,14 @@ birds_years_wide <- birds_wide %>% pivot_longer(cols = -c(1:2),
               values_from = "Count")
 
 #Combining the variables of species and watershed to create a unique identifier for each row 
-birds_years_wide <- birds_years_wide %>% unite("Species.watershed", Species:Watershed_name, sep = ".")
+birds_years_wide <- birds_years_wide %>% unite("Species.watershed", Species:Watershed_name, sep = ".", remove = FALSE)
 
 
 #Creating a separate species.watershed dataframe to add back to the dataset after standardization
-birds_env <- birds_years_wide[, 1]
+birds_env <- birds_years_wide[, 1:3]
 
 #Standardizing by presence/absence
-decostand_birds_pa <- decostand(birds_years_wide[, -c(1)], "pa", na.rm = FALSE)
+decostand_birds_pa <- decostand(birds_years_wide[, -c(1:3)], "pa", na.rm = FALSE)
 #Making all NA's zeroes; NA's are entries in which no data was collected, thus are absent/0
 decostand_birds_pa[is.na(decostand_birds_pa)] <- 0
 
@@ -704,10 +836,10 @@ decostand_birds_pa[is.na(decostand_birds_pa)] <- 0
 birds_pa_matrix <- as.matrix(decostand_birds_pa)
 
 # Applying the getTrends function to each row of the presence/absence matrix
-birds_trends <- apply(birds_pa_matrix, 1, getTrends)
+birds_trends <- apply(birds_pa_matrix, 1, getTrends3.0)
 
 #Creating a table with the species.watershed and the Trends info. I excluded the bsline info.
-birds_classification <- tibble((birds_env), do.call(rbind,lapply(birds_trends,(function(v){v[c(1,2,3,5)]}))))
+birds_classification <- tibble((birds_env), do.call(rbind,lapply(birds_trends,(function(v){v[c(1,2,3,4, 5,6,7,8,9,10)]}))))
 
 #Adding in the presence/absence per year data back in 
 birds_class <- birds_classification %>% add_column(decostand_birds_pa, .before = "chiPval")
@@ -720,6 +852,24 @@ birds_class_long <- birds_class %>% pivot_longer(cols = "1992":"2009",
                                                  names_to = "Recyear", 
                                                  values_to = "Presence")
 
+#Species richness calculation
+birds_sprich <- decostand_birds_pa %>% add_column(birds_env) %>% pivot_longer(cols = "1992":"2009",
+                                                                                       names_to = "Recyear",
+                                                                                       values_to = "Presence")
+
+birds_sprich <- birds_sprich %>% mutate(Recyear = as.numeric(Recyear),
+                                              Watershed_name = factor(Watershed_name))
+birds_sprich$Watershed_name <- factor(birds_sprich$Watershed_name,
+                                        levels = c("1D", "N1B", "4A", 
+                                           "4B", "N4B", "N4D", 
+                                           "20B", "N20B"))
+
+birds_sprich <- birds_sprich %>% group_by(Watershed_name, Recyear) %>% reframe(Richness = sum(Presence))
+
+
+birds_sprich %>% ggplot(aes(x = Recyear, y = Richness)) + geom_point() + facet_wrap(.~Watershed_name) + geom_smooth(method = "lm", se = FALSE) + theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1, size =10)) +
+  labs(title = "Birds Species Richness per Year and Watershed")
 
 ```
 
@@ -832,8 +982,8 @@ Summary of changes:
 ### Grasshoppers: Cleaning and organizing
 ```{r grasshoppers cleaning}
 
-grasshoppers_raw <- read_csv("Datasets_EAGER/Grasshoppers/knb-lter-knz.29.20/CGR022.csv", show_col_types = FALSE) #This dataset is the grasshopper species counts from each set of sweeps
-grasshopper_families <- read_excel("Datasets_EAGER/Grasshoppers/Grasshopper_families.xlsx") #Dataset I created that records the families and suborders for each grasshopper genus in the dataset; I am going to only look at grasshoppers from the suborder Caelifera because those from the suborder Ensifera (family/genus: Oecanthinae, Gryllidae, and Tettigoniidae) were not counted until 2013.
+grasshoppers_raw <- read_csv("Datasets_EAGER/Raw_data/Grasshoppers/knb-lter-knz.29.20/CGR022.csv", show_col_types = FALSE) #This dataset is the grasshopper species counts from each set of sweeps
+grasshopper_families <- read_excel("Datasets_EAGER/Other/Grasshopper_families.xlsx") #Dataset I created that records the families and suborders for each grasshopper genus in the dataset; I am going to only look at grasshoppers from the suborder Caelifera because those from the suborder Ensifera (family/genus: Oecanthinae, Gryllidae, and Tettigoniidae) were not counted until 2013.
 
 #Changing the classifcations of the some of the variables for later analysis and creating a new dataset
 grasshoppers_all <- grasshoppers_raw %>% mutate(WATERSHED = factor(WATERSHED),
@@ -1006,7 +1156,6 @@ grasshoppers <- grasshoppers %>% subset(Genus != "Unknown")
 ##Removing the entries that aren't identified to species 
 grasshoppers <- grasshoppers %>% subset(Spp != "spp.")
 
-length(unique(grasshoppers$Spp_code))
 ```
 
 ### Grasshoppers: Presence/Absence & Classification
@@ -1032,14 +1181,14 @@ grasshoppers_years_wide <- grasshoppers_wide %>% pivot_longer(cols = -c(1:2),
 
 #Combining the species and watershed variables to create a unique identifier for each row
 grasshoppers_years_wide <- grasshoppers_years_wide %>% 
-  unite("Species.watershed", Species:Watershed_name, sep = ".")
+  unite("Species.watershed", Species:Watershed_name, sep = ".", remove = FALSE)
 
 #Creating a separate species.watershed dataframe to add back to the dataset after standardization
-grasshoppers_env <- grasshoppers_years_wide[, 1]
+grasshoppers_env <- grasshoppers_years_wide[, 1:3]
 
 
 #Standardizing by presence/absence
-decostand_grasshoppers_pa <- decostand(grasshoppers_years_wide[, -c(1)], "pa", na.rm = FALSE)
+decostand_grasshoppers_pa <- decostand(grasshoppers_years_wide[, -c(1:3)], "pa", na.rm = FALSE)
 #Making all NA's zeroes; NA's are entries in which no data was collected, thus are absent/0
 decostand_grasshoppers_pa[is.na(decostand_grasshoppers_pa)] <- 0
 
@@ -1049,10 +1198,10 @@ decostand_grasshoppers_pa[is.na(decostand_grasshoppers_pa)] <- 0
 grasshoppers_pa_matrix <- as.matrix(decostand_grasshoppers_pa)
 
 #Applying the getTrends function to each row of the presence/absence matrix
-grasshoppers_trends <- apply(grasshoppers_pa_matrix, 1, getTrends)
+grasshoppers_trends <- apply(grasshoppers_pa_matrix, 1, getTrends3.0)
 
 #Creating a table with the species.watershed and the Trends info. I excluded the bsline info.
-grasshoppers_classification <- tibble((grasshoppers_env), do.call(rbind,lapply(grasshoppers_trends,(function(v){v[c(1,2,3,5)]}))))
+grasshoppers_classification <- tibble((grasshoppers_env), do.call(rbind,lapply(grasshoppers_trends,(function(v){v[c(1,2,3,4,5,6,7,8,9,10)]}))))
 
 
 #Adding in the presence/absence per year data back in 
@@ -1065,6 +1214,26 @@ grasshoppers_class <- grasshoppers_class %>% separate(Species.watershed, c("Genu
 grasshoppers_class_long <- grasshoppers_class %>% pivot_longer(cols = "2002":"2020", 
                                                  names_to = "Recyear", 
                                                  values_to = "Presence")
+
+#Species richness calculation
+grasshoppers_sprich <- decostand_grasshoppers_pa %>% add_column(grasshoppers_env) %>% pivot_longer(cols = "2002":"2020",
+                                                                                       names_to = "Recyear",
+                                                                                       values_to = "Presence")
+
+grasshoppers_sprich <- grasshoppers_sprich %>% mutate(Recyear = as.numeric(Recyear),
+                                              Watershed_name = factor(Watershed_name))
+grasshoppers_sprich$Watershed_name <- factor(grasshoppers_sprich$Watershed_name,
+                                        levels = c("1D", "N1B", "4B", 
+                                           "4F", "N4A", "N4D", 
+                                           "20B", "N20B"))
+
+grasshoppers_sprich <- grasshoppers_sprich %>% group_by(Watershed_name, Recyear) %>% reframe(Richness = sum(Presence))
+
+
+grasshoppers_sprich %>% ggplot(aes(x = Recyear, y = Richness)) + geom_point() + facet_wrap(.~Watershed_name) + geom_smooth(method = "lm", se = FALSE) + theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1, size =10)) +
+  labs(title = "Grasshoppers Species Richness per Year and Watershed")
+
 
 ```
 
@@ -1162,9 +1331,9 @@ Summary of changes:
 
 ### Plants: Cleaning and organizing
 ```{r plants cleaning}
-plants_raw <- read_csv("Datasets_EAGER/Plants/knb-lter-knz.69.21_SpeciesComposition/PVC021.csv")
+plants_raw <- read_csv("Datasets_EAGER/Raw_data/Plants/knb-lter-knz.69.21_SpeciesComposition/PVC021.csv")
 
-watershed_info <- read_excel("Datasets_EAGER/Other/Watershed Info.xlsx")
+watershed_info <- read_excel("Datasets_EAGER/Other/Watershed_info.xlsx")
 
 unique(plants_raw$WaterShed)
 
@@ -1260,14 +1429,14 @@ plants_years_wide <- plants_wide %>% pivot_longer(cols = -c(1:2),
 
 #Combining the species and watershed variables to create a unique identifier for each row
 plants_years_wide <- plants_years_wide %>% 
-  unite("Species.watershed", Species:Watershed_name, sep = ".")
+  unite("Species.watershed", Species:Watershed_name, sep = ".", remove = FALSE)
 
 #Creating a separate species.watershed dataframe to add back to the dataset after standardization
-plants_env <- plants_years_wide[, 1]
+plants_env <- plants_years_wide[, 1:3]
 
 
 #Standardizing by presence/absence
-decostand_plants_pa <- decostand(plants_years_wide[, -c(1)], "pa", na.rm = FALSE)
+decostand_plants_pa <- decostand(plants_years_wide[, -c(1:3)], "pa", na.rm = FALSE)
 #Making all NA's zeroes; NA's are entries in which no data was collected, thus are absent/0
 decostand_plants_pa[is.na(decostand_plants_pa)] <- 0
 
@@ -1276,10 +1445,10 @@ decostand_plants_pa[is.na(decostand_plants_pa)] <- 0
 plants_pa_matrix <- as.matrix(decostand_plants_pa)
 
 #Applying the getTrends function to each row of the presence/absence matrix
-plants_trends <- apply(plants_pa_matrix, 1, getTrends)
+plants_trends <- apply(plants_pa_matrix, 1, getTrends3.0)
 
 #Creating a table with the species.watershed and the Trends info. I excluded the bsline info.
-plants_classification <- tibble((plants_env), do.call(rbind,lapply(plants_trends,(function(v){v[c(1,2,3,5)]}))))
+plants_classification <- tibble((plants_env), do.call(rbind,lapply(plants_trends,(function(v){v[c(1,2,3,4,5,6,7,8,9,10)]}))))
 
 
 #Adding in the presence/absence per year data back in 
@@ -1292,6 +1461,27 @@ plants_class <- plants_class %>% separate(Species.watershed, c("Genus", "Spp", "
 plants_class_long <- plants_class %>% pivot_longer(cols = "1992":"2022", 
                                                  names_to = "Recyear", 
                                                  values_to = "Presence")
+
+
+#Species richness calculation
+plants_sprich <- decostand_plants_pa %>% add_column(plants_env) %>% pivot_longer(cols = "1992":"2022",
+                                                                                       names_to = "Recyear",
+                                                                                       values_to = "Presence")
+
+plants_sprich <- plants_sprich %>% mutate(Recyear = as.numeric(Recyear),
+                                              Watershed_name = factor(Watershed_name))
+# grasshoppers_sprich$Watershed_name <- factor(grasshoppers_sprich$Watershed_name,
+#                                         levels = c("1D", "N1B", "4B", 
+#                                            "4F", "N4A", "N4D", 
+#                                            "20B", "N20B"))
+
+plants_sprich <- plants_sprich %>% group_by(Watershed_name, Recyear) %>% reframe(Richness = sum(Presence))
+
+
+plants_sprich %>% ggplot(aes(x = Recyear, y = Richness)) + geom_point() + facet_wrap(.~Watershed_name) + geom_smooth(method = "lm", se = FALSE) + theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1, size =10)) +
+  labs(title = "Plant Species Richness per Year and Watershed")
+
 
 ```
 

@@ -1,0 +1,391 @@
+---
+title: "E2_AllTaxa_Plots"
+author: "Maya Parker-Smith"
+date: "2023-12-06"
+output:
+  html_document:
+    smart: no
+    theme: flatly
+    float: yes
+    css: "style.css"    
+editor_options: 
+  chunk_output_type: console
+mainfont: Arial
+mathfont: Arial
+fontsize: 12pt
+---
+
+
+```{r setup, include=FALSE}
+
+```
+
+## Small Mammals
+
+### Set-up
+```{r smammals set up}
+
+
+#
+E1_smammals_classified <- read_csv("Datasets/E1_output_data/E1_smammals/E1_smammals_classified.csv")
+
+smammals_classified_long <- smammals_classified %>% pivot_longer(cols = "1992":"2013", names_to = "Recyear", values_to = "Presence")
+
+smammals_graphing <- smammals_classified_long %>% 
+  dplyr::select(Recyear, Species, Common_name, 
+                classification, Presence, Watershed_name)
+
+
+#Making the zeroes in the presence column into NAs for plotting (that way they don't show up on the graph)
+smammals_graphing$Presence[smammals_graphing$Presence == 0] <- NA
+
+#Making sure the Recyear is coded as numeric 
+smammals_graphing <- smammals_graphing %>% mutate(Recyear = as.numeric(Recyear))
+
+
+smammals_classified$Watershed_name <- factor(smammals_classified$Watershed_name,
+                                        levels = c("1D", "4B", "20B", "N1B", "N4D", "N20B"))
+
+smammals_classified$classification <- factor(smammals_classified$classification,
+                                     levels = c("No_change-absent", "Rare", "No_change-present",
+                                                "Recurrent", "Random", "Increasing"))
+
+smammals_graphing$Watershed_name <- factor(smammals_graphing$Watershed_name,
+                                        levels = c("1D", "4B", "20B", "N1B", "N4D", "N20B"))
+
+smammals_graphing$classification <- factor(smammals_graphing$classification,
+                                     levels = c("No_change-absent", "Rare", "No_change-present",
+                                                "Recurrent", "Random", "Increasing"))
+
+unique(smammals_classified$Species)
+```
+
+
+```{r}
+
+
+smammals_classified %>% 
+  group_by(Watershed_name, classification) %>% 
+  dplyr::summarise(total_count=n(),.groups = 'drop') %>% 
+  mutate(Proportion = (total_count/14)) %>%
+  
+  ggplot(aes(x = classification, y = Proportion, fill = classification)) + 
+  geom_col() + 
+  scale_fill_manual(values = c("lightgray", "darkgray","#000000", "#CC79A7", "#0072B2", "#009E73")) +
+  facet_wrap(.~Watershed_name) +
+  theme_bw() +
+  theme(text = element_text(size=14), 
+        axis.text.x = element_text(angle=90, hjust=1)) +
+  labs(title= "Proportion of Small Mammals Species in Each Incidence Classification for Each Watershed", 
+       x = "Classification", 
+       y = "Proportion of Species", 
+       fill = "Classification")
+
+  
+
+
+smammals_violin <- smammals_classified %>% 
+  group_by(Watershed_name, classification) %>% 
+  dplyr::summarise(total_count=n(),.groups = 'drop') %>% 
+  mutate(Proportion = (total_count/14))
+
+smammals_violin <- smammals_violin %>% dplyr::select(Watershed_name, classification, Proportion) %>% pivot_wider(names_from = classification, values_from = Proportion) 
+
+
+smammals_violin[is.na(smammals_violin)] <- 0
+
+smammals_violin <- smammals_violin %>% 
+  pivot_longer(cols = "No_change-absent":"Increasing", 
+               names_to = "classification", values_to = "Proportion")
+  
+smammals_violin$classification <- factor(smammals_violin$classification,
+         levels = c("No_change-absent", "Rare", "No_change-present",
+                    "Recurrent", "Random", "Increasing"))
+
+smammals_violin %>% ggplot(aes(x = Proportion, y = classification, fill = classification)) + 
+  geom_violin() +
+  scale_fill_manual(values = c("lightgray","darkgray","#000000", "#CC79A7", "#0072B2", "#009E73")) +
+  theme_bw() +
+  labs(x = "Proportion of species in watersheds", 
+       y = "Classification", 
+       title = "Small mammals: proportion of species in each classification category",
+       fill = "Classification")
+
+
+smammals_graphing %>% 
+  ggplot(aes(x = Recyear, y = Presence, fill = classification)) + 
+  geom_tile(width = .6, height = .6) + 
+  facet_grid(Common_name~Watershed_name, switch = "y") +
+  theme(text = element_text(size=9),
+        axis.text.x = element_text(angle=45, hjust=1, size =9),
+        axis.text.y = element_text(size=12),
+        strip.text.y.left = element_text(angle = 0, size = 9),
+        strip.text.x.top = element_text(size = 9)) +
+  geom_vline(xintercept = 2002.5, linetype= 2) +
+  coord_fixed(ratio = 5) +
+  labs(x = "Year", y = "Presence") +
+  scale_fill_manual(values = c("white","darkgray" ,"black", "#CC79A7", "#0072B2","#009E73")) +
+  labs(title = "Small Mammal Classifcation by Species",
+       fill = "Classification")
+
+```
+
+
+## Grasshoppers
+
+### Set-up
+```{r}
+
+grasshoppers_classified <- read_csv("Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers_classified.csv")
+
+grasshoppers_classified_long <- grasshoppers_classified %>% pivot_longer(cols = "2002":"2020", names_to = "Recyear", values_to = "Presence")
+
+grasshoppers_graphing <- grasshoppers_classified_long %>% 
+  dplyr::select(Recyear, Species,classification, Presence, Watershed_name)
+
+
+#Making the zeroes in the presence column into NAs for plotting (that way they don't show up on the graph)
+grasshoppers_graphing$Presence[grasshoppers_graphing$Presence == 0] <- NA
+
+#Making sure the Recyear is coded as numeric 
+grasshoppers_graphing <- grasshoppers_graphing %>% mutate(Recyear = as.numeric(Recyear))
+
+
+grasshoppers_classified$Watershed_name <- factor(grasshoppers_classified$Watershed_name,
+                                        levels = c("1D", "N1B", "4B", 
+                                           "4F", "N4A", "N4D", 
+                                           "20B", "N20B"))
+
+grasshoppers_classified$classification <- factor(grasshoppers_classified$classification,
+                                     levels = c("No_change-absent", "No_change-present",
+                                                "Recurrent", "Random", "Decreasing"))
+
+grasshoppers_graphing$Watershed_name <- factor(grasshoppers_graphing$Watershed_name,
+                                        levels = c("1D", "N1B", "4B", 
+                                           "4F", "N4A", "N4D", 
+                                           "20B", "N20B"))
+
+grasshoppers_graphing$classification <- factor(grasshoppers_graphing$classification,
+                                     levels = c("No_change-absent", "No_change-present",
+                                                "Recurrent", "Random", "Decreasing"))
+
+
+```
+
+
+```{r}
+grasshoppers_violin <- grasshoppers_classified %>% 
+  group_by(Watershed_name, classification) %>% 
+  dplyr::summarise(total_count=n(),.groups = 'drop') %>% 
+  mutate(Proportion = (total_count/44))
+
+grasshoppers_violin <- grasshoppers_violin %>% dplyr::select(Watershed_name, classification, Proportion) %>% pivot_wider(names_from = classification, values_from = Proportion) 
+
+
+grasshoppers_violin[is.na(grasshoppers_violin)] <- 0
+
+grasshoppers_violin <- grasshoppers_violin %>% 
+  pivot_longer(cols = "No_change-absent":"Decreasing", 
+               names_to = "classification", values_to = "Proportion") 
+  
+grasshoppers_violin$classification <- factor(grasshoppers_violin$classification,
+         levels = c("No_change-absent", "No_change-present",
+                    "Recurrent", "Random", "Decreasing"))
+
+grasshoppers_violin %>% ggplot(aes(x = Proportion, y = classification, fill = classification)) + 
+  geom_violin() +
+  scale_fill_manual(values = c("lightgray","#000000", "#CC79A7", "#0072B2", "#D55E00")) +
+  theme_bw() +
+  labs(x = "Proportion of species in watersheds", 
+       y = "Classification", 
+       title = "Grasshoppers: proportion of species in each classification category",
+       fill = "Classification")
+
+```
+
+
+
+## Birds
+```{r}
+birds_classified <- read_csv("Datasets/E1_output_data/E1_birds/E1_birds_classified.csv")
+
+birds_classified_long <- birds_classified %>% pivot_longer(cols = "1992":"2009", names_to = "Recyear", values_to = "Presence")
+
+birds_graphing <- birds_classified_long %>% 
+  dplyr::select(Recyear, Species,classification, Presence, Watershed_name)
+
+
+#Making the zeroes in the presence column into NAs for plotting (that way they don't show up on the graph)
+birds_graphing$Presence[birds_graphing$Presence == 0] <- NA
+
+#Making sure the Recyear is coded as numeric 
+birds_graphing <- birds_graphing %>% mutate(Recyear = as.numeric(Recyear))
+
+
+birds_classified$Watershed_name <- factor(birds_classified$Watershed_name,
+                                        levels = c("1D", "N1B", "4A", 
+                                           "4B", "N4B", "N4D", 
+                                           "20B", "N20B"))
+
+birds_classified$classification <- factor(birds_classified$classification,
+                                     levels = c("No_change-absent", "No_change-present",
+                                                "Recurrent", "Random", "Increasing", "Decreasing"))
+
+birds_graphing$Watershed_name <- factor(birds_graphing$Watershed_name,
+                                        levels = c("1D", "N1B", "4A", 
+                                           "4B", "N4B", "N4D", 
+                                           "20B", "N20B"))
+
+birds_graphing$classification <- factor(birds_graphing$classification,
+                                     levels = c("No_change-absent", "No_change-present",
+                                                "Recurrent", "Random", "Increasing", "Decreasing"))
+
+
+```
+
+
+```{r}
+birds_violin <- birds_classified %>% 
+  group_by(Watershed_name, classification) %>% 
+  dplyr::summarise(total_count=n(),.groups = 'drop') %>% 
+  mutate(Proportion = (total_count/81))
+
+birds_violin <- birds_violin %>% dplyr::select(Watershed_name, classification, Proportion) %>% pivot_wider(names_from = classification, values_from = Proportion) 
+
+
+birds_violin[is.na(birds_violin)] <- 0
+
+birds_violin <- birds_violin %>% 
+  pivot_longer(cols = "No_change-absent":"Increasing", 
+               names_to = "classification", values_to = "Proportion") 
+  
+birds_violin$classification <- factor(birds_violin$classification,
+         levels = c("No_change-absent", "No_change-present",
+                    "Recurrent", "Random", "Increasing", "Decreasing"))
+
+birds_violin %>% ggplot(aes(x = Proportion, y = classification, fill = classification)) + 
+  geom_violin() +
+  scale_fill_manual(values = c("lightgray","#000000", "#CC79A7", "#0072B2", "#009E73", "#D55E00")) +
+  theme_bw() +
+  labs(x = "Proportion of species in watersheds", 
+       y = "Classification", 
+       title = "Birds: proportion of species in each classification category",
+       fill = "Classification")
+
+```
+
+## Plants
+
+```{r}
+plants_classified <- read_csv("Datasets/E1_output_data/E1_plants/E1_plants_classified.csv")
+unique(plants_classified$Watershed_name)
+
+plants_increasing <- plants_classified %>% subset(classification == "Increasing")
+length(unique(plants_increasing$Species))
+
+plants_increasing_firstfourth <- plants_increasing[1:28, ] 
+plants_increasing_secondfourth <- plants_increasing[29:56,] 
+plants_increasing_thirdfourth <- plants_increasing[57:84,] 
+lants_increasing_fourthfourth <- plants_increasing[85:112,] 
+
+plants_decreasing <- plants_classified %>% subset(classification == "Decreasing")
+length(unique(plants_decreasing$Species))
+
+plants_classified_increasing_firstfourth <- plants_classified %>% subset(Species %in% plants_increasing_firstfourth$Species)
+
+
+
+plants_classified_increasing_firstfourth_long <- plants_classified_increasing_firstfourth %>% pivot_longer(cols = "1992":"2022", names_to = "Recyear", values_to = "Presence")
+
+plants_classified_increasing_firstfourth_long$Presence[plants_classified_increasing_firstfourth_long$Presence == 0] <- NA
+plants_classified_increasing_firstfourth_long <- plants_classified_increasing_firstfourth_long %>% mutate(Recyear = as.numeric(Recyear))
+
+plants_classified_increasing_firstfourth_long %>% ggplot(aes(x = Recyear, y = Presence, fill = classification)) + geom_tile(width = .6, height = .6) + 
+  facet_grid(Species~Watershed_name, switch = "y") +
+  theme(text = element_text(size=9),
+        axis.text.x = element_text(angle=45, hjust=1, size =9),
+        axis.text.y = element_text(size=12),
+        strip.text.y.left = element_text(angle = 0, size = 9),
+        strip.text.x.top = element_text(size = 9)) +
+  labs(x = "Year", y = "Presence") +
+  coord_fixed(ratio = 5) +
+  geom_vline(xintercept = 2008, linetype= 2)+
+  scale_fill_manual(values = c("gray","#000000", "#CC79A7", "#0072B2","#009E73", "#D55E00")) +
+  labs(title = "Plant classifcations with increasing incidence (1/4)", 
+       fill = "Classification")
+
+
+plants_classified_long <- plants_classified %>% 
+  pivot_longer(cols = "1992":"2022", names_to = "Recyear", values_to = "Presence")
+
+
+
+plants_graphing <- plants_classified_long %>% 
+  dplyr::select(Recyear, Species,classification, Presence, Watershed_name)
+
+
+#Making the zeroes in the presence column into NAs for plotting (that way they don't show up on the graph)
+plants_graphing$Presence[plants_graphing$Presence == 0] <- NA
+
+#Making sure the Recyear is coded as numeric 
+plants_graphing <- plants_graphing %>% mutate(Recyear = as.numeric(Recyear))
+
+
+plants_classified$Watershed_name <- factor(plants_classified$Watershed_name,
+                                        levels = c("1D", "N1B", "4A", 
+                                           "4B", "N4A", "N4D", 
+                                           "20B", "N20B"))
+
+plants_classified$classification <- factor(plants_classified$classification,
+                                     levels = c("No_change-absent", "No_change-present",
+                                                "Recurrent", "Random", "Increasing", "Decreasing"))
+
+plants_graphing$Watershed_name <- factor(plants_graphing$Watershed_name,
+                                        levels = c("1D", "N1B", "4A", 
+                                           "4B", "N4A", "N4D", 
+                                           "20B", "N20B"))
+
+plants_graphing$classification <- factor(plants_graphing$classification,
+                                     levels = c("No_change-absent", "No_change-present",
+                                                "Recurrent", "Random", "Increasing", "Decreasing"))
+
+plants_graphing_increasing <- plants_graphing %>% subset(classification == "Increasing")
+
+
+plants_graphing_increasing <- plants_graphing %>% subset(classification == "Increasing")
+length(unique(plants_graphing_increasing$Species))
+
+```
+
+
+```{r}
+plants_violin <- plants_classified %>% 
+  group_by(Watershed_name, classification) %>% 
+  dplyr::summarise(total_count=n(),.groups = 'drop') %>% 
+  mutate(Proportion = (total_count/325))
+
+plants_violin <- plants_violin %>% dplyr::select(Watershed_name, classification, Proportion) %>% pivot_wider(names_from = classification, values_from = Proportion) 
+
+
+plants_violin[is.na(plants_violin)] <- 0
+
+plants_violin <- plants_violin %>% 
+  pivot_longer(cols = "No_change-absent":"Decreasing", 
+               names_to = "classification", values_to = "Proportion") 
+  
+plants_violin$classification <- factor(plants_violin$classification,
+         levels = c("No_change-absent", "No_change-present",
+                    "Recurrent", "Random", "Increasing", "Decreasing"))
+
+plants_violin %>% ggplot(aes(x = Proportion, y = classification, fill = classification)) + 
+  geom_violin() +
+  scale_fill_manual(values = c("lightgray","#000000", "#CC79A7", "#0072B2", "#009E73", "#D55E00")) +
+  theme_bw() +
+  labs(x = "Proportion of species in watersheds", 
+       y = "Classification", 
+       title = "Plants: proportion of species in each classification category",
+       fill = "Classification")
+
+
+```
+
