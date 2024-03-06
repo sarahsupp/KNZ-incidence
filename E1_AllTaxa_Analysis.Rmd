@@ -461,16 +461,16 @@ smammals_jaccdiss_1D_plot <-
   geom_point(alpha = 0.5, size = 4, color="#B71C1C") +
   theme_bw() +
   geom_smooth(method = "lm") +
+  ggpubr::stat_cor() +
   geom_label(label="1D", 
-    x=22,
+    x=21,
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
     color = "white",
     fill="#B71C1C") +
   ylim(0, 1) +
-  labs(y = "Jaccard's Dissimilarity", x = "Year from Baseline") +
-  ggpubr::stat_cor()
+  labs(y = "Jaccard's Dissimilarity", x = "Year from Baseline") 
 
 
 
@@ -515,17 +515,17 @@ smammals_jaccdiss_N1B_plot <-
   ggplot(aes(x = Year2, y = Jacc_diss)) + 
   geom_point(alpha = 0.5, size = 4, color = "#880E4F") +
   geom_smooth(method = "lm") +
+  ggpubr::stat_cor() +
   theme_bw() +
    geom_label(label="N1B", 
-    x=22,
+    x=21,
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
     color = "white",
     fill="#880E4F") +
     ylim(0, 1) + 
-  labs(y = "Jaccard's Dissimilarity", x = "Year from Baseline") +
-  ggpubr::stat_cor()
+  labs(y = "Jaccard's Dissimilarity", x = "Year from Baseline") 
 
 
 
@@ -573,16 +573,16 @@ smammals_jaccdiss_4B_plot <-
   geom_point(alpha = 0.5, size = 4, color = "#4A148C") +
   theme_bw() +
   geom_smooth(method = "lm") +
+  ggpubr::stat_cor() +
   geom_label(label="4B", 
-    x=22,
+    x=21,
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
     color = "white",
     fill="#4A148C") +
     ylim(0, 1) + 
-  labs(y = "Jaccard's Dissimilarity", x = "Year from Baseline") +
-  ggpubr::stat_cor()
+  labs(y = "Jaccard's Dissimilarity", x = "Year from Baseline") 
 
 
 
@@ -626,17 +626,17 @@ smammals_jaccdiss_N4D_plot <-
   ggplot(aes(x = Year2, y = Jacc_diss)) + 
   geom_point(alpha = 0.5, size = 4, color="#311B92") +
   geom_smooth(method = "lm") +
+  ggpubr::stat_cor() +
   theme_bw() +
   geom_label(label="N4D", 
-    x=22,
+    x=21,
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
     color = "white",
     fill="#311B92") +
   ylim(0, 1) +
-  labs(y = "Jaccard's Dissimilarity", x = "Year from Baseline") +
-  ggpubr::stat_cor()
+  labs(y = "Jaccard's Dissimilarity", x = "Year from Baseline") 
 
 
 
@@ -681,17 +681,17 @@ smammals_jaccdiss_20B_plot <-
   ggplot(aes(x = Year2, y = Jacc_diss)) + 
   geom_point(alpha = 0.5, size = 4, color="#0D47A1") +
   geom_smooth(method = "lm") +
+  ggpubr::stat_cor() +
   theme_bw() +
   geom_label(label="20B", 
-    x=22,
+    x=21,
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
     color = "white",
     fill="#0D47A1") +
   ylim(0, 1) +
-  labs(y = "Jaccard's Dissimilarity", x = "Year from Baseline") +
-  ggpubr::stat_cor()
+  labs(y = "Jaccard's Dissimilarity", x = "Year from Baseline") 
 
 
 
@@ -737,16 +737,17 @@ smammals_jaccdiss_N20B_plot <-
   geom_point(alpha = 0.5, size = 4, color="#006064") +
   theme_bw() +
   geom_smooth(method = "lm") +
+  ggpubr::stat_cor() +
   geom_label(label="N20B", 
-    x=22,
+    x=21,
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
     color = "white",
     fill="#006064") +
   ylim(0, 1) +
-  labs(y = "Jaccard's Dissimilarity", x = "Year from Baseline") +
-  ggpubr::stat_cor()
+  labs(y = "Jaccard's Dissimilarity", x = "Year from Baseline") 
+
 
 
 smammals_jaccdiss_1D_plot
@@ -1167,7 +1168,7 @@ grasshoppers_jaccdiss_1D_plot <-
   ggpubr::stat_cor() +
   theme_bw() +
   geom_label(label="1D", 
-    x=19,
+    x=18,
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
@@ -1221,7 +1222,7 @@ grasshoppers_jaccdiss_N1B_plot <-
   ggpubr::stat_cor() +
   theme_bw() +
    geom_label(label="N1B", 
-    x=18.5,
+    x=18,
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
@@ -1279,7 +1280,7 @@ grasshoppers_jaccdiss_4B_plot <-
   ggpubr::stat_cor() +
   theme_bw() +
   geom_label(label="4B", 
-    x=19,
+    x=18,
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
@@ -1334,7 +1335,7 @@ grasshoppers_jaccdiss_4F_plot <-
   ggpubr::stat_cor() +
   theme_bw() +
   geom_label(label="4F", 
-    x=19,
+    x=18,
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
@@ -1387,7 +1388,7 @@ grasshoppers_jaccdiss_N4A_plot <-
   geom_smooth(method = "lm") +
   ggpubr::stat_cor() +
   geom_label(label="N4A", 
-    x=18.5,
+    x=18,
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
@@ -1441,7 +1442,7 @@ grasshoppers_jaccdiss_N4D_plot <-
   ggpubr::stat_cor() +
   theme_bw() +
   geom_label(label="N4D", 
-    x=18.5,
+    x=18,
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
@@ -1496,7 +1497,7 @@ grasshoppers_jaccdiss_20B_plot <-
   geom_smooth(method = "lm") +
   ggpubr::stat_cor() +
   geom_label(label="20B", 
-    x=18.5,
+    x=18,
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
@@ -1551,7 +1552,7 @@ grasshoppers_jaccdiss_N20B_plot <-
   ggpubr::stat_cor() +
   theme_bw() +
   geom_label(label="N20B", 
-    x=18.5,
+    x=18,
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
@@ -1994,7 +1995,7 @@ birds_jaccdiss_1D_plot <-
   ggpubr::stat_cor() +
   theme_bw() +
   geom_label(label="1D", 
-    x=18,
+    x=17,
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
@@ -2048,7 +2049,7 @@ birds_jaccdiss_N1B_plot <-
   ggpubr::stat_cor() +
   theme_bw() +
    geom_label(label="N1B", 
-    x=17.5,
+    x=17,
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
@@ -2103,7 +2104,7 @@ birds_jaccdiss_4A_plot <-
   ggpubr::stat_cor() +
   theme_bw() +
   geom_label(label="4A", 
-    x=18,
+    x=17,
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
@@ -2161,7 +2162,7 @@ birds_jaccdiss_4B_plot <-
   geom_smooth(method = "lm") +
   ggpubr::stat_cor() +
   geom_label(label="4B", 
-    x=18,
+    x=17,
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
@@ -2215,7 +2216,7 @@ birds_jaccdiss_N4B_plot <-
   ggpubr::stat_cor() +
   theme_bw() +
   geom_label(label="N4B", 
-    x=17.5,
+    x=17,
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
@@ -2269,7 +2270,7 @@ birds_jaccdiss_N4D_plot <-
   ggpubr::stat_cor() +
   theme_bw() +
   geom_label(label="N4D", 
-    x=17.5,
+    x=17,
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
@@ -2324,7 +2325,7 @@ birds_jaccdiss_20B_plot <-
   ggpubr::stat_cor() +
   theme_bw() +
   geom_label(label="20B", 
-    x=17.5,
+    x=17,
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
@@ -2379,7 +2380,7 @@ birds_jaccdiss_N20B_plot <-
   geom_point(alpha = 0.5, size = 4, color="#1B5E20") +
   theme_bw() +
   geom_label(label="N20B", 
-    x=17.5,
+    x=17,
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
@@ -2798,7 +2799,7 @@ plants_jaccdiss_1D_plot <-
   ggpubr::stat_cor() +
   theme_bw() +
   geom_label(label="1D", 
-    x=31,
+    x=30,
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
@@ -2852,7 +2853,7 @@ plants_jaccdiss_N1B_plot <-
   ggpubr::stat_cor() +
   theme_bw() +
    geom_label(label="N1B", 
-    x=30.5,
+    x=30,
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
@@ -2907,7 +2908,7 @@ plants_jaccdiss_4A_plot <-
   ggpubr::stat_cor() +
   theme_bw() +
   geom_label(label="4A", 
-    x=31,
+    x=30,
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
@@ -2965,7 +2966,7 @@ plants_jaccdiss_4B_plot <-
   geom_point(alpha = 0.5, size = 4, color = "#311B92") +
   theme_bw() +
   geom_label(label="4B", 
-    x=31,
+    x=30,
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
@@ -3019,7 +3020,7 @@ plants_jaccdiss_N4A_plot <-
   geom_point(alpha = 0.5, size = 4, color="#0D47A1") +
   theme_bw() +
   geom_label(label="N4A", 
-    x=30.5,
+    x=30,
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
@@ -3073,7 +3074,7 @@ plants_jaccdiss_N4D_plot <-
   ggpubr::stat_cor() +
   theme_bw() +
   geom_label(label="N4D", 
-    x=30.5,
+    x=30,
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
@@ -3128,7 +3129,7 @@ plants_jaccdiss_20B_plot <-
   geom_point(alpha = 0.5, size = 4, color="#004D40") +
   theme_bw() +
   geom_label(label="20B", 
-    x=30.5,
+    x=30,
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
@@ -3183,7 +3184,7 @@ plants_jaccdiss_N20B_plot <-
   ggpubr::stat_cor() +
   theme_bw() +
   geom_label(label="N20B", 
-    x=30.5,
+    x=30,
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
