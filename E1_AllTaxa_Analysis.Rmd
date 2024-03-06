@@ -821,7 +821,8 @@ smammals_sprich_all %>% ggplot(aes(x = Recyear, y = Richness)) +
   geom_smooth(method = "lm", se = FALSE) + 
   theme(text = element_text(size=12),
         axis.text.x = element_text(angle=45, hjust=1, size =12)) +
-  labs(title = "Small Mammals Species Richness per Year and Watershed")
+  labs(title = "Small Mammals Species Richness per Year and Watershed") +
+  ggpubr::stat_cor()
 
 
 lm(Richness ~ (Recyear * Watershed_name), data = smammals_sprich) %>% summary()
@@ -1162,6 +1163,8 @@ grasshoppers_jaccdiss_1D_plot <-
   grasshoppers_jaccdiss_1D_df[-(1), ] %>% 
   ggplot(aes(x = Year2, y = Jacc_diss)) + 
   geom_point(alpha = 0.5, size = 4, color="#B71C1C") +
+  geom_smooth(method = "lm") +
+  ggpubr::stat_cor() +
   theme_bw() +
   geom_label(label="1D", 
     x=19,
@@ -1171,7 +1174,7 @@ grasshoppers_jaccdiss_1D_plot <-
     color = "white",
     fill="#B71C1C") +
   ylim(0, 1) +
-  labs(y = "Jaccard's Dissimilarity", x = "Year from Baseline")
+  labs(y = "Jaccard's Dissimilarity", x = "Year from Baseline") 
 
 
 
@@ -1214,6 +1217,8 @@ grasshoppers_jaccdiss_N1B_plot <-
   grasshoppers_jaccdiss_N1B_df[-(1), ] %>% 
   ggplot(aes(x = Year2, y = Jacc_diss)) + 
   geom_point(alpha = 0.5, size = 4, color = "#880E4F") +
+  geom_smooth(method = "lm") +
+  ggpubr::stat_cor() +
   theme_bw() +
    geom_label(label="N1B", 
     x=18.5,
@@ -1270,6 +1275,8 @@ grasshoppers_jaccdiss_4B_plot <-
   grasshoppers_jaccdiss_4B_df[-(1), ] %>% 
   ggplot(aes(x = Year2, y = Jacc_diss)) + 
   geom_point(alpha = 0.5, size = 4, color = "#4A148C") +
+  geom_smooth(method = "lm") +
+  ggpubr::stat_cor() +
   theme_bw() +
   geom_label(label="4B", 
     x=19,
@@ -1323,6 +1330,8 @@ grasshoppers_jaccdiss_4F_plot <-
   grasshoppers_jaccdiss_4F_df[-(1), ] %>% 
   ggplot(aes(x = Year2, y = Jacc_diss)) + 
   geom_point(alpha = 0.5, size = 4, color = "#311B92") +
+  geom_smooth(method = "lm") +
+  ggpubr::stat_cor() +
   theme_bw() +
   geom_label(label="4F", 
     x=19,
@@ -1375,6 +1384,8 @@ grasshoppers_jaccdiss_N4A_plot <-
   ggplot(aes(x = Year2, y = Jacc_diss)) + 
   geom_point(alpha = 0.5, size = 4, color="#0D47A1") +
   theme_bw() +
+  geom_smooth(method = "lm") +
+  ggpubr::stat_cor() +
   geom_label(label="N4A", 
     x=18.5,
     y=1.00,
@@ -1426,6 +1437,8 @@ grasshoppers_jaccdiss_N4D_plot <-
   grasshoppers_jaccdiss_N4D_df[-(1), ] %>% 
   ggplot(aes(x = Year2, y = Jacc_diss)) + 
   geom_point(alpha = 0.5, size = 4, color="#006064") +
+  geom_smooth(method = "lm") +
+  ggpubr::stat_cor() +
   theme_bw() +
   geom_label(label="N4D", 
     x=18.5,
@@ -1480,6 +1493,8 @@ grasshoppers_jaccdiss_20B_plot <-
   ggplot(aes(x = Year2, y = Jacc_diss)) + 
   geom_point(alpha = 0.5, size = 4, color="#004D40") +
   theme_bw() +
+  geom_smooth(method = "lm") +
+  ggpubr::stat_cor() +
   geom_label(label="20B", 
     x=18.5,
     y=1.00,
@@ -1532,6 +1547,8 @@ grasshoppers_jaccdiss_N20B_plot <-
   grasshoppers_jaccdiss_N20B_df[-(1), ] %>% 
   ggplot(aes(x = Year2, y = Jacc_diss)) + 
   geom_point(alpha = 0.5, size = 4, color="#1B5E20") +
+  geom_smooth(method = "lm") +
+  ggpubr::stat_cor() +
   theme_bw() +
   geom_label(label="N20B", 
     x=18.5,
@@ -1767,7 +1784,7 @@ view(birds_class.switch3_wide)
 
 
 
-### Birds: Dissimilarity Between Watersheds
+### Birds: Dissimilarity Between Watersheds *NEEDS FIXED*
 This section is for conducting dissimilarity tests between watersheds for the bird dataset. 
 
 These dissimilarity tests will include a Jaccard's dissimilarity test for the first year of the time series, a Jaccard's dissimilarity test for the last year of the time series, a Jaccard's dissimilarity test for the overall time-series, and a Bray-Curtis dissimilarity test for the overall time-series.
@@ -1973,6 +1990,8 @@ birds_jaccdiss_1D_plot <-
   birds_jaccdiss_1D_df[-(1), ] %>% 
   ggplot(aes(x = Year2, y = Jacc_diss)) + 
   geom_point(alpha = 0.5, size = 4, color="#B71C1C") +
+  geom_smooth(method = "lm") +
+  ggpubr::stat_cor() +
   theme_bw() +
   geom_label(label="1D", 
     x=18,
@@ -2025,6 +2044,8 @@ birds_jaccdiss_N1B_plot <-
   birds_jaccdiss_N1B_df[-(1), ] %>% 
   ggplot(aes(x = Year2, y = Jacc_diss)) + 
   geom_point(alpha = 0.5, size = 4, color = "#880E4F") +
+  geom_smooth(method = "lm") +
+  ggpubr::stat_cor() +
   theme_bw() +
    geom_label(label="N1B", 
     x=17.5,
@@ -2078,6 +2099,8 @@ birds_jaccdiss_4A_plot <-
   birds_jaccdiss_4A_df[-(1), ] %>% 
   ggplot(aes(x = Year2, y = Jacc_diss)) + 
   geom_point(alpha = 0.5, size = 4, color = "#4A148C") +
+  geom_smooth(method = "lm") +
+  ggpubr::stat_cor() +
   theme_bw() +
   geom_label(label="4A", 
     x=18,
@@ -2135,6 +2158,8 @@ birds_jaccdiss_4B_plot <-
   ggplot(aes(x = Year2, y = Jacc_diss)) + 
   geom_point(alpha = 0.5, size = 4, color = "#311B92") +
   theme_bw() +
+  geom_smooth(method = "lm") +
+  ggpubr::stat_cor() +
   geom_label(label="4B", 
     x=18,
     y=1.00,
@@ -2186,6 +2211,8 @@ birds_jaccdiss_N4B_plot <-
   birds_jaccdiss_N4B_df[-(1), ] %>% 
   ggplot(aes(x = Year2, y = Jacc_diss)) + 
   geom_point(alpha = 0.5, size = 4, color="#0D47A1") +
+  geom_smooth(method = "lm") +
+  ggpubr::stat_cor() +
   theme_bw() +
   geom_label(label="N4B", 
     x=17.5,
@@ -2238,6 +2265,8 @@ birds_jaccdiss_N4D_plot <-
   birds_jaccdiss_N4D_df[-(1), ] %>% 
   ggplot(aes(x = Year2, y = Jacc_diss)) + 
   geom_point(alpha = 0.5, size = 4, color="#006064") +
+  geom_smooth(method = "lm") +
+  ggpubr::stat_cor() +
   theme_bw() +
   geom_label(label="N4D", 
     x=17.5,
@@ -2291,6 +2320,8 @@ birds_jaccdiss_20B_plot <-
   birds_jaccdiss_20B_df[-(1), ] %>% 
   ggplot(aes(x = Year2, y = Jacc_diss)) + 
   geom_point(alpha = 0.5, size = 4, color="#004D40") +
+  geom_smooth(method = "lm") +
+  ggpubr::stat_cor() +
   theme_bw() +
   geom_label(label="20B", 
     x=17.5,
@@ -2343,6 +2374,8 @@ birds_jaccdiss_N20B_df <- birds_jaccdiss_N20B_df %>%
 birds_jaccdiss_N20B_plot <- 
   birds_jaccdiss_N20B_df[-(1), ] %>% 
   ggplot(aes(x = Year2, y = Jacc_diss)) + 
+  geom_smooth(method = "lm") +
+  ggpubr::stat_cor() +
   geom_point(alpha = 0.5, size = 4, color="#1B5E20") +
   theme_bw() +
   geom_label(label="N20B", 
@@ -2761,6 +2794,8 @@ plants_jaccdiss_1D_plot <-
   plants_jaccdiss_1D_df[-(1), ] %>% 
   ggplot(aes(x = Year2, y = Jacc_diss)) + 
   geom_point(alpha = 0.5, size = 4, color="#B71C1C") +
+  geom_smooth(method = "lm") +
+  ggpubr::stat_cor() +
   theme_bw() +
   geom_label(label="1D", 
     x=31,
@@ -2813,6 +2848,8 @@ plants_jaccdiss_N1B_plot <-
   plants_jaccdiss_N1B_df[-(1), ] %>% 
   ggplot(aes(x = Year2, y = Jacc_diss)) + 
   geom_point(alpha = 0.5, size = 4, color = "#880E4F") +
+  geom_smooth(method = "lm") +
+  ggpubr::stat_cor() +
   theme_bw() +
    geom_label(label="N1B", 
     x=30.5,
@@ -2866,6 +2903,8 @@ plants_jaccdiss_4A_plot <-
   plants_jaccdiss_4A_df[-(1), ] %>% 
   ggplot(aes(x = Year2, y = Jacc_diss)) + 
   geom_point(alpha = 0.5, size = 4, color = "#4A148C") +
+  geom_smooth(method = "lm") +
+  ggpubr::stat_cor() +
   theme_bw() +
   geom_label(label="4A", 
     x=31,
@@ -2921,6 +2960,8 @@ plants_jaccdiss_4B_df <-
 plants_jaccdiss_4B_plot <- 
   plants_jaccdiss_4B_df[-(1), ] %>% 
   ggplot(aes(x = Year2, y = Jacc_diss)) + 
+  geom_smooth(method = "lm") +
+  ggpubr::stat_cor() +
   geom_point(alpha = 0.5, size = 4, color = "#311B92") +
   theme_bw() +
   geom_label(label="4B", 
@@ -2973,6 +3014,8 @@ plants_jaccdiss_N4A_df <- plants_jaccdiss_N4A_df %>%
 plants_jaccdiss_N4A_plot <- 
   plants_jaccdiss_N4A_df[-(1), ] %>% 
   ggplot(aes(x = Year2, y = Jacc_diss)) + 
+  geom_smooth(method = "lm") +
+  ggpubr::stat_cor() +
   geom_point(alpha = 0.5, size = 4, color="#0D47A1") +
   theme_bw() +
   geom_label(label="N4A", 
@@ -3026,6 +3069,8 @@ plants_jaccdiss_N4D_plot <-
   plants_jaccdiss_N4D_df[-(1), ] %>% 
   ggplot(aes(x = Year2, y = Jacc_diss)) + 
   geom_point(alpha = 0.5, size = 4, color="#006064") +
+  geom_smooth(method = "lm") +
+  ggpubr::stat_cor() +
   theme_bw() +
   geom_label(label="N4D", 
     x=30.5,
@@ -3078,6 +3123,8 @@ plants_jaccdiss_20B_df <- plants_jaccdiss_20B_df %>%
 plants_jaccdiss_20B_plot <- 
   plants_jaccdiss_20B_df[-(1), ] %>% 
   ggplot(aes(x = Year2, y = Jacc_diss)) + 
+  geom_smooth(method = "lm") +
+  ggpubr::stat_cor() +
   geom_point(alpha = 0.5, size = 4, color="#004D40") +
   theme_bw() +
   geom_label(label="20B", 
@@ -3132,6 +3179,8 @@ plants_jaccdiss_N20B_plot <-
   plants_jaccdiss_N20B_df[-(1), ] %>% 
   ggplot(aes(x = Year2, y = Jacc_diss)) + 
   geom_point(alpha = 0.5, size = 4, color="#1B5E20") +
+  geom_smooth(method = "lm") +
+  ggpubr::stat_cor() +
   theme_bw() +
   geom_label(label="N20B", 
     x=30.5,
