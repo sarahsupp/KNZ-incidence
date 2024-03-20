@@ -197,7 +197,8 @@ For this section, I am reorganizing the cleaned small-mammal data and reformatti
 ```{r smammals classification}
 
 #Since I won't differentiate the data based on the trap lines or season, I am summing the data based solely on watershed.
-smammals <- E0_smammals %>% group_by(Recyear, Watershed_name, Species, Common_name) %>% 
+smammals <- E0_smammals %>% 
+  group_by(Recyear, Watershed_name, Species, Common_name) %>% 
   reframe(Count = sum(Count))
 
 #Combining the species and watershed variables so that each species per watershed per year is a unique identifier
@@ -219,7 +220,9 @@ smammals_pa_matrix <- as.matrix(decostand_smammals_pa)
 #Applying the getTrends3.0 function to each row of the presence/absence matrix
 smammals_trends <- apply(smammals_pa_matrix, 1, getTrends3.0) 
 
-#Creating a table with the species.watershed and the getTrends info. I excluded the bsline info. ADD INFO ABOUT WHAT THIS IS TAKING FROM 
+#Creating a table with the species.watershed and the getTrends info. 
+#I excluded the baseline info. 
+#FIXME: ADD INFO ABOUT WHAT THIS IS TAKING FROM 
 smammals_classification <- tibble((smammals_env), do.call(rbind,lapply(smammals_trends,(function(v){v[c(1,2,3,4,5,6,7,8,9,10)]}))))
 
 #Adding in the presence/absence per year data back in 
