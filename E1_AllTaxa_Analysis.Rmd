@@ -35,10 +35,16 @@ library(boot)
 library(ggpubr)
 ```
 
-#Read in Data Table including the watershed info for all watersheds
-This table will be used in subsequent taxa data.
+#Read in Data Tables
+This includes the watersheds tables and the species-level data for the 4 taxa.
 ```{r}
 watershed_info <- read_excel("Datasets/Other/Watershed_info.xlsx")
+
+#Reading in the cleaned taxa data sets
+E0_smammals <- read_csv("Datasets/E0_cleaned_data/E0_smammals.csv")
+E0_grasshoppers <- read_csv("Datasets/E0_cleaned_data/E0_grasshoppers.csv")
+E0_birds<- read_csv("Datasets/E0_cleaned_data/E0_birds.csv")
+E0_plants <- read_csv("Datasets/E0_cleaned_data/E0_plants.csv")
 ```
 
 # Clean Data to Classified Incidence for All Taxa
@@ -182,15 +188,13 @@ statSumm <- tibble("numyears" = tslen,
 ```
 
 
+# Determining Species Incidence Classification
 
 ## Small-mammals (1992 - 2013) {.tabset}
 ### Small-mammals: Presence/ Absence & Incidence Classification
 For this section, I am reorganizing the cleaned small-mammal data and reformatting it into a presence/absence matrix. This matrix will then be ran through the getTrends3.0 function to get the incidence classifications for each species at each watershed.
 
 ```{r smammals classification}
-
-#Reading in the cleaned dataset
-E0_smammals <- read_csv("Datasets/E0_cleaned_data/E0_smammals.csv")
 
 #Since I won't differentiate the data based on the trap lines or season, I am summing the data based solely on watershed.
 smammals <- E0_smammals %>% group_by(Recyear, Watershed_name, Species, Common_name) %>% 
@@ -222,33 +226,37 @@ smammals_classification <- tibble((smammals_env), do.call(rbind,lapply(smammals_
 smammals_classification <- smammals_classification %>% add_column(decostand_smammals_pa, .before = "chiPval")
 
 #Separating the species and watershed variable names for graphing later
-smammals_classification <- smammals_classification %>% separate(Species.watershed, c("Genus", "Spp", "Watershed_name")) %>% unite("Species", Genus:Spp, sep = "_")
+smammals_classification <- smammals_classification %>% 
+  separate(Species.watershed, c("Genus", "Spp", "Watershed_name")) %>%
+  unite("Species", Genus:Spp, sep = "_")
 
 
 write_csv(smammals_classification, "Datasets/E1_output_data/E1_smammals/E1_smammals_classified.csv")
+```
 
-
+Pivot longer to add back in the pres/abs and year information
+```{r}
 #Pivoting longer so that each row is now a year, species, watershed, etc.
-smammals_classification_long <- smammals_classification %>% pivot_longer(cols = "1992":"2013", names_to = "Recyear", values_to = "Presence")
+smammals_classification_long <- smammals_classification %>% 
+  pivot_longer(cols = "1992":"2013", names_to = "Recyear", values_to = "Presence")
 
 
-smammals_classification_summary <- smammals_classification %>% group_by(Species, classification) %>% summarize(total_count=n(),.groups = 'drop')
+smammals_classification_summary <- smammals_classification %>% 
+  group_by(Species, classification) %>% 
+  summarize(total_count=n(),.groups = 'drop')
 
-view(smammals_classification)
+#view(smammals_classification)
 
 ```
 
 ### Small-mammals: Calculating Summary Statistics
 ```{r smammals_summstat}
 
-view(smammals_classification)
-
 smammals_class.switch <- smammals_classification %>% 
   group_by(Species, classification) %>%
   summarize(total_count=n(),.groups = 'drop')
 
-
-view(smammals_class.switch)
+#view(smammals_class.switch)
 
 smammals_class.switch1 <- smammals_classification %>% 
   group_by(Species) %>%
@@ -266,27 +274,26 @@ smammals_class.switch2 <- smammals_classification %>%
   group_by(Species, classification) %>%
   summarize(count = n_distinct(Watershed_name))
 
-view(smammals_class.switch2)
+#view(smammals_class.switch2)
 
 smammals_class.switch2_wide <- smammals_class.switch2 %>% pivot_wider(names_from = classification, values_from = count)
 
-view(smammals_class.switch2_wide)
+#view(smammals_class.switch2_wide)
 
 
 smammals_class.switch3 <- smammals_classification %>%
   group_by(Watershed_name, classification) %>%
   summarize(count = n_distinct(Species))
 
-view(smammals_class.switch3)
+#view(smammals_class.switch3)
 
 smammals_class.switch3_wide <- smammals_class.switch3 %>% pivot_wider(names_from = classification, values_from = count)
 
-view(smammals_class.switch3_wide)
-
+#view(smammals_class.switch3_wide)
 ```
 
 
-### Small-mammals: Dissimilarity Between Watersheds *NEEDS FIXED*
+### Small-mammals: Dissimilarity Between Watersheds *FIXME*
 This section is for conducting dissimilarity tests between watersheds for the small-mammal dataset. 
 
 These dissimilarity tests will include a Jaccard's dissimilarity test for the first year of the time series, a Jaccard's dissimilarity test for the last year of the time series, a Jaccard's dissimilarity test for the overall time-series, and a Bray-Curtis dissimilarity test for the overall time-series.
@@ -843,10 +850,6 @@ lm(Richness ~ (Recyear * Watershed_name), data = smammals_sprich) %>% summary()
 For this section, I am reorganizing the grasshopper data and reformatting it into a presence/absence matrix. This matrix will then be ran through the getTrends3.0 function to get the incidence classifications for each species at each watershed.
 
 ```{r grasshoppers classification}
-
-#Reading in the cleaned dataset
-E0_grasshoppers <- read_csv("Datasets/E0_cleaned_data/E0_grasshoppers.csv")
-
 
 #Selecting the columns I want for further analysis 
 grasshoppers <- E0_grasshoppers %>% 
@@ -1682,10 +1685,6 @@ The overall output is a dataset that includes the incidecne classification for e
 
 ```{r birds classification}
 
-#Reading in the cleaned dataset
-E0_birds<- read_csv("Datasets/E0_cleaned_data/E0_birds.csv")
-
-
 #Selecting the columns I want for further analysis 
 birds <- E0_birds %>% 
   group_by(Recyear, AOU_code, Watershed_name) %>% 
@@ -2481,9 +2480,6 @@ birds_sprich %>% ggplot(aes(x = Recyear, y = Richness)) + geom_point() + facet_w
 ### Plants: Presence/ Absence & Incidence Classification
 For this section, I am reorganizing the bird data and reformatting it into a presence/absence matrix. This matrix will then be ran through the getTrends3.0 function to get the classifications for each species at each watershed.
 ```{r plants classification}
-
-#Reading in the cleaned dataset
-E0_plants <- read_csv("Datasets/E0_cleaned_data/E0_plants.csv")
 
 #Selecting the columns I want for further analysis 
 plants <- E0_plants %>% 
