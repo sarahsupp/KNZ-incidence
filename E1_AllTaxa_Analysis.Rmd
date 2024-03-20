@@ -23,9 +23,6 @@ rm(list=ls())
 
 #Read in necessary libraries
 library(tidyverse)
-library(dplyr)
-library(tidyr)
-library(purrr)
 library(broom)
 library(tseries)
 library(vegan)
@@ -36,8 +33,11 @@ library(MASS)
 library(cowplot)
 library(boot)
 library(ggpubr)
+```
 
-#Table including the watershed info for all watersheds - this table will be used in subsequent taxa data
+#Read in Data Table including the watershed info for all watersheds
+This table will be used in subsequent taxa data.
+```{r}
 watershed_info <- read_excel("Datasets/Other/Watershed_info.xlsx")
 ```
 
