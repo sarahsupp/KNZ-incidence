@@ -59,8 +59,6 @@ The "getTrends" function will classify each taxa's species from each watershed i
 
 ```{r getTrends3.0}
 
-x<- c(0,1,0,1,1,1,1,1,0,1,1,0,0,0,0,1,1,0,1,0,0,0,1)
-
 getTrends3.0 <- function(x) {
   #input (x) is a single row of a matrix where the species are rows and the columns are each year with 1/0 values (1=present, 0=absent). 
   #So you need to iterate each row separately to get the results
@@ -81,7 +79,7 @@ getTrends3.0 <- function(x) {
   tssum <- sum(x)
   
   # calculate proportion of years species was present
-  tsprop <- (tssum)/(tslen)
+  tsprop <- tssum/tslen
  
   # create an empty vector to store results in for the next for loop
    l <- c()
@@ -137,10 +135,14 @@ getTrends3.0 <- function(x) {
     if((f_early > f_late) & (p_val <= 0.05)) {
       trend <- -1
       cat = "Decreasing"
-    } else if((f_early < f_late) & (p_val <= 0.05)) {
+      runsTestPV <- NA
+    } 
+    else if((f_early < f_late) & (p_val <= 0.05)) {
       trend <- 1
       cat = "Increasing"
-    } else {
+      runsTestPV <- NA
+    } 
+    else {
     # Chi-squared test not significant
     trend <- 0
     
@@ -148,15 +150,17 @@ getTrends3.0 <- function(x) {
     runsPV <- tseries::runs.test(as.factor(x), alternative = "less")
     runsTestPV <- runsPV$p.value
     if(is.nan(runsTestPV)) {
-      runsTestPV <- 2}
+      runsTestPV <- 2 }
     # if Chi-sq test insignif. and the runs test was significant AND it was present in at least TWO blocks of time
     if((p_val > 0.05) & (runsTestPV < 0.05) & (v > 2)) {
       cat="Recurrent"
-    } else if(((p_val > 0.05) & (runsTestPV > 0.05))|((runsTestPV < 0.05) & (v <= 2))) {
+    } 
+    else if(((p_val > 0.05) & (runsTestPV > 0.05))|((runsTestPV < 0.05) & (v <= 2))) {
       cat="Random"
       }
     } #end else for ns chisq
   }
+
 # for each species, record the summary statistics
 statSumm <- tibble("numyears" = tslen, 
                    "numpresent" = tssum,
@@ -170,7 +174,10 @@ statSumm <- tibble("numyears" = tslen,
                    "classification" = as.factor(cat))
   return(statSumm)
 }
-getTrends3.0(x)
+
+#Test that the function works
+#x<- c(0,1,0,1,1,1,1,1,0,1,1,0,0,0,0,1,1,0,1,0,0,0,1)
+#getTrends3.0(x) 
 
 ```
 
@@ -206,7 +213,7 @@ decostand_smammals_pa <- decostand(smammals_years_wide[, -(1:4)], "pa", na.rm = 
 smammals_pa_matrix <- as.matrix(decostand_smammals_pa)
 
 #Applying the getTrends3.0 function to each row of the presence/absence matrix
-smammals_trends <- apply(smammals_pa_matrix, 1, getTrends3.0)
+smammals_trends <- apply(smammals_pa_matrix, 1, getTrends3.0) 
 
 #Creating a table with the species.watershed and the getTrends info. I excluded the bsline info. ADD INFO ABOUT WHAT THIS IS TAKING FROM 
 smammals_classification <- tibble((smammals_env), do.call(rbind,lapply(smammals_trends,(function(v){v[c(1,2,3,4,5,6,7,8,9,10)]}))))
