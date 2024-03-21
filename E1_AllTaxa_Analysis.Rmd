@@ -187,6 +187,53 @@ statSumm <- tibble("numyears" = tslen,
 
 ```
 
+Function to process the data, get the classification, and write to a .csv file.
+```{r process and classify}
+
+process_classify_data <- function(data, output_filpath = NULL) {
+  # This function takes in a taxa-level dataset from the Konza Prairie LTER
+  # It puts the data into the correct structure for the getTrends3.0 function
+  # The classifies species incidence and writes to a csv file.
+  
+  # sum the data based on watershed and year
+  watershed_dat <- data %>%
+    group_by(Recyear, Watershed_name, Species, Common_name) %>%
+    summarize(Count = sum(Count), .groups = 'drop') %>%
+    # combine species and watershed vars to make a unique identifier
+    unite("Species.watershed", Species:Watershed_name, sep = ".", remove = FALSE) %>%
+    # pivot table for species.watershed variable
+    pivot_wider(names_from = "Recyear", values_from = "Count")
+  
+  # Create a separate 'species.watershed' dataframe
+  data_env <- watershed_dat[, 1:4]
+  
+  # Standardize by presence/absence and make a matrix
+  decostand_pa_dat <- as.matrix(decostand(watershed_dat[, -(1:4)], "pa", na.rm=TRUE))
+  
+  # Apply the getTrends3.0 function to each row
+  taxa_trends <- apply(decostand_pa_dat, 1, getTrends3.0)
+  
+  # Create table with species.watershed and getTrends results
+  taxa_classification <- tibble(data_env, 
+                                do.call(rbind, lapply(taxa_trends, 
+                                                      function(v) {v[c(1:10)]})))
+  
+  # Add presence/absence per year and separate species and watershed variables
+  taxa_classification <- taxa_classification %>%
+    add_column(as.data.frame(decostand_pa_dat), .before = "chiPval") %>%
+    separate(Species.watershed, c("Genus", "Spp", "Watershed_name")) %>%
+    unite("Species", Genus:Spp, sep = "_")
+  
+  # Optionally write the output to a CSV file
+  if (!is.null(output_file_path)) {
+    write_csv(taxa_classification, output_file_path)
+  }
+  
+  return(taxa_classification)
+}
+
+```
+
 
 # Determining Species Incidence Classification
 
