@@ -190,17 +190,17 @@ statSumm <- tibble("numyears" = tslen,
 Function to process the data, get the classification, and write to a .csv file.
 ```{r process and classify}
 
-process_classify_data <- function(data, output_filpath = NULL) {
+process_classify_data <- function(data, species_col, count_col, output_filepath = NULL) {
   # This function takes in a taxa-level dataset from the Konza Prairie LTER
   # It puts the data into the correct structure for the getTrends3.0 function
   # The classifies species incidence and writes to a csv file.
   
   # sum the data based on watershed and year
   watershed_dat <- data %>%
-    group_by(Recyear, Watershed_name, Species, Common_name) %>%
-    summarize(Count = sum(Count), .groups = 'drop') %>%
+    group_by(Recyear, Watershed_name, {{species_col}}) %>% 
+    summarize(Count = sum({{count_col}}), .groups = 'drop') %>%
     # combine species and watershed vars to make a unique identifier
-    unite("Species.watershed", Species:Watershed_name, sep = ".", remove = FALSE) %>%
+    unite("Species.watershed", {{species_col}}:Watershed_name, sep = ".", remove = FALSE) %>%
     # pivot table for species.watershed variable
     pivot_wider(names_from = "Recyear", values_from = "Count")
   
@@ -211,6 +211,8 @@ process_classify_data <- function(data, output_filpath = NULL) {
   decostand_pa_dat <- as.matrix(decostand(watershed_dat[, -(1:4)], "pa", na.rm=TRUE))
   
   # Apply the getTrends3.0 function to each row
+  # FIXME: grass, birds & plants: 
+  #         Error in if (tsprop == 0) { : missing value where TRUE/FALSE needed
   taxa_trends <- apply(decostand_pa_dat, 1, getTrends3.0)
   
   # Create table with species.watershed and getTrends results
@@ -225,13 +227,12 @@ process_classify_data <- function(data, output_filpath = NULL) {
     unite("Species", Genus:Spp, sep = "_")
   
   # Optionally write the output to a CSV file
-  if (!is.null(output_file_path)) {
-    write_csv(taxa_classification, output_file_path)
+  if (!is.null(output_filepath)) {
+    write_csv(taxa_classification, output_filepath)
   }
   
   return(taxa_classification)
 }
-
 ```
 
 
@@ -240,6 +241,28 @@ process_classify_data <- function(data, output_filpath = NULL) {
 ## Small-mammals (1992 - 2013) {.tabset}
 ### Small-mammals: Presence/ Absence & Incidence Classification
 For this section, I am reorganizing the cleaned small-mammal data and reformatting it into a presence/absence matrix. This matrix will then be ran through the getTrends3.0 function to get the incidence classifications for each species at each watershed.
+
+```{r classify all 4 taxa}
+
+smammals_classification = process_classify_data(data=E0_smammals, 
+                                                species_col=Species, 
+                                                count_col = Count,
+                      "Datasets/E1_output_data/E1_smammals/E1_smammals_classified.csv")
+
+grasshoppers_classification = process_classify_data(data=E0_grasshoppers,
+                                                    species_col=Species,
+                                                    count_col=Total,                             "Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers_classified.csv")
+ 
+bird_classification = process_classify_data(data=E0_birds,
+                                            species_col=AOU_code,
+                                            count_col=Count,
+                       "Datasets/E1_output_data/E1_birds/E1_birds_classified.csv")
+
+plant_classification = process_classify_data(data=E0_plants,
+                                             species_col=Genus_spp,
+                                             count_col=Cover,
+                 "Datasets/E1_output_data/E1_plants/E1_plants_classified.csv")
+```
 
 ```{r smammals classification}
 
