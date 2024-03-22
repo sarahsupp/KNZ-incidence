@@ -57,7 +57,7 @@ smammals_graphing$classification <- factor(smammals_graphing$classification,
                                      levels = c("No_change-absent", "Rare", "No_change-present",
                                                 "Recurrent", "Random", "Increasing"))
 
-unique(smammals_classified$Species)
+#unique(smammals_classified$Species)
 ```
 
 
@@ -110,6 +110,8 @@ smammals_violin %>% ggplot(aes(x = Proportion, y = classification, fill = classi
        y = "Classification", 
        title = "Small mammals: proportion of species in each classification category",
        fill = "Classification")
+
+ggsave("Figures/smammals_overall_classes.png", dpi=300, width=6, height=4)
 
 
 smammals_graphing %>% 
@@ -189,7 +191,7 @@ grasshoppers_violin <- grasshoppers_violin %>%
                names_to = "classification", values_to = "Proportion") 
   
 grasshoppers_violin$classification <- factor(grasshoppers_violin$classification,
-         levels = c("No_change-absent", "No_change-present",
+         levels = c("No_change-absent", "Rare", "No_change-present",
                     "Recurrent", "Random", "Decreasing"))
 
 grasshoppers_violin %>% ggplot(aes(x = Proportion, y = classification, fill = classification)) + 

@@ -188,7 +188,9 @@ statSumm <- tibble("numyears" = tslen,
 ```
 
 Function to process the data, get the classification, and write to a .csv file.
-```{r process and classify}
+```{r process and classify} 
+#FIXME: This does not result in the correct number of rows!!
+# It is vastly undercounting compared to what Maya had done. May need to recheck how the data processing and the apply step is working, or leave it alone :(
 
 process_classify_data <- function(data, species_col, count_col, output_filepath = NULL) {
   # This function takes in a taxa-level dataset from the Konza Prairie LTER
@@ -208,8 +210,12 @@ process_classify_data <- function(data, species_col, count_col, output_filepath 
   data_env <- watershed_dat[, 1:4]
   
   # Standardize by presence/absence and make a matrix
-  decostand_pa_dat <- as.matrix(decostand(watershed_dat[, -(1:4)], "pa", na.rm=TRUE))
+  decostand_pa_dat <- decostand(watershed_dat[,-(1:4)], "pa", na.rm=TRUE) %>%
+    replace(is.na(.), 0)
   
+  # make it a matrix  
+  decostand_pa_dat <- as.matrix(decostand_pa_dat)
+
   # Apply the getTrends3.0 function to each row
   # FIXME: grass, birds & plants: 
   #         Error in if (tsprop == 0) { : missing value where TRUE/FALSE needed
@@ -242,6 +248,7 @@ process_classify_data <- function(data, species_col, count_col, output_filepath 
 ### Small-mammals: Presence/ Absence & Incidence Classification
 For this section, I am reorganizing the cleaned small-mammal data and reformatting it into a presence/absence matrix. This matrix will then be ran through the getTrends3.0 function to get the incidence classifications for each species at each watershed.
 
+#FIXME: this chunk does not work yet. It is undercounting all taxa except small mammals
 ```{r classify all 4 taxa}
 
 smammals_classification = process_classify_data(data=E0_smammals, 
@@ -322,6 +329,15 @@ smammals_classification_summary <- smammals_classification %>%
 
 ```
 
+### Plot classification results as a whole
+```{r}
+ggplot(smammals_classification, aes(classification)) + 
+  geom_violin(aes(fill=classification)) + 
+  theme_bw()
+```
+
+
+
 ### Small-mammals: Calculating Summary Statistics
 ```{r smammals_summstat}
 
@@ -336,7 +352,8 @@ smammals_class.switch1 <- smammals_classification %>%
   summarize(count = n_distinct(classification))
 
 smammals_class.switch1 %>% ggplot(aes(x = count)) + 
-  geom_histogram(binwidth = 0.5) + 
+  #geom_histogram(binwidth = 0.5) + 
+  geom_bar() +
   theme_bw() +
   geom_text(x=3.5, y=7, label= 
               "Species that switch classification at least once = 12/14 (86%)") +
@@ -907,6 +924,7 @@ smammals_sprich_all %>% ggplot(aes(x = Recyear, y = Richness)) +
   geom_point() + 
   facet_wrap(.~Watershed_name) + 
   geom_smooth(method = "lm", se = FALSE) + 
+  theme_bw() +
   theme(text = element_text(size=12),
         axis.text.x = element_text(angle=45, hjust=1, size =12)) +
   labs(title = "Small Mammals Species Richness per Year and Watershed") +
