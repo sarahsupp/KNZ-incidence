@@ -107,7 +107,7 @@ getTrends3.0 <- function(x) {
     trendPlus <- NA
     cat <- "No_change-absent"
   } else if ((tsprop > 0) & (tsprop <= 0.10)) {
-    # if most of the values are 1 (>=95% of all years), it is "no change" present
+    # if most of the values are 1 (<=10% of all years), it is "rare"
     p_val <- NA
     f_early <- NA
     f_late <- NA
