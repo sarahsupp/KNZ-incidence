@@ -329,6 +329,7 @@ smammals_classification_summary <- smammals_classification %>%
 
 ```
 
+#FIXME: doesn't work. Use E2_AllTaxa_Plots.Rmd instead
 ### Plot classification results as a whole
 ```{r}
 ggplot(smammals_classification, aes(classification)) + 
@@ -1005,14 +1006,14 @@ write_csv(grasshoppers_classification, "Datasets/E1_output_data/E1_grasshoppers/
 ### Grasshoppers: Calculating Summary Statistics
 ```{r grasshoppers_summstat}
 
-view(grasshoppers_classification)
+#view(grasshoppers_classification)
 
 grasshoppers_class.switch <- grasshoppers_classification %>% 
   group_by(Species, classification) %>%
   summarize(total_count=n(),.groups = 'drop')
 
 
-view(grasshoppers_class.switch)
+#view(grasshoppers_class.switch)
 
 grasshoppers_class.switch1 <- grasshoppers_classification %>% 
   group_by(Species) %>%
@@ -1029,22 +1030,22 @@ grasshoppers_class.switch2 <- grasshoppers_classification %>%
   group_by(Species, classification) %>%
   summarize(count = n_distinct(Watershed_name))
 
-view(grasshoppers_class.switch2)
+#view(grasshoppers_class.switch2)
 
 grasshoppers_class.switch2_wide <- grasshoppers_class.switch2 %>% pivot_wider(names_from = classification, values_from = count)
 
-view(grasshoppers_class.switch2_wide)
+#view(grasshoppers_class.switch2_wide)
 
 
 grasshoppers_class.switch3 <- grasshoppers_classification %>%
   group_by(Watershed_name, classification) %>%
   summarize(count = n_distinct(Species))
 
-view(grasshoppers_class.switch3)
+#view(grasshoppers_class.switch3)
 
 grasshoppers_class.switch3_wide <- grasshoppers_class.switch3 %>% pivot_wider(names_from = classification, values_from = count)
 
-view(grasshoppers_class.switch3_wide)
+#view(grasshoppers_class.switch3_wide)
 
 ```
 
@@ -1761,9 +1762,14 @@ grasshoppers_sprich$Watershed_name <- factor(grasshoppers_sprich$Watershed_name,
 grasshoppers_sprich <- grasshoppers_sprich %>% group_by(Watershed_name, Recyear) %>% reframe(Richness = sum(Presence))
 
 
-grasshoppers_sprich %>% ggplot(aes(x = Recyear, y = Richness)) + geom_point() + facet_wrap(.~Watershed_name) + geom_smooth(method = "lm", se = FALSE) + theme(text = element_text(size=10),
+grasshoppers_sprich %>% ggplot(aes(x = Recyear, y = Richness)) + 
+  geom_point() + facet_wrap(.~Watershed_name, ncol=4) + 
+  geom_smooth(method = "lm", se = FALSE) + 
+  theme_bw() +
+  theme(text = element_text(size=10),
         axis.text.x = element_text(angle=45, hjust=1, size =10)) +
-  labs(title = "Grasshoppers Species Richness per Year and Watershed")
+  labs(title = "Grasshoppers Species Richness per Year and Watershed")  +
+  ggpubr::stat_cor()
 
 ```
 
@@ -1789,9 +1795,8 @@ birds_wide <- birds %>%
               values_fn = function(x) paste(sum(x)))
 
 #Creating a dataset with species and watershed as rows and years as columns. This is the format I need for the getTrends function
-birds_years_wide <- birds_wide %>% pivot_longer(cols = -c(1:2), 
-                                                names_to = "Species", 
-                                                values_to = "Count") %>% 
+birds_years_wide <- birds_wide %>% 
+  pivot_longer(cols = -c(1:2), names_to = "Species", values_to = "Count") %>% 
   pivot_wider(names_from = factor("Recyear"), 
               values_from = "Count")
 
@@ -1818,10 +1823,12 @@ birds_trends <- apply(birds_pa_matrix, 1, getTrends3.0)
 birds_classification <- tibble((birds_env), do.call(rbind,lapply(birds_trends,(function(v){v[c(1,2,3,4,5,6,7,8,9,10)]}))))
 
 #Adding in the presence/absence per year data back in 
-birds_classification <- birds_classification %>% add_column(decostand_birds_pa, .before = "chiPval")
+birds_classification <- birds_classification %>% 
+  add_column(decostand_birds_pa, .before = "chiPval")
 
 #Separating the species and watershed variable names for graphing later
-birds_classification <- birds_classification %>% separate(Species.watershed, c("AOU_code", "Watershed_name"))
+birds_classification <- birds_classification %>% 
+  separate(Species.watershed, c("AOU_code", "Watershed_name"))
 
 #Saving the output with all the classification info into the 'E1_birds' in the 'E1_output_data folder'
 write_csv(birds_classification, "Datasets/E1_output_data/E1_birds/E1_birds_classified.csv")
@@ -2562,9 +2569,15 @@ write.csv(birds_sprich_all, "Datasets/E1_output_data/E1_birds/E1_birds_richness.
 
 
 
-birds_sprich %>% ggplot(aes(x = Recyear, y = Richness)) + geom_point() + facet_wrap(.~Watershed_name) + geom_smooth(method = "lm", se = FALSE) + theme(text = element_text(size=10),
+birds_sprich %>% ggplot(aes(x = Recyear, y = Richness)) + 
+  geom_point() + facet_wrap(.~Watershed_name, nrow=2) + 
+  geom_smooth(method = "lm", se = FALSE) + 
+  theme_bw() +
+  theme(text = element_text(size=10),
         axis.text.x = element_text(angle=45, hjust=1, size =10)) +
-  labs(title = "Birds Species Richness per Year and Watershed")
+  labs(title = "Birds Species Richness per Year and Watershed") + 
+  ggpubr::stat_cor()
+
 ```
 
 ## Plants (1992 - 2022)
@@ -3371,6 +3384,15 @@ plants_sprich_all <- left_join(plants_sprich, plants_sprich_values_shortened, by
 write.csv(plants_sprich_all, "Datasets/E1_output_data/E1_plants/E1_plants_richness.csv")
 
 
+
+plants_sprich %>% ggplot(aes(x = Recyear, y = Richness)) + 
+  geom_point() + facet_wrap(.~Watershed_name, nrow=2) + 
+  geom_smooth(method = "lm", se = FALSE) + 
+  theme_bw() +
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1, size =10)) +
+  labs(title = "Plant Species Richness per Year and Watershed") + 
+  ggpubr::stat_cor()
 
 ```
 
