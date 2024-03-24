@@ -434,6 +434,7 @@ smammals_violin <- smammals_violin %>%
 smammals_violin$classification <- factor(smammals_violin$classification,
          levels = c("No_change-absent", "Rare", "No_change-present",
                     "Recurrent", "Random", "Increasing"))
+smammals_violin$taxa="small mammals"
 
 smammals_violin %>% ggplot(aes(x = Proportion, y = classification, fill = classification)) + 
   geom_violin() +
@@ -467,6 +468,7 @@ grasshoppers_violin <- grasshoppers_violin %>%
 grasshoppers_violin$classification <- factor(grasshoppers_violin$classification,
          levels = c("No_change-absent", "Rare", "No_change-present",
                     "Recurrent", "Random", "Decreasing"))
+grasshoppers_violin$taxa = "grasshoppers"
 
 grasshoppers_violin %>% ggplot(aes(x = Proportion, y = classification, fill = classification)) + 
   geom_violin() +
@@ -501,6 +503,7 @@ birds_violin <- birds_violin %>%
 birds_violin$classification <- factor(birds_violin$classification,
          levels = c("No_change-absent", "Rare", "No_change-present",
                     "Recurrent", "Random", "Increasing", "Decreasing"))
+birds_violin$taxa = "birds"
 
 birds_violin %>% ggplot(aes(x = Proportion, y = classification, fill = classification)) + 
   geom_violin() +
@@ -535,6 +538,7 @@ plants_violin <- plants_violin %>%
 plants_violin$classification <- factor(plants_violin$classification,
          levels = c("No_change-absent", "Rare", "No_change-present",
                     "Recurrent", "Random", "Increasing", "Decreasing"))
+plants_violin$taxa = "plants"
 
 plants_violin %>% ggplot(aes(x = Proportion, y = classification, fill = classification)) + 
   geom_violin() +
@@ -546,6 +550,27 @@ plants_violin %>% ggplot(aes(x = Proportion, y = classification, fill = classifi
        fill = "Classification")
 
 ggsave("Figures/plants_overall_classes_NOABS.png", dpi=300, width=6, height=4)
+
+
+alltaxa_violin <- rbind(smammals_violin, grasshoppers_violin, birds_violin, plants_violin)
+alltaxa_violin$taxa <- factor(alltaxa_violin$taxa,
+         levels = c("plants", "grasshoppers", "birds", "small mammals"))
+
+alltaxa_violin %>% ggplot(aes(x = Proportion, y = classification, fill = classification)) + 
+  geom_violin() +
+  scale_fill_manual(values = c("darkgray", "#000000", "#CC79A7", "#0072B2", "#009E73", "#D55E00")) +
+  facet_wrap(~taxa, ncol=1) +
+  theme_bw() +
+  labs(x = "Proportion species in watersheds", 
+       y = "Classification", 
+       title = "Classification by taxa",
+       fill = "Classification") +
+    theme(legend.position="bottom") +
+  theme(legend.title=element_blank())
+
+ggsave("Figures/ALLTAXA_overall_classes_NOABS.png", dpi=300, width=5.5, height=10)
+
+
 
 ```
 
