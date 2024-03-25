@@ -18,6 +18,8 @@ fontsize: 12pt
 
 ```{r setup, include=FALSE}
 
+library(tidyverse)
+library(corrplot)
 ```
 
 ## Small Mammals
@@ -570,7 +572,103 @@ alltaxa_violin %>% ggplot(aes(x = Proportion, y = classification, fill = classif
 
 ggsave("Figures/ALLTAXA_overall_classes_NOABS.png", dpi=300, width=5.5, height=10)
 
-
 ```
 
+
+Chi square tests for significance
+```{r}
+#prepare the data
+smammal_class_counts <- E1_smammals_classified %>% 
+  group_by(Watershed_name, classification) %>% 
+  dplyr::summarise(total_count=n(),.groups = 'drop') %>%
+  mutate(taxa = "small mammals")
+
+grasshoppers_class_counts <- E1_grasshoppers_classified %>% 
+  group_by(Watershed_name, classification) %>% 
+  dplyr::summarise(total_count=n(),.groups = 'drop') %>%
+  mutate(taxa = "grasshoppers")
+
+birds_class_counts <- E1_birds_classified %>% 
+  group_by(Watershed_name, classification) %>% 
+  dplyr::summarise(total_count=n(),.groups = 'drop')  %>%
+  mutate(taxa = "birds")
+
+plants_class_counts <- E1_plants_classified %>% 
+  group_by(Watershed_name, classification) %>% 
+  dplyr::summarise(total_count=n(),.groups = 'drop')  %>%
+  mutate(taxa = "plants")
+
+#rbind all the count datasets together
+alltaxa_counts <- rbind(smammal_class_counts, grasshoppers_class_counts, birds_class_counts, plants_class_counts)
+alltaxa_counts$taxa <- factor(alltaxa_counts$taxa,
+         levels = c("plants", "grasshoppers", "birds", "small mammals"))
+
+#------------smammals
+# set up each taxa as a contingency table, removing the absent ones
+smamm_chsq <- smammal_class_counts %>%
+  filter(classification != "No_change-absent") %>%
+  dplyr::select(Watershed_name, classification, total_count) %>%
+  pivot_wider(names_from = Watershed_name, values_from = total_count) %>% 
+  replace(is.na(.), 0)
+
+#make it be a matrix for the ChiSquare test
+smamm_chsq2 <- as.matrix(smamm_chsq[,2:7])
+  
+chisq.test(smamm_chsq2) #Categories are NS different for small mammals
+
+#---------hoppers
+# set up each taxa as a contingency table
+grasshop_chsq <- grasshoppers_class_counts %>%
+  filter(classification != "No_change-absent") %>%
+  dplyr::select(Watershed_name, classification, total_count) %>%
+  pivot_wider(names_from = Watershed_name, values_from = total_count) %>% 
+  replace(is.na(.), 0)
+
+#make it be a matrix for the ChiSquare test
+grasshop_chsq2 <- as.matrix(grasshop_chsq[,2:9])
+  
+chisq.test(grasshop_chsq2) #Categories are NS for grasshoppers
+
+#---------birds
+# set up each taxa as a contingency table
+b_chsq <- birds_class_counts %>%
+  filter(classification != "No_change-absent") %>%
+  dplyr::select(Watershed_name, classification, total_count) %>%
+  pivot_wider(names_from = Watershed_name, values_from = total_count) %>% 
+  replace(is.na(.), 0)
+
+#make it be a matrix for the ChiSquare test
+b_chsq2 <- as.matrix(b_chsq[,2:9])
+  
+chisq.test(b_chsq2) #Categories are NS for birds
+
+#---------plants
+# set up each taxa as a contingency table
+p_chsq <- plants_class_counts %>%
+  filter(classification != "No_change-absent") %>%
+  dplyr::select(Watershed_name, classification, total_count) %>%
+  pivot_wider(names_from = Watershed_name, values_from = total_count) %>% 
+  replace(is.na(.), 0)
+
+#make it be a matrix for the ChiSquare test
+p_chsq2 <- as.matrix(p_chsq[,2:9])
+  
+plant_chisq <- chisq.test(p_chsq2) #Categories ARE SIG DIFF for plants
+
+#calculate and round Pearson residuals from Observed & Expected values
+round(plant_chisq$residuals, 3)
+  # Positive residuals specify an attraction (positive association) between the corresponding row and column variables.
+  # Negative residuals imply a repulsion (negative association)
+
+#show as a corrplot
+rownames(plant_chisq$residuals) <- c("Rare", "No change", "recurrent", "random", "increasing", "decreasing")
+corrplot(plant_chisq$residuals, is.cor = FALSE, type="lower", diag=FALSE)
+
+# Contibution in percentage (%)
+contrib <- 100*plant_chisq$residuals^2/plant_chisq$statistic
+round(contrib, 3)
+
+# Visualize the contribution
+corrplot(contrib, is.cor = FALSE)
+```
 
