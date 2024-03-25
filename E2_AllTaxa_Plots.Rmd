@@ -662,7 +662,7 @@ round(plant_chisq$residuals, 3)
 
 #show as a corrplot
 rownames(plant_chisq$residuals) <- c("Rare", "No change", "recurrent", "random", "increasing", "decreasing")
-corrplot(plant_chisq$residuals, is.cor = FALSE, type="lower", diag=FALSE)
+corrplot(plant_chisq$residuals, is.cor = FALSE)
 
 # Contibution in percentage (%)
 contrib <- 100*plant_chisq$residuals^2/plant_chisq$statistic
