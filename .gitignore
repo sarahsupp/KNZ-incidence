@@ -3,6 +3,7 @@
 .RData
 .Ruserdata
 *.DS_Store
+.DS_Store
 Datasets_EAGER/Plants/.DS_Store
 Datasets_EAGER/Other/.DS_Store
 Datasets_EAGER/Other/.DS_Store
