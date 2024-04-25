@@ -1,0 +1,68 @@
+---
+title: "BirdOccurenceTraits"
+author: "Biana Qiu"
+date: "2024-03-22"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+#Preparing to merge datasets - Adding a new column of species in trait data with underscore instead of space in plant scientific names
+
+PlantTraits <- KNZ_merged_xlsx_merged_plants_KNZ #renaming datasets
+PlantOccurances <- E1_plants_classified
+
+PlantTraits$Species <- paste(PlantTraits$Scientific_name) #Copying scientific name into new column called Species to match occurance dataset
+
+PlantTraits$Species <- gsub(" ", "_", PlantTraits$Species) #substituting the space in between genus and species for an "_"
+
+#Adding species abbreviation to match plant occurence dataset
+TestPLantTrait <- PlantTraits %>% 
+  mutate(Sp_abbrev = paste(str_sub(genus, start = 1, end = 6), str_sub(species, start = 1, end = 5), sep = "_"))
+
+#Merging the two datasets together (Second Try!)
+merged_plant_data <- merge(PlantOccurances, TestPLantTrait, by.x = "Species", by.y = "Sp_abbrev", all = TRUE)
+```
+
+```{r}
+#Moving Species column from right-most to left-most 
+NewPlantTraits <- PlantTraits %>%
+  select(Species, everything())
+```
+
+```{r}
+#Merging two datasets together (failed)
+#Merged2PlantTrait_Occurrence <- left_join(PlantOccurances, NewPlantTraits)
+```
+
+```{r}
+#Changing the all the species name in the 'Species' column in the 'NewPlantTraits' dataset
+NewPlantTraits$Species <- tolower(NewPlantTraits$Species)
+```
+
+
+```{r}
+
+# Filter PlantOccurances dataset to include only species present in NewPlantTraits datset
+MergedPlants_filtered <- PlantOccurances %>%
+  filter(Species %in% NewPlantTraits$Species)
+
+#Merging the two datasets together (Second Try!)
+#merged_plant_data <- merge(MergedPlants_filtered, TestPlantTrait, by = "Species", all = TRUE)
+```
+
+
+```{r}
+#Annual vs Perennial graph
+
+
+
+```
+
