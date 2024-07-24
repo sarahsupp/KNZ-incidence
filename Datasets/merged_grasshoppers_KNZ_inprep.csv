@@ -1,0 +1,45 @@
+family,genus,species,body_length,body_mass_g,citation,latin.name,SPCODE,SPECIES.abbrv,Grass.feeder,Forb.feeder,feeder..g.grass..f.forb..m.mixed.,Life.History..E.early.season..M.mid..L.late.,flight.ability..p.poor..s.strong.
+Acrididae,Ageneotettix,deorum,NA,NA,NA,Ageneotettix deorum,29,agenotteti deorum,1,0,g,m,s
+Acrididae,Arphia,conspersa,NA,NA,NA,Arphia conspersa,35,arphia conspersa,0,1,m,e,s
+Acrididae,Arphia,simplex,NA,NA,NA,Arphia simplex,40,arphia spp.,0,1,m,e,s
+Acrididae,Arphia,xanthoptera,NA,NA,NA,Arphia xanthoptera,33,arphia xanthopte,0,1,m,e,s
+Acrididae,Boopedon,auriventris,NA,NA,NA,Boopedon auriventris,26,boopedon auriventr,1,0,g,m,p
+Acrididae,Boopedon,gracile,NA,NA,NA,Boopedon gracile,28,boopedon gracile,1,0,g,m,s
+Romaleidae,Brachystola,magna,NA,NA,NA,Brachystola magna,1,brachystol magna,0,1,m,e,p
+Acrididae,Campylacantha,olivacea,NA,NA,NA,Campylacantha olivacea,5,campylacan olivacea,0,1,m,l,p
+Acrididae,Chortophaga,viridifasciata,NA,NA,NA,Chortophaga viridifasciata,31,chortophag viridifas,1,0,g,e,s
+Acrididae,Encoptolophus,sordidus,NA,NA,NA,Encoptolophus sordidus,43,encoptolop sordidus,1,0,g,l,p
+Acrididae,Eritettix,simplex,NA,NA,NA,Eritettix simplex,19,eritettix  simplex,1,0,g,e,s
+Acrididae,Hadrotettix,trifasciatus,NA,NA,NA,Hadrotettix trifasciatus,36,hadrotetti trifascia,0.5,0.5,f,e,s
+Acrididae,Hesperotettix,speciosus,NA,NA,NA,Hesperotettix speciosus,8,hesperotet spp.,0,1,m,m,p
+Acrididae,Hesperotettix,viridis,NA,NA,NA,Hesperotettix viridis,7,hesperotet viridis,0,1,m,m,p
+Acrididae,Hippiscus,ocelote,NA,NA,NA,Hippiscus ocelote,37,hippiscus  rugosus,0.5,0.5,f,m,s
+Acrididae,Hypochlora,alba,NA,NA,NA,Hypochlora alba,4,hypochlora alba,0,1,m,l,p
+Acrididae,Melanoplus,bivittatus,NA,NA,NA,Melanoplus bivittatus,16,melanoplus bivittata,0.5,0.5,f,m,s
+Acrididae,Melanoplus,confusus,NA,NA,NA,Melanoplus confusus,17,melanoplus confusus,0.5,0.5,f,e,s
+Acrididae,Melanoplus,differentialis,NA,NA,NA,Melanoplus differentialis,14,melanoplus different,0,1,m,m,s
+Acrididae,Melanoplus,femurrubrum,NA,NA,NA,Melanoplus femurrubrum,12,melanoplus femurrubr,0.5,0.5,f,m,s
+Acrididae,Melanoplus,keeleri,NA,NA,NA,Melanoplus keeleri,15,melanoplus keeleri,0,1,m,l,s
+Acrididae,Melanoplus,packardii,NA,NA,NA,Melanoplus packardii,13,melanoplus packardii,0,1,m,m,s
+Acrididae,Melanoplus,sanguinipes,NA,NA,NA,Melanoplus sanguinipes,11,melanoplus sanguinip,0.5,0.5,f,l,s
+Acrididae,Melanoplus,scudderi,NA,NA,NA,Melanoplus scudderi,10,melanoplus scudderi,0,1,m,l,p
+Acrididae,Mermiria,bivittata,NA,NA,NA,Mermiria bivittata,23,mermeria bivitattu,1,0,g,e,s
+Acrididae,Mermiria,picta,NA,NA,NA,Mermiria picta,22,mermeria picta,1,0,g,m,s
+Acrididae,Boopedon,nubilum,NA,NA,NA,Boopedon nubilum,NA,NA,NA,NA,NA,NA,NA
+Acrididae,Dissosteira,carolina,NA,NA,NA,Dissosteira carolina,NA,NA,NA,NA,NA,NA,NA
+Acrididae,Encoptolophus,subgracilis,NA,NA,NA,Encoptolophus subgracilis,NA,NA,NA,NA,NA,NA,NA
+Acrididae,Melanoplus,angustipennis,NA,NA,NA,Melanoplus angustipennis,NA,NA,NA,NA,NA,NA,NA
+Acrididae,Melanoplus,occidentalis,NA,NA,NA,Melanoplus occidentalis,NA,NA,NA,NA,NA,NA,NA
+Acrididae,Pardalophora,apiculata,NA,NA,NA,Pardalophora apiculata,NA,NA,NA,NA,NA,NA,NA
+Acrididae,Schistocerca,obscura,NA,NA,NA,Schistocerca obscura,NA,NA,NA,NA,NA,NA,NA
+Acrididae,Schistocerca,alutacea,NA,NA,NA,Schistocerca alutacea,NA,NA,NA,NA,NA,NA,NA
+Tetrigidae,Tettigidea,lateralis,NA,NA,NA,Tettigidea lateralis,NA,NA,NA,NA,NA,NA,NA
+Acrididae,Xanthippus,corallipes,NA,NA,NA,Xanthippus corallipes,NA,NA,NA,NA,NA,NA,NA
+Acrididae,Opeia,obscura,NA,NA,NA,Opeia obscura,24,opeia obscura,1,0,g,m,s
+Acrididae,Orphulella,speciosa,NA,NA,NA,Orphulella speciosa,21,orphulella speciosa,1,0,g,l,s
+Acrididae,Paratylotropidia,brunneri,NA,NA,NA,Paratylotropidia brunneri,3,paratylota brunneri,0.5,0.5,f,l,p
+Acrididae,Pardalophora,haldemani,NA,NA,NA,Pardalophora haldemani,39,pardalopho haldemani,1,0,g,e,s
+Acrididae,Phoetaliotes,nebrascensis,NA,NA,NA,Phoetaliotes nebrascensis,9,phoetaliot nebrascen,1,0,g,m,p
+Acrididae,Pseudopomala,brachyptera,NA,NA,NA,Pseudopomala brachyptera,25,pseudopoma brachypte,1,0,g,e,p
+Acrididae,Schistocerca,lineata,NA,NA,NA,Schistocerca lineata,2,schistocer lineata,0.5,0.5,f,m,s
+Acrididae,Syrbula,admirabilis,NA,NA,NA,Syrbula admirabilis,20,sybula admiribil,1,0,g,m,s

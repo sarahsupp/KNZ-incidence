@@ -1,0 +1,255 @@
+---
+title: "Traits_plots"
+author: "Sarah Supp"
+date: "2024-07-24"
+output: html_document
+---
+
+Setup, import the libraries and the data for small mammals and birds
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(ggridges)
+library(gridExtra)
+
+smammal_class <- read_csv("Datasets/E1_output_data/E1_smammals/E1_smammals_classified.csv")
+bird_class <- read_csv("Datasets/E1_output_data/E1_birds/E1_birds_classified.csv")
+plant_class <- read_csv("Datasets/E1_output_data/E1_plants/E1_plants_classified.csv")
+hopper_class <- read_csv("Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers_classified.csv")
+
+smammal_trait <- read_csv("Datasets/Smammals-Traits.csv")
+bird_trait <- read_csv("Datasets/Merged_AVONETBirdData.csv")
+plant_trait <- read_csv("Datasets/KNZ_merged_plant_inprep.csv")
+hopper_trait <- read_csv("Datasets/merged_grasshoppers_KNZ_inprep.csv")
+
+
+smammals_traits_class <- read_csv("Datasets/smammals_traits_class.csv") 
+birds_traits_class <- read_csv("Datasets/birds_traits_class.csv") 
+```
+
+set classification as an ordered factor for consistency
+set watersheds as an ordered factor for consistency
+```{r}
+#CLASSIFICATIONS
+smammal_class$classification <- factor(smammal_class$classification,
+                                     levels = c("No_change-absent", "Rare", "No_change-present",
+                                                "Recurrent", "Random", "Increasing", "Decreasing"))
+
+plant_class$classification <- factor(plant_class$classification,
+                                     levels = c("No_change-absent", "Rare", "No_change-present",
+                                                "Recurrent", "Random", "Increasing", "Decreasing"))
+
+bird_class$classification <- factor(bird_class$classification,
+                                     levels = c("No_change-absent", "Rare", "No_change-present",
+                                                "Recurrent", "Random", "Increasing", "Decreasing"))
+
+hopper_class$classification <- factor(hopper_class$classification,
+                                     levels = c("No_change-absent", "Rare", "No_change-present",
+                                                "Recurrent", "Random", "Increasing", "Decreasing"))
+
+#WATERSHEDS
+smammal_class$Watershed_name <- factor(smammal_class$Watershed_name,
+                                        levels = c("1D", "4B", "20B", "N1B", "N4D", "N20B"))
+bird_class$Watershed_name <- factor(bird_class$Watershed_name,
+                                        levels = c("1D", "4B", "20B", "N1B", "N4D", "N20B"))
+hopper_class$Watershed_name <- factor(hopper_class$Watershed_name,
+                                        levels = c("1D", "4B", "20B", "N1B", "N4D", "N20B"))
+plant_class$Watershed_name <- factor(plant_class$Watershed_name,
+                                        levels = c("1D", "4B", "20B", "N1B", "N4D", "N20B"))
+
+
+#add taxa labels
+smammal_class$taxa <- "small mammal"
+plant_class$taxa <- "plant"
+bird_class$taxa <- "bird"
+hopper_class$taxa <- "grasshopper"
+
+
+```
+
+
+merge classification and trait datasets
+```{r}
+smammal_trait$Species <- paste(smammal_trait$genus, smammal_trait$species, sep="_")
+smammal_merge <- merge(smammal_class, smammal_trait)
+
+bird_merge <- merge(bird_class, bird_trait)
+
+plant_trait$Species <- paste(str_sub(plant_trait$genus, 1, 6), str_sub(plant_trait$species, 1, 5), sep = "_")
+plant_merge <- merge(plant_class, plant_trait) #lost 40 rows due to a mismatch in species (more in the class set)
+#FIXME: This also contains some NA values for Watershed_name and I'm not sure why
+
+hopper_trait$Species <- str_replace(hopper_trait$latin.name, " ", "_")
+hopper_merge <- merge(hopper_class, hopper_trait)
+
+#and lastly a merged class dataset for community plots
+alltaxa <- rbind(smammal_class %>% select(Species, Watershed_name, percyears, classification, taxa),
+      plant_class %>% select(Species, Watershed_name, percyears, classification, taxa),
+      hopper_class %>% select(Species, Watershed_name, percyears, classification, taxa),
+      bird_class %>% select(Species, Watershed_name, percyears, classification, taxa))
+
+alltaxa$taxa <- factor(alltaxa$taxa, levels = c("plant", "grasshopper", "bird", "small mammal"))
+
+```
+
+
+
+
+make plots of classification vs percentage years
+```{r}
+a_pers <- ggplot(alltaxa %>% filter(classification != "No_change-absent"), 
+                 aes(x = percyears, y = classification, fill=classification)) +
+  geom_density_ridges(
+    jittered_points = TRUE,
+    position = position_points_jitter(width = 0.05, height = 0),
+    point_shape = '|', point_size = 3, point_alpha = 1, alpha = 0.7,
+  )  +
+  scale_fill_manual(values = c("darkgray", "#000000", "#CC79A7", "#0072B2", "#009E73", "#D55E00")) +
+  theme_bw() + 
+  facet_wrap(~taxa, ncol=1) +
+  labs(x = "Percentage years present", 
+       y = "Classification", 
+       title = "Persistence by taxa incidence",
+       fill = "Classification") +
+    theme(legend.position="bottom") +
+  theme(legend.title=element_blank())
+
+ggsave("Figures/all_taxa_percent-years.png", dpi=300, width=5.5, height=10)
+
+```
+
+Smammals: litter size, body size
+```{r}
+ggplot(smammal_merge %>% filter(classification != "No_change-absent"), aes(classification, litters_per_year)) + 
+  geom_violin(aes(fill=classification)) +
+  facet_wrap(~Watershed_name) +
+  scale_fill_manual(values = c("darkgray", "#000000", "#CC79A7", "#0072B2", "#009E73", "#D55E00")) +
+  theme_bw()
+
+ggplot(smammal_merge %>% filter(classification != "No_change-absent"), aes(classification, litter_size)) + 
+  geom_violin(aes(fill=classification)) +
+  facet_wrap(~Watershed_name) +
+  scale_fill_manual(values = c("darkgray", "#000000", "#CC79A7", "#0072B2", "#009E73", "#D55E00")) +
+  theme_bw()
+
+ggplot(smammal_merge %>% filter(classification != "No_change-absent"), aes(litter_size, litters_per_year)) + 
+  geom_point(aes(col=classification)) +
+  facet_wrap(~Watershed_name) +
+  scale_colour_manual(values = c("darkgray", "#000000", "#CC79A7", "#0072B2", "#009E73", "#D55E00")) +
+  theme_bw()
+
+ggplot(smammal_merge %>% filter(classification != "No_change-absent"), aes(diet)) + 
+  geom_bar(aes(fill=classification)) +
+  facet_wrap(~Watershed_name) +
+  scale_fill_manual(values = c("darkgray", "#000000", "#CC79A7", "#0072B2", "#009E73", "#D55E00")) +
+  theme_bw()
+
+ggsave("Figures/small_mammals_diet_watershed.png", dpi=300, width=10, height=6)
+```
+
+
+Some plant trait plots
+```{r}
+plant_merge <- plant_merge %>% 
+  mutate(growth_form = replace(growth_form, growth_form == "a", "annual")) %>%
+  mutate(growth_form = replace(growth_form, growth_form == "b", "biennial")) %>%
+  mutate(growth_form = replace(growth_form, growth_form == "p", "perennial"))
+
+ggplot(plant_merge %>% filter(classification != "No_change-absent" & !is.na(Watershed_name)), aes(growth_form)) + 
+  geom_bar(aes(fill=classification)) +
+  facet_wrap(~Watershed_name) +
+  scale_fill_manual(values = c("darkgray", "#000000", "#CC79A7", "#0072B2", "#009E73", "#D55E00")) +
+  theme_bw()
+
+ggsave("Figures/plants_growth-form_watershed.png", dpi=300, width=10, height=6)
+
+decreasing <- plant_merge %>% 
+  filter(classification == "Decreasing")
+unique(decreasing$Species)
+table(decreasing$Watershed_name)
+
+increasing <- plant_merge %>% 
+  filter(classification == "Increasing")
+unique(increasing$Species)
+table(increasing$Watershed_name)
+
+```
+
+some bird trait plots
+```{r}
+#Body Mass
+ggplot(bird_merge %>% filter(classification != "No_change-absent" & !is.na(Watershed_name)), 
+                 aes(x = Mass, y = classification, fill=classification)) +
+    geom_density_ridges(stat = "binline", bins = 20, scale = 0.95, draw_baseline = FALSE) +
+  scale_fill_manual(values = c("darkgray", "#000000", "#CC79A7", "#0072B2", "#009E73", "#D55E00")) +
+  scale_x_log10() +
+  theme_bw() + 
+  facet_wrap(~Watershed_name) +
+  labs(x = "Body Mass (g)", 
+       y = "Classification", 
+       fill = "Classification") +
+    theme(legend.position="bottom") +
+  theme(legend.title=element_blank())
+
+ggsave("Figures/birds_bodymass_watershed.png", dpi=300, width=10, height=6)
+
+
+#Hand Wing Index
+ggplot(bird_merge %>% filter(classification != "No_change-absent" & !is.na(Watershed_name)), 
+                 aes(x = Hand.Wing.Index, y = classification, fill=classification)) +
+    geom_density_ridges(stat = "binline", bins = 20, scale = 0.95, draw_baseline = FALSE) +
+  scale_fill_manual(values = c("darkgray", "#000000", "#CC79A7", "#0072B2", "#009E73", "#D55E00")) +
+  #scale_x_log10() +
+  theme_bw() + 
+  facet_wrap(~Watershed_name) +
+  labs(x = "Hand Wing Index", 
+       y = "Classification", 
+       fill = "Classification") +
+    theme(legend.position="bottom") +
+  theme(legend.title=element_blank())
+
+#Range Size
+ggplot(bird_merge %>% filter(classification != "No_change-absent" & !is.na(Watershed_name)), 
+                 aes(x = Range.Size, y = classification, fill=classification)) +
+    geom_density_ridges(stat = "binline", bins = 20, scale = 0.95, draw_baseline = FALSE) +
+  scale_fill_manual(values = c("darkgray", "#000000", "#CC79A7", "#0072B2", "#009E73", "#D55E00")) +
+  theme_bw() + 
+  facet_wrap(~Watershed_name) +
+  labs(x = "Range Size", 
+       y = "Classification", 
+       fill = "Classification") +
+    theme(legend.position="bottom") +
+  theme(legend.title=element_blank())
+
+#trophic niche
+ggplot(bird_merge %>% filter(classification != "No_change-absent" & !is.na(Watershed_name)), aes(Trophic.Niche)) + 
+  geom_bar(aes(fill=classification)) +
+  facet_wrap(~Watershed_name) +
+  scale_fill_manual(values = c("darkgray", "#000000", "#CC79A7", "#0072B2", "#009E73", "#D55E00")) +
+  theme_bw()
+
+#trophic level
+ggplot(bird_merge %>% filter(classification != "No_change-absent" & !is.na(Watershed_name)), aes(Trophic.Level)) + 
+  geom_bar(aes(fill=classification)) +
+  facet_wrap(~Watershed_name) +
+  scale_fill_manual(values = c("darkgray", "#000000", "#CC79A7", "#0072B2", "#009E73", "#D55E00")) +
+  theme_bw() + 
+  theme(axis.text.x = element_text(angle=45, hjust=1))
+
+ggsave("Figures/birds_trophic_watershed.png", dpi=300, width=10, height=6)
+
+
+#habitat
+bird_merge$Habitat <- factor(bird_merge$Habitat, levels = c("Forest", "Woodland", "Shrubland", "Grassland", "Wetland", "Human Modified"))
+
+ggplot(bird_merge %>% filter(classification != "No_change-absent" & !is.na(Watershed_name)), aes(Habitat)) + 
+  geom_bar(aes(fill=classification)) +
+  facet_wrap(~Watershed_name) +
+  scale_fill_manual(values = c("darkgray", "#000000", "#CC79A7", "#0072B2", "#009E73", "#D55E00")) +
+  theme_bw() + 
+  theme(axis.text.x = element_text(angle=45, hjust=1))
+
+ggsave("Figures/birds_habitat_watershed.png", dpi=300, width=10, height=6)
+```
+

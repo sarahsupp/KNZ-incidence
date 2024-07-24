@@ -54,7 +54,7 @@ This Rmarkdown is for taking the clean datasets for all 4 taxa (small-mammals, g
 This section is dedicated to the functions that will be applied to our datasets. 
 
 ### getTrends3.0
-The "getTrends" function will classify each taxa's species from each watershed into distinct categories. This version of the function has the stipulations for 'Always_present' >=95% years present, 'Always_absent' <=5% years present, and for recurrent category requires at least 2 blocks of time when it is present. I also renamed some variables for clarity. The categories include: 
+The "getTrends" function will classify each taxa's species from each watershed into distinct categories. This version of the function has the stipulations for 'No_change-present' >=90% years present, 'Rare' present but for only <=10% of years, 'No_change-absent' 0 years present, and for recurrent category requires at least 2 blocks of time when it is present. I also renamed some variables for clarity. The categories include: 
 - **"No_change-absent"** <- though species was detected at other surrounding watersheds, it was absent at specified watershed for the duration of the time series.
 - **"Rare"** <- Species was present at specified watershed for between 1-10% of years in the duration of the time series.
 - **"No_change-present"** <- species at watershed is present in >=90% of years in which data was collected.
@@ -116,7 +116,7 @@ getTrends3.0 <- function(x) {
     trendPlus <- NA
     cat <- "Rare"
   } else if (tsprop >= 0.90) {
-    # if most of the values are 1 (>=95% of all years), it is "no change" present
+    # if most of the values are 1 (>=90% of all years), it is "no change" present
     p_val <- NA
     f_early <- NA
     f_late <- NA
@@ -2901,7 +2901,7 @@ plants_jaccdiss_1D_df <- plants_jaccdiss_1D_df %>%
 plants_jaccdiss_1D_plot <- 
   plants_jaccdiss_1D_df[-(1), ] %>% 
   ggplot(aes(x = Year2, y = Jacc_diss)) + 
-  geom_point(alpha = 0.5, size = 4, color="#B71C1C") +
+  geom_point() + #alpha = 0.5, size = 4, color="#B71C1C") +
   geom_smooth(method = "lm") +
   ggpubr::stat_cor() +
   theme_bw() +
@@ -2910,10 +2910,9 @@ plants_jaccdiss_1D_plot <-
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
-    color = "white",
-    fill="#B71C1C") +
+    color = "white", fill="black") +
   ylim(0, 1) +
-  labs(y = "Jaccard's Dissimilarity", x = "Year from Baseline")
+  labs(y = "Jaccard's Dissimilarity", x = "")
 
 
 
@@ -2955,8 +2954,8 @@ plants_jaccdiss_N1B_df <-
 plants_jaccdiss_N1B_plot <- 
   plants_jaccdiss_N1B_df[-(1), ] %>% 
   ggplot(aes(x = Year2, y = Jacc_diss)) + 
-  geom_point(alpha = 0.5, size = 4, color = "#880E4F") +
-  geom_smooth(method = "lm") +
+  geom_point() + # alpha = 0.5, size = 4, color = "#880E4F") +
+ # geom_smooth(method = "lm") +
   ggpubr::stat_cor() +
   theme_bw() +
    geom_label(label="N1B", 
@@ -2964,8 +2963,7 @@ plants_jaccdiss_N1B_plot <-
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
-    color = "white",
-    fill="#880E4F") +
+    color = "white", fill="black") +
     ylim(0, 1) + 
   labs(y = "Jaccard's Dissimilarity", x = "Year from Baseline")
 
@@ -3068,19 +3066,18 @@ plants_jaccdiss_4B_df <-
 plants_jaccdiss_4B_plot <- 
   plants_jaccdiss_4B_df[-(1), ] %>% 
   ggplot(aes(x = Year2, y = Jacc_diss)) + 
-  geom_smooth(method = "lm") +
+  #geom_smooth(method = "lm") +
   ggpubr::stat_cor() +
-  geom_point(alpha = 0.5, size = 4, color = "#311B92") +
+  geom_point() + #alpha = 0.5, size = 4, color = "#311B92") +
   theme_bw() +
   geom_label(label="4B", 
     x=30,
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
-    color = "white",
-    fill="#311B92") +
+    color = "white", fill="black") +
     ylim(0, 1) + 
-  labs(y = "Jaccard's Dissimilarity", x = "Year from Baseline")
+  labs(y = "", x = "")
 
 
 
@@ -3134,7 +3131,7 @@ plants_jaccdiss_N4A_plot <-
     color = "white",
     fill="#0D47A1") +
   ylim(0, 1) +
-  labs(y = "Jaccard's Dissimilarity", x = "Year from Baseline")
+  labs(y = "", x = "Year from Baseline")
 
 
 
@@ -3176,8 +3173,8 @@ plants_jaccdiss_N4D_df <- plants_jaccdiss_N4D_df %>%
 plants_jaccdiss_N4D_plot <- 
   plants_jaccdiss_N4D_df[-(1), ] %>% 
   ggplot(aes(x = Year2, y = Jacc_diss)) + 
-  geom_point(alpha = 0.5, size = 4, color="#006064") +
-  geom_smooth(method = "lm") +
+  geom_point() + #alpha = 0.5, size = 4, color="#006064") +
+  #geom_smooth(method = "lm") +
   ggpubr::stat_cor() +
   theme_bw() +
   geom_label(label="N4D", 
@@ -3185,10 +3182,9 @@ plants_jaccdiss_N4D_plot <-
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
-    color = "white",
-    fill="#006064") +
+    color = "white", fill="black") +
   ylim(0, 1) +
-  labs(y = "Jaccard's Dissimilarity", x = "Year from Baseline")
+  labs(y = "", x = "Year from Baseline")
 
 
 
@@ -3233,17 +3229,16 @@ plants_jaccdiss_20B_plot <-
   ggplot(aes(x = Year2, y = Jacc_diss)) + 
   geom_smooth(method = "lm") +
   ggpubr::stat_cor() +
-  geom_point(alpha = 0.5, size = 4, color="#004D40") +
+  geom_point() + #alpha = 0.5, size = 4, color="#004D40") +
   theme_bw() +
   geom_label(label="20B", 
     x=30,
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
-    color = "white",
-    fill="#004D40") +
+    color = "white", fill="black") +
   ylim(0, 1) +
-  labs(y = "Jaccard's Dissimilarity", x = "Year from Baseline")
+  labs(y = "", x = "")
 
 
 
@@ -3286,7 +3281,7 @@ plants_jaccdiss_N20B_df <- plants_jaccdiss_N20B_df %>%
 plants_jaccdiss_N20B_plot <- 
   plants_jaccdiss_N20B_df[-(1), ] %>% 
   ggplot(aes(x = Year2, y = Jacc_diss)) + 
-  geom_point(alpha = 0.5, size = 4, color="#1B5E20") +
+  geom_point() +#alpha = 0.5) + #, size = 4), color="#1B5E20") +
   geom_smooth(method = "lm") +
   ggpubr::stat_cor() +
   theme_bw() +
@@ -3295,35 +3290,36 @@ plants_jaccdiss_N20B_plot <-
     y=1.00,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.6,
-    color = "white",
-    fill="#1B5E20") +
+    color = "white", fill="black") +
   ylim(0, 1) +
-  labs(y = "Jaccard's Dissimilarity", x = "Year from Baseline")
+  labs(y = "", x = "Year from Baseline")
 
 
-plants_jaccdiss_1D_plot
-plants_jaccdiss_N1B_plot
-plants_jaccdiss_4A_plot
-plants_jaccdiss_4B_plot
-plants_jaccdiss_N4A_plot
-plants_jaccdiss_N4D_plot
-plants_jaccdiss_20B_plot
-plants_jaccdiss_N20B_plot
+# plants_jaccdiss_1D_plot
+# plants_jaccdiss_N1B_plot
+# plants_jaccdiss_4A_plot
+# plants_jaccdiss_4B_plot
+# plants_jaccdiss_N4A_plot
+# plants_jaccdiss_N4D_plot
+# plants_jaccdiss_20B_plot
+# plants_jaccdiss_N20B_plot
 
 
 #Putting all the plots together
 plot_grid(
   plants_jaccdiss_1D_plot, 
-  plants_jaccdiss_4A_plot,
+  #plants_jaccdiss_4A_plot, #not included for other taxa
   plants_jaccdiss_4B_plot,
   plants_jaccdiss_20B_plot, 
   plants_jaccdiss_N1B_plot,
-  plants_jaccdiss_N4A_plot, 
+  #plants_jaccdiss_N4A_plot, #not included for other taxa
   plants_jaccdiss_N4D_plot,
   plants_jaccdiss_N20B_plot,
 nrow = 2,
-ncol = 4
+ncol = 3
 )
+
+ggsave("Figures/plant_jaccard-diss_3xfire.png", dpi=300, width=10, height=6)
 ```
 
 ### Plants: Species Richness
@@ -3385,7 +3381,11 @@ write.csv(plants_sprich_all, "Datasets/E1_output_data/E1_plants/E1_plants_richne
 
 
 
-plants_sprich %>% ggplot(aes(x = Recyear, y = Richness)) + 
+plants_sprich$Watershed_name <- factor(plants_sprich$Watershed_name,
+                                        levels = c("1D", "4A", "4B", "20B", "N1B", "N4A", "N4D", "N20B"))
+
+plants_sprich %>% filter(Watershed_name %in% c("1D", "N1B", "4B", "N4D", "20B", "N20B")) %>% 
+  ggplot(aes(x = Recyear, y = Richness)) + 
   geom_point() + facet_wrap(.~Watershed_name, nrow=2) + 
   geom_smooth(method = "lm", se = FALSE) + 
   theme_bw() +
@@ -3394,20 +3394,24 @@ plants_sprich %>% ggplot(aes(x = Recyear, y = Richness)) +
   labs(title = "Plant Species Richness per Year and Watershed") + 
   ggpubr::stat_cor()
 
+ggsave("Figures/plant-richness-firex3.png", dpi=300, width=8, height=5.5)
+
 ```
 
 
 ### Plants: Calculating Summary Statistics
 
 ```{r}
-view(plants_classification)
+#view(plants_classification)
 
-plants_class.switch <- plants_classification %>% 
+plants_class.switch <- plants_classification %>%
+  filter(Watershed_name %in% c("1D", "N1B", "4B", "N4D", "20B", "N20B")) %>% #KEEP this line in if you want to use just the 6 that are consistent with other taxa
+  filter(classification != "No_change-absent") %>% #KEEP this line in to ignore cases where the species was absent
   group_by(Species, classification) %>%
   summarize(total_count=n(),.groups = 'drop')
 
 
-view(plants_class.switch)
+#view(plants_class.switch)
 
 plants_class.switch1 <- plants_classification %>% 
   group_by(Species) %>%
@@ -3424,7 +3428,7 @@ plants_class.switch2 <- plants_classification %>%
   group_by(Species, classification) %>%
   summarize(count = n_distinct(Watershed_name))
 
-view(plants_class.switch2)
+#view(plants_class.switch2)
 
 plants_class.switch2_wide <- plants_class.switch2 %>% pivot_wider(names_from = classification, values_from = count)
 
