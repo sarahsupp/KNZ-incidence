@@ -244,7 +244,7 @@ getAbundTrends <- function(x) {
   # Output is a list with 10 items, that represents the classification results for a single species
   
   #proportion of years absent; select the final element in the vector
-  tsabs <- tail(x,n=1)
+  tsabs <- tail(x, n=1)
   
   #make x be only the 0s and 1s, removing tsabs
   x <- x[-length(x)]
@@ -259,17 +259,6 @@ getAbundTrends <- function(x) {
   
   #find the time-series length (number of years)
   tslen <- length(x)
-  
-  #FIXME: DELETE this section since I already have tsabs?
-  # #find the time-series length (number of years)
-  # tslen <- length(x)
-  # 
-  # # counts the number of years the species was present
-  # tssum <- sum(x)
-  # 
-  # # calculate proportion of years species was present
-  # tsprop <- tssum/tslen
-  # 
   
   # create an empty vector to store results in for the next for loop
    l <- c()
@@ -288,7 +277,7 @@ getAbundTrends <- function(x) {
   }
   
   # If the species was absent in all years (tsabs=1), then we don't need to continue
-  if (tsabs == 0) {
+  if (tsabs == 1) {
     p_val <- NA
     f_early <- NA
     f_late <- NA
@@ -362,8 +351,8 @@ statSumm <- tibble("numyears" = tslen,
 }
 
 #Test that the function works
-x<- c(0,1,0,1,1,1,1,1,0,1,1,0,0,0,0,1,1,0,1,0,0,0,1, 0.36)
-getAbundTrends(x) 
+# x<- c(0,1,0,1,1,1,1,1,0,1,1,0,0,0,0,1,1,0,1,0,0,0,1, 0.36)
+# getAbundTrends(x) 
 
 ```
 
@@ -523,10 +512,15 @@ abund_matrix <- smammals_years_matrix %>%
   split(.$row_id) %>%
   map(~ label_abundance(as.numeric(.x[ , -ncol(.x)]))) %>%
   do.call(rbind, .)
-head(result_matrix)
 
-#input abund_matrix into getAbundTrends function
-#TODO
+#input abund_matrix into getAbundTrends function, apply to each row of the converted matrix
+smammals_abun_trends <- apply(abund_matrix, 1, getAbundTrends) 
+
+#Create table with the getAbunTrends results annotated with species & watershed labels
+#   labels from smammals_env, created earlier
+smammals_abun_classification <- tibble((smammals_env), do.call(rbind,lapply(smammals_abun_trends,(function(v){v[c(1,2,3,4,5,6,7,8,9)]}))))
+
+write_csv(smammals_abun_classification, "Datasets/E1_output_data/E1_smammals/E1_smammals_classified_abund.csv")
 ```
 
 
