@@ -18,14 +18,14 @@ bird_class <- read_csv("Datasets/E1_output_data/E1_birds/E1_birds_classified.csv
 plant_class <- read_csv("Datasets/E1_output_data/E1_plants/E1_plants_classified.csv")
 hopper_class <- read_csv("Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers_classified.csv")
 
-smammal_trait <- read_csv("Datasets/Smammals-Traits.csv")
-bird_trait <- read_csv("Datasets/Merged_AVONETBirdData.csv")
-plant_trait <- read_csv("Datasets/KNZ_merged_plant_inprep.csv")
-hopper_trait <- read_csv("Datasets/merged_grasshoppers_KNZ_inprep.csv")
+smammal_trait <- read_csv("Datasets/Traits_data/Smammals-Traits.csv")
+bird_trait <- read_csv("Datasets/Traits_data/Merged_AVONETBirdData.csv")
+plant_trait <- read_csv("Datasets/Traits_data/KNZ_merged_plant_inprep.csv")
+hopper_trait <- read_csv("Datasets/Traits_data/merged_grasshoppers_KNZ_inprep.csv")
 
 
-smammals_traits_class <- read_csv("Datasets/smammals_traits_class.csv") 
-birds_traits_class <- read_csv("Datasets/birds_traits_class.csv") 
+smammals_traits_class <- read_csv("Datasets/Traits_data/smammals_traits_class.csv") 
+birds_traits_class <- read_csv("Datasets/Traits_data/birds_traits_class.csv") 
 ```
 
 set classification as an ordered factor for consistency
