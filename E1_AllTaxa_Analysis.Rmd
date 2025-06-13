@@ -23,22 +23,22 @@ rm(list=ls())
 
 #Read in necessary libraries
 library(tidyverse)
+library(boot)
 library(broom)
-library(tseries)
-library(vegan)
-library(multcomp)
-library(readxl)
+library(cowplot)
+library(ggpubr)
 library(lme4)
 library(MASS)
-library(cowplot)
-library(boot)
-library(ggpubr)
+library(multcomp)
+library(readxl)
+library(tseries)
+library(vegan)
 ```
 
 #Read in Data Tables
 This includes the watersheds tables and the species-level data for the 4 taxa.
 ```{r}
-watershed_info <- read_excel("Datasets/Other/Watershed_info.xlsx")
+watershed_info <- read_excel("Datasets/Watershed_data/Watershed_info.xlsx")
 
 #Reading in the cleaned taxa data sets
 E0_smammals <- read_csv("Datasets/E0_cleaned_data/E0_smammals.csv")
@@ -48,20 +48,21 @@ E0_plants <- read_csv("Datasets/E0_cleaned_data/E0_plants.csv")
 ```
 
 # Clean Data to Classified Incidence for All Taxa
-This Rmarkdown is for taking the clean datasets for all 4 taxa (small-mammals, grasshoppers, birds, and plants) and using the incidence classification method to categorize each species. 
+This Rmarkdown is for taking the clean datasets for all 4 taxa (small-mammals, grasshoppers, birds, and plants) and using the incidence classification method to categorize each species. This file also estimates composition change (Jaccard dissimilarity) and richness change (linear model) over time.
 
 ## Functions
 This section is dedicated to the functions that will be applied to our datasets. 
 
 ### getTrends3.0
-The "getTrends" function will classify each taxa's species from each watershed into distinct categories. This version of the function has the stipulations for 'No_change-present' >=90% years present, 'Rare' present but for only <=10% of years, 'No_change-absent' 0 years present, and for recurrent category requires at least 2 blocks of time when it is present. I also renamed some variables for clarity. The categories include: 
+The "getTrends3.0" function will classify species within each taxa, from each watershed, into distinct categories. This version of the function has the stipulations for 'No_change-present' >=90% years present, 'Rare' present but for only <=10% of years, 'No_change-absent' 0 years present, and for recurrent category requires at least 2 blocks of time when it is present. I also renamed some variables for clarity. The categories include: 
 - **"No_change-absent"** <- though species was detected at other surrounding watersheds, it was absent at specified watershed for the duration of the time series.
 - **"Rare"** <- Species was present at specified watershed for between 1-10% of years in the duration of the time series.
 - **"No_change-present"** <- species at watershed is present in >=90% of years in which data was collected.
-- **"Random"** <- species is detected sporadically for the duration of the study at watershed
-- **"Recurrent"** <- species is detected in consecutive years and is followed by the absence of the species for a period of time, in a distinct pattern. Species must at least two instances of presences followed by absences. 
 - **"Increasing"** <- the presence of the species increases throughout the duration of the study (it is absent during the beginning of the study, but appears towards the end of the study)
 - **"Decreasing"** <- the presence of the species decreases throughout the duration of the study (it is present during the beginning of the study, but then disappears towards the end of the study)
+- **"Recurrent"** <- species is detected in consecutive years and is followed by the absence of the species for a period of time, in a distinct pattern. Species must at least two instances of presences followed by absences. 
+- **"Random"** <- species is detected sporadically for the duration of the study at watershed
+
 
 ```{r getTrends3.0}
 
