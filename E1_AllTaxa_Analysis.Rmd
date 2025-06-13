@@ -364,6 +364,7 @@ statSumm <- tibble("numyears" = tslen,
 ### Small-mammals: Presence/ Absence & Incidence Classification
 For this section, I am reorganizing the cleaned small-mammal data and reformatting it into a presence/absence matrix. This matrix will then run through the getTrends3.0 function to get the incidence classifications for each species at each watershed.
 
+Conduct the **incidence classification** method
 ```{r smammals classification}
 
 # Sum the data based on watershed
@@ -441,18 +442,18 @@ smammals_abun_class_summary <- smammals_abun_classification %>%
 
 
 ### Small-mammals: Calculating Summary Statistics
+
+**Compare the incidence classification results across species and watersheds**
+
+How often did species "switch" their classifications versus stay consistent across sites?
 ```{r smammals_summstat}
 
-smammals_class.switch <- smammals_classification %>% 
-  group_by(Species, classification) %>%
-  summarize(total_count=n(),.groups = 'drop')
-
-#view(smammals_class.switch)
-
+# Make a table that counts how many classifications each species had (across 6 watersheds) 
 smammals_class.switch1 <- smammals_classification %>% 
   group_by(Species) %>%
   summarize(count = n_distinct(classification))
 
+# plot as a bar graph
 smammals_class.switch1 %>% ggplot(aes(x = count)) + 
   #geom_histogram(binwidth = 0.5) + 
   geom_bar() +
@@ -461,27 +462,30 @@ smammals_class.switch1 %>% ggplot(aes(x = count)) +
               "Species that switch classification at least once = 12/14 (86%)") +
   labs(x = "Number of times a species switched classification", 
        title = "Small-mammals: incidence classification switches")
+```
 
+Were species classified differently across the 6 watersheds?
+```{r}
+# Make a table that shows how each species was categorized, and how many times (across 6 watersheds) 
 smammals_class.switch2 <- smammals_classification %>%
   group_by(Species, classification) %>%
   summarize(count = n_distinct(Watershed_name))
-
 #view(smammals_class.switch2)
 
 smammals_class.switch2_wide <- smammals_class.switch2 %>% pivot_wider(names_from = classification, values_from = count)
-
 #view(smammals_class.switch2_wide)
+```
 
-
+How frequent were the each of the classifications across the watersheds?
+```{r}
+# Make a table that shows how many species were in each classification, by watershed 
 smammals_class.switch3 <- smammals_classification %>%
   group_by(Watershed_name, classification) %>%
   summarize(count = n_distinct(Species))
-
 #view(smammals_class.switch3)
 
 smammals_class.switch3_wide <- smammals_class.switch3 %>% pivot_wider(names_from = classification, values_from = count)
-
-#view(smammals_class.switch3_wide)
+view(smammals_class.switch3_wide)
 ```
 
 
@@ -533,7 +537,7 @@ smammals_jacc_diss_year22 <- smammals %>%
   pivot_wider(names_from = "Species", values_from = "Total", 
               values_fn = function(x) paste(sum(x)))
 
-##Standardizing the species counts by presence/absence, then conducting a Jaccard's dissimilarity test accross watersheds
+##Standardizing the species counts by presence/absence, then conducting a Jaccard's dissimilarity test across watersheds
 smammals_jacc_diss_year22 <- smammals_jacc_diss_year22[, -c(1)] %>% 
   decostand(method = "pa") %>% 
   vegdist(method = "jaccard")
@@ -1036,6 +1040,21 @@ smammals_sprich_all %>% ggplot(aes(x = Recyear, y = Richness)) +
 lm(Richness ~ (Recyear * Watershed_name), data = smammals_sprich) %>% summary()
 
 ```
+
+### Small-mammals: Abundance trends using the count data
+
+```{r}
+ggplot(smammals, aes(Recyear, Count, group=Watershed_name)) + 
+  geom_point(aes(col=Watershed_name)) + 
+  geom_line(aes(col=Watershed_name)) +
+  #stat_smooth(method="lm", aes(col=Watershed_name)) + 
+  facet_wrap(~Species, scales='free') +
+  theme_bw()
+
+#FIXME: Visual and statistical analysis of the abundance datasets
+
+```
+
 
 
 ## Grasshoppers (2002 - 2020) {.tabset}
