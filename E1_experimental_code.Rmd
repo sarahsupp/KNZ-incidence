@@ -1,0 +1,91 @@
+---
+title: "optimized_process_analysis"
+author: "Sarah Supp"
+date: "2025-06-13"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Experimental code to optimize E1_AllTaxa_Analysis
+
+E1_AllTaxa_Analysis.Rmd is a really long code file. Ideally, I wanted to generate functions and code that would run thorugh all species in a similar, repeatable way, but there are enough differences in the dataset that I haven't figured this out yet. The code I was playing with is here, to try to make it workable. For now, I have removed it from the main E1 file. Ideally, it would plug in around Line 420 in that code file; right after the functions have all been defined.
+
+Function to process the data, get the classification, and write to a .csv file.
+```{r process and classify} 
+#FIXME: This does not result in the correct number of rows!!
+# It is vastly undercounting compared to what Maya had done. May need to recheck how the data processing and the apply step is working, or leave it alone :(
+
+process_classify_data <- function(data, species_col, count_col, output_filepath = NULL) {
+  # This function takes in a taxa-level dataset from the Konza Prairie LTER
+  # It puts the data into the correct structure for the getTrends3.0 function
+  # The classifies species incidence and writes to a csv file.
+  
+  # sum the data based on watershed and year
+  watershed_dat <- data %>%
+    group_by(Recyear, Watershed_name, {{species_col}}) %>% 
+    summarize(Count = sum({{count_col}}), .groups = 'drop') %>%
+    # combine species and watershed vars to make a unique identifier
+    unite("Species.watershed", {{species_col}}:Watershed_name, sep = ".", remove = FALSE) %>%
+    # pivot table for species.watershed variable
+    pivot_wider(names_from = "Recyear", values_from = "Count")
+  
+  # Create a separate 'species.watershed' dataframe
+  data_env <- watershed_dat[, 1:4]
+  
+  # Standardize by presence/absence and make a matrix
+  decostand_pa_dat <- decostand(watershed_dat[,-(1:4)], "pa", na.rm=TRUE) %>%
+    replace(is.na(.), 0)
+  
+  # make it a matrix  
+  decostand_pa_dat <- as.matrix(decostand_pa_dat)
+
+  # Apply the getTrends3.0 function to each row
+  # FIXME: grass, birds & plants: 
+  #         Error in if (tsprop == 0) { : missing value where TRUE/FALSE needed
+  taxa_trends <- apply(decostand_pa_dat, 1, getTrends3.0)
+  
+  # Create table with species.watershed and getTrends results
+  taxa_classification <- tibble(data_env, 
+                                do.call(rbind, lapply(taxa_trends, 
+                                                      function(v) {v[c(1:10)]})))
+  
+  # Add presence/absence per year and separate species and watershed variables
+  taxa_classification <- taxa_classification %>%
+    add_column(as.data.frame(decostand_pa_dat), .before = "chiPval") %>%
+    separate(Species.watershed, c("Genus", "Spp", "Watershed_name")) %>%
+    unite("Species", Genus:Spp, sep = "_")
+  
+  # Optionally write the output to a CSV file
+  if (!is.null(output_filepath)) {
+    write_csv(taxa_classification, output_filepath)
+  }
+  
+  return(taxa_classification)
+}
+```
+
+#FIXME: this chunk does not work yet. It is undercounting all taxa except small mammals
+```{r classify all 4 taxa}
+
+smammals_classification_TRY = process_classify_data(data=E0_smammals, 
+                                                species_col=Species, 
+                                                count_col = Count,
+                      "Datasets/E1_output_data/E1_smammals/E1_smammals_classified_TRY.csv")
+
+grasshoppers_classification_TRY = process_classify_data(data=E0_grasshoppers,
+                                                    species_col=Species,
+                                                    count_col=Total,                             "Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers_classified_TRY.csv")
+ 
+bird_classification_TRY = process_classify_data(data=E0_birds,
+                                            species_col=AOU_code,
+                                            count_col=Count,
+                       "Datasets/E1_output_data/E1_birds/E1_birds_classified_TRY.csv")
+
+plant_classification_TRY = process_classify_data(data=E0_plants,
+                                             species_col=Genus_spp,
+                                             count_col=Cover,
+                 "Datasets/E1_output_data/E1_plants/E1_plants_classified_TRY.csv")
+```
