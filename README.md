@@ -2,7 +2,7 @@
  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
  
 # KNZ-incidence
-This repository contains data and code for analyses supporting the NSF EAGER Award 2227298.
+This repository contains data and code for analyses supporting the NSF EAGER Award 2227298.This work investigates a novel classification methodology for sequential species presence and absence (incidence) patterns and uses long-term control-experiment comparisons at the [Konza Prairie Long Term Ecological Research site](https://lternet.edu/site/konza-prairie-lter/) with 15 or more years of data to test the level of ecological disturbance needed for species to "switch" their incidence. The work compares two watershed treatments representing pulse (fire) and press (grazing) disturbance types, and will compare the findings across plant and animal (insect, bird, small mammal) taxonomic groups. The research will generate estimates of changes in population abundance, the proportion of years present, the incidence classification and an abundance-based classification, for each species population and compare among the disturbance treatment levels.
 
 
 *Note* This repository is under development (c) 2023-2025.
