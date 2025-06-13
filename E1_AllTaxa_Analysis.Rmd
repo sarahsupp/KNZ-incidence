@@ -356,150 +356,60 @@ statSumm <- tibble("numyears" = tslen,
 
 ```
 
-Function to process the data, get the classification, and write to a .csv file.
-```{r process and classify} 
-#FIXME: This does not result in the correct number of rows!!
-# It is vastly undercounting compared to what Maya had done. May need to recheck how the data processing and the apply step is working, or leave it alone :(
-
-process_classify_data <- function(data, species_col, count_col, output_filepath = NULL) {
-  # This function takes in a taxa-level dataset from the Konza Prairie LTER
-  # It puts the data into the correct structure for the getTrends3.0 function
-  # The classifies species incidence and writes to a csv file.
-  
-  # sum the data based on watershed and year
-  watershed_dat <- data %>%
-    group_by(Recyear, Watershed_name, {{species_col}}) %>% 
-    summarize(Count = sum({{count_col}}), .groups = 'drop') %>%
-    # combine species and watershed vars to make a unique identifier
-    unite("Species.watershed", {{species_col}}:Watershed_name, sep = ".", remove = FALSE) %>%
-    # pivot table for species.watershed variable
-    pivot_wider(names_from = "Recyear", values_from = "Count")
-  
-  # Create a separate 'species.watershed' dataframe
-  data_env <- watershed_dat[, 1:4]
-  
-  # Standardize by presence/absence and make a matrix
-  decostand_pa_dat <- decostand(watershed_dat[,-(1:4)], "pa", na.rm=TRUE) %>%
-    replace(is.na(.), 0)
-  
-  # make it a matrix  
-  decostand_pa_dat <- as.matrix(decostand_pa_dat)
-
-  # Apply the getTrends3.0 function to each row
-  # FIXME: grass, birds & plants: 
-  #         Error in if (tsprop == 0) { : missing value where TRUE/FALSE needed
-  taxa_trends <- apply(decostand_pa_dat, 1, getTrends3.0)
-  
-  # Create table with species.watershed and getTrends results
-  taxa_classification <- tibble(data_env, 
-                                do.call(rbind, lapply(taxa_trends, 
-                                                      function(v) {v[c(1:10)]})))
-  
-  # Add presence/absence per year and separate species and watershed variables
-  taxa_classification <- taxa_classification %>%
-    add_column(as.data.frame(decostand_pa_dat), .before = "chiPval") %>%
-    separate(Species.watershed, c("Genus", "Spp", "Watershed_name")) %>%
-    unite("Species", Genus:Spp, sep = "_")
-  
-  # Optionally write the output to a CSV file
-  if (!is.null(output_filepath)) {
-    write_csv(taxa_classification, output_filepath)
-  }
-  
-  return(taxa_classification)
-}
-```
 
 
 # Determining Species Incidence Classification
 
 ## Small-mammals (1992 - 2013) {.tabset}
 ### Small-mammals: Presence/ Absence & Incidence Classification
-For this section, I am reorganizing the cleaned small-mammal data and reformatting it into a presence/absence matrix. This matrix will then be ran through the getTrends3.0 function to get the incidence classifications for each species at each watershed.
-
-#FIXME: this chunk does not work yet. It is undercounting all taxa except small mammals
-```{r classify all 4 taxa}
-
-smammals_classification_TRY = process_classify_data(data=E0_smammals, 
-                                                species_col=Species, 
-                                                count_col = Count,
-                      "Datasets/E1_output_data/E1_smammals/E1_smammals_classified_TRY.csv")
-
-grasshoppers_classification_TRY = process_classify_data(data=E0_grasshoppers,
-                                                    species_col=Species,
-                                                    count_col=Total,                             "Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers_classified_TRY.csv")
- 
-bird_classification = process_classify_data(data=E0_birds,
-                                            species_col=AOU_code,
-                                            count_col=Count,
-                       "Datasets/E1_output_data/E1_birds/E1_birds_classified.csv")
-
-plant_classification = process_classify_data(data=E0_plants,
-                                             species_col=Genus_spp,
-                                             count_col=Cover,
-                 "Datasets/E1_output_data/E1_plants/E1_plants_classified.csv")
-```
+For this section, I am reorganizing the cleaned small-mammal data and reformatting it into a presence/absence matrix. This matrix will then run through the getTrends3.0 function to get the incidence classifications for each species at each watershed.
 
 ```{r smammals classification}
 
-#Since I won't differentiate the data based on the trap lines or season, I am summing the data based solely on watershed.
+# Sum the data based on watershed
+# Here, we won't differentiate the data based on the trap lines or season
 smammals <- E0_smammals %>% 
   group_by(Recyear, Watershed_name, Species, Common_name) %>% 
   reframe(Count = sum(Count))
 
-#Combining the species and watershed variables so that each species per watershed per year is a unique identifier
+#Combine the species and watershed variables so that each species per watershed per year is a unique identifier
 smammals <- smammals %>% unite("Species.watershed", Species:Watershed_name, sep = ".", remove = FALSE)
 
-#Pivoting the table so that each year is a column and each row is the 'species.watershed' variable
+#Pivot the table so that each year is a column and each row is the 'species.watershed' variable
 smammals_years_wide <- smammals %>% 
   pivot_wider(names_from = "Recyear", values_from = "Count")
 
-#Creating a separate species.watershed dataframe to add back to the dataset after standardization
+#Create a separate species.watershed dataframe to add back to the dataset after standardization
 smammals_env <- smammals_years_wide[, 1:4]
 
-#Standardizing by presence/absence
+#Standardize by presence/absence
 decostand_smammals_pa <- decostand(smammals_years_wide[, -(1:4)], "pa", na.rm = TRUE )
 
-#Transforming the presence/absence data into a matrix so I can feed it to the function
+#Transform the presence/absence data into a matrix so I can feed it to the function
 smammals_pa_matrix <- as.matrix(decostand_smammals_pa)
 
-#Applying the getTrends3.0 function to each row of the presence/absence matrix
+#Apply the getTrends3.0 function to each row of the presence/absence matrix
 smammals_trends <- apply(smammals_pa_matrix, 1, getTrends3.0) 
 
-#Creating a table with the species.watershed and the getTrends info. 
-#I excluded the baseline info. 
-#FIXME: ADD INFO ABOUT WHAT THIS IS TAKING FROM 
+# Create a table with the species.watershed and the getTrends info. 
+# puts everything back into a dataframe format
 smammals_classification <- tibble((smammals_env), do.call(rbind,lapply(smammals_trends,(function(v){v[c(1,2,3,4,5,6,7,8,9,10)]}))))
 
-#Adding in the presence/absence per year data back in 
+#Add back in the presence/absence per year data
 smammals_classification <- smammals_classification %>% add_column(decostand_smammals_pa, .before = "chiPval")
 
-#Separating the species and watershed variable names for graphing later
+#Separate the species and watershed variable names for graphing later
 smammals_classification <- smammals_classification %>% 
   separate(Species.watershed, c("Genus", "Spp", "Watershed_name")) %>%
   unite("Species", Genus:Spp, sep = "_")
 
-
+# Write results to file
 write_csv(smammals_classification, "Datasets/E1_output_data/E1_smammals/E1_smammals_classified.csv")
 ```
 
-Pivot longer to add back in the pres/abs and year information
-```{r}
-#Pivoting longer so that each row is now a year, species, watershed, etc.
-smammals_classification_long <- smammals_classification %>% 
-  pivot_longer(cols = "1992":"2013", names_to = "Recyear", values_to = "Presence")
-
-
-smammals_classification_summary <- smammals_classification %>% 
-  group_by(Species, classification) %>% 
-  summarize(total_count=n(),.groups = 'drop')
-
-#view(smammals_classification)
-
-```
 
 Conduct the **abundance classification** method
-```{r}
+```{r smammals abundance classification}
 #use the wide format count data as input; convert to matrix format and remove labels
 smammals_years_matrix <- as.matrix(smammals_years_wide[, -(1:4)])
 
@@ -520,18 +430,14 @@ smammals_abun_trends <- apply(abund_matrix, 1, getAbundTrends)
 #   labels from smammals_env, created earlier
 smammals_abun_classification <- tibble((smammals_env), do.call(rbind,lapply(smammals_abun_trends,(function(v){v[c(1,2,3,4,5,6,7,8,9)]}))))
 
+# Write to file
 write_csv(smammals_abun_classification, "Datasets/E1_output_data/E1_smammals/E1_smammals_classified_abund.csv")
+
+#count up the number of classifications for each species
+smammals_abun_class_summary <- smammals_abun_classification %>% 
+  group_by(Species, classification) %>% 
+  summarize(total_count=n(),.groups = 'drop')
 ```
-
-
-#FIXME: doesn't work. Use E2_AllTaxa_Plots.Rmd instead
-### Plot classification results as a whole
-```{r}
-ggplot(smammals_classification, aes(classification)) + 
-  geom_violin(aes(fill=classification)) + 
-  theme_bw()
-```
-
 
 
 ### Small-mammals: Calculating Summary Statistics
@@ -554,7 +460,7 @@ smammals_class.switch1 %>% ggplot(aes(x = count)) +
   geom_text(x=3.5, y=7, label= 
               "Species that switch classification at least once = 12/14 (86%)") +
   labs(x = "Number of times a species switched classification", 
-       title = "Small-mammals: Classification switches")
+       title = "Small-mammals: incidence classification switches")
 
 smammals_class.switch2 <- smammals_classification %>%
   group_by(Species, classification) %>%
