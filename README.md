@@ -34,7 +34,7 @@ This paper uses a novel incidence classification method (presence vs absence). W
 Using the incidence classificaiton method, a population may fall into one of seven classes:
 | Type | Classification and description | consistency | contingency test | runs test |
 | ---- | ---- |  ---- | ---- | ---- |
-| No change |  **Core**: Species is consistently present throughout the time series | present >=95% years | -- | -- |
+| No change |  **Core**: Species is consistently present throughout the time series | present >=90% years | -- | -- |
 | No change | **Absent**: Species is consistently absent throughout the time series, but is in the species pool | absent in all years | -- | -- |
 | No change | **Rare**: Species is infrequent throughout time series and cannot be classified | Present <= 10% years | -- | -- |
 | Directed change | **Increasing**: Species incidence significantly greater in later half of the time series | -- | p < 0.05 (+) | -- |
