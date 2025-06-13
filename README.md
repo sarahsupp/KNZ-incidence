@@ -1,8 +1,11 @@
+[![NSF-0000000](https://img.shields.io/badge/NSF-2227298-blue.svg)](https://nsf.gov/awardsearch/showAward?AWD_ID=2227298)
+ [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+ 
 # KNZ-incidence
 This repository contains data and code for analyses supporting the NSF EAGER Award 2227298.
 
 
-*Note* This repository is under development (c) 2023-2024.
+*Note* This repository is under development (c) 2023-2025.
 
 
 ## Code Authors
