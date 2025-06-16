@@ -598,10 +598,11 @@ write.csv(smammals_diss_watersheds,
 
 ```
 
-#TODO: START HERE AGAIN
-*
+
 ### Small-mammals: Jaccard's Dissimiliarity 
-TRYING SOMETHING ELSE FOR NOW! SUBSETTING EACH WATERSHED INDIVIDUALLY, THEN CREATING A DISSIMILRITY MATRIX COMPARING EACH YEAR TO THE PREVIOUS? (OR BASELINE)
+Compare all years within a watershed to the baseline year.
+Is dissimilarity increasing through time?
+Is the rate of composition change different according to treatment?
 ```{r}
 
 # Compare the dissimilarity across all years to Year 1, within each watershed
@@ -631,393 +632,38 @@ dimnames(smammals_jacc_allyears) <- list(watershed_year, watershed_year)
 # Rename the automatically created column names
 # Filter Year1 to always be 1992 so all comparisons are relative to the baseline year
 # Keep only comparisons within watershed
+# ensure years are numeric
 smammals_jacc_allyears <- as.data.frame.table(as.matrix(smammals_jacc_allyears)) %>%
   separate(Var1, c("Watershed1", "Recyear"), "_") %>%
   separate(Var2, c("Watershed2", "Recyear2"), "_") %>%
   rename("Year1" = "Recyear",
          "Year2" = "Recyear2" ,
          "Jacc_diss" = "Freq") %>%
-  filter(Year1 == "1992") %>%
+  mutate(Year1 = as.numeric(Year1),
+         Year2 = as.numeric(Year2)) %>%
+  filter(Year1 == 1992) %>%
   filter(Watershed1 == Watershed2)
 ```
 
-#TODO: start HERE
+#FIXME: add this plot to E2 file instead?
 Visualize the results
 ```{r}
-smammals_jaccdiss_1D_plot <- 
-  smammals_jaccdiss_1D_df[-(1), ] %>% 
-  ggplot(aes(x = Year2, y = Jacc_diss)) + 
-  geom_point(alpha = 0.5, size = 4, color="#B71C1C") +
-  theme_bw() +
-  geom_smooth(method = "lm") +
+smammals_jacc_allyears_plot <- 
+  ggplot(data=smammals_jacc_allyears, aes(x=Year2, y=Jacc_diss)) + 
+  geom_point() +
+  geom_smooth(method="lm") +
   ggpubr::stat_cor() +
-  geom_label(label="1D", 
-    x=21,
-    y=1.00,
-    label.padding = unit(0.55, "lines"), # Rectangle size around label
-    label.size = 0.6,
-    color = "white",
-    fill="#B71C1C") +
-  ylim(0, 1) +
-  labs(y = "Jaccard's Dissimilarity", x = "Year from Baseline") 
-
+  ylim(0,1) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  labs(x="Year compared to baseline", y="Jaccard's dissimilarity") + 
+  facet_wrap(~Watershed1)
+  
+  smammals_jacc_allyears_plot
+  
+  ggsave("Figures/smammals_jacc_years.png", dpi=300, width=6, height=4)
 ```
-
-
-
-## Subset 1992 for Year 1, so all comparison are relative to baselilne year
-smammals_jaccdiss_1D_df <- smammals_jaccdiss_1D_df %>% 
-  subset(Year1 == "1992") %>% 
-  mutate(Year2 = as.numeric(Year2))
-
-
-# #FOR WATERSHED 1D
-# 
-# ## Subsetting watershed "1D", the summarizing data based on the counts of species per year. Pivoting the output into a wide format so that each row is a species name and each column is a year from 1992 to 2013, and the values are the species counts per year.
-# smammals_jaccdiss_1D <- smammals %>% 
-#   subset(Watershed_name == "1D") %>%
-#   group_by(Species, Recyear) %>% 
-#   reframe(Total = (Count)) %>% 
-#   pivot_wider(names_from = "Species", values_from = "Total", 
-#               values_fn = function(x) paste(sum(x)))
-# 
-# 
-# 
-# ## Transforming the species counts to just presence/absence values, removing the species names column from the matrix for the dissimilarity test, then running a Jaccard's dissimilarity test on the differences between years.
-# smammals_jaccdiss_1D <- 
-#   smammals_jaccdiss_1D[, -c(1)] %>% 
-#   decostand(method = "pa") %>% 
-#   vegdist(method = "jaccard")
-# 
-# ## Having the Jaccard's dissimilarity output be coded and saved as a matrix
-# smammals_jaccdiss_1D<- as.matrix(smammals_jaccdiss_1D)
-# ## Taking that matrix and adding in dimension names (the years of the data) to make the matrix readable.
-# dimnames(smammals_jaccdiss_1D) <- list(c("1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013"), 
-#                                        c("1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013"))
-
-# ## Transforming the Jaccard's dissimilarity matrix into a data frame and renaming the automatically created column names, so now the columns include "Year1": the first year being compared, "Year2": the year that is being compared to Var1, and "Jacc_diss": the Jaccard's dissimilarity value.
-# smammals_jaccdiss_1D_df <- as.data.frame.table(as.matrix(smammals_jaccdiss_1D)) %>%
-#   rename("Year1" = "Var1",
-#          "Year2" = "Var2" ,
-#          "Jacc_diss" = "Freq")
-
-
-## Subsetting "1992", meaning the remaining values will be the Jaccard's dissimilarity compared to the baseline year 
-smammals_jaccdiss_1D_df <- smammals_jaccdiss_1D_df %>% 
-  subset(Year1 == "1992") %>% 
-  mutate(Year2 = as.numeric(Year2))
   
-## Creating a plot to show how dissimilarity in species presence compared to the baseline year for watershed 1D in the small mammals dataset
-smammals_jaccdiss_1D_plot <- 
-  smammals_jaccdiss_1D_df[-(1), ] %>% 
-  ggplot(aes(x = Year2, y = Jacc_diss)) + 
-  geom_point(alpha = 0.5, size = 4, color="#B71C1C") +
-  theme_bw() +
-  geom_smooth(method = "lm") +
-  ggpubr::stat_cor() +
-  geom_label(label="1D", 
-    x=21,
-    y=1.00,
-    label.padding = unit(0.55, "lines"), # Rectangle size around label
-    label.size = 0.6,
-    color = "white",
-    fill="#B71C1C") +
-  ylim(0, 1) +
-  labs(y = "Jaccard's Dissimilarity", x = "Year from Baseline") 
-
-
-
-
-#FOR WATERSHED N1B
-
-## Subsetting watershed "N1B", the summarizing data based on the counts of species per year. Pivoting the output into a wide format so that each row is a species name and each column is a year from 1992 to 2013, and the values are the species counts per year.
-smammals_jaccdiss_N1B <- smammals %>% 
-  subset(Watershed_name == "N1B") %>%
-  group_by(Species, Recyear) %>% 
-  reframe(Total = (Count)) %>% 
-  pivot_wider(names_from = "Species", values_from = "Total", 
-              values_fn = function(x) paste(sum(x)))
-
-## Transforming the species counts to just presence/absence values, removing the species names column from the matrix for the dissimilarity test, then running a Jaccard's dissimilarity test on the differences between years.
-smammals_jaccdiss_N1B <- 
-  smammals_jaccdiss_N1B[, -c(1)] %>% 
-  decostand(method = "pa") %>% 
-  vegdist(method = "jaccard")
-
-## Having the Jaccard's dissimilarity output be coded and saved as a matrix
-smammals_jaccdiss_N1B <- as.matrix(smammals_jaccdiss_N1B)
-## Taking that matrix and adding in dimension names (the years of the data) to make the matrix readable.
-dimnames(smammals_jaccdiss_N1B) <- list(c("1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013"), 
-                                       c("1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013"))
-
-## Transforming the Jaccard's dissimilarity matrix into a data frame and renaming the automatically created column names, so now the columns include "Year1": the first year being compared, "Year2": the year that is being compared to Var1, and "Jacc_diss": the Jaccard's dissimilarity value.
-smammals_jaccdiss_N1B_df <- as.data.frame.table(as.matrix(smammals_jaccdiss_N1B)) %>%
-  rename("Year1" = "Var1",
-         "Year2" = "Var2" ,
-         "Jacc_diss" = "Freq")
-
-## Subsetting "1992", meaning the remaining values will be the Jaccard's dissimilarity compared to the baseline year 
-smammals_jaccdiss_N1B_df <- 
-  smammals_jaccdiss_N1B_df %>% 
-  subset(Year1 == "1992") %>% 
-  mutate(Year2 = as.numeric(Year2))
-  
-## Creating a plot to show how dissimilarity in species presence compared to the baseline year for watershed N1B in the small mammals dataset
-smammals_jaccdiss_N1B_plot <- 
-  smammals_jaccdiss_N1B_df[-(1), ] %>% 
-  ggplot(aes(x = Year2, y = Jacc_diss)) + 
-  geom_point(alpha = 0.5, size = 4, color = "#880E4F") +
-  geom_smooth(method = "lm") +
-  ggpubr::stat_cor() +
-  theme_bw() +
-   geom_label(label="N1B", 
-    x=21,
-    y=1.00,
-    label.padding = unit(0.55, "lines"), # Rectangle size around label
-    label.size = 0.6,
-    color = "white",
-    fill="#880E4F") +
-    ylim(0, 1) + 
-  labs(y = "Jaccard's Dissimilarity", x = "Year from Baseline") 
-
-
-
-
-## FOR WATERSHED 4B
-
-## Subsetting watershed "4B", the summarizing data based on the counts of species per year. Pivoting the output into a wide format so that each row is a species name and each column is a year from 1992 to 2013, and the values are the species counts per year.
-smammals_jaccdiss_4B <- smammals %>% 
-  subset(Watershed_name == "4B") %>%
-  group_by(Species, Recyear) %>% 
-  reframe(Total = (Count)) %>% 
-  pivot_wider(names_from = "Species", values_from = "Total", 
-              values_fn = function(x) paste(sum(x)))
-
-## Transforming the species counts to just presence/absence values, removing the species names column from the matrix for the dissimilarity test, then running a Jaccard's dissimilarity test on the differences between years.
-smammals_jaccdiss_4B <- 
-  smammals_jaccdiss_4B[, -c(1)] %>% 
-  decostand(method = "pa") %>% 
-  vegdist(method = "jaccard")
-
-## Having the Jaccard's dissimilarity output be coded and saved as a matrix
-smammals_jaccdiss_4B <- as.matrix(smammals_jaccdiss_4B)
-
-## Taking that matrix and adding in dimension names (the years of the data) to make the matrix readable.
-dimnames(smammals_jaccdiss_4B) <- list(c("1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013"), 
-                                       c("1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013"))
-
-## Transforming the Jaccard's dissimilarity matrix into a data frame and renaming the automatically created column names, so now the columns include "Year1": the first year being compared, "Year2": the year that is being compared to Var1, and "Jacc_diss": the Jaccard's dissimilarity value.
-smammals_jaccdiss_4B_df <- as.data.frame.table(as.matrix(smammals_jaccdiss_4B))%>%
-  rename("Year1" = "Var1",
-         "Year2" = "Var2" ,
-         "Jacc_diss" = "Freq")
-
-## Subsetting "1992", meaning the remaining values will be the Jaccard's dissimilarity compared to the baseline year 
-smammals_jaccdiss_4B_df <- 
-  smammals_jaccdiss_4B_df %>% 
-  subset(Year1 == "1992") %>% 
-  mutate(Year2 = as.numeric(Year2))
-  
-
-## Creating a plot to show how dissimilarity in species presence compared to the baseline year for watershed 4B in the small mammals dataset
-smammals_jaccdiss_4B_plot <- 
-  smammals_jaccdiss_4B_df[-(1), ] %>% 
-  ggplot(aes(x = Year2, y = Jacc_diss)) + 
-  geom_point(alpha = 0.5, size = 4, color = "#4A148C") +
-  theme_bw() +
-  geom_smooth(method = "lm") +
-  ggpubr::stat_cor() +
-  geom_label(label="4B", 
-    x=21,
-    y=1.00,
-    label.padding = unit(0.55, "lines"), # Rectangle size around label
-    label.size = 0.6,
-    color = "white",
-    fill="#4A148C") +
-    ylim(0, 1) + 
-  labs(y = "Jaccard's Dissimilarity", x = "Year from Baseline") 
-
-
-
-
-#FOR WATERSHED N4D
-
-## Subsetting watershed "N4D", the summarizing data based on the counts of species per year. Pivoting the output into a wide format so that each row is a species name and each column is a year from 1992 to 2013, and the values are the species counts per year.. 
-smammals_jaccdiss_N4D <- smammals %>% 
-  subset(Watershed_name == "N4D") %>%
-  group_by(Species, Recyear) %>% 
-  reframe(Total = (Count)) %>% 
-  pivot_wider(names_from = "Species", values_from = "Total", 
-              values_fn = function(x) paste(sum(x)))
-
-## Transforming the species counts to just presence/absence values, removing the species names column from the matrix for the dissimilarity test, then running a Jaccard's dissimilarity test on the differences between years.
-smammals_jaccdiss_N4D <- 
-  smammals_jaccdiss_N4D[, -c(1)] %>% 
-  decostand(method = "pa") %>% 
-  vegdist(method = "jaccard")
-
-## Having the Jaccard's dissimilarity output be coded and saved as a matrix
-smammals_jaccdiss_N4D<- as.matrix(smammals_jaccdiss_N4D)
-## Taking that matrix and adding in dimension names (the years of the data) to make the matrix readable.
-dimnames(smammals_jaccdiss_N4D) <- list(c("1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013"), 
-                                       c("1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013"))
-
-## Transforming the Jaccard's dissimilarity matrix into a data frame and renaming the automatically created column names, so now the columns include "Year1": the first year being compared, "Year2": the year that is being compared to Var1, and "Jacc_diss": the Jaccard's dissimilarity value.
-smammals_jaccdiss_N4D_df <- as.data.frame.table(as.matrix(smammals_jaccdiss_N4D)) %>%
-  rename("Year1" = "Var1",
-         "Year2" = "Var2" ,
-         "Jacc_diss" = "Freq")
-
-## Subsetting "1992", meaning the remaining values will be the Jaccard's dissimilarity compared to the baseline year 
-smammals_jaccdiss_N4D_df <- smammals_jaccdiss_N4D_df %>% 
-  subset(Year1 == "1992") %>% 
-  mutate(Year2 = as.numeric(Year2))
-
-## Creating a plot to show how dissimilarity in species presence compared to the baseline year for watershed N4D in the small mammals dataset
-smammals_jaccdiss_N4D_plot <- 
-  smammals_jaccdiss_N4D_df[-(1), ] %>% 
-  ggplot(aes(x = Year2, y = Jacc_diss)) + 
-  geom_point(alpha = 0.5, size = 4, color="#311B92") +
-  geom_smooth(method = "lm") +
-  ggpubr::stat_cor() +
-  theme_bw() +
-  geom_label(label="N4D", 
-    x=21,
-    y=1.00,
-    label.padding = unit(0.55, "lines"), # Rectangle size around label
-    label.size = 0.6,
-    color = "white",
-    fill="#311B92") +
-  ylim(0, 1) +
-  labs(y = "Jaccard's Dissimilarity", x = "Year from Baseline") 
-
-
-
-
-# FOR 20B
-
-## Subsetting watershed "20B", the summarizing data based on the counts of species per year. Pivoting the output into a wide format so that each row is a species name and each column is a year from 1992 to 2013, and the values are the species counts per year.. 
-smammals_jaccdiss_20B <- smammals %>% 
-  subset(Watershed_name == "20B") %>%
-  group_by(Species, Recyear) %>% 
-  reframe(Total = (Count)) %>% 
-  pivot_wider(names_from = "Species", values_from = "Total", 
-              values_fn = function(x) paste(sum(x)))
-
-## Transforming the species counts to just presence/absence values, removing the species names column from the matrix for the dissimilarity test, then running a Jaccard's dissimilarity test on the differences between years.
-smammals_jaccdiss_20B <- 
-  smammals_jaccdiss_20B[, -c(1)] %>% 
-  decostand(method = "pa") %>% 
-  vegdist(method = "jaccard")
-
-## Having the Jaccard's dissimilarity output be coded and saved as a matrix
-smammals_jaccdiss_20B<- as.matrix(smammals_jaccdiss_20B)
-## Taking that matrix and adding in dimension names (the years of the data) to make the matrix readable.
-dimnames(smammals_jaccdiss_20B) <- list(c("1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013"), 
-                                       c("1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013"))
-
-## Transforming the Jaccard's dissimilarity matrix into a data frame, so now the columns include "Var1": the first year being compared, "Var2": the year that is being compared to Var1, and "Freq": the Jaccard's dissimilarity value.
-smammals_jaccdiss_20B_df <- as.data.frame.table(as.matrix(smammals_jaccdiss_20B)) %>%
-  rename("Year1" = "Var1",
-         "Year2" = "Var2" ,
-         "Jacc_diss" = "Freq")
-
-## Subsetting "1992", meaning the remaining values will be the Jaccard's dissimilarity compared to the baseline year 
-smammals_jaccdiss_20B_df <- smammals_jaccdiss_20B_df %>% 
-  subset(Year1 == "1992") %>% 
-  mutate(Year2 = as.numeric(Year2))
-  
-  
-## Creating a plot to show how dissimilarity in species presence compared to the baseline year for watershed 20B in the small mammals dataset
-smammals_jaccdiss_20B_plot <- 
-  smammals_jaccdiss_20B_df[-(1), ] %>% 
-  ggplot(aes(x = Year2, y = Jacc_diss)) + 
-  geom_point(alpha = 0.5, size = 4, color="#0D47A1") +
-  geom_smooth(method = "lm") +
-  ggpubr::stat_cor() +
-  theme_bw() +
-  geom_label(label="20B", 
-    x=21,
-    y=1.00,
-    label.padding = unit(0.55, "lines"), # Rectangle size around label
-    label.size = 0.6,
-    color = "white",
-    fill="#0D47A1") +
-  ylim(0, 1) +
-  labs(y = "Jaccard's Dissimilarity", x = "Year from Baseline") 
-
-
-
-
-# FOR N20B
-
-## Subsetting watershed "N20B", the summarizing data based on the counts of species per year. Pivoting the output into a wide format so that each row is a species name and each column is a year from 1992 to 2013, and the values are the species counts per year.. 
-smammals_jaccdiss_N20B <- smammals %>% 
-  subset(Watershed_name == "N20B") %>%
-  group_by(Species, Recyear) %>% 
-  reframe(Total = (Count)) %>% 
-  pivot_wider(names_from = "Species", values_from = "Total", 
-              values_fn = function(x) paste(sum(x)))
-
-## Transforming the species counts to just presence/absence values, removing the species names column from the matrix for the dissimilarity test, then running a Jaccard's dissimilarity test on the differences between years.
-smammals_jaccdiss_N20B <- 
-  smammals_jaccdiss_N20B[, -c(1)] %>% 
-  decostand(method = "pa") %>% 
-  vegdist(method = "jaccard")
-
-## Having the Jaccard's dissimilarity output be coded and saved as a matrix
-smammals_jaccdiss_N20B<- as.matrix(smammals_jaccdiss_N20B)
-## Taking that matrix and adding in dimension names (the years of the data) to make the matrix readable.
-dimnames(smammals_jaccdiss_N20B) <- list(c("1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013"), 
-                                       c("1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013"))
-
-## Transforming the Jaccard's dissimilarity matrix into a data frame, so now the columns include "Var1": the first year being compared, "Var2": the year that is being compared to Var1, and "Freq": the Jaccard's dissimilarity value.
-smammals_jaccdiss_N20B_df <- as.data.frame.table(as.matrix(smammals_jaccdiss_N20B)) %>%
-  rename("Year1" = "Var1",
-         "Year2" = "Var2" ,
-         "Jacc_diss" = "Freq")
-
-## Subsetting "1992", meaning the remaining values will be the Jaccard's dissimilarity compared to the baseline year 
-smammals_jaccdiss_N20B_df <- smammals_jaccdiss_N20B_df %>% 
-  subset(Year1 == "1992") %>% 
-  mutate(Year2 = as.numeric(Year2))
-  
-  
-## Creating a plot to show how dissimilarity in species presence compared to the baseline year for watershed 20B in the small mammals dataset
-smammals_jaccdiss_N20B_plot <- 
-  smammals_jaccdiss_N20B_df[-(1), ] %>% 
-  ggplot(aes(x = Year2, y = Jacc_diss)) + 
-  geom_point(alpha = 0.5, size = 4, color="#006064") +
-  theme_bw() +
-  geom_smooth(method = "lm") +
-  ggpubr::stat_cor() +
-  geom_label(label="N20B", 
-    x=21,
-    y=1.00,
-    label.padding = unit(0.55, "lines"), # Rectangle size around label
-    label.size = 0.6,
-    color = "white",
-    fill="#006064") +
-  ylim(0, 1) +
-  labs(y = "Jaccard's Dissimilarity", x = "Year from Baseline") 
-
-
-
-smammals_jaccdiss_1D_plot
-smammals_jaccdiss_N1B_plot
-smammals_jaccdiss_4B_plot
-smammals_jaccdiss_N4D_plot
-smammals_jaccdiss_20B_plot
-smammals_jaccdiss_N20B_plot
-
-
-plot_grid(
-  smammals_jaccdiss_1D_plot, smammals_jaccdiss_4B_plot, smammals_jaccdiss_20B_plot, smammals_jaccdiss_N1B_plot,
-  smammals_jaccdiss_N4D_plot, smammals_jaccdiss_N20B_plot,
-  align="hv"
-)
-
-```
 
 ### Small-mammals: Species Richness
 ```{r smammals richness}
