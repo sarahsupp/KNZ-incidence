@@ -605,7 +605,7 @@ smammals_bc_allyears <- as.data.frame.table(as.matrix(smammals_bc)) %>%
   filter(Year1 == 1992) %>%
   filter(Watershed1 == Watershed2)
 
-#FIXME: MAKE THIS DATAFRAME LESS REDUNDANT (DELETE LOWER TRIANGE?)
+#FIXME: MAKE THIS DATAFRAME LESS REDUNDANT (DELETE LOWER TRIANGLE?)
 ## Transform the Jaccard's dissimilarity matrix into a data frame
 # Rename the automatically created column names
 # Filter Year1==Year2 so watersheds are compared within the same year
@@ -629,7 +629,7 @@ smammals_diss_year1toN <- merge(smammals_jacc_allyears, smammals_bc_allyears)
 
 smammals_diss_watersheds <- merge(smammals_jacc_watersheds, smammals_bc_watersheds)
   
-##Saving the data frames with dissimilarity into the E1_output_data folder in project directory 
+##Save to file
 write.csv(smammals_diss_year1toN,
           "Datasets/E1_output_data/E1_smammals/E1_smammals_dissimilarity_year1toN.csv")
 
@@ -637,43 +637,6 @@ write.csv(smammals_diss_watersheds,
           "Datasets/E1_output_data/E1_smammals/E1_smammals_dissimilarity_watersheds.csv")
 ```
 
-#FIXME: add this plot to E2 file instead?
-Visualize the Jaccards results
-```{r}
-smammals_jacc_plot <- 
-  ggplot(data=smammals_diss_year1toN, aes(x=Year2, y=Jacc_diss)) + 
-  geom_point() +
-  geom_smooth(method="lm") +
-  ggpubr::stat_cor() +
-  ylim(0,1) +
-  theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
-  labs(x="Year compared to baseline", y="Jaccard's dissimilarity") + 
-  facet_wrap(~Watershed1)
-  
-  smammals_jacc_plot
-  
-  ggsave("Figures/smammals_jacc_years.png", dpi=300, width=6, height=4)
-```
-
-Visualize the Bray-Curtis results
-```{r}
-smammals_bray_plot <- 
-  ggplot(data=smammals_diss_year1toN, aes(x=Year2, y=Bray_diss)) + 
-  geom_point() +
-  geom_smooth(method="lm") +
-  ggpubr::stat_cor() +
-  ylim(0,1) +
-  theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
-  labs(x="Year compared to baseline", y="Bray-Curtis dissimilarity") + 
-  facet_wrap(~Watershed1)
-  
-  smammals_bray_plot
-  
-  ggsave("Figures/smammals_bray_years.png", dpi=300, width=6, height=4)
-```
-    
 
 ### Small-mammals: Species Richness
 ```{r smammals richness}
@@ -729,42 +692,9 @@ write.csv(smammals_sprich, "Datasets/E1_output_data/E1_smammals/E1_smammals_rich
 write.csv(smammals_sprich_lm_short, "Datasets/E1_output_data/E1_smammals/E1_smammals_richness_lm.csv")
 ```
 
-#FIXME: add this plot to E2 file instead?
-Visualize the richness trends over time across the watersheds.
-All are statistically insignificant.
-```{r}
-smammals_sprich %>% ggplot(aes(x = Recyear, y = Richness)) + 
-  geom_point() + 
-  facet_wrap(.~Watershed_name) + 
-  geom_smooth(method = "lm", se = FALSE) + 
-  theme_bw() +
-  theme(text = element_text(size=12),
-        axis.text.x = element_text(angle=45, hjust=1, size =12)) +
-  labs(title = "Small Mammal Species Richness trend") +
-  xlab("Year") +
-  ggpubr::stat_cor()
-
-ggsave("Figures/small_mammals_richness.png", dpi=300, width=6, height=4)
-```
-
 ### Small-mammals: Abundance trends using the count data
 
 ```{r small mammals abundnce}
-
-# Take the table already created for the species counts, then 
-#   pivot the data into a long format,
-#   where 'Recyear' column is a numeric column, and 
-#   the 'Watershed_name', 'Species', and 'Common_name' columns into a factor
-smammals_spabund_long <- smammals_years_wide %>%
-  pivot_longer(cols = "1992":"2013",
-               names_to = "Recyear",
-               values_to = "Count") %>%
-  mutate(Recyear = as.numeric(Recyear),
-         Watershed_name = factor(Watershed_name),
-         Species = factor(Species),
-         Common_name = factor(Common_name))%>%
-  dplyr::select(-Species.watershed)
-
 #make a version of the wide dataset without the extra columns, for the linear model analysis
 smammals_spabund <- smammals_years_wide %>% 
   dplyr::select(-Watershed_name, -Species, -Common_name)
@@ -796,28 +726,6 @@ write.csv(smammals_years_wide, "Datasets/E1_output_data/E1_smammals/E1_smammals_
 
 #Save abundance model results
 write.csv(smammals_spabun_lm_short, "Datasets/E1_output_data/E1_smammals/E1_smammals_abundance_lm.csv")
-```
-
-#FIXME: add this plot to E2 file instead?
-Visualize the species with significantly increasing or decreasing abundance trends
-```{r}
-# this is a mess to visualize, let's try only showing the significant ones
-smammals_spabund_sig <- smammals_spabund_long %>% 
-  filter()
-
-ggplot(data=smammals_spabund_long, aes(x = Recyear, y = Count, group = Watershed_name)) + 
-  geom_point(alpha=0.50, aes(col=Watershed_name)) + 
-  geom_smooth(se = FALSE, aes(col=Watershed_name)) + 
-  theme_bw() +
-  theme(text = element_text(size=12),
-        axis.text.x = element_text(angle=45, hjust=1, size =12)) +
-  labs(title = "Small Mammal Species Abundance trends") +
-  xlab("Year") +
-  scale_color_viridis(discrete = TRUE, option = "D") +  # options: "A" to "E"
-  #ggpubr::stat_cor() + 
-  facet_wrap(.~Species, scales='free')
-
-ggsave("Figures/small_mammals_abundance.png", dpi=300, width=10, height=10)
 ```
 
 

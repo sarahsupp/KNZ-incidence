@@ -22,15 +22,37 @@ library(tidyverse)
 library(corrplot)
 ```
 
+Read in all relevant datasets for plotting
+```{r}
+# small mammal data and results
+E1_smammals_classified <- read_csv("Datasets/E1_output_data/E1_smammals/E1_smammals_classified.csv")
+E1_smammals_classified_abund <-
+  read_csv("Datasets/E1_output_data/E1_smammals/E1_smammals_classified_abund.csv")
+E1_smammals_dissimilarity_year1toN <- 
+  ("read_csvDatasets/E1_output_data/E1_smammals/E1_smammals_dissimilarity_year1toN.csv")
+E1_smammals_richness <- 
+  read_csv("Datasets/E1_output_data/E1_smammals/E1_smammals_richness.csv")
+E1_smammals_abundance <- read.csv("Datasets/E1_output_data/E1_smammals/E1_smammals_abundance.csv")
+E1_smammals_abundance_lm <- read.csv("Datasets/E1_output_data/E1_smammals/E1_smammals_abundance_lm.csv")
+
+# grasshopper data and results
+E1_grasshoppers_classified <-
+  read_csv("Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers_classified.csv")
+
+# bird data and results
+E1_birds_classified <- read_csv("Datasets/E1_output_data/E1_birds/E1_birds_classified.csv")
+
+# plant data and results
+E1_plants_classified <- read_csv("Datasets/E1_output_data/E1_plants/E1_plants_classified.csv")
+
+
+```
+
+
 ## Small Mammals
 
 ### Set-up
 ```{r smammals set up}
-
-
-#
-E1_smammals_classified <- read_csv("Datasets/E1_output_data/E1_smammals/E1_smammals_classified.csv")
-
 smammals_classified_long <- E1_smammals_classified %>% 
   pivot_longer(cols = "1992":"2013", names_to = "Recyear", values_to = "Presence")
 
@@ -65,8 +87,6 @@ smammals_graphing$classification <- factor(smammals_graphing$classification,
 
 
 ```{r}
-
-
 E1_smammals_classified %>% 
   group_by(Watershed_name, classification) %>% 
   dplyr::summarise(total_count=n(),.groups = 'drop') %>% 
@@ -117,8 +137,9 @@ smammals_violin %>% ggplot(aes(x = Proportion, y = classification, fill = classi
        fill = "Classification")
 
 ggsave("Figures/smammals_overall_classes.png", dpi=300, width=6, height=4)
+```
 
-
+```{r}
 smammals_graphing %>% 
   ggplot(aes(x = Recyear, y = Presence, fill = classification)) + 
   geom_tile(width = .6, height = .6) + 
@@ -137,14 +158,98 @@ smammals_graphing %>%
 
 ```
 
+**Small Mammal Dissimilarity plots**
+Visualize Jaccard's Dissimilarity compared to baseline year (year 1)
+```{r}
+smammals_jacc_plot <- 
+  ggplot(data=E1_smammals_dissimilarity_year1toN, aes(x=Year2, y=Jacc_diss)) + 
+  geom_point() +
+  geom_smooth(method="lm") +
+  ggpubr::stat_cor() +
+  ylim(0,1) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  labs(x="Year compared to baseline", y="Jaccard's dissimilarity") + 
+  facet_wrap(~Watershed1)
+  
+  smammals_jacc_plot
+  
+  ggsave("Figures/smammals_jacc_years.png", dpi=300, width=6, height=4)
+```
+
+Visualize the Bray-Curtis Dissimilarity compared to baseline year (year 1)
+```{r}
+smammals_bray_plot <- 
+  ggplot(data=E1_smammals_dissimilarity_year1toN, aes(x=Year2, y=Bray_diss)) + 
+  geom_point() +
+  geom_smooth(method="lm") +
+  ggpubr::stat_cor() +
+  ylim(0,1) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  labs(x="Year compared to baseline", y="Bray-Curtis dissimilarity") + 
+  facet_wrap(~Watershed1)
+  
+  smammals_bray_plot
+  
+  ggsave("Figures/smammals_bray_years.png", dpi=300, width=6, height=4)
+```
+
+**Small Mammal Species Richness plots**
+Visualize the richness trends over time across the watersheds.
+All are statistically insignificant.
+```{r}
+ggplot(data=E1_smammals_richness, aes(x = Recyear, y = Richness)) + 
+  geom_point() + 
+  facet_wrap(.~Watershed_name) + 
+  geom_smooth(method = "lm", se = FALSE) + 
+  theme_bw() +
+  theme(text = element_text(size=12),
+        axis.text.x = element_text(angle=45, hjust=1, size =12)) +
+  labs(title = "Small Mammal Species Richness trend") +
+  xlab("Year") +
+  ggpubr::stat_cor()
+
+ggsave("Figures/small_mammals_richness.png", dpi=300, width=6, height=4)
+```
+
+Visualize the species abundance trends
+```{r}
+# Take the table of species counts, then 
+#   pivot the data into a long format,
+#   where 'Recyear' column is a numeric column, and 
+#   the 'Watershed_name', 'Species', and 'Common_name' columns into a factor
+smammals_spabund_long <- E1_smammals_abundance %>%
+  pivot_longer(cols = "1992":"2013",
+               names_to = "Recyear",
+               values_to = "Count") %>%
+  mutate(Recyear = as.numeric(Recyear),
+         Watershed_name = factor(Watershed_name),
+         Species = factor(Species),
+         Common_name = factor(Common_name))%>%
+  dplyr::select(-Species.watershed)
+
+# show abundance trends by species, comparing across watersheds
+ggplot(data=smammals_spabund_long, aes(x = Recyear, y = Count, group = Watershed_name)) + 
+  geom_point(alpha=0.50, aes(col=Watershed_name)) + 
+  geom_smooth(se = FALSE, aes(col=Watershed_name)) + 
+  theme_bw() +
+  theme(text = element_text(size=12),
+        axis.text.x = element_text(angle=45, hjust=1, size =12)) +
+  labs(title = "Small Mammal Species Abundance trends") +
+  xlab("Year") +
+  scale_color_viridis(discrete = TRUE, option = "D") +  # options: "A" to "E"
+  #ggpubr::stat_cor() + 
+  facet_wrap(.~Species, scales='free')
+
+ggsave("Figures/small_mammals_abundance.png", dpi=300, width=10, height=10)
+```
+
 
 ## Grasshoppers
 
 ### Set-up
 ```{r}
-
-E1_grasshoppers_classified <- read_csv("Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers_classified.csv")
-
 grasshoppers_classified_long <- E1_grasshoppers_classified %>% 
   pivot_longer(cols = "2002":"2020", names_to = "Recyear", values_to = "Presence")
 
@@ -219,8 +324,6 @@ ggsave("Figures/grasshoppers_overall_classes.png", dpi=300, width=6, height=4)
 
 ## Birds
 ```{r}
-E1_birds_classified <- read_csv("Datasets/E1_output_data/E1_birds/E1_birds_classified.csv")
-
 birds_classified_long <- E1_birds_classified %>% 
   pivot_longer(cols = "1992":"2009", names_to = "Recyear", values_to = "Presence")
 
@@ -295,7 +398,6 @@ ggsave("Figures/birds_overall_classes.png", dpi=300, width=6, height=4)
 ## Plants
 
 ```{r}
-E1_plants_classified <- read_csv("Datasets/E1_output_data/E1_plants/E1_plants_classified.csv")
 unique(E1_plants_classified$Watershed_name)
 
 #FIXME: clean up the increasing/decreasing stuff, or put that as a separate analysis/visual in a different markdown chunk.
