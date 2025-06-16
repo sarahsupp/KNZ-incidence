@@ -357,7 +357,7 @@ statSumm <- tibble("numyears" = tslen,
 ```
 
 We also need functions to extract information from linear models. These will be used later for analyzing species richness across each watershed.
-```{r}
+```{r get model results}
 ##'fit_model' takes the data frame and runs a linear model for richness ('value') by year ('n').
 fit_model <- function(df) lm(value ~ n, data = df)
 
@@ -637,8 +637,6 @@ write.csv(smammals_diss_watersheds,
           "Datasets/E1_output_data/E1_smammals/E1_smammals_dissimilarity_watersheds.csv")
 ```
 
-#TODO: START HERE AGAIN
-
 #FIXME: add this plot to E2 file instead?
 Visualize the Jaccards results
 ```{r}
@@ -731,6 +729,7 @@ write.csv(smammals_sprich, "Datasets/E1_output_data/E1_smammals/E1_smammals_rich
 write.csv(smammals_sprich_lm_short, "Datasets/E1_output_data/E1_smammals/E1_smammals_richness_lm.csv")
 ```
 
+#FIXME: add this plot to E2 file instead?
 Visualize the richness trends over time across the watersheds.
 All are statistically insignificant.
 ```{r}
@@ -750,18 +749,79 @@ ggsave("Figures/small_mammals_richness.png", dpi=300, width=6, height=4)
 
 ### Small-mammals: Abundance trends using the count data
 
-```{r}
-ggplot(smammals, aes(Recyear, Count, group=Watershed_name)) + 
-  geom_point(aes(col=Watershed_name)) + 
-  geom_line(aes(col=Watershed_name)) +
-  #stat_smooth(method="lm", aes(col=Watershed_name)) + 
-  facet_wrap(~Species, scales='free') +
-  theme_bw()
+```{r small mammals abundnce}
 
-#FIXME: Visual and statistical analysis of the abundance datasets
+# Take the table already created for the species counts, then 
+#   pivot the data into a long format,
+#   where 'Recyear' column is a numeric column, and 
+#   the 'Watershed_name', 'Species', and 'Common_name' columns into a factor
+smammals_spabund_long <- smammals_years_wide %>%
+  pivot_longer(cols = "1992":"2013",
+               names_to = "Recyear",
+               values_to = "Count") %>%
+  mutate(Recyear = as.numeric(Recyear),
+         Watershed_name = factor(Watershed_name),
+         Species = factor(Species),
+         Common_name = factor(Common_name))%>%
+  dplyr::select(-Species.watershed)
 
+#make a version of the wide dataset without the extra columns, for the linear model analysis
+smammals_spabund <- smammals_years_wide %>% 
+  dplyr::select(-Watershed_name, -Species, -Common_name)
+
+#Use 'purr' to run the model. The gather function get the values we need, and the group_by function makes sure the values are grouped by 'Watershed_name'. 
+#   'n' is the row number, which translates to the year (1992 = 1, 1993 = 2... 2022 = 31). 
+#   The arrange function orders the data by 'Watershed_name' and row number. 
+#   The nest function nests all the data (year/row number, and richness) into a single column, while each row is a watershed. 
+#   The rest of the code runs the linear models for each row, and creates new columns with the outputs.
+smammals_spabun_lm <- smammals_spabund %>%
+  gather('year', 'value', -Species.watershed) %>%
+  group_by(Species.watershed) %>%
+  mutate(n = row_number()) %>%
+  arrange(Species.watershed, n) %>%
+  nest() %>%
+  mutate(model = map(data, fit_model)) %>%
+  mutate(slope = map_dbl(model, get_slope)) %>%
+  mutate(p_value = map_dbl(model, get_p_value)) %>%
+  mutate(rsquared = map_dbl(model, get_rsq))
+
+# eliminate the list type before writing to file (this is the detailed model results)
+smammals_spabun_lm_short <- smammals_spabun_lm %>%
+  dplyr::select(Species.watershed, slope, p_value, rsquared) %>%
+  separate(Species.watershed, c("Genus", "Spp", "Watershed_name")) %>%
+  unite("Species", Genus:Spp, sep = "_") 
+
+#Save abundance data 
+write.csv(smammals_years_wide, "Datasets/E1_output_data/E1_smammals/E1_smammals_abundance.csv")
+
+#Save abundance model results
+write.csv(smammals_spabun_lm_short, "Datasets/E1_output_data/E1_smammals/E1_smammals_abundance_lm.csv")
 ```
 
+#FIXME: add this plot to E2 file instead?
+Visualize the species with significantly increasing or decreasing abundance trends
+```{r}
+# this is a mess to visualize, let's try only showing the significant ones
+smammals_spabund_sig <- smammals_spabund_long %>% 
+  filter()
+
+ggplot(data=smammals_spabund_long, aes(x = Recyear, y = Count, group = Watershed_name)) + 
+  geom_point(alpha=0.50, aes(col=Watershed_name)) + 
+  geom_smooth(se = FALSE, aes(col=Watershed_name)) + 
+  theme_bw() +
+  theme(text = element_text(size=12),
+        axis.text.x = element_text(angle=45, hjust=1, size =12)) +
+  labs(title = "Small Mammal Species Abundance trends") +
+  xlab("Year") +
+  scale_color_viridis(discrete = TRUE, option = "D") +  # options: "A" to "E"
+  #ggpubr::stat_cor() + 
+  facet_wrap(.~Species, scales='free')
+
+ggsave("Figures/small_mammals_abundance.png", dpi=300, width=10, height=10)
+```
+
+
+#TODO: START HERE AGAIN
 
 
 ## Grasshoppers (2002 - 2020) {.tabset}
