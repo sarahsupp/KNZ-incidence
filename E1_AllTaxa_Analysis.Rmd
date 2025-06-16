@@ -489,18 +489,21 @@ view(smammals_class.switch3_wide)
 ```
 
 
-### Small-mammals: Dissimilarity Between Watersheds *FIXME*
+### Small-mammals: Dissimilarity Between Watersheds 
 This section is for conducting dissimilarity tests between watersheds for the small-mammal dataset. 
 
-These dissimilarity tests will include a Jaccard's dissimilarity test for the first year of the time series, a Jaccard's dissimilarity test for the last year of the time series, a Jaccard's dissimilarity test for the overall time-series, and a Bray-Curtis dissimilarity test for the overall time-series.
+These dissimilarity tests will include Jaccard's and Bray comparison for:
+  - the first year to the last year of the time series, within watersheds
+  - across watersheds for the first year of the time series
+  - across watersheds for the last year of the time series
 
 **Jaccard's dissimilarity between the first and last year of year in the time series, 1992 & 2013**
-```{r smammals dissimilarity}
+```{r smammals jaccard dissimilarity}
 
 #Jaccard's dissimilarity between the first and last year of year in the time series, 1992 & 2013
 
-##Creating the needed data frame by subsetting the year 1992 and 2013, then grouping the smammals data frame by watershed, species, and year and just pasting the species counts, then pivoting so that each watershed and year is a row and each species is a column
-smammals_jacc_diss_year1and22 <- smammals %>% 
+##Create the needed data frame by subsetting the year 1992 and 2013, then grouping the smammals data frame by watershed, species, and year and just pasting the species counts, then pivoting so that each watershed and year is a row and each species is a column
+smammals_counts <- smammals %>% 
   subset(Recyear %in% c(1992, 2013)) %>%
   group_by(Watershed_name, Species, Recyear) %>% 
   reframe(Total = (Count)) %>% 
@@ -509,102 +512,93 @@ smammals_jacc_diss_year1and22 <- smammals %>%
   unite("Watershed_year", Watershed_name:Recyear, sep = "_")
 
 # save the order of the names for watershed_year
-watershed_year <- smammals_jacc_diss_year1and22$Watershed_year
+watershed_year <- smammals_counts$Watershed_year
   
-##Standardizing the species counts by presence/absence, then conducting a Jaccard's dissimilarity test accross watersheds
-smammals_jacc_diss_year1and22 <- smammals_jacc_diss_year1and22[, -c(1)] %>% 
+## Standardize species counts by presence/absence; 
+#   conduct Jaccard's dissimilarity test across watersheds
+smammals_jacc <- smammals_counts[, -c(1)] %>% 
   decostand(method = "pa") %>% 
   vegdist(method = "jaccard")
 
 
-##Taking the matrix output of the Jaccard's dissimilarity test and adding row/column names based in the order of the watersheds in 'smammals_jacc_diss_year1'
-smammals_jacc_diss_year1and22 <- as.matrix(smammals_jacc_diss_year1and22)
-dimnames(smammals_jacc_diss_year1and22) <- list(watershed_year, watershed_year)
+##Take the matrix output of the Jaccard's dissimilarity test and adding row/column names based in the order of the watersheds in 'smammals_jacc_diss_year1'
+smammals_jacc <- as.matrix(smammals_jacc)
+dimnames(smammals_jacc) <- list(watershed_year, watershed_year)
 
 ##Creating a data frame with the outputs, having the watershed pairs as rows (one column is the first watershed, the second column is the watershed it is being compared to, and the third column is contains the dissimilarity values). I will be adding outputs from other dissimilarity matricees to this data frame.
-smammals_diss <- as.data.frame.table(as.matrix(smammals_jacc_diss_year1and22))
-#Renaming the column name for the dissimilarity outputs since I'll be adding to this data frame later on
-smammals_diss <- smammals_diss %>% 
+smammals_jacc <- as.data.frame.table(as.matrix(smammals_jacc))
+
+#Rename column name for the dissimilarity outputs 
+smammals_jacc <- smammals_jacc %>% 
   rename("JaccDiss" = "Freq") %>%
   separate(Var1, c("Watershed1", "Recyear"), "_") %>%
   separate(Var2, c("Watershed2", "Recyear2"), "_")
 
 # dissimiliarity WITHIN watersheds, year 1 to year 22 (N)
-smammals_diss_year1toN <- smammals_diss %>%
+smammals_jacc_year1toN <- smammals_jacc %>%
   filter(Watershed1 == Watershed2) %>%
   filter(Recyear == 1992 & Recyear2 == 2013)
 
 # dissimilarity ACROSS watersheds, separately within year 1 and within year 22 (N)
-smammals_diss_watersheds <- smammals_diss %>%
+smammals_jacc_watersheds <- smammals_jacc %>%
   filter(Recyear == Recyear2)
 ```
 
-
-
-#Jaccard's Dissimilarity on the overall dataset, summing the individual species counts by watershed
-```{r}
-##Grouping the smammals data frame by watershed and species and summing the species counts through the years, then pivoting so that each watershed is a row and each species is a column
-smammals_diss_overall <- smammals %>%  
-  group_by(Watershed_name, Species) %>% 
-  reframe(Total = sum(Count)) %>% 
-  pivot_wider(names_from = "Species", values_from = "Total", 
-              values_fn = function(x) paste(sum(x)))
-
-##Standardizing the species counts by presence/absence, then conducting a Jaccard's dissimilarity test accross watersheds
-smammals_jacc_overall <- smammals_diss_overall[, -c(1)] %>% 
-  decostand(method = "pa") %>% 
-  vegdist(method = "jaccard")
-
-##Taking the matrix output of the Jaccard's dissimilarity test and adding row/column names based in the order of the watersheds in 'smammals_diss_overall'
-smammals_jacc_overall <- as.matrix(smammals_jacc_overall)
-dimnames(smammals_jacc_overall) <- list(c("1D", "20B", "4B", 
-                                          "N1B", "N20B", "N4D"), 
-                                        c("1D", "20B", "4B", 
-                                          "N1B", "N20B", "N4D"))
-
-##Transforming the dissimilarity matrix to a data frame, then adding the output to the already created data frame.
-smammals_jacc_overall <- as.data.frame.table(as.matrix(smammals_jacc_overall))
-smammals_diss <- left_join(smammals_diss, 
-                           smammals_jacc_overall, 
-                           by = c("Var1", "Var2")) 
-##Renaming the dissimilarity output numbers to 'JaccDiss_overall'
-smammals_diss <- smammals_diss %>% 
-  rename("JaccDiss_overall" = "Freq")
-
-
-
+Let's also calculate Bray-Curtis dissimilarity, which takes abundance (counts) into consideration
+```{r smammals jaccard dissimilarity}
+# we already made a dataframe for counts in years 1 and years 22 (N), so we can use that again here
 
 #Bray-Curtis dissimilarity for overall dataset, summing the individual species counts by watershed
 
-##Standardizing for the percent abundance of each species based on the total abundance across each watershed, then conducting a Bray-Curtis dissimilarity test on the output
-smammals_bc_overall <- smammals_diss_overall[, -c(1)] %>% 
+##Standardize for the percent abundance of each species based on the total abundance across each watershed, then conducting a Bray-Curtis dissimilarity test on the output
+smammals_bc <- smammals_counts[, -c(1)] %>% 
   mutate_if(is.character, as.numeric) %>% 
   decostand(method = "total") %>% 
   vegdist(method = "bray")
 
-#Taking the matrix output of the Bray-Curtis dissimilarity test and adding row/column names based in the order of the watersheds in 'smammals_diss_overall'
-smammals_bc_overall <- as.matrix(smammals_bc_overall)
-dimnames(smammals_bc_overall) <- list(c("1D", "20B", "4B", 
-                                        "N1B", "N20B", "N4D"), 
-                                      c("1D", "20B", "4B",
-                                        "N1B","N20B", "N4D"))
+#Take the matrix output of the Bray-Curtis dissimilarity test
+#   add row/column names based in the order of the watersheds in smammals_count
+smammals_bc <- as.matrix(smammals_bc)
+dimnames(smammals_bc) <- list(watershed_year, watershed_year)
 
-#Transforming the dissimilarity matrix to a data frame, then adding the output to the already created data frame.
-smammals_bc_overall <- as.data.frame.table(as.matrix(smammals_bc_overall))
-smammals_diss <- left_join(smammals_diss, 
-                           smammals_bc_overall, 
-                           by = c("Var1", "Var2"))
-##Renaming the dissimilarity output numbers to 'BrayDiss_overall'
-smammals_diss <- smammals_diss %>% rename("BrayDiss_overall" = "Freq")
+#Transform the dissimilarity matrix to a data frame
+smammals_bc <- as.data.frame.table(as.matrix(smammals_bc))
 
-#Renaming the 'var1' and 'var2' columns to 'watershed1' and 'watershed2'
-smammals_diss <- smammals_diss %>% rename("Watershed1" = "Var1",
-                                          "Watershed2" = "Var2")
+#rename colnames
+smammals_bc <- smammals_bc %>% 
+  rename("BrayDiss" = "Freq") %>%
+  separate(Var1, c("Watershed1", "Recyear"), "_") %>%
+  separate(Var2, c("Watershed2", "Recyear2"), "_")
 
-##Saving the data frame with all dissimilarity outputs into the E1_output_data folder located in project directory 
-write.csv(smammals_diss, "Datasets/E1_output_data/E1_smammals/E1_smammals_dissimilarity.csv")
+# dissimiliarity WITHIN watersheds, year 1 to year 22 (N)
+smammals_bray_year1toN <- smammals_bc %>%
+  filter(Watershed1 == Watershed2) %>%
+  filter(Recyear == 1992 & Recyear2 == 2013)
+
+# dissimilarity ACROSS watersheds, separately within year 1 and within year 22 (N)
+smammals_bray_watersheds <- smammals_bc %>%
+  filter(Recyear == Recyear2)
+
+#FIXME: merge jacc and bray datasets, write to disk
+```
+
+Merge dissimilarity datasets and write to file
+```{r save dissimilarity results}
+#merge jacc and bray results into a single dataframe
+smammals_diss_year1toN <- merge(smammals_jacc_year1toN, smammals_bray_year1toN)
+
+smammals_diss_watersheds <- merge(smammals_jacc_watersheds, smammals_bray_watersheds)
+  
+##Saving the data frames with dissimilarity into the E1_output_data folder  in project directory 
+write.csv(smammals_diss_year1toN,
+          "Datasets/E1_output_data/E1_smammals/E1_smammals_dissimilarity_year1toN.csv")
+
+write.csv(smammals_diss_watersheds,
+          "Datasets/E1_output_data/E1_smammals/E1_smammals_dissimilarity_watersheds.csv")
 
 ```
+
+#TODO: START HERE AGAIN
 *
 ### Small-mammals: Jaccard's Dissimiliarity 
 TRYING SOMETHING ELSE FOR NOW! SUBSETTING EACH WATERSHED INDIVIDUALLY, THEN CREATING A DISSIMILRITY MATRIX COMPARING EACH YEAR TO THE PREVIOUS? (OR BASELINE)
