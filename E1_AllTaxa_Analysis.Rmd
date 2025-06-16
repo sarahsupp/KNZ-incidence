@@ -234,7 +234,7 @@ label_abundance <- function(x) {
 ```
 
 
-Then we can get the abundance trends.
+Then we can use this function to get the abundance trends.
 
 ```{r getAbundTrends}
 
@@ -356,6 +356,20 @@ statSumm <- tibble("numyears" = tslen,
 
 ```
 
+We also need functions to extract information from linear models. These will be used later for analyzing species richness across each watershed.
+```{r}
+##'fit_model' takes the data frame and runs a linear model for richness ('value') by year ('n').
+fit_model <- function(df) lm(value ~ n, data = df)
+
+##'get_slope' takes the output from the models ('mod') and extracts the slope ('estimate')
+get_slope <- function(mod) tidy(mod)$estimate[2]
+
+##'get_p_value' takes the output from the models ('mod') and extracts the p.value
+get_p_value <- function(mod) tidy(mod)$p.value[2]
+
+##'get_rsq' takes the output from the models ('mod') and extracts the r-squared value
+get_rsq <- function(mod) summary(mod)$r.squared
+```
 
 
 # Determining Species Incidence Classification
@@ -489,118 +503,13 @@ view(smammals_class.switch3_wide)
 ```
 
 
-### Small-mammals: Dissimilarity Between Watersheds 
+### Small-mammals: Dissimilarity Between Watersheds and between Years
 This section is for conducting dissimilarity tests between watersheds for the small-mammal dataset. 
 
 These dissimilarity tests will include Jaccard's and Bray comparison for:
-  - the first year to the last year of the time series, within watersheds
-  - across watersheds for the first year of the time series
-  - across watersheds for the last year of the time series
+  - the first year to each subsequent year of the time series, within watersheds
+  - across watersheds, within each year separately
 
-**Jaccard's dissimilarity between the first and last year of year in the time series, 1992 & 2013**
-```{r smammals jaccard dissimilarity}
-
-#Jaccard's dissimilarity between the first and last year of year in the time series, 1992 & 2013
-
-##Create the needed data frame by subsetting the year 1992 and 2013, then grouping the smammals data frame by watershed, species, and year and just pasting the species counts, then pivoting so that each watershed and year is a row and each species is a column
-smammals_counts <- smammals %>% 
-  subset(Recyear %in% c(1992, 2013)) %>%
-  group_by(Watershed_name, Species, Recyear) %>% 
-  reframe(Total = (Count)) %>% 
-  pivot_wider(names_from = "Species", values_from = "Total", 
-              values_fn = function(x) paste(sum(x))) %>%
-  unite("Watershed_year", Watershed_name:Recyear, sep = "_")
-
-# save the order of the names for watershed_year
-watershed_year <- smammals_counts$Watershed_year
-  
-## Standardize species counts by presence/absence; 
-#   conduct Jaccard's dissimilarity test across watersheds
-smammals_jacc <- smammals_counts[, -c(1)] %>% 
-  decostand(method = "pa") %>% 
-  vegdist(method = "jaccard")
-
-
-##Take the matrix output of the Jaccard's dissimilarity test and adding row/column names based in the order of the watersheds in 'smammals_jacc_diss_year1'
-smammals_jacc <- as.matrix(smammals_jacc)
-dimnames(smammals_jacc) <- list(watershed_year, watershed_year)
-
-##Creating a data frame with the outputs, having the watershed pairs as rows (one column is the first watershed, the second column is the watershed it is being compared to, and the third column is contains the dissimilarity values). I will be adding outputs from other dissimilarity matricees to this data frame.
-smammals_jacc <- as.data.frame.table(as.matrix(smammals_jacc))
-
-#Rename column name for the dissimilarity outputs 
-smammals_jacc <- smammals_jacc %>% 
-  rename("JaccDiss" = "Freq") %>%
-  separate(Var1, c("Watershed1", "Recyear"), "_") %>%
-  separate(Var2, c("Watershed2", "Recyear2"), "_")
-
-# dissimiliarity WITHIN watersheds, year 1 to year 22 (N)
-smammals_jacc_year1toN <- smammals_jacc %>%
-  filter(Watershed1 == Watershed2) %>%
-  filter(Recyear == 1992 & Recyear2 == 2013)
-
-# dissimilarity ACROSS watersheds, separately within year 1 and within year 22 (N)
-smammals_jacc_watersheds <- smammals_jacc %>%
-  filter(Recyear == Recyear2)
-```
-
-Let's also calculate Bray-Curtis dissimilarity, which takes abundance (counts) into consideration
-```{r smammals jaccard dissimilarity}
-# we already made a dataframe for counts in years 1 and years 22 (N), so we can use that again here
-
-#Bray-Curtis dissimilarity for overall dataset, summing the individual species counts by watershed
-
-##Standardize for the percent abundance of each species based on the total abundance across each watershed, then conducting a Bray-Curtis dissimilarity test on the output
-smammals_bc <- smammals_counts[, -c(1)] %>% 
-  mutate_if(is.character, as.numeric) %>% 
-  decostand(method = "total") %>% 
-  vegdist(method = "bray")
-
-#Take the matrix output of the Bray-Curtis dissimilarity test
-#   add row/column names based in the order of the watersheds in smammals_count
-smammals_bc <- as.matrix(smammals_bc)
-dimnames(smammals_bc) <- list(watershed_year, watershed_year)
-
-#Transform the dissimilarity matrix to a data frame
-smammals_bc <- as.data.frame.table(as.matrix(smammals_bc))
-
-#rename colnames
-smammals_bc <- smammals_bc %>% 
-  rename("BrayDiss" = "Freq") %>%
-  separate(Var1, c("Watershed1", "Recyear"), "_") %>%
-  separate(Var2, c("Watershed2", "Recyear2"), "_")
-
-# dissimiliarity WITHIN watersheds, year 1 to year 22 (N)
-smammals_bray_year1toN <- smammals_bc %>%
-  filter(Watershed1 == Watershed2) %>%
-  filter(Recyear == 1992 & Recyear2 == 2013)
-
-# dissimilarity ACROSS watersheds, separately within year 1 and within year 22 (N)
-smammals_bray_watersheds <- smammals_bc %>%
-  filter(Recyear == Recyear2)
-
-#FIXME: merge jacc and bray datasets, write to disk
-```
-
-Merge dissimilarity datasets and write to file
-```{r save dissimilarity results}
-#merge jacc and bray results into a single dataframe
-smammals_diss_year1toN <- merge(smammals_jacc_year1toN, smammals_bray_year1toN)
-
-smammals_diss_watersheds <- merge(smammals_jacc_watersheds, smammals_bray_watersheds)
-  
-##Saving the data frames with dissimilarity into the E1_output_data folder  in project directory 
-write.csv(smammals_diss_year1toN,
-          "Datasets/E1_output_data/E1_smammals/E1_smammals_dissimilarity_year1toN.csv")
-
-write.csv(smammals_diss_watersheds,
-          "Datasets/E1_output_data/E1_smammals/E1_smammals_dissimilarity_watersheds.csv")
-
-```
-
-
-### Small-mammals: Jaccard's Dissimiliarity 
-Compare all years within a watershed to the baseline year.
 Is dissimilarity increasing through time?
 Is the rate of composition change different according to treatment?
 ```{r}
@@ -619,21 +528,21 @@ watershed_year <- smammals_count_allyears$Watershed_year
 ## Transform species counts to presence/absence values
 #   Remove the species names column from the matrix for the dissimilarity test.
 #   Run a Jaccard's dissimilarity test on the differences between years.
-smammals_jacc_allyears <-  smammals_count_allyears[, -c(1)] %>% 
+smammals_jacc <-  smammals_count_allyears[, -c(1)] %>% 
   decostand(method = "pa") %>% 
   vegdist(method = "jaccard")
 
 ## Transform Jaccard's dissimilarity output as a matrix
-smammals_jacc_allyears <- as.matrix(smammals_jacc_allyears)
+smammals_jacc <- as.matrix(smammals_jacc)
 ## Add dimension names (the watershed_years)
-dimnames(smammals_jacc_allyears) <- list(watershed_year, watershed_year)
+dimnames(smammals_jacc) <- list(watershed_year, watershed_year)
 
 ## Transform the Jaccard's dissimilarity matrix into a data frame
 # Rename the automatically created column names
 # Filter Year1 to always be 1992 so all comparisons are relative to the baseline year
 # Keep only comparisons within watershed
 # ensure years are numeric
-smammals_jacc_allyears <- as.data.frame.table(as.matrix(smammals_jacc_allyears)) %>%
+smammals_jacc_allyears <- as.data.frame.table(as.matrix(smammals_jacc)) %>%
   separate(Var1, c("Watershed1", "Recyear"), "_") %>%
   separate(Var2, c("Watershed2", "Recyear2"), "_") %>%
   rename("Year1" = "Recyear",
@@ -643,13 +552,98 @@ smammals_jacc_allyears <- as.data.frame.table(as.matrix(smammals_jacc_allyears))
          Year2 = as.numeric(Year2)) %>%
   filter(Year1 == 1992) %>%
   filter(Watershed1 == Watershed2)
+
+#FIXME: MAKE THIS DATAFRAME LESS REDUNDANT (DELETE LOWER TRIANGE?)
+## Transform the Jaccard's dissimilarity matrix into a data frame
+# Rename the automatically created column names
+# Filter Year1 to always be 1992 so all comparisons are relative to the baseline year
+# Keep only comparisons within watershed
+# ensure years are numeric
+smammals_jacc_watersheds <- as.data.frame.table(as.matrix(smammals_jacc)) %>%
+  separate(Var1, c("Watershed1", "Recyear"), "_") %>%
+  separate(Var2, c("Watershed2", "Recyear2"), "_") %>%
+  rename("Year1" = "Recyear",
+         "Year2" = "Recyear2" ,
+         "Jacc_diss" = "Freq") %>%
+  mutate(Year1 = as.numeric(Year1),
+         Year2 = as.numeric(Year2)) %>%
+  filter(Year1 == Year2)
 ```
 
+Let's also calculate Bray-Curtis dissimilarity, which takes abundance (counts) into consideration
+```{r smammals jaccard dissimilarity}
+# we already made a dataframe for counts in years 1 and years 22 (N), so we can use that again here
+
+#Bray-Curtis dissimilarity for overall dataset, summing the individual species counts by watershed
+
+##Standardize for the percent abundance of each species based on total abundance across each watershed
+#   Conduct a Bray-Curtis dissimilarity test on the output
+smammals_bc <- smammals_count_allyears[, -c(1)] %>% 
+  mutate_if(is.character, as.numeric) %>% 
+  decostand(method = "total") %>% 
+  vegdist(method = "bray")
+
+#Take the matrix output of the Bray-Curtis dissimilarity test
+#   add row/column names based in the order of the watersheds in smammals_count
+smammals_bc <- as.matrix(smammals_bc)
+dimnames(smammals_bc) <- list(watershed_year, watershed_year)
+
+
+## Transform the Bray-Curtis dissimilarity matrix into a data frame
+# Rename the automatically created column names
+# Filter Year1 to always be 1992 so all comparisons are relative to the baseline year
+# Keep only comparisons within watershed
+# ensure years are numeric
+smammals_bc_allyears <- as.data.frame.table(as.matrix(smammals_bc)) %>%
+  separate(Var1, c("Watershed1", "Recyear"), "_") %>%
+  separate(Var2, c("Watershed2", "Recyear2"), "_") %>%
+  rename("Year1" = "Recyear",
+         "Year2" = "Recyear2" ,
+         "Bray_diss" = "Freq") %>%
+  mutate(Year1 = as.numeric(Year1),
+         Year2 = as.numeric(Year2)) %>%
+  filter(Year1 == 1992) %>%
+  filter(Watershed1 == Watershed2)
+
+#FIXME: MAKE THIS DATAFRAME LESS REDUNDANT (DELETE LOWER TRIANGE?)
+## Transform the Jaccard's dissimilarity matrix into a data frame
+# Rename the automatically created column names
+# Filter Year1==Year2 so watersheds are compared within the same year
+# Keep only comparisons within watershed
+# ensure years are numeric
+smammals_bc_watersheds <- as.data.frame.table(as.matrix(smammals_bc)) %>%
+  separate(Var1, c("Watershed1", "Recyear"), "_") %>%
+  separate(Var2, c("Watershed2", "Recyear2"), "_") %>%
+  rename("Year1" = "Recyear",
+         "Year2" = "Recyear2" ,
+         "Jacc_diss" = "Freq") %>%
+  mutate(Year1 = as.numeric(Year1),
+         Year2 = as.numeric(Year2)) %>%
+  filter(Year1 == Year2)
+```
+
+Merge dissimilarity datasets and write to file
+```{r save dissimilarity results}
+#merge jacc and bray results into a single dataframe
+smammals_diss_year1toN <- merge(smammals_jacc_allyears, smammals_bc_allyears)
+
+smammals_diss_watersheds <- merge(smammals_jacc_watersheds, smammals_bc_watersheds)
+  
+##Saving the data frames with dissimilarity into the E1_output_data folder in project directory 
+write.csv(smammals_diss_year1toN,
+          "Datasets/E1_output_data/E1_smammals/E1_smammals_dissimilarity_year1toN.csv")
+
+write.csv(smammals_diss_watersheds,
+          "Datasets/E1_output_data/E1_smammals/E1_smammals_dissimilarity_watersheds.csv")
+```
+
+#TODO: START HERE AGAIN
+
 #FIXME: add this plot to E2 file instead?
-Visualize the results
+Visualize the Jaccards results
 ```{r}
-smammals_jacc_allyears_plot <- 
-  ggplot(data=smammals_jacc_allyears, aes(x=Year2, y=Jacc_diss)) + 
+smammals_jacc_plot <- 
+  ggplot(data=smammals_diss_year1toN, aes(x=Year2, y=Jacc_diss)) + 
   geom_point() +
   geom_smooth(method="lm") +
   ggpubr::stat_cor() +
@@ -659,39 +653,63 @@ smammals_jacc_allyears_plot <-
   labs(x="Year compared to baseline", y="Jaccard's dissimilarity") + 
   facet_wrap(~Watershed1)
   
-  smammals_jacc_allyears_plot
+  smammals_jacc_plot
   
   ggsave("Figures/smammals_jacc_years.png", dpi=300, width=6, height=4)
 ```
+
+Visualize the Bray-Curtis results
+```{r}
+smammals_bray_plot <- 
+  ggplot(data=smammals_diss_year1toN, aes(x=Year2, y=Bray_diss)) + 
+  geom_point() +
+  geom_smooth(method="lm") +
+  ggpubr::stat_cor() +
+  ylim(0,1) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  labs(x="Year compared to baseline", y="Bray-Curtis dissimilarity") + 
+  facet_wrap(~Watershed1)
   
+  smammals_bray_plot
+  
+  ggsave("Figures/smammals_bray_years.png", dpi=300, width=6, height=4)
+```
+    
 
 ### Small-mammals: Species Richness
 ```{r smammals richness}
 
-#Taking the table already created for the species presence/absence matrix, then adding in the year and watershed information back in, then pivoting the data into a long format.
+# Take the table already created for the species presence/absence matrix, then 
+#   add in the year and watershed information back in, then 
+#   pivot the data into a long format,
+#   where 'Recyear' column is a numeric column, and 
+#   the 'Watershed_name' column into a factor
 smammals_sprich <- decostand_smammals_pa %>% 
   add_column(smammals_env) %>% 
   pivot_longer(cols = "1992":"2013", 
                names_to = "Recyear", 
-               values_to = "Presence")
-
-#Mutating the 'Recyear' column into a numeric column, and the 'Watershed_name' column into a factor
-smammals_sprich <- smammals_sprich %>% 
+               values_to = "Presence") %>% 
   mutate(Recyear = as.numeric(Recyear),
          Watershed_name = factor(Watershed_name))
 
-#Summing the presences of each species at each watershed and year to get a number for species richness
+
+#Sum the presences of each species at each watershed and year to get a value for species richness
 smammals_sprich <- smammals_sprich %>% 
   group_by(Watershed_name, Recyear) %>% 
   reframe(Richness = sum(Presence))
 
-#Pivoting the dataset 
+#Pivot the dataset 
 smammals_sprich_wide <- smammals_sprich %>% 
   pivot_wider(names_from = "Recyear", 
               values_from = "Richness")
 
-#Using 'purr' to run the model. The gather function get the values we need, and the group_by function makes sure the values are grouped by 'Watershed_name'. 'n' is the row number, which translates to the year (1992 = 1, 1993 = 2... 2022 = 31). The arrange function orders the data by 'Watershed_name' and row number. The nest function nests all the data (year/row number, and richness) into a single column, while each row is a watershed. The rest of the code runs the linear models for each row, and creates new columns with the outputs.
-smammals_sprich_values <- smammals_sprich_wide %>%
+#Use 'purr' to run the model. The gather function get the values we need, and the group_by function makes sure the values are grouped by 'Watershed_name'. 
+#   'n' is the row number, which translates to the year (1992 = 1, 1993 = 2... 2022 = 31). 
+#   The arrange function orders the data by 'Watershed_name' and row number. 
+#   The nest function nests all the data (year/row number, and richness) into a single column, while each row is a watershed. 
+#   The rest of the code runs the linear models for each row, and creates new columns with the outputs.
+smammals_sprich_lm <- smammals_sprich_wide %>%
   gather('year', 'value', -Watershed_name) %>%
   group_by(Watershed_name) %>%
   mutate(n = row_number()) %>%
@@ -702,32 +720,32 @@ smammals_sprich_values <- smammals_sprich_wide %>%
   mutate(p_value = map_dbl(model, get_p_value)) %>%
   mutate(rsquared = map_dbl(model, get_rsq))
 
-#Selecting the columns with the relevant info I want to keep
-smammals_sprich_values_shortened <- smammals_sprich_values %>% 
+# eliminate the list type before writing to file (this is the detailed model results)
+smammals_sprich_lm_short <- smammals_sprich_lm %>%
   dplyr::select(Watershed_name, slope, p_value, rsquared)
 
-#Combines the richness per year by watershed with the values of the model output (this is for ease of graphing later). This means the model output values by watershed('slope', 'p_value', and 'rsquared') will be repeated for each year.
-smammals_sprich_all <- left_join(smammals_sprich, smammals_sprich_values_shortened, by = "Watershed_name")
+#Save richness data 
+write.csv(smammals_sprich, "Datasets/E1_output_data/E1_smammals/E1_smammals_richness.csv")
 
+#Save richness model results
+write.csv(smammals_sprich_lm_short, "Datasets/E1_output_data/E1_smammals/E1_smammals_richness_lm.csv")
+```
 
-#Saving the data frame with the species richness outputs into the E1_output_data folder located in project directory 
-write.csv(smammals_sprich_all, "Datasets/E1_output_data/E1_smammals/E1_smammals_richness.csv")
-
-
-
-smammals_sprich_all %>% ggplot(aes(x = Recyear, y = Richness)) + 
+Visualize the richness trends over time across the watersheds.
+All are statistically insignificant.
+```{r}
+smammals_sprich %>% ggplot(aes(x = Recyear, y = Richness)) + 
   geom_point() + 
   facet_wrap(.~Watershed_name) + 
   geom_smooth(method = "lm", se = FALSE) + 
   theme_bw() +
   theme(text = element_text(size=12),
         axis.text.x = element_text(angle=45, hjust=1, size =12)) +
-  labs(title = "Small Mammals Species Richness per Year and Watershed") +
+  labs(title = "Small Mammal Species Richness trend") +
+  xlab("Year") +
   ggpubr::stat_cor()
 
-
-lm(Richness ~ (Recyear * Watershed_name), data = smammals_sprich) %>% summary()
-
+ggsave("Figures/small_mammals_richness.png", dpi=300, width=6, height=4)
 ```
 
 ### Small-mammals: Abundance trends using the count data
@@ -3133,18 +3151,6 @@ ggsave("Figures/plant_jaccard-diss_3xfire.png", dpi=300, width=10, height=6)
 
 ### Plants: Species Richness
 ```{r}
-
-#Creating functions to extract info from linear models that will be used for species richness across each watershed. 
-##'fit_model' takes the data frame and runs a linear model for richness ('value') by year ('n').
-##'get_slope' takes the output from the models ('mod') and extracts the slope ('estimate')
-##'get_p_value' takes the output from the models ('mod') and extracts the p.value
-##'get_rsq' takes the output from the models ('mod') and extracts the r-squared value
-fit_model <- function(df) lm(value ~ n, data = df)
-get_slope <- function(mod) tidy(mod)$estimate[2]
-get_p_value <- function(mod) tidy(mod)$p.value[2]
-get_rsq <- function(mod) summary(mod)$r.squared
-
-
 #Taking the table already created for the species presence/absence matrix, then adding in the year and watershed information back in, then pivoting the data into a long format.
 plants_sprich <- decostand_plants_pa %>% 
   add_column(plants_env) %>% 
