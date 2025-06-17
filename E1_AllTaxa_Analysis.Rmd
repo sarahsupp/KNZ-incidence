@@ -166,10 +166,7 @@ Conduct the **incidence classification** method
 # Here, we won't differentiate the data based on the trap lines or season
 grasshoppers <- E0_grasshoppers %>% 
   group_by(Recyear, Watershed_name, Species) %>% 
-  reframe(Count = sum(Total))
-
-#Combine the species & watershed variables to create a unique identifier
-grasshoppers <- grasshoppers %>% 
+  reframe(Count = sum(Total)) %>% 
   unite("Species.watershed", Species:Watershed_name, sep = ".", remove = FALSE)
 
 #Pivot the table so that each year is a column and each row is the 'species.watershed' variable
@@ -228,6 +225,142 @@ grasshoppers_abun_classification <- tibble((grasshoppers_env), do.call(rbind,lap
 write_csv(grasshoppers_abun_classification, "Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers_classified_abund.csv")
 ```
 
+## Birds (1992 - 2009) {.tabset}
+
+### Birds: Presence/ Absence & Incidence Classification
+
+For this section, I am reorganizing the grasshopper data and reformatting it into a presence/absence matrix. This matrix will then be ran through the getTrends3.0 function to get the incidence classifications for each species at each watershed.
+
+Conduct the **incidence classification** method
+```{r birds incidence classification}
+# Sum the data based on watershed
+# Here, we won't differentiate the data based on the trap lines or season
+birds <- E0_birds %>% 
+  group_by(Recyear, Watershed_name, AOU_code) %>% 
+  reframe(Count = sum(Count)) %>%
+  unite("species.watershed", AOU_code:Watershed_name, sep=".", remove=FALSE)
+
+#Pivot the table so that each year is a column and each row is the 'species.watershed' variable
+# years where the species was not detected should appear as NA, and are converted to zero
+birds_years_wide <- birds %>% 
+  pivot_wider(names_from = "Recyear", values_from = "Count") %>%
+  mutate(across(4:21, ~replace_na(.,0)))
+
+#Create a separate species.watershed dataframe to add back to the dataset after standardization
+birds_env <- birds_years_wide[, 1:3]
+
+#Standardize by presence/absence
+decostand_birds_pa <- decostand(birds_years_wide[, -c(1:3)], "pa", na.rm = FALSE)
+
+#Transform the presence/absence data into a matrix so I can feed it to the function
+birds_pa_matrix <- as.matrix(decostand_birds_pa)
+
+#Apply the getTrends3.0 function to each row of the presence/absence matrix
+birds_trends <- apply(birds_pa_matrix, 1, getTrends3.0)
+
+# Create a table with the species.watershed and the getTrends info. 
+#   puts everything back into a dataframe format
+#   1-10 stands for the number of rows in the output tibble from getTrends3.0
+birds_classification <- tibble((birds_env), do.call(rbind,lapply(birds_trends,(function(v){v[c(1:10)]}))))
+
+#Add back in the presence/absence per year data
+birds_classification <- birds_classification %>% add_column(decostand_birds_pa)
+
+# Write to file
+write_csv(birds_classification, "Datasets/E1_output_data/E1_birds/E1_birds_classified.csv")
+```
+
+Conduct the **abundance classification** method
+```{r birds abundance classification}
+#use the wide format count data as input; convert to matrix format and remove labels
+birds_years_matrix <- as.matrix(birds_years_wide[, -(1:3)])
+
+# input matrix into label_abundance method
+# returns a new matrix where 0=below average, 1=above or equal to average
+#   final column = proportion of years the species was absence (proportion of zeros)
+abund_matrix <- birds_years_matrix %>%
+  as.data.frame() %>%
+  mutate(row_id = row_number()) %>%
+  split(.$row_id) %>%
+  map(~ label_abundance(as.numeric(.x[ , -ncol(.x)]))) %>%
+  do.call(rbind, .)
+
+#input abund_matrix into getAbundTrends function, apply to each row of the converted matrix
+birds_abun_trends <- apply(abund_matrix, 1, getAbundTrends) 
+
+#Create table with the getAbunTrends results annotated with species & watershed labels
+#   labels from birds_env, created earlier
+birds_abun_classification <- tibble((birds_env), do.call(rbind,lapply(birds_abun_trends,(function(v){v[c(1:9)]}))))
+
+# Write to file
+write_csv(birds_abun_classification,
+          "Datasets/E1_output_data/E1_birds/E1_birds_classified_abund.csv")
+```
+
+
+## Plants (1992 - 2022) {.tabset}
+
+### Plants: Presence/ Absence & Incidence Classification
+
+For this section, I am reorganizing the bird data and reformatting it into a presence/absence matrix. This matrix will then be ran through the getTrends3.0 function to get the classifications for each species at each watershed.
+
+**Note**: Plant data does not collect abundance as counts, but uses cover instead. 
+It is recorded  on a scale of 1-7 where: 
+  - 1 = <1% cover
+  - 2 = 1-5% cover
+  - 3 = 5-25% cover
+  - 4 = 25-50% cover
+  - 5 = 50-75% cover
+  - 6 = 75-95% cover
+  - 7 = 95-100% cover
+
+Conduct the **incidence classification** method
+```{r plants incidence classification}
+
+# Average the data based on watershed (not using SUM because it's cover, not count, data)
+# Here, we won't differentiate the data based on the trap lines or season
+# NOTE: Count isn't meaningful here, but it can be converted into pres/abs later
+plants <- E0_plants %>% 
+  group_by(Recyear, Watershed_name, Genus_spp) %>% 
+  reframe(Count = mean(Cover)) %>%
+  unite("species.watershed", Genus_spp:Watershed_name, sep=".", remove=FALSE)
+
+#Pivot the table so that each year is a column and each row is the 'species.watershed' variable
+# years where the species was not detected should appear as NA, and are converted to zero
+plants_years_wide <- plants %>% 
+  pivot_wider(names_from = "Recyear", values_from = "Count") %>%
+  mutate(across(4:34, ~replace_na(.,0)))
+
+#Create a separate species.watershed dataframe to add back to the dataset after standardization
+plants_env <- plants_years_wide[, 1:3]
+
+#Standardize by presence/absence
+decostand_plants_pa <- decostand(plants_years_wide[, -c(1:3)], "pa", na.rm = FALSE)
+
+#Transform the presence/absence data into a matrix so I can feed it to the function
+plants_pa_matrix <- as.matrix(decostand_plants_pa)
+
+#Apply the getTrends3.0 function to each row of the presence/absence matrix
+plants_trends <- apply(plants_pa_matrix, 1, getTrends3.0)
+
+# Create a table with the species.watershed and the getTrends info. 
+#   puts everything back into a dataframe format
+#   1-10 stands for the number of rows in the output tibble from getTrends3.0
+plants_classification <- tibble((plants_env), do.call(rbind,lapply(plants_trends,(function(v){v[c(1:10)]}))))
+
+#Add back in the presence/absence per year data
+plants_classification <- plants_classification %>% add_column(decostand_plants_pa)
+
+# Write to file
+write_csv(plants_classification, "Datasets/E1_output_data/E1_plants/E1_plants_classified.csv")
+```
+
+#TODO START HERE
+#FIXME: What is the best way to deal with cover classes here? It's an ordinal variable? Can it be used for bray-curtis or any non-p/a analysis?
+Maybe it still works for the abundance class, since we're only looking for above vs below average abundance as the comparison? May need to tweak the code a bit...
+Conduct the **abundance classification** method
+```{r plants abundance classification}
+```
 
 ## Summary statistics on classification (all taxa) {.tabset}
 This section makes some basic summaries of the incidence classification results.
@@ -642,73 +775,11 @@ grasshoppers_sprich %>% ggplot(aes(x = Recyear, y = Richness)) +
 
 ```
 
-## Birds (1992 - 2009) {.tabset}
-
-### Birds: Presence/ Absence & Incidence Classification
-
-For this section, I am reorganizing the bird data and reformatting it into a presence/absence matrix. This matrix will then be ran through the getTrends3.0 function to get the classifications for each species at each watershed.
-
-The overall output is a dataset that includes the incidecne classification for each species at each watershed, and includes all other output from the getTrends3.0 function
-
-```{r birds classification}
-
-#Selecting the columns I want for further analysis 
-birds <- E0_birds %>% 
-  group_by(Recyear, AOU_code, Watershed_name) %>% 
-  reframe(Count = sum(Count))
 
 
 
-#Pivoting the the dataset wider, so that each species is its own column and each row is a year and watershed. This is to populate the dataset with NA's (which will become zeroes) for each species in each year. If species weren't observed, they weren't recorded, but we still want that to count as an absence and it needs to represented in the dataset.
-birds_wide <- birds %>% 
-  pivot_wider(names_from = "AOU_code", values_from = "Count", 
-              values_fn = function(x) paste(sum(x)))
-
-#Creating a dataset with species and watershed as rows and years as columns. This is the format I need for the getTrends function
-birds_years_wide <- birds_wide %>% 
-  pivot_longer(cols = -c(1:2), names_to = "Species", values_to = "Count") %>% 
-  pivot_wider(names_from = factor("Recyear"), 
-              values_from = "Count")
-
-#Combining the variables of species and watershed to create a unique identifier for each row 
-birds_years_wide <- birds_years_wide %>% unite("Species.watershed", Species:Watershed_name, sep = ".", remove = FALSE)
 
 
-#Creating a separate species.watershed dataframe to add back to the dataset after standardization
-birds_env <- birds_years_wide[, 1:3]
-
-#Standardizing by presence/absence
-decostand_birds_pa <- decostand(birds_years_wide[, -c(1:3)], "pa", na.rm = FALSE)
-#Making all NA's zeroes; NA's are entries in which no data was collected, thus are absent/0
-decostand_birds_pa[is.na(decostand_birds_pa)] <- 0
-
-
-# Transforming the presence/absence data into a matrix so I can feed it to the function
-birds_pa_matrix <- as.matrix(decostand_birds_pa)
-
-# Applying the getTrends function to each row of the presence/absence matrix
-birds_trends <- apply(birds_pa_matrix, 1, getTrends3.0)
-
-#Creating a table with the species.watershed and the Trends info. The function serves to extract information from the lists created when the function produces the output. The numbers corresponds with the column rows from the list of tibbles created. 
-birds_classification <- tibble((birds_env), do.call(rbind,lapply(birds_trends,(function(v){v[c(1,2,3,4,5,6,7,8,9,10)]}))))
-
-#Adding in the presence/absence per year data back in 
-birds_classification <- birds_classification %>% 
-  add_column(decostand_birds_pa, .before = "chiPval")
-
-#Separating the species and watershed variable names for graphing later
-birds_classification <- birds_classification %>% 
-  separate(Species.watershed, c("AOU_code", "Watershed_name"))
-
-#Saving the output with all the classification info into the 'E1_birds' in the 'E1_output_data folder'
-write_csv(birds_classification, "Datasets/E1_output_data/E1_birds/E1_birds_classified.csv")
-
-#Pivoting longer so that each row is now a year, species, watershed, etc.
-# birds_class_long <- birds_class %>% pivot_longer(cols = "1992":"2009", 
-#                                                  names_to = "Recyear", 
-#                                                  values_to = "Presence")
-
-```
 
 ### Birds: Calculating Summary Statistics
 
