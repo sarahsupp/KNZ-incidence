@@ -4,6 +4,10 @@
 #   Modified from original code in Gotelli et al. 2021 for incidence classification
 # Corresponding author: Sarah R. Supp; supps@denison.edu
 
+# Requirements
+require(tidyverse)
+require(vegan)
+
 #---------------------------------------------------------------------------------
 ### getTrends3.0
 # The "getTrends3.0" function will classify species within each taxa, from each watershed, into distinct categories, using only presence-absence data. This version of the function has the stipulations for 'No_change-present' >=90% years present, 'Rare' present but for only <=10% of years, 'No_change-absent' 0 years present, and for recurrent category requires at least 2 blocks of time when it is present. I also renamed some variables for clarity. The categories include: 
@@ -224,3 +228,113 @@ get_p_value <- function(mod) tidy(mod)$p.value[2]
 
 ##'get_rsq' takes the output from the models ('mod') and extracts the r-squared value
 get_rsq <- function(mod) summary(mod)$r.squared
+
+#---------------------------------------------------------------------------------
+### Jaccard Dissimilarity functions
+# this is repeated across all four taxa to collect results
+
+process_jaccard_dissimilarity <- function(df, baseline_year) {
+  # Reformat and pivot
+  df_wide <- df %>%
+    group_by(Watershed_name, Species, Recyear) %>%
+    reframe(Total = Count) %>%
+    pivot_wider(names_from = "Species", values_from = "Total")  %>%
+                #values_fn = function(x) paste(sum(x))) %>%
+    replace(is.na(.),0) %>%
+    unite("Watershed_year", Watershed_name:Recyear, sep = "_")
+  
+  watershed_year <- df_wide$Watershed_year
+  
+  # Jaccard dissimilarity
+  jacc <- df_wide[, -1] %>%
+    decostand(method = "pa") %>%
+    vegdist(method = "jaccard") %>%
+    as.matrix()
+  dimnames(jacc) <- list(watershed_year, watershed_year)
+  
+  # Compare to baseline year
+  jacc_years <- as.data.frame.table(jacc) %>%
+    separate(Var1, c("Watershed1", "Year1"), "_") %>%
+    separate(Var2, c("Watershed2", "Year2"), "_") %>%
+    rename("Jacc_diss" = "Freq") %>%
+    mutate(across(c(Year1, Year2), as.numeric)) %>%
+    filter(Year1 == baseline_year & Watershed1 == Watershed2)
+  
+  # Compare watersheds within same year
+  jacc_watersheds <- as.data.frame.table(jacc) %>%
+    separate(Var1, c("Watershed1", "Year1"), "_") %>%
+    separate(Var2, c("Watershed2", "Year2"), "_") %>%
+    rename("Jacc_diss" = "Freq") %>%
+    mutate(across(c(Year1, Year2), as.numeric)) %>%
+    filter(Year1 == Year2) %>%
+    rowwise() %>%
+    mutate(
+      Watershed_min = min(Watershed1, Watershed2),
+      Watershed_max = max(Watershed1, Watershed2)
+    ) %>%
+    ungroup() %>%
+    distinct(Year1, Watershed_min, Watershed_max, .keep_all = TRUE) %>%
+    dplyr::select(-Watershed1, -Watershed2) %>%
+    rename(Watershed1 = Watershed_min, Watershed2 = Watershed_max) %>%
+    dplyr::select(Watershed1, Year1, Watershed2, Year2, Jacc_diss)
+  
+  list(jacc_baseline = jacc_years, jacc_watershed = jacc_watersheds)
+}
+
+
+compute_dissimilarity <- function(df_counts, method = "jaccard", baseline_year) {
+  # input a dataframe where the first column is watershed_year and
+  #   all subsequent columns are species names. Values are the count (abundance)
+  # method can be specified as "jaccard" or "bray" for dissimiliarity calculation
+  # if baseline_year is specified, will calculate dissimiliarity to all subsequent years
+  # if baseline_year is NULL, will calculate dissimilarity across watersheds, within the same year
+  
+  # Prepare matrix
+  diss_input <- df_counts[, -1]  # drop Watershed_year
+  diss_input <- diss_input %>% mutate_if(is.character, as.numeric)
+  
+  # Optional standardization (Bray requires total, Jaccard uses presence-absence)
+  if (method == "jaccard") {
+    diss_input <- decostand(diss_input, method = "pa")
+  } else if (method == "bray") {
+    diss_input <- decostand(diss_input, method = "total")
+  } else {
+    stop("Unsupported method. Use 'jaccard' or 'bray'")
+  }
+  
+  # Compute dissimilarity
+  diss_mat <- vegdist(diss_input, method = method)
+  diss_mat <- as.matrix(diss_mat)
+  rownames(diss_mat) <- colnames(diss_mat) <- df_counts$Watershed_year
+  
+  # Melt into long format
+  df_long <- as.data.frame.table(diss_mat) %>%
+    separate(Var1, c("Watershed1", "Year1"), sep = "_") %>%
+    separate(Var2, c("Watershed2", "Year2"), sep = "_") %>%
+    mutate(across(c(Year1, Year2), as.numeric)) %>%
+    rename(diss = Freq)
+  
+  # Compare to baseline year, within watersheds
+  df_baseline <- df_long %>%
+    filter(Year1 == baseline_year, Watershed1 == Watershed2)
+  
+  # Compare watersheds, within years, removing redundancy 
+  df_watershed <- df_long %>%
+    filter(Year1 == Year2) %>%
+    rowwise() %>%
+    mutate(
+      Watershed_min = min(Watershed1, Watershed2),
+      Watershed_max = max(Watershed1, Watershed2)
+    ) %>%
+    ungroup() %>%
+    distinct(Year1, Watershed_min, Watershed_max, .keep_all = TRUE) %>%
+    dplyr::select(Watershed1 = Watershed_min, Year1,
+           Watershed2 = Watershed_max, Year2, diss)
+  
+  # Rename columns to identify metric
+  colnames(df_baseline)[ncol(df_baseline)] <- paste0(method, "_diss")
+  colnames(df_watershed)[ncol(df_watershed)] <- paste0(method, "_diss")
+  
+  list(baseline = df_baseline, watershed = df_watershed)
+  }
+ 
