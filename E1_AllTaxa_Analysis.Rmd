@@ -504,29 +504,30 @@ write.csv(gh_watershed, "Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers
 Save results for **Bird composition dissimilarity**
 ```{r}
 # prepare the count data into wide format with merged column for watershed_year
-grasshoppers_count_allyears <- grasshoppers %>% 
-  group_by(Watershed_name, Species, Recyear) %>% 
+## First, populating the dataset with NA's by grouping the dataset by Watershed and Species, then pivoting wider. I found if I subsetted by watershed from the 'birds' dataset first, then there would be species missing since not all species were at every watershed. 
+birds_count_allyears <- birds %>% 
+  group_by(Watershed_name, AOU_code, Recyear) %>% 
   reframe(Total = (Count)) %>% 
-  pivot_wider(names_from = "Species", values_from = "Total", 
+  pivot_wider(names_from = "AOU_code", values_from = "Total",
               values_fn = function(x) paste(sum(x))) %>%
-  unite("Watershed_year", Watershed_name:Recyear, sep = "_") %>%
-  replace(is.na(.), "0")
+  unite("Watershed_year", Watershed_name:Recyear, sep="_") %>%
+  replace(is.na(.),"0")
 
 # find the first year of the study
-year1 <- min(grasshoppers$Recyear)
+year1 <- min(birds$Recyear)
 
-# grasshopper dissimilarity estimates
-gh_jacc <- compute_dissimilarity(grasshoppers_count_allyears, method="jaccard", baseline_year = year1)
-gh_bray <- compute_dissimilarity(grasshoppers_count_allyears, method="bray", baseline_year = year1)
+# bird dissimilarity estimates
+bd_jacc <- compute_dissimilarity(birds_count_allyears, method="jaccard", baseline_year = year1)
+bd_bray <- compute_dissimilarity(birds_count_allyears, method="bray", baseline_year = year1)
 
 # merge and write results
-gh_baseline <- merge(gh_jacc[1], gh_bray[1])
-gh_watershed <- merge(gh_jacc[2], gh_bray[2])
+bd_baseline <- merge(bd_jacc[1], bd_bray[1])
+bd_watershed <- merge(bd_jacc[2], bd_bray[2])
 
 ##Save to file
-write.csv(gh_baseline, "Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers_dissimilarity_year1toN.csv")
+write.csv(bd_baseline, "Datasets/E1_output_data/E1_birds/E1_birds_dissimilarity_year1toN.csv")
 
-write.csv(gh_watershed, "Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers_dissimilarity_watersheds.csv")
+write.csv(bd_watershed, "Datasets/E1_output_data/E1_birds/E1_birds_dissimilarity_watersheds.csv")
 ```
 
 #FIXME: DELETE???
