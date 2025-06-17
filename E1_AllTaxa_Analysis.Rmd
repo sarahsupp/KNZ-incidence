@@ -14,8 +14,8 @@ mainfont: Arial
 mathfont: Arial
 fontsize: 12pt
 ---
-Creates tabs in the HTML document
-#  {.tabset .tabset-pills .tabset-fade}
+
+Creates tabs in the HTML document \# {.tabset .tabset-pills .tabset-fade}
 
 ```{r setup, include=FALSE}
 #Clear environment
@@ -34,10 +34,13 @@ library(purrr)
 library(readxl)
 library(tseries)
 library(vegan)
+
+#Call our custom functions for classification and analysis
+source("classify_functions.R")
 ```
 
-#Read in Data Tables
-This includes the watersheds tables and the species-level data for the 4 taxa.
+#Read in Data Tables This includes the watersheds tables and the species-level data for the 4 taxa.
+
 ```{r}
 watershed_info <- read_excel("Datasets/Watershed_data/Watershed_info.xlsx")
 
@@ -49,335 +52,44 @@ E0_plants <- read_csv("Datasets/E0_cleaned_data/E0_plants.csv")
 ```
 
 # Clean Data to Classified Incidence for All Taxa
+
 This Rmarkdown is for taking the clean datasets for all 4 taxa (small-mammals, grasshoppers, birds, and plants) and using the incidence classification method to categorize each species. This file also estimates composition change (Jaccard dissimilarity) and richness change (linear model) over time.
 
-## Functions
-This section is dedicated to the functions that will be applied to our datasets. 
+## Brief overview of Classification
 
-### getTrends3.0
-The "getTrends3.0" function will classify species within each taxa, from each watershed, into distinct categories, using only presence-absence data. This version of the function has the stipulations for 'No_change-present' >=90% years present, 'Rare' present but for only <=10% of years, 'No_change-absent' 0 years present, and for recurrent category requires at least 2 blocks of time when it is present. I also renamed some variables for clarity. The categories include: 
+Incidence Classification categories include:
 
-- **"No_change-absent"** <- though species was detected at other surrounding watersheds, it was absent at specified watershed for the duration of the time series.
-- **"Rare"** <- Species was present at specified watershed for between 1-10% of years in the duration of the time series.
-- **"No_change-present"** <- species at watershed is present in >=90% of years in which data was collected.
-- **"Increasing"** <- the presence of the species increases throughout the duration of the study (it is absent during the beginning of the study, but appears towards the end of the study)
-- **"Decreasing"** <- the presence of the species decreases throughout the duration of the study (it is present during the beginning of the study, but then disappears towards the end of the study)
-- **"Recurrent"** <- species is detected in consecutive years and is followed by the absence of the species for a period of time, in a distinct pattern. Species must at least two instances of presences followed by absences. 
-- **"Random"** <- species is detected sporadically for the duration of the study at watershed
+-   **"No_change-absent"** \<- though species was detected at other surrounding watersheds, it was absent at specified watershed for the duration of the time series.
+-   **"Rare"** \<- Species was present at specified watershed for between 1-10% of years in the duration of the time series.
+-   **"No_change-present"** \<- species at watershed is present in \>=90% of years in which data was collected.
+-   **"Increasing"** \<- the presence of the species increases throughout the duration of the study (it is absent during the beginning of the study, but appears towards the end of the study)
+-   **"Decreasing"** \<- the presence of the species decreases throughout the duration of the study (it is present during the beginning of the study, but then disappears towards the end of the study)
+-   **"Recurrent"** \<- species is detected in consecutive years and is followed by the absence of the species for a period of time, in a distinct pattern. Species must at least two instances of presences followed by absences.
+-   **"Random"** \<- species is detected sporadically for the duration of the study at watershed
 
+Abundance Classification categories include:
 
-```{r getTrends3.0}
+-   **"No_change-absent"** \<- though species was detected at other surrounding watersheds, it was absent at specified watershed for the duration of the time series (\# years present = 0).
+-   **"Rare"** \<- Species was present at specified watershed for between 1-10% of years in the duration of the time series. Abundance will not be classified.
+-   **"No_change-increasing"** \<- species at watershed is above average abundance in \>=90% of years in which data was collected. #CHECKME: is this even possible?
+-   **"No_change-decreasing"** \<- species at watershed is below average abundance in \>=90% of years in which data was collected. #CHECKME: is this even possible?
+-   **"Increasing"** \<- the second half of the study contains most of the above average records of the species (it is mostly below average during the beginning of the study)
+-   **"Decreasing"** \<- the second half of the study contains most of the below average records of the species (it is mostly above average during the beginning of the study)
+-   **"Recurrent"** \<- species abundance fluctuations appear to be clumped into consecutive years, with distinct periods of above average and below average abundances.
+-   **"Random"** \<- species abundance fluctuates in an unpredictable pattern for the duration of the study.
 
-getTrends3.0 <- function(x) {
-  #input (x) is a single row of a matrix where the species are rows and the columns are each year with 1/0 values (1=present, 0=absent). 
-  #So you need to iterate each row separately to get the results
-  # Output is a list with 10 items, that represents the classification results for a single species
-  
-  #create an object the same length as x that defines early vs late years
-  time <- rep("late", length(x))
-  time[1:(round(length(x)/2))] <- "early"
-  
-  #NOTE: I ended up placing the z_x table back at the top of the function because I was having a hard time getting it to run without it.
-  # makes a table that tells you how many 0s and 1s are in the early and the late halves of the time series
-  z_x <- table(x,time)
-  
-  #find the time-series length (number of years)
-  tslen <- length(x)
-
-  # counts the number of years the species was present
-  tssum <- sum(x)
-  
-  # calculate proportion of years species was present
-  tsprop <- tssum/tslen
- 
-  # create an empty vector to store results in for the next for loop
-   l <- c()
-  
-  # identifies when a change from a 0 to a 1 or vice versa happens
-  for(k in 1:(tslen-1)) {
-    j <- x[k+1] - x[k]
-    l <- c(l, j)
-    v <- sum(abs(l))
-  }
-  
-  # If all the values are 0, it is always absent
-  if (tsprop == 0) {
-    p_val <- NA
-    f_early <- NA
-    f_late <- NA
-    runsTestPV <- NA
-    trend <- NA
-    trendPlus <- NA
-    cat <- "No_change-absent"
-  } else if ((tsprop > 0) & (tsprop <= 0.10)) {
-    # if most of the values are 1 (<=10% of all years), it is "rare"
-    p_val <- NA
-    f_early <- NA
-    f_late <- NA
-    runsTestPV <- NA
-    trend <- NA
-    trendPlus <- NA
-    cat <- "Rare"
-  } else if (tsprop >= 0.90) {
-    # if most of the values are 1 (>=90% of all years), it is "no change" present
-    p_val <- NA
-    f_early <- NA
-    f_late <- NA
-    runsTestPV <- NA
-    trend <- NA
-    trendPlus <- NA
-    cat <- "No_change-present"
-  } else {
-    #If the time series contains changes, then we do a chi-sq test to detect directed change
-    #adds rownames to the z_x table
-    rownames(z_x) <- c("absent","present")
-    
-    # get p value for the chi-squared test
-    p_val <- chisq.test(z_x)$p.val
-    
-    # get early and late fractions
-    # for each the early and the late parts of the time series:
-    #    the number of years it was present divided by the number of years
-    f_early <- z_x["present","early"] / sum(z_x[,1]) 
-    f_late <- z_x["present","late"] / sum(z_x[,2])
-   
-    if((f_early > f_late) & (p_val <= 0.05)) {
-      trend <- -1
-      cat = "Decreasing"
-      runsTestPV <- NA
-    } 
-    else if((f_early < f_late) & (p_val <= 0.05)) {
-      trend <- 1
-      cat = "Increasing"
-      runsTestPV <- NA
-    } 
-    else {
-    # Chi-squared test not significant
-    trend <- 0
-    
-    #conduct a runs test on the time-series
-    runsPV <- tseries::runs.test(as.factor(x), alternative = "less")
-    runsTestPV <- runsPV$p.value
-    if(is.nan(runsTestPV)) {
-      runsTestPV <- 2 }
-    # if Chi-sq test insignif. and the runs test was significant AND it was present in at least TWO blocks of time
-    if((p_val > 0.05) & (runsTestPV < 0.05) & (v > 2)) {
-      cat="Recurrent"
-    } 
-    else if(((p_val > 0.05) & (runsTestPV > 0.05))|((runsTestPV < 0.05) & (v <= 2))) {
-      cat="Random"
-      }
-    } #end else for ns chisq
-  }
-
-# for each species, record the summary statistics
-statSumm <- tibble("numyears" = tslen, 
-                   "numpresent" = tssum,
-                   "percyears" = tsprop,
-                   "chiPval" = p_val, 
-                   "chi_fearly" = f_early, 
-                   "chi_flate" = f_late, 
-                   "runsPval" = runsTestPV, 
-                   "numtransitions" = v, 
-                   "trend" = trend, 
-                   "classification" = as.factor(cat))
-  return(statSumm)
-}
-
-#Test that the function works
-#x<- c(0,1,0,1,1,1,1,1,0,1,1,0,0,0,0,1,1,0,1,0,0,0,1)
-#getTrends3.0(x) 
-
-```
-
-
-### getAbundTrends
-The "getAbundTrends" function will classify species within each taxa, from each watershed, into distinct categories, informed by the abundance (count or percent cover) data. This modification of the incidence classification makes a few key changes, but is largely similar. First, using the average abundance of the population time series (i.e., from the sequence of counts), each time step is converted into 0 (less than average) or 1 (equal to or greater than average). At this step, we will also record the percent of years species was present, so we can avoid over-interpreting a lot of zeros. The previous rule for recurrent classification is relaxed here as it is not needed. The categories include: 
-
-- **"No_change-absent"** <- though species was detected at other surrounding watersheds, it was absent at specified watershed for the duration of the time series (# years present = 0).
-- **"Rare"** <- Species was present at specified watershed for between 1-10% of years in the duration of the time series. Abundance will not be classified.
-- **"No_change-increasing"** <- species at watershed is above average abundance in >=90% of years in which data was collected. #CHECKME: is this even possible?
-- **"No_change-decreasing"** <- species at watershed is below average abundance in >=90% of years in which data was collected. #CHECKME: is this even possible?
-- **"Increasing"** <- the second half of the study contains most of the above average records of the species (it is mostly below average during the beginning of the study)
-- **"Decreasing"** <- the second half of the study contains most of the below average records of the species (it is mostly above average during the beginning of the study)
-- **"Recurrent"** <- species abundance fluctuations appear to be clumped into consecutive years, with distinct periods of above average and below average abundances.
-- **"Random"** <- species abundance fluctuates in an unpredictable pattern for the duration of the study.
-
-First, we will need a new function that can convert the abundance values into below average (0) vs equal to or above average (1) according to each population time series mean. This function also needs to label any populations that have a large number of absences, and should be considered as rare or always absent, so those can be labeled in the abundance trends function later.
-
-```{r label abundance trends}
-
-# Define a custom function to label each time step according to its abundance trend.
-# 0 = below average abundance
-# 1 = equal to or greater than average abundance
-# label is added to indicate classification if it is absent or too rare
-# this function acts on each row of a species count matrix
-
-label_abundance <- function(x) {
-  # Create a new vector with labels
-  convert_x <- numeric(length(x))
-  # Calculate average of population time series
-  average = mean(x)
-  # Calculate the proportion of zeros in the time series (how many years absent?)
-  tsabs <- round(mean(x==0), 2)
-  #iterate and replace values with abundance conversion
-  for (i in 1:length(x)) {
-  if (x[i] >= average) {
-    convert_x[i] <- 1
-  } else {
-    convert_x[i] <- 0
-  }
-  }
-  convert_x <- append(convert_x, tsabs)
-  return(convert_x)
-}
-```
-
-Then we can use this function to get the abundance trends.
-
-```{r getAbundTrends}
-
-getAbundTrends <- function(x) {
-  #input (x) is a single row of a matrix where the species are rows and the columns are each year with 1/0 values (1=equal to or above avg abund, 0=below avg abund). 
-  #So you need to iterate each row separately to get the results
-  # Output is a list with 10 items, that represents the classification results for a single species
-  
-  #proportion of years absent; select the final element in the vector
-  tsabs <- tail(x, n=1)
-  
-  #make x be only the 0s and 1s, removing tsabs
-  x <- x[-length(x)]
-  
-  #create an object the same length as x that defines early vs late years
-  time <- rep("late", length(x))
-  time[1:(round(length(x)/2))] <- "early"
-  
-  #NOTE: I ended up placing the z_x table back at the top of the function because I was having a hard time getting it to run without it.
-  # makes a table that shows how many 0s and 1s are in the early and the late halves of the time series
-  z_x <- table(x,time)
-  
-  #find the time-series length (number of years)
-  tslen <- length(x)
-  
-  # create an empty vector to store results in for the next for loop
-   l <- c()
-  
-  # identifies when a change from a 0 to a 1 or vice versa happens
-   # length(l) should be 1 shorter than length(x)
-   # j indicates if a switch happened, and what direction
-   #    j 0 means no switch occurred in the time step
-   #    j -1 means it switched from above to below average abundance
-   #    j 1 means it switched from below to above average abundance
-   # v indicates the total number of switches that happened
-  for(k in 1:(tslen-1)) {
-    j <- x[k+1] - x[k]
-    l <- c(l, j)
-    v <- sum(abs(l))
-  }
-  
-  # If the species was absent in all years (tsabs=1), then we don't need to continue
-  if (tsabs == 1) {
-    p_val <- NA
-    f_early <- NA
-    f_late <- NA
-    runsTestPV <- NA
-    trend <- NA
-    trendPlus <- NA
-    cat <- "No_change-absent"
-  } else if ((tsabs >= 0.90) & (tsabs < 1)) {
-    # if the species was absent *most* years (tsabs >=0.90), we don't need to continue
-    p_val <- NA
-    f_early <- NA
-    f_late <- NA
-    runsTestPV <- NA
-    trend <- NA
-    trendPlus <- NA
-    cat <- "Rare"
-  } else {
-    #If not labeled absent or rare, then we proceed with a chi-sq test to detect directed change
-    #adds rownames to the z_x table
-    rownames(z_x) <- c("below_avg","above_avg")
-    
-    # get p value for the chi-squared test
-    p_val <- chisq.test(z_x)$p.val
-    
-    # get early and late fractions
-    # for each the early and the late parts of the time series:
-    #    the number of years it was present divided by the number of years
-    f_early <- z_x["above_avg","early"] / sum(z_x[,1]) 
-    f_late <- z_x["above_avg","late"] / sum(z_x[,2])
-   
-    if((f_early > f_late) & (p_val <= 0.05)) {
-      trend <- -1
-      cat = "Decreasing"
-      runsTestPV <- NA
-    } 
-    else if((f_early < f_late) & (p_val <= 0.05)) {
-      trend <- 1
-      cat = "Increasing"
-      runsTestPV <- NA
-    } 
-    else {
-    # Chi-squared test not significant
-    trend <- 0
-    
-    #conduct a runs test on the time-series
-    runsPV <- tseries::runs.test(as.factor(x), alternative = "less")
-    runsTestPV <- runsPV$p.value
-    if(is.nan(runsTestPV)) {
-      runsTestPV <- 2 }
-    # if Chi-sq test insignif. and the runs test was significant
-    if((p_val > 0.05) & (runsTestPV < 0.05)) {
-      cat="Recurrent"
-    } 
-    else if((p_val > 0.05) & (runsTestPV > 0.05)) {
-      cat="Random"
-      }
-    } #end else for ns chisq
-  }
-
-# for each species, record the summary statistics
-statSumm <- tibble("numyears" = tslen, 
-                   "percyears" = 1 - tsabs, #convert absent proportion to present proportion
-                   "chiPval" = p_val, 
-                   "chi_fearly" = f_early, 
-                   "chi_flate" = f_late, 
-                   "runsPval" = runsTestPV, 
-                   "numtransitions" = v, 
-                   "trend" = trend, 
-                   "classification" = as.factor(cat))
-  return(statSumm)
-}
-
-#Test that the function works
-# x<- c(0,1,0,1,1,1,1,1,0,1,1,0,0,0,0,1,1,0,1,0,0,0,1, 0.36)
-# getAbundTrends(x) 
-
-```
-
-We also need functions to extract information from linear models. These will be used later for analyzing species richness across each watershed.
-```{r get model results}
-##'fit_model' takes the data frame and runs a linear model for richness ('value') by year ('n').
-fit_model <- function(df) lm(value ~ n, data = df)
-
-##'get_slope' takes the output from the models ('mod') and extracts the slope ('estimate')
-get_slope <- function(mod) tidy(mod)$estimate[2]
-
-##'get_p_value' takes the output from the models ('mod') and extracts the p.value
-get_p_value <- function(mod) tidy(mod)$p.value[2]
-
-##'get_rsq' takes the output from the models ('mod') and extracts the r-squared value
-get_rsq <- function(mod) summary(mod)$r.squared
-```
-
+#----------------------------------------------------------------------------------
 
 # Determining Species Incidence Classification
 
 ## Small-mammals (1992 - 2013) {.tabset}
+
 ### Small-mammals: Presence/ Absence & Incidence Classification
+
 For this section, I am reorganizing the cleaned small-mammal data and reformatting it into a presence/absence matrix. This matrix will then run through the getTrends3.0 function to get the incidence classifications for each species at each watershed.
 
 Conduct the **incidence classification** method
+
 ```{r smammals incidence classification}
 
 # Sum the data based on watershed
@@ -422,8 +134,8 @@ smammals_classification <- smammals_classification %>%
 write_csv(smammals_classification, "Datasets/E1_output_data/E1_smammals/E1_smammals_classified.csv")
 ```
 
-
 Conduct the **abundance classification** method
+
 ```{r smammals abundance classification}
 #use the wide format count data as input; convert to matrix format and remove labels
 smammals_years_matrix <- as.matrix(smammals_years_wide[, -(1:4)])
@@ -454,12 +166,12 @@ smammals_abun_class_summary <- smammals_abun_classification %>%
   summarize(total_count=n(),.groups = 'drop')
 ```
 
-
 ### Small-mammals: Calculating Summary Statistics
 
 **Compare the incidence classification results across species and watersheds**
 
 How often did species "switch" their classifications versus stay consistent across sites?
+
 ```{r smammals_summstat}
 
 # Make a table that counts how many classifications each species had (across 6 watersheds) 
@@ -479,6 +191,7 @@ smammals_class.switch1 %>% ggplot(aes(x = count)) +
 ```
 
 Were species classified differently across the 6 watersheds?
+
 ```{r}
 # Make a table that shows how each species was categorized, and how many times (across 6 watersheds) 
 smammals_class.switch2 <- smammals_classification %>%
@@ -491,6 +204,7 @@ smammals_class.switch2_wide <- smammals_class.switch2 %>% pivot_wider(names_from
 ```
 
 How frequent were the each of the classifications across the watersheds?
+
 ```{r}
 # Make a table that shows how many species were in each classification, by watershed 
 smammals_class.switch3 <- smammals_classification %>%
@@ -502,16 +216,14 @@ smammals_class.switch3_wide <- smammals_class.switch3 %>% pivot_wider(names_from
 view(smammals_class.switch3_wide)
 ```
 
-
 ### Small-mammals: Dissimilarity Between Watersheds and between Years
-This section is for conducting dissimilarity tests between watersheds for the small-mammal dataset. 
 
-These dissimilarity tests will include Jaccard's and Bray comparison for:
-  - the first year to each subsequent year of the time series, within watersheds
-  - across watersheds, within each year separately
+This section is for conducting dissimilarity tests between watersheds for the small-mammal dataset.
 
-Is dissimilarity increasing through time?
-Is the rate of composition change different according to treatment?
+These dissimilarity tests will include Jaccard's and Bray comparison for: - the first year to each subsequent year of the time series, within watersheds - across watersheds, within each year separately
+
+Is dissimilarity increasing through time? Is the rate of composition change different according to treatment?
+
 ```{r}
 
 # Compare the dissimilarity across all years to Year 1, within each watershed
@@ -571,6 +283,7 @@ smammals_jacc_watersheds <- as.data.frame.table(as.matrix(smammals_jacc)) %>%
 ```
 
 Let's also calculate Bray-Curtis dissimilarity, which takes abundance (counts) into consideration
+
 ```{r smammals jaccard dissimilarity}
 # we already made a dataframe for counts in years 1 and years 22 (N), so we can use that again here
 
@@ -623,6 +336,7 @@ smammals_bc_watersheds <- as.data.frame.table(as.matrix(smammals_bc)) %>%
 ```
 
 Merge dissimilarity datasets and write to file
+
 ```{r save dissimilarity results}
 #merge jacc and bray results into a single dataframe
 smammals_diss_year1toN <- merge(smammals_jacc_allyears, smammals_bc_allyears)
@@ -637,8 +351,8 @@ write.csv(smammals_diss_watersheds,
           "Datasets/E1_output_data/E1_smammals/E1_smammals_dissimilarity_watersheds.csv")
 ```
 
-
 ### Small-mammals: Species Richness
+
 ```{r smammals richness}
 
 # Take the table already created for the species presence/absence matrix, then 
@@ -728,15 +442,14 @@ write.csv(smammals_years_wide, "Datasets/E1_output_data/E1_smammals/E1_smammals_
 write.csv(smammals_spabun_lm_short, "Datasets/E1_output_data/E1_smammals/E1_smammals_abundance_lm.csv")
 ```
 
-
-#TODO: START HERE AGAIN
-
-
 ## Grasshoppers (2002 - 2020) {.tabset}
+
 ### Grasshoppers: Presence/ Absence & Incidence Classification
+
 For this section, I am reorganizing the grasshopper data and reformatting it into a presence/absence matrix. This matrix will then be ran through the getTrends3.0 function to get the incidence classifications for each species at each watershed.
 
 Conduct the **incidence classification** method
+
 ```{r grasshoppers incidence classification}
 # Sum the data based on watershed
 # Here, we won't differentiate the data based on the trap lines or season
@@ -783,9 +496,9 @@ grasshoppers_classification <- grasshoppers_classification %>%
 write_csv(grasshoppers_classification, "Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers_classified.csv")
 ```
 
-
 Conduct the **abundance classification** method
-```{r smammals abundance classification}
+
+```{r grasshoppers abundance classification}
 #use the wide format count data as input; convert to matrix format and remove labels
 grasshoppers_years_matrix <- as.matrix(grasshoppers_years_wide[, -(1:3)])
 
@@ -815,9 +528,14 @@ grasshoppers_abun_class_summary <- grasshoppers_abun_classification %>%
   summarize(total_count=n(),.groups = 'drop')
 ```
 
+#TODO: START HERE AGAIN
 
+**Compare the incidence classification results across species and watersheds**
+
+How often did species "switch" their classifications versus stay consistent across sites?
 
 ### Grasshoppers: Calculating Summary Statistics
+
 ```{r grasshoppers_summstat}
 
 #view(grasshoppers_classification)
@@ -863,10 +581,9 @@ grasshoppers_class.switch3_wide <- grasshoppers_class.switch3 %>% pivot_wider(na
 
 ```
 
-
-
 ### Grasshoppers: Dissimilarity Between Watersheds
-This section is for conducting dissimilarity tests between watersheds for the grasshopper dataset. 
+
+This section is for conducting dissimilarity tests between watersheds for the grasshopper dataset.
 
 These dissimilarity tests will include a Jaccard's dissimilarity test for the first year of the time series, a Jaccard's dissimilarity test for the last year of the time series, a Jaccard's dissimilarity test for the overall time-series, and a Bray-Curtis dissimilarity test for the overall time-series.
 
@@ -1026,8 +743,8 @@ write.csv(grasshoppers_diss, "Datasets/E1_output_data/E1_grasshoppers/E1_grassho
 
 ```
 
-
 ### Grasshoppers: Dissimilarity Between Years by Watershed
+
 ```{r}
 
 ## First, populating the dataset with NA's by grouping the dataset by Watershed and Species, then pivoting wider. I found if I subsetted by watershed from the 'grasshoppers' dataset first, then there would be species missing since not all species were at every watershed. 
@@ -1510,8 +1227,8 @@ ncol = 4
 
 ```
 
-
 ### Grasshoppers: Species Richness
+
 ```{r}
 
 #Taking the table already created for the species presence/absence matrix, then adding in the year and watershed information back in, then pivoting the data into a long format.
@@ -1587,9 +1304,10 @@ grasshoppers_sprich %>% ggplot(aes(x = Recyear, y = Richness)) +
 
 ```
 
-
 ## Birds (1992 - 2009) {.tabset}
+
 ### Birds: Presence/ Absence & Incidence Classification
+
 For this section, I am reorganizing the bird data and reformatting it into a presence/absence matrix. This matrix will then be ran through the getTrends3.0 function to get the classifications for each species at each watershed.
 
 The overall output is a dataset that includes the incidecne classification for each species at each watershed, and includes all other output from the getTrends3.0 function
@@ -1654,8 +1372,8 @@ write_csv(birds_classification, "Datasets/E1_output_data/E1_birds/E1_birds_class
 
 ```
 
-
 ### Birds: Calculating Summary Statistics
+
 ```{r}
 view(birds_classification)
 
@@ -1701,12 +1419,12 @@ view(birds_class.switch3_wide)
 
 ```
 
-
-
 ### Birds: Dissimilarity Between Watersheds *NEEDS FIXED*
-This section is for conducting dissimilarity tests between watersheds for the bird dataset. 
+
+This section is for conducting dissimilarity tests between watersheds for the bird dataset.
 
 These dissimilarity tests will include a Jaccard's dissimilarity test for the first year of the time series, a Jaccard's dissimilarity test for the last year of the time series, a Jaccard's dissimilarity test for the overall time-series, and a Bray-Curtis dissimilarity test for the overall time-series.
+
 ```{r birds dissimilarity}
 
 #Jaccard's dissimilarity for the first year in the time series, 1992
@@ -1856,6 +1574,7 @@ write.csv(birds_diss, "Datasets/E1_output_data/E1_birds/E1_birds_dissimilarity.c
 ```
 
 ### Birds: Dissimilarity Between Years by Watershed
+
 ```{r}
 ## First, populating the dataset with NA's by grouping the dataset by Watershed and Species, then pivoting wider. I found if I subsetted by watershed from the 'birds' dataset first, then there would be species missing since not all species were at every watershed. 
 
@@ -2333,8 +2052,8 @@ ncol = 4
 )
 ```
 
-
 ### Birds: Species Richness
+
 ```{r}
 
 #Taking the table already created for the species presence/absence matrix, then adding in the year and watershed information back in, then pivoting the data into a long format.
@@ -2395,8 +2114,11 @@ birds_sprich %>% ggplot(aes(x = Recyear, y = Richness)) +
 ```
 
 ## Plants (1992 - 2022)
+
 ### Plants: Presence/ Absence & Incidence Classification
+
 For this section, I am reorganizing the bird data and reformatting it into a presence/absence matrix. This matrix will then be ran through the getTrends3.0 function to get the classifications for each species at each watershed.
+
 ```{r plants classification}
 
 #Selecting the columns I want for further analysis 
@@ -2464,11 +2186,12 @@ plants_class_long <- plants_classification %>% pivot_longer(cols = "1992":"2022"
 
 ```
 
-
 ### Plants Dissimilarity Between Watersheds
-This section is for conducting dissimilarity tests between watersheds for the plant dataset. 
+
+This section is for conducting dissimilarity tests between watersheds for the plant dataset.
 
 These dissimilarity tests will include a Jaccard's dissimilarity test for the first year of the time series, a Jaccard's dissimilarity test for the last year of the time series, a Jaccard's dissimilarity test for the overall time-series, and a Bray-Curtis dissimilarity test for the overall time-series.
+
 ```{r plants dissimilarity}
 
 
@@ -2661,8 +2384,8 @@ write.csv(plants_diss, "Datasets/E1_output_data/E1_plants/E1_plants_dissimilarit
 
 ```
 
-
 ### Plants: Dissimilarity Between Years by Watershed
+
 ```{r}
 ## First, populating the dataset with NA's by grouping the dataset by Watershed and Species, then pivoting wider. I found if I subsetted by watershed from the 'birds' dataset first, then there would be species missing since not all species were at every watershed. 
 
@@ -3137,6 +2860,7 @@ ggsave("Figures/plant_jaccard-diss_3xfire.png", dpi=300, width=10, height=6)
 ```
 
 ### Plants: Species Richness
+
 ```{r}
 #Taking the table already created for the species presence/absence matrix, then adding in the year and watershed information back in, then pivoting the data into a long format.
 plants_sprich <- decostand_plants_pa %>% 
@@ -3199,7 +2923,6 @@ plants_sprich %>% filter(Watershed_name %in% c("1D", "N1B", "4B", "N4D", "20B", 
 ggsave("Figures/plant-richness-firex3.png", dpi=300, width=8, height=5.5)
 
 ```
-
 
 ### Plants: Calculating Summary Statistics
 
