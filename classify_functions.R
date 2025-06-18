@@ -233,55 +233,6 @@ get_rsq <- function(mod) summary(mod)$r.squared
 ### Jaccard Dissimilarity functions
 # this is repeated across all four taxa to collect results
 
-process_jaccard_dissimilarity <- function(df, baseline_year) {
-  # Reformat and pivot
-  df_wide <- df %>%
-    group_by(Watershed_name, Species, Recyear) %>%
-    reframe(Total = Count) %>%
-    pivot_wider(names_from = "Species", values_from = "Total")  %>%
-                #values_fn = function(x) paste(sum(x))) %>%
-    replace(is.na(.),0) %>%
-    unite("Watershed_year", Watershed_name:Recyear, sep = "_")
-  
-  watershed_year <- df_wide$Watershed_year
-  
-  # Jaccard dissimilarity
-  jacc <- df_wide[, -1] %>%
-    decostand(method = "pa") %>%
-    vegdist(method = "jaccard") %>%
-    as.matrix()
-  dimnames(jacc) <- list(watershed_year, watershed_year)
-  
-  # Compare to baseline year
-  jacc_years <- as.data.frame.table(jacc) %>%
-    separate(Var1, c("Watershed1", "Year1"), "_") %>%
-    separate(Var2, c("Watershed2", "Year2"), "_") %>%
-    rename("Jacc_diss" = "Freq") %>%
-    mutate(across(c(Year1, Year2), as.numeric)) %>%
-    filter(Year1 == baseline_year & Watershed1 == Watershed2)
-  
-  # Compare watersheds within same year
-  jacc_watersheds <- as.data.frame.table(jacc) %>%
-    separate(Var1, c("Watershed1", "Year1"), "_") %>%
-    separate(Var2, c("Watershed2", "Year2"), "_") %>%
-    rename("Jacc_diss" = "Freq") %>%
-    mutate(across(c(Year1, Year2), as.numeric)) %>%
-    filter(Year1 == Year2) %>%
-    rowwise() %>%
-    mutate(
-      Watershed_min = min(Watershed1, Watershed2),
-      Watershed_max = max(Watershed1, Watershed2)
-    ) %>%
-    ungroup() %>%
-    distinct(Year1, Watershed_min, Watershed_max, .keep_all = TRUE) %>%
-    dplyr::select(-Watershed1, -Watershed2) %>%
-    rename(Watershed1 = Watershed_min, Watershed2 = Watershed_max) %>%
-    dplyr::select(Watershed1, Year1, Watershed2, Year2, Jacc_diss)
-  
-  list(jacc_baseline = jacc_years, jacc_watershed = jacc_watersheds)
-}
-
-
 compute_dissimilarity <- function(df_counts, method = "jaccard", baseline_year) {
   # input a dataframe where the first column is watershed_year and
   #   all subsequent columns are species names. Values are the count (abundance)
