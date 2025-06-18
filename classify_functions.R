@@ -193,24 +193,118 @@ label_abundance <- function(x) {
 # label is added to indicate classification if it is absent or too rare
 # this function acts on each row of a species count matrix
 
-label_abundance <- function(x) {
-  # Create a new vector with labels
-  convert_x <- numeric(length(x))
-  # Calculate average of population time series
-  average = mean(x)
-  # Calculate the proportion of zeros in the time series (how many years absent?)
-  tsabs <- round(mean(x==0), 2)
-  #iterate and replace values with abundance conversion
-  for (i in 1:length(x)) {
-    if (x[i] >= average) {
-      convert_x[i] <- 1
-    } else {
-      convert_x[i] <- 0
-    }
+getAbundTrends
+function(x) {
+  #input (x) is a single row of a matrix where the species are rows and the columns are each year with 1/0 values (1=equal to or above avg abund, 0=below avg abund). 
+  #So you need to iterate each row separately to get the results
+  # Output is a list with 10 items, that represents the classification results for a single species
+  
+  #proportion of years absent; select the final element in the vector
+  tsabs <- tail(x, n=1)
+  
+  #make x be only the 0s and 1s, removing tsabs
+  x <- x[-length(x)]
+  
+  #create an object the same length as x that defines early vs late years
+  time <- rep("late", length(x))
+  time[1:(round(length(x)/2))] <- "early"
+  
+  #NOTE: I ended up placing the z_x table back at the top of the function because I was having a hard time getting it to run without it.
+  # makes a table that shows how many 0s and 1s are in the early and the late halves of the time series
+  z_x <- table(x,time)
+  
+  #find the time-series length (number of years)
+  tslen <- length(x)
+  
+  # create an empty vector to store results in for the next for loop
+  l <- c()
+  
+  # identifies when a change from a 0 to a 1 or vice versa happens
+  # length(l) should be 1 shorter than length(x)
+  # j indicates if a switch happened, and what direction
+  #    j 0 means no switch occurred in the time step
+  #    j -1 means it switched from above to below average abundance
+  #    j 1 means it switched from below to above average abundance
+  # v indicates the total number of switches that happened
+  for(k in 1:(tslen-1)) {
+    j <- x[k+1] - x[k]
+    l <- c(l, j)
+    v <- sum(abs(l))
   }
-  convert_x <- append(convert_x, tsabs)
-  return(convert_x)
-}    
+  
+  # If the species was absent in all years (tsabs=1), then we don't need to continue
+  if (tsabs == 1) {
+    p_val <- NA
+    f_early <- NA
+    f_late <- NA
+    runsTestPV <- NA
+    trend <- NA
+    trendPlus <- NA
+    cat <- "No_change-absent"
+  } else if ((tsabs >= 0.90) & (tsabs < 1)) {
+    # if the species was absent *most* years (tsabs >=0.90), we don't need to continue
+    p_val <- NA
+    f_early <- NA
+    f_late <- NA
+    runsTestPV <- NA
+    trend <- NA
+    trendPlus <- NA
+    cat <- "Rare"
+  } else {
+    #If not labeled absent or rare, then we proceed with a chi-sq test to detect directed change
+    #adds rownames to the z_x table
+    rownames(z_x) <- c("below_avg","above_avg")
+    
+    # get p value for the chi-squared test
+    p_val <- chisq.test(z_x)$p.val
+    
+    # get early and late fractions
+    # for each the early and the late parts of the time series:
+    #    the number of years it was present divided by the number of years
+    f_early <- z_x["above_avg","early"] / sum(z_x[,1]) 
+    f_late <- z_x["above_avg","late"] / sum(z_x[,2])
+    
+    if((f_early > f_late) & (p_val <= 0.05)) {
+      trend <- -1
+      cat = "Decreasing"
+      runsTestPV <- NA
+    } 
+    else if((f_early < f_late) & (p_val <= 0.05)) {
+      trend <- 1
+      cat = "Increasing"
+      runsTestPV <- NA
+    } 
+    else {
+      # Chi-squared test not significant
+      trend <- 0
+      
+      #conduct a runs test on the time-series
+      runsPV <- tseries::runs.test(as.factor(x), alternative = "less")
+      runsTestPV <- runsPV$p.value
+      if(is.nan(runsTestPV)) {
+        runsTestPV <- 2 }
+      # if Chi-sq test insignif. and the runs test was significant
+      if((p_val > 0.05) & (runsTestPV < 0.05)) {
+        cat="Recurrent"
+      } 
+      else if((p_val > 0.05) & (runsTestPV > 0.05)) {
+        cat="Random"
+      }
+    } #end else for ns chisq
+  }
+  
+  # for each species, record the summary statistics
+  statSumm <- tibble("numyears" = tslen, 
+                     "percyears" = 1 - tsabs, #convert absent proportion to present proportion
+                     "chiPval" = p_val, 
+                     "chi_fearly" = f_early, 
+                     "chi_flate" = f_late, 
+                     "runsPval" = runsTestPV, 
+                     "numtransitions" = v, 
+                     "trend" = trend, 
+                     "classification" = as.factor(cat))
+  return(statSumm)
+}
 
 #---------------------------------------------------------------------------------
 ### extract model results functions
