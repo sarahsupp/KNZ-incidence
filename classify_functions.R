@@ -178,8 +178,9 @@ label_abundance <- function(x) {
 ### getAbundTrends
 # The "getAbundTrends" function will classify species within each taxa, from each watershed, into distinct categories, informed by the abundance (count or percent cover) data. This modification of the incidence classification makes a few key changes, but is largely similar. First, using the average abundance of the population time series (i.e., from the sequence of counts), each time step is converted into 0 (less than average) or 1 (equal to or greater than average). At this step, we will also record the percent of years species was present, so we can avoid over-interpreting a lot of zeros. The previous rule for recurrent classification is relaxed here as it is not needed. The categories include: 
 #   
-#   - **"No_change-absent"** <- though species was detected at other surrounding watersheds, it was absent at specified watershed for the duration of the time series (# years present = 0).
+#     - **"No_change-absent"** <- though species was detected at other surrounding watersheds, it was absent at specified watershed for the duration of the time series (# years present = 0).
 #     - **"Rare"** <- Species was present at specified watershed for between 1-10% of years in the duration of the time series. Abundance will not be classified.
+#     - **"Invariant"** <- Species abundance is the same for all species and cannot be analyzed (happens with plant class 1)
 #     - **"No_change-increasing"** <- species at watershed is above average abundance in >=90% of years in which data was collected. #CHECKME: is this even possible?
 #     - **"No_change-decreasing"** <- species at watershed is below average abundance in >=90% of years in which data was collected. #CHECKME: is this even possible?
 #     - **"Increasing"** <- the second half of the study contains most of the above average records of the species (it is mostly below average during the beginning of the study)
@@ -193,8 +194,7 @@ label_abundance <- function(x) {
 # label is added to indicate classification if it is absent or too rare
 # this function acts on each row of a species count matrix
 
-getAbundTrends
-function(x) {
+getAbundTrends <- function(x) {
   #input (x) is a single row of a matrix where the species are rows and the columns are each year with 1/0 values (1=equal to or above avg abund, 0=below avg abund). 
   #So you need to iterate each row separately to get the results
   # Output is a list with 10 items, that represents the classification results for a single species
@@ -209,9 +209,11 @@ function(x) {
   time <- rep("late", length(x))
   time[1:(round(length(x)/2))] <- "early"
   
-  #NOTE: I ended up placing the z_x table back at the top of the function because I was having a hard time getting it to run without it.
   # makes a table that shows how many 0s and 1s are in the early and the late halves of the time series
   z_x <- table(x,time)
+  # ensure the table has 2 rows
+  z_x <- table(factor(x, levels = c(0,1)),
+               factor(time, levels = c("early", "late")))
   
   #find the time-series length (number of years)
   tslen <- length(x)
@@ -232,8 +234,17 @@ function(x) {
     v <- sum(abs(l))
   }
   
-  # If the species was absent in all years (tsabs=1), then we don't need to continue
-  if (tsabs == 1) {
+  if (v==0) {
+    # If the species was invariant in all years (i.e., all values are 1), then we don't need to continue
+    p_val <- NA
+    f_early <- NA
+    f_late <- NA
+    runsTestPV <- NA
+    trend <- NA
+    trendPlus <- NA
+    cat <- "Invariant"
+  } else if (tsabs == 1) {
+    # If the species was absent in all years (tsabs=1), then we don't need to continue
     p_val <- NA
     f_early <- NA
     f_late <- NA
@@ -251,16 +262,16 @@ function(x) {
     trendPlus <- NA
     cat <- "Rare"
   } else {
-    #If not labeled absent or rare, then we proceed with a chi-sq test to detect directed change
-    #adds rownames to the z_x table
-    rownames(z_x) <- c("below_avg","above_avg")
+    #If not labeled invariant, absent, or rare, then we proceed with a chi-sq test to detect directed change
+     #adds rownames to the z_x table
+     rownames(z_x) <- c("below_avg","above_avg")
     
     # get p value for the chi-squared test
     p_val <- chisq.test(z_x)$p.val
     
     # get early and late fractions
     # for each the early and the late parts of the time series:
-    #    the number of years it was present divided by the number of years
+    #    the number of years it was above average divided by the number of years
     f_early <- z_x["above_avg","early"] / sum(z_x[,1]) 
     f_late <- z_x["above_avg","late"] / sum(z_x[,2])
     

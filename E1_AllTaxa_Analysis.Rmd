@@ -69,6 +69,7 @@ Incidence Classification categories include:
 
 Abundance Classification categories include:
 
+-   **Invariant** \<- species abundance did not vary across the time series. Cannot be analyzed.
 -   **"No_change-absent"** \<- though species was detected at other surrounding watersheds, it was absent at specified watershed for the duration of the time series (\# years present = 0).
 -   **"Rare"** \<- Species was present at specified watershed for between 1-10% of years in the duration of the time series. Abundance will not be classified.
 -   **"No_change-increasing"** \<- species at watershed is above average abundance in \>=90% of years in which data was collected. #CHECKME: is this even possible?
@@ -315,14 +316,15 @@ It is recorded  on a scale of 1-7 where:
   - 7 = 95-100% cover
 
 Conduct the **incidence classification** method
+*Note: Here, the column named 'Count' represents median Cover class (range 1-7) for plants*
 ```{r plants incidence classification}
 
 # Average the data based on watershed (not using SUM because it's cover, not count, data)
 # Here, we won't differentiate the data based on the trap lines or season
-# NOTE: Count isn't meaningful here, but it can be converted into pres/abs later
+# NOTE: Count=median(cover) here, but it can be converted into pres/abs later
 plants <- E0_plants %>% 
   group_by(Recyear, Watershed_name, Genus_spp) %>% 
-  reframe(Count = mean(Cover)) %>%
+  reframe(Count = median(Cover)) %>%
   unite("species.watershed", Genus_spp:Watershed_name, sep=".", remove=FALSE)
 
 #Pivot the table so that each year is a column and each row is the 'species.watershed' variable
@@ -355,12 +357,41 @@ plants_classification <- plants_classification %>% add_column(decostand_plants_p
 write_csv(plants_classification, "Datasets/E1_output_data/E1_plants/E1_plants_classified.csv")
 ```
 
+Conduct the **abundance classification** method
+*Note: Here, the column named 'Count' represents median Cover class (range 1-7) for plants*
+```{r plants abundance classification}
+#use the wide format count data as input; convert to matrix format and remove labels
+plants_years_matrix <- as.matrix(plants_years_wide[, -(1:3)])
+
+# input matrix into label_abundance method
+# returns a new matrix where 0=below average, 1=above or equal to average
+#   final column = proportion of years the species was absence (proportion of zeros)
+abund_matrix <- plants_years_matrix %>%
+  as.data.frame() %>%
+  mutate(row_id = row_number()) %>%
+  split(.$row_id) %>%
+  map(~ label_abundance(as.numeric(.x[ , -ncol(.x)]))) %>%
+  do.call(rbind, .)
+
+#input abund_matrix into getAbundTrends function, apply to each row of the converted matrix
+plants_abun_trends <- apply(abund_matrix, 1, getAbundTrends) 
+
+#Create table with the getAbunTrends results annotated with species & watershed labels
+#   labels from birds_env, created earlier
+plants_abun_classification <- tibble((plants_env), do.call(rbind,lapply(plants_abun_trends,(function(v){v[c(1:9)]}))))
+
+# Write to file
+write_csv(plants_abun_classification,
+          "Datasets/E1_output_data/E1_plants/E1_plants_classified_abund.csv")
+
+```
+
 #TODO START HERE
 #FIXME: What is the best way to deal with cover classes here? It's an ordinal variable? Can it be used for bray-curtis or any non-p/a analysis?
 Maybe it still works for the abundance class, since we're only looking for above vs below average abundance as the comparison? May need to tweak the code a bit...
-Conduct the **abundance classification** method
-```{r plants abundance classification}
-```
+
+
+
 
 ## Summary statistics on classification (all taxa) {.tabset}
 This section makes some basic summaries of the incidence classification results.
