@@ -53,7 +53,7 @@ E0_plants <- read_csv("Datasets/E0_cleaned_data/E0_plants.csv")
 
 # Clean Data to Classified Incidence for All Taxa
 
-This Rmarkdown is for taking the clean datasets for all 4 taxa (small-mammals, grasshoppers, birds, and plants) and using the incidence classification method to categorize each species. This file also estimates composition change (Jaccard dissimilarity) and richness change (linear model) over time.
+This Rmarkdown is for taking the clean datasets for all 4 taxa (small-mammals, grasshoppers, birds, and plants) and using the incidence classification method to categorize each species. This file also estimates composition change using presence-absence information (Jaccard dissimilarity) and abundance information (Bray-Curtis dissimilarity), richness change (linear model), and abundance change (linear model) over time.
 
 ## Brief overview of Classification
 
