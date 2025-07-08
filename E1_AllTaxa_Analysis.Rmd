@@ -59,25 +59,25 @@ This Rmarkdown is for taking the clean datasets for all 4 taxa (small-mammals, g
 
 Incidence Classification categories include:
 
--   **"No_change-absent"** \<- though species was detected at other surrounding watersheds, it was absent at specified watershed for the duration of the time series.
+-   **"No_change-absent"** \<- Species was detected at other surrounding watersheds, but it was absent at specified watershed for the duration of the time series.
 -   **"Rare"** \<- Species was present at specified watershed for between 1-10% of years in the duration of the time series.
--   **"No_change-present"** \<- species at watershed is present in \>=90% of years in which data was collected.
--   **"Increasing"** \<- the presence of the species increases throughout the duration of the study (it is absent during the beginning of the study, but appears towards the end of the study)
--   **"Decreasing"** \<- the presence of the species decreases throughout the duration of the study (it is present during the beginning of the study, but then disappears towards the end of the study)
--   **"Recurrent"** \<- species is detected in consecutive years and is followed by the absence of the species for a period of time, in a distinct pattern. Species must at least two instances of presences followed by absences.
--   **"Random"** \<- species is detected sporadically for the duration of the study at watershed
+-   **"No_change-present"** \<- Species at watershed is present in \>=90% of years in which data was collected.
+-   **"Increasing"** \<- The presence of the species increases throughout the duration of the study (it is absent during the beginning of the study, but appears towards the end of the study)
+-   **"Decreasing"** \<- The presence of the species decreases throughout the duration of the study (it is present during the beginning of the study, but then disappears towards the end of the study)
+-   **"Recurrent"** \<- Species is detected in consecutive years and is followed by the absence of the species for a period of time, in a distinct pattern. Species must at least two instances of presences followed by absences.
+-   **"Random"** \<- Species is detected sporadically for the duration of the study at watershed
 
 Abundance Classification categories include:
 
--   **Invariant** \<- species abundance did not vary across the time series. Cannot be analyzed.
--   **"No_change-absent"** \<- though species was detected at other surrounding watersheds, it was absent at specified watershed for the duration of the time series (\# years present = 0).
+-   **Invariant** \<- Species abundance did not vary across the time series. Cannot be analyzed.
+-   **"No_change-absent"** \<- Species was detected at other surrounding watersheds, but it was absent at specified watershed for the duration of the time series (\# years present = 0).
 -   **"Rare"** \<- Species was present at specified watershed for between 1-10% of years in the duration of the time series. Abundance will not be classified.
--   **"No_change-increasing"** \<- species at watershed is above average abundance in \>=90% of years in which data was collected. #CHECKME: is this even possible?
--   **"No_change-decreasing"** \<- species at watershed is below average abundance in \>=90% of years in which data was collected. #CHECKME: is this even possible?
--   **"Increasing"** \<- the second half of the study contains most of the above average records of the species (it is mostly below average during the beginning of the study)
--   **"Decreasing"** \<- the second half of the study contains most of the below average records of the species (it is mostly above average during the beginning of the study)
--   **"Recurrent"** \<- species abundance fluctuations appear to be clumped into consecutive years, with distinct periods of above average and below average abundances.
--   **"Random"** \<- species abundance fluctuates in an unpredictable pattern for the duration of the study.
+-   **"No_change-increasing"** \<- Species at watershed is above average abundance in \>=90% of years in which data was collected. #CHECKME: is this even possible?
+-   **"No_change-decreasing"** \<- Species at watershed is below average abundance in \>=90% of years in which data was collected. #CHECKME: is this even possible?
+-   **"Increasing"** \<- The second half of the study contains most of the above average records of the species (it is mostly below average during the beginning of the study)
+-   **"Decreasing"** \<- The second half of the study contains most of the below average records of the species (it is mostly above average during the beginning of the study)
+-   **"Recurrent"** \<- Species abundance fluctuations appear to be clumped into consecutive years, with distinct periods of above average and below average abundances.
+-   **"Random"** \<- Species abundance fluctuates in an unpredictable pattern of above vs below average for the duration of the study.
 
 #----------------------------------------------------------------------------------
 
