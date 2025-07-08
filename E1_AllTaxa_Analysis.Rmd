@@ -386,11 +386,6 @@ write_csv(plants_abun_classification,
 
 ```
 
-#TODO START HERE
-#FIXME: What is the best way to deal with cover classes here? It's an ordinal variable? Can it be used for bray-curtis or any non-p/a analysis?
-Maybe it still works for the abundance class, since we're only looking for above vs below average abundance as the comparison? May need to tweak the code a bit...
-
-
 
 #----------------------------------------------------------------------------------------------
 ## Summary statistics on classification (all taxa) {.tabset}
@@ -672,7 +667,8 @@ Is dissimilarity increasing through time? Is the rate of composition change diff
 
 Save results for **Small mammal composition dissimilarity**
 ```{r}
-# prepare the count data into wide format with merged column for watershed_year
+# prepare the count data into wide format with merged column for watershed_year;
+# Adds NAs for missing species since they aren't all present on every watershed
 smammals_count_allyears <- smammals %>% 
   group_by(Watershed_name, Species, Recyear) %>% 
   reframe(Total = (Count)) %>% 
@@ -729,7 +725,6 @@ write.csv(gh_watershed, "Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers
 Save results for **Bird composition dissimilarity**
 ```{r}
 # prepare the count data into wide format with merged column for watershed_year
-## First, populating the dataset with NA's by grouping the dataset by Watershed and Species, then pivoting wider. I found if I subsetted by watershed from the 'birds' dataset first, then there would be species missing since not all species were at every watershed. 
 birds_count_allyears <- birds %>% 
   group_by(Watershed_name, AOU_code, Recyear) %>% 
   reframe(Total = (Count)) %>% 
@@ -757,12 +752,43 @@ write.csv(bd_watershed, "Datasets/E1_output_data/E1_birds/E1_birds_dissimilarity
 
 #### Plant Composition
 
-#TODO: WORK ON NEXT; COVER CLASSES
-Jaccard likely OK, but Bray-curtis may need rethinking
+**Note:** The plant dataset uses an ordinal variable for cover class instead of abundance, or count. This is fine to covert to presence absence for Jaccard dissimilarity but would be flawed to use in Bray-Curtis directly, in place of abundance. There are two potential options, and we can calculate both: 
+
+1. Convert cover class to midpoints (this still would represent percent cover, not abundance)
+2. Use an alternative method that works with ordinal variables, like Gower's distance
+
+I have a preference for using Gower's distance here because we can treat the variables as ordinal, without assuming equal intervals between the classes (they aren't; see label descriptions above). The first option of converting to midpoints implicitly suggests continuous or equal interval data, which it isn't really. Gower 0 == the same; Gower 1 == completely different.
+
 Save results for **Plant composition dissimilarity**
 ```{r}
-#FIXME: What will need to be handled differently for plants? Using percent cover, not count; use mean percent cover instead? something else? Check with KNZ data manager and recent pubs?
+# prepare the cover data into wide format with merged column for watershed_year
+plants_count_allyears <- plants %>% 
+  #add a line to ensure Count is an ordered factor (plant cover class)
+#  mutate(Count = factor(Count, levels = 1:7, ordered = TRUE)) %>%
+  group_by(Watershed_name, Genus_spp, Recyear) %>% 
+  reframe(Total = (Count)) %>% 
+  pivot_wider(names_from = "Genus_spp", values_from = "Total",
+              values_fn = function(x) paste(x)) %>%
+  unite("Watershed_year", Watershed_name:Recyear, sep="_") %>%
+  replace(is.na(.),"0")
+
+# find the first year of the study
+year1 <- min(plants$Recyear)
+
+# bird dissimilarity estimates
+pl_jacc <- compute_dissimilarity(plants_count_allyears, method="jaccard", baseline_year = year1)
+pl_gower <- compute_dissimilarity(plants_count_allyears, method="gower", baseline_year = year1)
+
+# merge and write results
+pl_baseline <- merge(pl_jacc[1], pl_gower[1])
+pl_watershed <- merge(pl_jacc[2], pl_gower[2])
+
+##Save to file
+write.csv(pl_baseline, "Datasets/E1_output_data/E1_plants/E1_plants_dissimilarity_year1toN.csv")
+
+write.csv(pl_watershed, "Datasets/E1_output_data/E1_plants/E1_plants_dissimilarity_watersheds.csv")
 ```
+
 
 
 #TODO: START HERE AGAIN

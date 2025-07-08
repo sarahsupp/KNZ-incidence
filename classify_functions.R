@@ -5,6 +5,7 @@
 # Corresponding author: Sarah R. Supp; supps@denison.edu
 
 # Requirements
+require(cluster)
 require(tidyverse)
 require(vegan)
 
@@ -335,13 +336,14 @@ get_p_value <- function(mod) tidy(mod)$p.value[2]
 get_rsq <- function(mod) summary(mod)$r.squared
 
 #---------------------------------------------------------------------------------
-### Jaccard Dissimilarity functions
+### Jaccard, Bray, and Gower Dissimilarity functions
 # this is repeated across all four taxa to collect results
+# Gower is used in place of Bray-Curtis for plant cover classes
 
 compute_dissimilarity <- function(df_counts, method = "jaccard", baseline_year) {
   # input a dataframe where the first column is watershed_year and
   #   all subsequent columns are species names. Values are the count (abundance)
-  # method can be specified as "jaccard" or "bray" for dissimiliarity calculation
+  # method can be specified as "jaccard", "bray", or "gower" for dissimiliarity calculation
   # if baseline_year is specified, will calculate dissimiliarity to all subsequent years
   # if baseline_year is NULL, will calculate dissimilarity across watersheds, within the same year
   
@@ -351,15 +353,28 @@ compute_dissimilarity <- function(df_counts, method = "jaccard", baseline_year) 
   
   # Optional standardization (Bray requires total, Jaccard uses presence-absence)
   if (method == "jaccard") {
+    # prepare data with presence-absence
     diss_input <- decostand(diss_input, method = "pa")
+    # Compute dissimilarity
+    diss_mat <- vegdist(diss_input, method = method)
+    
   } else if (method == "bray") {
+    # prepare data with totals
     diss_input <- decostand(diss_input, method = "total")
+    # Compute dissimilarity
+    diss_mat <- vegdist(diss_input, method = method)
+    
+  } else if (method == "gower") {
+    # Convert columns to factors with ordered levels
+    diss_input[] <- lapply(diss_input, function(x) factor(x, ordered = TRUE))
+    #Compute dissimilarity
+    diss_mat <- daisy(diss_input, metric = "gower")
+    
   } else {
-    stop("Unsupported method. Use 'jaccard' or 'bray'")
+    stop("Unsupported method. Use 'jaccard', 'bray' or 'gower'")
   }
   
-  # Compute dissimilarity
-  diss_mat <- vegdist(diss_input, method = method)
+  # convert to matrix and add rownames
   diss_mat <- as.matrix(diss_mat)
   rownames(diss_mat) <- colnames(diss_mat) <- df_counts$Watershed_year
   

@@ -1,4 +1,4 @@
-"","Watershed1","Year1","Watershed2","Year2","Jacc_diss","Bray_diss"
+"","watershed.Watershed1","watershed.Year1","watershed.Watershed2","watershed.Year2","watershed.jaccard_diss","watershed.bray_diss"
 "1","1D",1992,"1D",1992,0,0
 "2","1D",1992,"20B",1992,0.625,0.658333333333333
 "3","1D",1992,"4B",1992,0.5,0.443798449612403
