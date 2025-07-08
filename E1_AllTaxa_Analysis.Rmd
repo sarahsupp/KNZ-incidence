@@ -791,6 +791,7 @@ write.csv(pl_watershed, "Datasets/E1_output_data/E1_plants/E1_plants_dissimilari
 
 
 
+#----------------------------------------------------------------------------------------
 #TODO: START HERE AGAIN
 # TODO: BEGIN AGAIN - THIS TIME WRITE A FUNCTION THAT CAN STREAMLINE THE RICHNESS ANALYSIS ACROSS TAXA
 
@@ -1841,51 +1842,3 @@ ggsave("Figures/plant-richness-firex3.png", dpi=300, width=8, height=5.5)
 
 ```
 
-### Plants: Calculating Summary Statistics
-
-```{r}
-#view(plants_classification)
-
-plants_class.switch <- plants_classification %>%
-  filter(Watershed_name %in% c("1D", "N1B", "4B", "N4D", "20B", "N20B")) %>% #KEEP this line in if you want to use just the 6 that are consistent with other taxa
-  filter(classification != "No_change-absent") %>% #KEEP this line in to ignore cases where the species was absent
-  group_by(Species, classification) %>%
-  summarize(total_count=n(),.groups = 'drop')
-
-
-#view(plants_class.switch)
-
-plants_class.switch1 <- plants_classification %>% 
-  group_by(Species) %>%
-  summarize(count = n_distinct(classification))
-
-plants_class.switch1 %>% ggplot(aes(x = count)) + 
-  geom_histogram(binwidth = 0.5) + 
-  theme_bw() +
-  labs(title = "plants: Classification switches",
-       x = "Number of Times a Species Switched Classifications",
-       y = "Count of Species")
-
-plants_class.switch2 <- plants_classification %>%
-  group_by(Species, classification) %>%
-  summarize(count = n_distinct(Watershed_name))
-
-#view(plants_class.switch2)
-
-plants_class.switch2_wide <- plants_class.switch2 %>% pivot_wider(names_from = classification, values_from = count)
-
-view(plants_class.switch2_wide)
-
-
-plants_class.switch3 <- plants_classification %>%
-  group_by(Watershed_name, classification) %>%
-  summarize(count = n_distinct(Species))
-
-view(plants_class.switch3)
-
-plants_class.switch3_wide <- plants_class.switch3 %>% pivot_wider(names_from = classification, values_from = count)
-
-view(plants_class.switch3_wide)
-
-
-```
