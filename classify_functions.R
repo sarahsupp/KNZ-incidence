@@ -324,7 +324,7 @@ getAbundTrends <- function(x) {
 # These will be used later for analyzing species richness across each watershed.
 
 ##'fit_model' takes the data frame and runs a linear model for richness ('value') by year ('n').
-fit_model <- function(df) lm(value ~ n, data = df)
+fit_model <- function(df) lm(Richness ~ n, data = df)
 
 ##'get_slope' takes the output from the models ('mod') and extracts the slope ('estimate')
 get_slope <- function(mod) tidy(mod)$estimate[2]
@@ -409,3 +409,52 @@ compute_dissimilarity <- function(df_counts, method = "jaccard", baseline_year) 
   list(baseline = df_baseline, watershed = df_watershed)
   }
  
+
+#-------------------------------------------------------------------------------------------
+### Richness function
+# Calculates species richness for each watershed in each year
+
+richness_trend <- function(pa_df, env_data){
+  # pa_df: a dataframe where each column is a year and 
+  #       each value is a 0 or 1 indicated presence or absence, 
+  #       each row represents a species in a watershed
+  # env_data: a dataframe that represents the ordering of the pa_df rows
+  #       and will be added back as columns
+  # Runs a linear regression for year and richness 
+  # Output is a linear model results dataframe with watershed, slope, p_value and rsquared
+  
+  # Combine pres-abs data with environmental labels and reshape to long format
+  pa_long <- pa_df %>%
+    add_column(env_data) %>%
+    pivot_longer(cols=where(is.numeric),
+                 names_to = "Recyear",
+                 values_to = "Presence") %>%
+    mutate(Recyear = as.numeric(Recyear),
+           Watershed_name = factor(Watershed_name))
+  
+  # Calculate species richness (sum of presences) per watershed per year
+  sprich <- pa_long %>%
+    group_by(Watershed_name, Recyear) %>%
+    summarise(Richness = sum(Presence), .groups = "drop")
+  
+  # Fit trend model across time for each watershed
+  sprich_lm <- sprich %>%
+    group_by(Watershed_name) %>%
+    mutate(n = row_number()) %>%
+    arrange(Watershed_name, n) %>%
+    nest() %>%
+    mutate(
+      model = map(data, fit_model),
+      slope = map_dbl(model, get_slope),
+      p_value = map_dbl(model, get_p_value),
+      rsquared = map_dbl(model, get_rsq)
+    )
+  
+  # saves just the values, removing the full model details
+  sprich_lm_summary <- sprich_lm %>%
+    dplyr::select(Watershed_name, slope, p_value, rsquared)
+  
+  return(list(
+    richness = sprich,
+    model = sprich_lm_summary))
+}
