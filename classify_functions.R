@@ -324,7 +324,7 @@ getAbundTrends <- function(x) {
 # These will be used later for analyzing species richness across each watershed.
 
 ##'fit_model' takes the data frame and runs a linear model for richness ('value') by year ('n').
-fit_model <- function(df) lm(Richness ~ n, data = df)
+fit_model <- function(df) lm(value ~ n, data = df)
 
 ##'get_slope' takes the output from the models ('mod') and extracts the slope ('estimate')
 get_slope <- function(mod) tidy(mod)$estimate[2]
@@ -439,6 +439,7 @@ richness_trend <- function(pa_df, env_data){
   
   # Fit trend model across time for each watershed
   sprich_lm <- sprich %>%
+    rename(value = Richness) %>% #make this generic so it works with the function
     group_by(Watershed_name) %>%
     mutate(n = row_number()) %>%
     arrange(Watershed_name, n) %>%
