@@ -239,7 +239,7 @@ Conduct the **incidence classification** method
 birds <- E0_birds %>% 
   group_by(Recyear, Watershed_name, AOU_code) %>% 
   reframe(Count = sum(Count)) %>%
-  unite("species.watershed", AOU_code:Watershed_name, sep=".", remove=FALSE)
+  unite("Species.watershed", AOU_code:Watershed_name, sep=".", remove=FALSE)
 
 #Pivot the table so that each year is a column and each row is the 'species.watershed' variable
 # years where the species was not detected should appear as NA, and are converted to zero
@@ -792,89 +792,94 @@ write.csv(pl_watershed, "Datasets/E1_output_data/E1_plants/E1_plants_dissimilari
 
 
 #----------------------------------------------------------------------------------------
-#TODO: START HERE AGAIN
-# TODO: BEGIN AGAIN - THIS TIME WRITE A FUNCTION THAT CAN STREAMLINE THE RICHNESS ANALYSIS ACROSS TAXA
 
 ## Species Richness change over time (all taxa) {.tabset}
+This section applies a function to calculate species richness per watershed and per year. 
+It then determines if richness is changing directionally over time using a simple linear model.
+
+**input:** the presence absence matrix and the watershed-species information. Both of these come from previous code steps (using decostand and creating the env dataframe)
+**returns:** a list with both dataframes to result -- contains summary richness data and the linear model results
 
 #### Small mammals
 
 ```{r smammals richness}
 
-# Take the table already created for the species presence/absence matrix, then 
-#   add in the year and watershed information back in, then 
-#   pivot the data into a long format,
-#   where 'Recyear' column is a numeric column, and 
-#   the 'Watershed_name' column into a factor
-smammals_sprich <- decostand_smammals_pa %>% 
-  add_column(smammals_env) %>% 
-  pivot_longer(cols = "1992":"2013", 
-               names_to = "Recyear", 
-               values_to = "Presence") %>% 
-  mutate(Recyear = as.numeric(Recyear),
-         Watershed_name = factor(Watershed_name))
-
-
-#Sum the presences of each species at each watershed and year to get a value for species richness
-smammals_sprich <- smammals_sprich %>% 
-  group_by(Watershed_name, Recyear) %>% 
-  reframe(Richness = sum(Presence))
-
-#Pivot the dataset 
-smammals_sprich_wide <- smammals_sprich %>% 
-  pivot_wider(names_from = "Recyear", 
-              values_from = "Richness")
-
-#Use 'purr' to run the model. The gather function get the values we need, and the group_by function makes sure the values are grouped by 'Watershed_name'. 
-#   'n' is the row number, which translates to the year (1992 = 1, 1993 = 2... 2022 = 31). 
-#   The arrange function orders the data by 'Watershed_name' and row number. 
-#   The nest function nests all the data (year/row number, and richness) into a single column, while each row is a watershed. 
-#   The rest of the code runs the linear models for each row, and creates new columns with the outputs.
-smammals_sprich_lm <- smammals_sprich_wide %>%
-  gather('year', 'value', -Watershed_name) %>%
-  group_by(Watershed_name) %>%
-  mutate(n = row_number()) %>%
-  arrange(Watershed_name, n) %>%
-  nest() %>%
-  mutate(model = map(data, fit_model)) %>%
-  mutate(slope = map_dbl(model, get_slope)) %>%
-  mutate(p_value = map_dbl(model, get_p_value)) %>%
-  mutate(rsquared = map_dbl(model, get_rsq))
-
-# eliminate the list type before writing to file (this is the detailed model results)
-smammals_sprich_lm_short <- smammals_sprich_lm %>%
-  dplyr::select(Watershed_name, slope, p_value, rsquared)
+# Apply function to calculate species richness per watershed and per year
+result <- richness_trend(decostand_smammals_pa, smammals_env)
 
 #Save richness data 
-write.csv(smammals_sprich, "Datasets/E1_output_data/E1_smammals/E1_smammals_richness.csv")
+write.csv(result$richness, "Datasets/E1_output_data/E1_smammals/E1_smammals_richness.csv")
 
 #Save richness model results
-write.csv(smammals_sprich_lm_short, "Datasets/E1_output_data/E1_smammals/E1_smammals_richness_lm.csv")
+write.csv(result$model, "Datasets/E1_output_data/E1_smammals/E1_smammals_richness_lm.csv")
 ```
 
 #### Grasshoppers
 
+```{r grasshopper richness}
+
+# Apply function to calculate species richness per watershed and per year
+result <- richness_trend(decostand_grasshoppers_pa, grasshoppers_env)
+
+#Save richness data 
+write.csv(result$richness, "Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers_richness.csv")
+
+#Save richness model results
+write.csv(result$model, "Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers_richness_lm.csv")
+```
+
 #### Birds
+
+```{r bird richness}
+
+# Apply function to calculate species richness per watershed and per year
+result <- richness_trend(decostand_birds_pa, birds_env)
+
+#Save richness data 
+write.csv(result$richness, "Datasets/E1_output_data/E1_birds/E1_birds_richness.csv")
+
+#Save richness model results
+write.csv(result$model, "Datasets/E1_output_data/E1_birds/E1_birds_richness_lm.csv")
+```
 
 #### Plants
 
+```{r plants richness}
+
+# Apply function to calculate species richness per watershed and per year
+result <- richness_trend(decostand_plants_pa, plants_env)
+
+#Save richness data 
+write.csv(result$richness, "Datasets/E1_output_data/E1_plants/E1_plants_richness.csv")
+
+#Save richness model results
+write.csv(result$model, "Datasets/E1_output_data/E1_plants/E1_plants_richness_lm.csv")
+```
+
+#TODO: START HERE AGAIN
+# TODO: BEGIN AGAIN - THIS TIME WRITE A FUNCTION THAT CAN STREAMLINE THE ABUNDANCE ANALYSIS ACROSS TAXA
+
 
 ## Abundance change over time (all taxa) {.tabset}
+This section determines if abundance is changing directionally over time using a simple linear model, using the count data for each taxonomic. While abundance fluctuates in a non-linar fashion for most species, this is meant to suggest which species have more apparent trends in increasing or decreasing abundance (i.e. it will not detect random or cyclical changes or particular extremes.
 
+We applied the same linear regression to the plant model, acknowledging that this data are ordinal, and not at regular intervals. 
+
+Each section writes a csv file summarizing the abundance information and model results.
 
 #### Small-mammals; count data
 
-```{r small mammals abundnce}
+```{r small mammals abundance}
 #make a version of the wide dataset without the extra columns, for the linear model analysis
-smammals_spabund <- smammals_years_wide %>% 
-  dplyr::select(-Watershed_name, -Species, -Common_name)
+sm_spabund <- smammals_years_wide %>% 
+  dplyr::select(-Watershed_name, -Species)
 
 #Use 'purr' to run the model. The gather function get the values we need, and the group_by function makes sure the values are grouped by 'Watershed_name'. 
 #   'n' is the row number, which translates to the year (1992 = 1, 1993 = 2... 2022 = 31). 
 #   The arrange function orders the data by 'Watershed_name' and row number. 
 #   The nest function nests all the data (year/row number, and richness) into a single column, while each row is a watershed. 
 #   The rest of the code runs the linear models for each row, and creates new columns with the outputs.
-smammals_spabun_lm <- smammals_spabund %>%
+sm_spabun_lm <- sm_spabund %>%
   gather('year', 'value', -Species.watershed) %>%
   group_by(Species.watershed) %>%
   mutate(n = row_number()) %>%
@@ -883,10 +888,8 @@ smammals_spabun_lm <- smammals_spabund %>%
   mutate(model = map(data, fit_model)) %>%
   mutate(slope = map_dbl(model, get_slope)) %>%
   mutate(p_value = map_dbl(model, get_p_value)) %>%
-  mutate(rsquared = map_dbl(model, get_rsq))
-
-# eliminate the list type before writing to file (this is the detailed model results)
-smammals_spabun_lm_short <- smammals_spabun_lm %>%
+  mutate(rsquared = map_dbl(model, get_rsq)) %>%
+  # remove detailed model results before writing to file
   dplyr::select(Species.watershed, slope, p_value, rsquared) %>%
   separate(Species.watershed, c("Genus", "Spp", "Watershed_name")) %>%
   unite("Species", Genus:Spp, sep = "_") 
@@ -895,12 +898,70 @@ smammals_spabun_lm_short <- smammals_spabun_lm %>%
 write.csv(smammals_years_wide, "Datasets/E1_output_data/E1_smammals/E1_smammals_abundance.csv")
 
 #Save abundance model results
-write.csv(smammals_spabun_lm_short, "Datasets/E1_output_data/E1_smammals/E1_smammals_abundance_lm.csv")
+write.csv(sm_spabun_lm, "Datasets/E1_output_data/E1_smammals/E1_smammals_abundance_lm.csv")
 ```
 
 #### Grasshoppers; count data
 
+```{r grasshoppers abundance}
+#make a version of the wide dataset without the extra columns, for the linear model analysis
+gh_spabund <- grasshoppers_years_wide %>% 
+  dplyr::select(-Watershed_name, -Species)
+
+# Run linear models for each row (species-watershed) and save the results
+gh_spabun_lm <- gh_spabund %>%
+  gather('year', 'value', -Species.watershed) %>%
+  group_by(Species.watershed) %>%
+  mutate(n = row_number()) %>%
+  arrange(Species.watershed, n) %>%
+  nest() %>%
+  mutate(model = map(data, fit_model)) %>%
+  mutate(slope = map_dbl(model, get_slope)) %>%
+  mutate(p_value = map_dbl(model, get_p_value)) %>%
+  mutate(rsquared = map_dbl(model, get_rsq)) %>%
+  # remove detailed model results before writing to file
+  dplyr::select(Species.watershed, slope, p_value, rsquared) %>%
+  separate(Species.watershed, c("Genus", "Spp", "Watershed_name")) %>%
+  unite("Species", Genus:Spp, sep = "_") 
+
+#Save abundance data 
+write.csv(grasshoppers_years_wide, "Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers_abundance.csv")
+
+#Save abundance model results
+write.csv(gh_spabun_lm, "Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers_abundance_lm.csv")
+```
+
+
 #### Birds; count data
+
+```{r birds abundance}
+#make a version of the wide dataset without the extra columns, for the linear model analysis
+bd_spabund <- birds_years_wide %>% 
+  dplyr::select(-Watershed_name, -AOU_code)
+
+# Run linear models for each row (Species-watershed) and save the results
+bd_spabun_lm <- bd_spabund %>%
+  gather('year', 'value', -Species.watershed) %>%
+  group_by(Species.watershed) %>%
+  mutate(n = row_number()) %>%
+  arrange(Species.watershed, n) %>%
+  nest() %>%
+  mutate(model = map(data, fit_model)) %>%
+  mutate(slope = map_dbl(model, get_slope)) %>%
+  mutate(p_value = map_dbl(model, get_p_value)) %>%
+  mutate(rsquared = map_dbl(model, get_rsq)) %>%
+  # remove detailed model results before writing to file
+  dplyr::select(Species.watershed, slope, p_value, rsquared) %>%
+  separate(Species.watershed, c("AOU_code", "Watershed_name")) # %>%
+  unite("Species", Genus:Spp, sep = "_") 
+
+#Save abundance data 
+write.csv(birds_years_wide, "Datasets/E1_output_data/E1_birds/E1_birds_abundance.csv")
+
+#Save abundance model results
+write.csv(bd_spabun_lm, "Datasets/E1_output_data/E1_birds/E1_birds_abundance_lm.csv")
+```
+
 
 #### Plants; percent cover data
 TODO: figure out how to best deal with this data. Really shouldn't be summing it
