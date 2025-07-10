@@ -25,6 +25,7 @@ rm(list=ls())
 library(tidyverse)
 library(boot)
 library(broom)
+library(corrplot)
 library(cowplot)
 library(ggpubr)
 library(lme4)
@@ -1002,7 +1003,204 @@ write.csv(pl_spabun_logit, "Datasets/E1_output_data/E1_plants/E1_plants_abundanc
 ```
 
 #-----------------------------------------------------------------------------------------
-# STATISTICAL COMPARISONS
+# STATISTICAL COMPARISONS FOR INCIDENCE and ABUNDANCE CLASSIFICATION
+##    should stats be in a new file? E2_stats? then plots becomes E3? Why did we call them E?
+
+prepare INCIDENCE data for statistical comparison
+```{r}
+#prepare the INCIDENCE data for analysis
+smammal_class_counts <- smammals_classification %>% 
+  group_by(Watershed_name, classification) %>% 
+  dplyr::summarise(total_count=n(),.groups = 'drop') %>%
+  mutate(taxa = "small mammals")
+
+grasshoppers_class_counts <- grasshoppers_classification %>% 
+  group_by(Watershed_name, classification) %>% 
+  dplyr::summarise(total_count=n(),.groups = 'drop') %>%
+  mutate(taxa = "grasshoppers")
+
+birds_class_counts <- birds_classification %>% 
+  group_by(Watershed_name, classification) %>% 
+  dplyr::summarise(total_count=n(),.groups = 'drop')  %>%
+  mutate(taxa = "birds")
+
+plants_class_counts <- plants_classification %>% 
+  group_by(Watershed_name, classification) %>% 
+  dplyr::summarise(total_count=n(),.groups = 'drop')  %>%
+  mutate(taxa = "plants")
+
+#rbind all the class summary datasets together
+all_class_counts <- rbind(smammal_class_counts, grasshoppers_class_counts, birds_class_counts, plants_class_counts)
+
+# make classification, watershed, and taxa ordered factors
+# remove non-repeated watersheds
+# remove absent classification (won't be compared)
+all_class_counts <- all_class_counts %>%
+  filter(Watershed_name %in% c("1D", "N1B", "4B", "N4D", "20B", "N20B")) %>%
+  filter(!classification == "No_change-absent") %>% 
+  mutate(Watershed_name = factor(Watershed_name, 
+                                 levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"), 
+                                 ordered = TRUE),
+         taxa = factor(taxa, levels = c("plants", "grasshoppers", "small mammals", "birds"),
+                       ordered = TRUE),
+         classification = factor(classification, 
+                                 levels = c("No_change-present", "Rare",
+                                            "Increasing", "Decreasing",
+                                            "Recurrent", "Random"), 
+                                 ordered = TRUE))
+```
+
+prepare ABUNDANCE data for statistical comparison
+```{r}
+#prepare the INCIDENCE data for analysis
+smammal_class_abun <- smammals_abun_classification %>% 
+  group_by(Watershed_name, classification) %>% 
+  dplyr::summarise(total_count=n(),.groups = 'drop') %>%
+  mutate(taxa = "small mammals")
+
+grasshoppers_class_abun <- grasshoppers_abun_classification %>% 
+  group_by(Watershed_name, classification) %>% 
+  dplyr::summarise(total_count=n(),.groups = 'drop') %>%
+  mutate(taxa = "grasshoppers")
+
+birds_class_abun <- birds_abun_classification %>% 
+  group_by(Watershed_name, classification) %>% 
+  dplyr::summarise(total_count=n(),.groups = 'drop')  %>%
+  mutate(taxa = "birds")
+
+plants_class_abun <- plants_abun_classification %>% 
+  group_by(Watershed_name, classification) %>% 
+  dplyr::summarise(total_count=n(),.groups = 'drop')  %>%
+  mutate(taxa = "plants")
+
+#rbind all the class summary datasets together
+all_class_abun <- rbind(smammal_class_abun, grasshoppers_class_abun, birds_class_abun, plants_class_abun)
+
+# make classification, watershed, and taxa ordered factors
+all_class_abun <- all_class_abun %>%
+  filter(Watershed_name %in% c("1D", "N1B", "4B", "N4D", "20B", "N20B")) %>%
+  mutate(Watershed_name = factor(Watershed_name, 
+                                 levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"), 
+                                 ordered = TRUE),
+         taxa = factor(taxa, 
+                       levels = c("plants", "grasshoppers", "small mammals", "birds"),
+                       ordered = TRUE),
+         classification = factor(classification, 
+                                 levels=c("Invariant", "Rare","Increasing", "Decreasing",
+                                          "Recurrent", "Random"), 
+                                 ordered = TRUE))
+```
+
+### 1. Are classifications significantly different across the watershed treatments?
+
+Apply Chi-square INCIDENCE comparison across watersheds for each taxa
+```{r}
+# run chi-square comparison across watersheds for each taxa 
+chisq_results <- all_class_counts %>%
+  group_by(taxa) %>%
+  nest() %>%
+  mutate(chisq = map(data, run_chisq_from_nested)) %>%
+  unnest(chisq)
+
+# add Bonferroni adjustments to p-value
+chisq_results <- chisq_results %>%
+  mutate(p_bonf = ifelse(!is.na(p_value), p.adjust(p_value, method = "bonferroni"), NA))
+
+write_csv(chisq_results, "Datasets/E1_output_data/chisq_results_by_taxa.csv")
+```
+
+Apply Chi-square ABUNDANCE comparison across watersheds for each taxa
+```{r}
+# run chi-square comparison across watersheds for each taxa 
+chisq_results_abun <- all_class_abun %>%
+  group_by(taxa) %>%
+  nest() %>%
+  mutate(chisq = map(data, run_chisq_from_nested)) %>%
+  unnest(chisq)
+
+# add Bonferroni adjustments to p-value
+chisq_results_abun <- chisq_results_abun %>%
+  mutate(p_bonf = ifelse(!is.na(p_value), p.adjust(p_value, method = "bonferroni"), NA))
+
+write_csv(chisq_results_abun, "Datasets/E1_output_data/chisq_abun_results_by_taxa.csv")
+```
+
+**ANSWER: For most taxa NO. For plant taxa YES.** 
+
+Plants do show some changes in classification frequency across treatments. 
+
+The hypothesis regarding if recurrent classification is more represented in 4-year burns is not supported. Does the recurrent category represent what we hope it does, or is it too simplistic? Or are recurrent cycles not really apparent at this site/treatment?
+
+The hypothesis regarding if press disturbance (grazing) results in more increasing/decreasing species is somewhat supported. Sites where native grazers are absent always are underrepresented by increasing taxa and over-represented by decreasing taxa compared to sites where native grazers have been added (press treatment). The direct effect of bison is on the "directed change" category, supporting a press disturbance impact showing up in these classifications.
+
+
+### 1a. For taxa that showed significant shifts in classification frequency, what is driving that change?
+
+For incidence classification: only plants demonstrated a significant difference (small cramers V)
+For abundance classification: only plants demonstrated a significant difference (small cramers V)
+
+Look at the INCIDENCE residuals
+```{r}
+# prepare data for plant residuals
+pl_resid <- chisq_results %>%
+  filter(taxa == "plants") %>%
+  pull(residuals) %>%
+  .[[1]] %>%
+  pivot_longer(-classification, names_to = "Watershed_name", values_to = "Residual") %>%
+  mutate(Watershed_name = factor(Watershed_name, 
+                                 levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"), 
+                                 ordered = TRUE),
+         classification = factor(classification, 
+                                 levels=c("No_change-present", "Rare","Increasing", "Decreasing",
+                                          "Recurrent", "Random"), 
+                                 ordered = TRUE))
+
+# heatmap of the residuals
+ggplot(pl_resid, aes(x = Watershed_name, y = classification, fill = Residual)) +
+  #geom_point(aes(color = Residual, size = abs(Residual))) +
+  geom_tile(color = "white") +
+  scale_fill_gradient2(low = "indianred", mid = "white", high = "navyblue", 
+                       midpoint = 0, limits = c(-max(abs(pl_resid$Residual)), 
+                                                max(abs(pl_resid$Residual))),
+                       name = "Std Residual") +
+  labs(title = "Incidence Class Standardized Residuals: Plants", 
+       x = "Watershed", 
+       y = "Classification") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+Look at the ABUNDANCE residuals
+```{r}
+# prepare data for plant residuals
+pl_resid_abun <- chisq_results_abun %>%
+  filter(taxa == "plants") %>%
+  pull(residuals) %>%
+  .[[1]] %>%
+  pivot_longer(-classification, names_to = "Watershed_name", values_to = "Residual") %>%
+  mutate(Watershed_name = factor(Watershed_name, 
+                                 levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"), 
+                                 ordered = TRUE),
+         classification = factor(classification, 
+                                 levels=c("Invariant", "Rare","Increasing", "Decreasing",
+                                          "Recurrent", "Random"), 
+                                 ordered = TRUE))
+
+# heatmap of the residuals
+ggplot(pl_resid_abun, aes(x = Watershed_name, y = classification, fill = Residual)) +
+  #geom_point(aes(color = Residual, size = abs(Residual))) +
+  geom_tile(color = "white") +
+  scale_fill_gradient2(low = "indianred", mid = "white", high = "navyblue", 
+                       midpoint = 0, limits = c(-max(abs(pl_resid_abun$Residual)), 
+                                                max(abs(pl_resid_abun$Residual))),
+                       name = "Std Residual") +
+  labs(title = "Abundance Class Standardized Residuals: Plants", 
+       x = "Watershed", 
+       y = "Classification") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
 
 #TODO: START HERE AGAIN
 
@@ -1073,3 +1271,37 @@ ncol = 3
 ggsave("Figures/plant_jaccard-diss_3xfire.png", dpi=300, width=10, height=6)
 ```
 
+
+#FIXME: delete when ready, old code from 2024 poster plots
+Chi square tests for significance
+```{r}
+#---------plants
+# set up each taxa as a contingency table
+p_chsq <- plants_class_counts %>%
+  filter(classification != "No_change-absent") %>%
+  filter(Watershed_name %in% c("1D", "N1B", "4B", "N4D", "20B", "N20B")) %>%
+  dplyr::select(Watershed_name, classification, total_count) %>%
+  pivot_wider(names_from = Watershed_name, values_from = total_count) %>% 
+  replace(is.na(.), 0)
+
+#make it be a matrix for the ChiSquare test
+p_chsq2 <- as.matrix(p_chsq[,2:7])
+  
+plant_chisq <- chisq.test(p_chsq2) #Categories ARE SIG DIFF for plants
+
+#calculate and round Pearson residuals from Observed & Expected values
+round(plant_chisq$residuals, 3)
+  # Positive residuals specify an attraction (positive association) between the corresponding row and column variables.
+  # Negative residuals imply a repulsion (negative association)
+
+#show as a corrplot
+rownames(plant_chisq$residuals) <- c("Rare", "No change", "recurrent", "random", "increasing", "decreasing")
+corrplot(plant_chisq$residuals, is.cor = FALSE)
+
+# Contibution in percentage (%)
+contrib <- 100*plant_chisq$residuals^2/plant_chisq$statistic
+round(contrib, 3)
+
+# Visualize the contribution
+corrplot(contrib, is.cor = FALSE)
+```

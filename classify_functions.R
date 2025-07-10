@@ -510,3 +510,58 @@ richness_trend <- function(pa_df, env_data){
     richness = sprich,
     model = sprich_lm_summary))
 }
+
+#----------------------------------------------------------------------------
+#### Cranmer's V
+# measure of association for categorical variables in a contingency table.
+#   0 = no association (completely independent)
+#   1 = perfect association (completely dependent)
+#   a large Cranmber's V tells you the significant difference is strong (perhaps >0.30?)
+
+get_cramers_v <- function(table) {
+  test <- chisq.test(table)
+  n <- sum(table)
+  min_dim <- min(nrow(table), ncol(table))
+  v <- sqrt(test$statistic / (n * (min_dim - 1)))
+  return(as.numeric(v))
+}
+
+
+#-----------------------------------------------------------------------------
+### Apply Chi-square comparison to Incidence or Abundance classification datasets, across taxa
+# Returns chi-square results
+
+run_chisq_from_nested <- function(df) {
+  # input: df is a dataframe with fields for 
+  #   watershed name, classification, and total_count
+  # output: chisquare test results
+  df_clean <- df %>%
+    dplyr::select(Watershed_name, classification, total_count) %>%
+    mutate(total_count = as.numeric(total_count)) %>%
+    tidyr::pivot_wider(
+      names_from = Watershed_name,
+      values_from = total_count,
+      values_fill = list(total_count = 0)
+    )
+  
+  chisq_input <- as.matrix(df_clean[,-1])
+  rownames(chisq_input) <- df_clean$classification
+  
+  cramers_v = get_cramers_v(chisq_input)
+  
+  test_result <- chisq.test(chisq_input)
+  
+  # Prepare expected and residuals as tidy tibbles
+  expected_tbl <- as_tibble(as.data.frame(test_result$expected), rownames = "classification")
+  residuals_tbl <- as_tibble(as.data.frame(test_result$stdres), rownames = "classification")
+  
+  tibble(
+    statistic = unname(test_result$statistic),
+    df = unname(test_result$parameter),
+    p_value = unname(test_result$p.value),
+    p_bonf = NA,  # We'll apply this after all tests are done
+    cramerV = cramers_v,
+    expected = list(expected_tbl),
+    residuals = list(residuals_tbl)
+  )
+}
