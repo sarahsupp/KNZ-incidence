@@ -1011,6 +1011,7 @@ write.csv(pl_spabun_logit, "Datasets/E1_output_data/E1_plants/E1_plants_abundanc
 #     filter out extra watersheds
 #     add label for trend direction
 ```{r}
+# process relevant data frames
 rich_p <- left_join(result$richness, result$model, by="Watershed_name") %>%
   filter(!Watershed_name %in% c("4A", "N4A")) %>%
   mutate(Watershed_name = factor(Watershed_name, 
@@ -1018,13 +1019,13 @@ rich_p <- left_join(result$richness, result$model, by="Watershed_name") %>%
                                  ordered = TRUE)) %>%
   mutate(trend_dir = ifelse(slope >= 0, "positive", "negative"))
   
-
+# make panel plot of results
 ggplot(rich_p, aes(x = Recyear, y = Richness)) + 
   geom_point(size=0.75) + 
   facet_wrap(.~Watershed_name, ncol=2) + 
   geom_smooth(data=rich_p %>% filter(p_value <= 0.05), 
               aes(color = trend_dir),
-              method = "lm", se = FALSE) +
+              method = "lm") +
   scale_color_manual(values = c("positive" = "cadetblue4", "negative" = "indianred2")) +
   theme_bw() +
   theme(text = element_text(size=10),
