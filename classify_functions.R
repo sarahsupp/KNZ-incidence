@@ -6,6 +6,8 @@
 
 # Requirements
 require(cluster)
+require(MASS)
+require(purrr)
 require(tidyverse)
 require(vegan)
 
@@ -334,6 +336,55 @@ get_p_value <- function(mod) tidy(mod)$p.value[2]
 
 ##'get_rsq' takes the output from the models ('mod') and extracts the r-squared value
 get_rsq <- function(mod) summary(mod)$r.squared
+
+#-------------------------------------------------------------------------------------------
+### extract ordinal model results functions
+# primarily needed for plant data as it is ordered cover class: 0-7
+
+##'fit_ordinal_model' takes the data frame and runs an ordinal logistic model for abundance ('value') by year ('n').
+# Wrap polr in safely/possibly so bad groups don’t stop the pipeline
+fit_ordinal_model <- possibly(
+  function(df) {
+    MASS::polr(as.ordered(value) ~ n, data = df, Hess=TRUE)
+    },
+otherwise = NULL  # or NA
+)
+
+##'fit_ordinal_null' takes the data frame and runs a null model of the full ordinal logistic model for abundance ('value') by year ('n').
+# Wrap polr in safely/possibly so bad groups don’t stop the pipeline
+fit_ordinal_null <- possibly(
+  function(df) {
+    MASS::polr(as.ordered(value) ~ 1, data = df, Hess=TRUE)
+  },
+  otherwise = NULL  # or NA
+)
+
+# 'get_polr_slope' takes output from polr model; pulls the coefficient for 'n'
+get_polr_slope <- function(model) {
+  if (is.null(model)) return(NA_real_)
+  
+  coefs <- coef(model)
+  if ("n" %in% names(coefs)) {
+    return(coefs[["n"]])
+  } else {
+    return(NA_real_)
+  }
+}
+
+# 'get_polr_p' takes output from polr model
+get_polr_p <- possibly(function(mod) {
+  coef_table <- summary(mod)$coefficients
+  t_value <- coef_table["n", "t value"]
+  2 * (1 - pnorm(abs(t_value)))
+}, otherwise = NA_real_)
+
+# 'get_polr_rsq' computes McFadden's pseudo-R2: note that this may not be super reliable
+get_polr_rsq <- function(mod, nullmod) {
+  if (is.null(mod) || is.null(nullmod)) return(NA_real_)
+  if (is.null(deviance(mod)) || is.null(deviance(nullmod))) return(NA_real_)
+  1 - (deviance(mod) / deviance(nullmod))
+}
+
 
 #---------------------------------------------------------------------------------
 ### Jaccard, Bray, and Gower Dissimilarity functions
