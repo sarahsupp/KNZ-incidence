@@ -1163,11 +1163,13 @@ ggplot(pl_resid, aes(x = Watershed_name, y = classification, fill = Residual)) +
                        midpoint = 0, limits = c(-max(abs(pl_resid$Residual)), 
                                                 max(abs(pl_resid$Residual))),
                        name = "Std Residual") +
-  labs(title = "Incidence Class Standardized Residuals: Plants", 
+  labs(title = "Plant standardized residuals", 
        x = "Watershed", 
-       y = "Classification") +
+       y = "Incidence Classification") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggsave("Figures/plant_incidence_chisq_residuals.png", dpi=300, width=4, height=4)
 ```
 
 Look at the ABUNDANCE residuals
@@ -1194,11 +1196,13 @@ ggplot(pl_resid_abun, aes(x = Watershed_name, y = classification, fill = Residua
                        midpoint = 0, limits = c(-max(abs(pl_resid_abun$Residual)), 
                                                 max(abs(pl_resid_abun$Residual))),
                        name = "Std Residual") +
-  labs(title = "Abundance Class Standardized Residuals: Plants", 
+  labs(title = "Plant standardized residuals", 
        x = "Watershed", 
-       y = "Classification") +
+       y = "Abundance Classification") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggsave("Figures/plant_abundance_chisq_residuals.png", dpi=300, width=4, height=4)
 ```
 
 
