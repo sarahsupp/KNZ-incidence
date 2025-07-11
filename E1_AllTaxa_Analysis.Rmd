@@ -1204,7 +1204,7 @@ pl_resid <- chisq_results %>%
 ggplot(pl_resid, aes(x = Watershed_name, y = classification, fill = Residual)) +
   #geom_point(aes(color = Residual, size = abs(Residual))) +
   geom_tile(color = "white") +
-  scale_fill_gradient2(low = "indianred", mid = "white", high = "navyblue", 
+  scale_fill_gradient2(low = "red4", mid = "white", high = "navyblue", 
                        midpoint = 0, limits = c(-max(abs(pl_resid$Residual)), 
                                                 max(abs(pl_resid$Residual))),
                        name = "Std Residual") +
@@ -1237,7 +1237,7 @@ pl_resid_abun <- chisq_results_abun %>%
 ggplot(pl_resid_abun, aes(x = Watershed_name, y = classification, fill = Residual)) +
   #geom_point(aes(color = Residual, size = abs(Residual))) +
   geom_tile(color = "white") +
-  scale_fill_gradient2(low = "indianred", mid = "white", high = "navyblue", 
+  scale_fill_gradient2(low = "red4", mid = "white", high = "navyblue", 
                        midpoint = 0, limits = c(-max(abs(pl_resid_abun$Residual)), 
                                                 max(abs(pl_resid_abun$Residual))),
                        name = "Std Residual") +
@@ -1264,8 +1264,44 @@ ggplot(all_class_counts, aes(x = Proportion, y = classification, fill = classifi
   labs(title = "Frequency across watersheds", y = "Incidence Classification") + 
   facet_wrap(~taxa)
 
-ggsave("Figures/class_frequency_by_taxa.png", dpi=300, width=6, height=6)
+ggsave("Figures/all_taxa_class_incid_freq.png", dpi=300, width=6, height=6)
 ```
+
+Just for plants, since they were the only ones that were significantly different across watersheds
+```{r}
+pl <- all_class_counts %>%
+  filter(taxa == "plants")
+
+#lollipop chart
+ggplot(pl, aes(x = Proportion, y = classification)) +
+  geom_segment(aes(x = 0, xend = Proportion, 
+                   y = classification, yend = classification),
+               color = "grey50", linewidth = 0.8) +
+  geom_point(aes(color=classification), size = 3) +
+  facet_wrap(~Watershed_name, ncol=2) +
+  labs(title = "Plant incidence",
+       x = "Proportion of species",
+       y = "Classification") +
+  theme_minimal() +
+  theme(strip.text = element_text(face = "bold"),
+        axis.text.y = element_text(size = 10),
+        legend.position = "none")
+
+#bar graph
+ggplot(pl, aes(x = Proportion, y = classification)) +
+  geom_col(aes(fill = classification)) + 
+  facet_wrap(~Watershed_name, ncol=2) +
+  labs(title = "Plant incidence",
+       x = "Proportion of species",
+       y = "Classification") +
+  theme_minimal() +
+  theme(strip.text = element_text(face = "bold"),
+        axis.text.y = element_text(size = 10),
+        legend.position = "none")
+
+ggsave("Figures/plant_class_incid_freq.png", dpi=300, width=4, height=6)
+```
+
 
 ### Abundance Classification
 ```{r}
@@ -1276,7 +1312,27 @@ ggplot(all_class_abun, aes(x = Proportion, y = classification, fill = classifica
   labs(title = "Frequency across watersheds", y = "Abundance Classification") + 
   facet_wrap(~taxa)
 
-ggsave("Figures/class_abun_frequency_by_taxa.png", dpi=300, width=6, height=6)
+ggsave("Figures/all_taxa_class_abun_freq.png", dpi=300, width=6, height=6)
+```
+
+Just for plants, since they were the only ones that were significantly different across watersheds
+```{r}
+pl_abun <- all_class_abun %>%
+  filter(taxa == "plants")
+
+#bar graph
+ggplot(pl_abun, aes(x = Proportion, y = classification)) +
+  geom_col(aes(fill = classification)) + 
+  facet_wrap(~Watershed_name, ncol=2) +
+  labs(title = "Plant abundance class",
+       x = "Proportion of species",
+       y = "Classification") +
+  theme_minimal() +
+  theme(strip.text = element_text(face = "bold"),
+        axis.text.y = element_text(size = 10),
+        legend.position = "none")
+
+ggsave("Figures/plant_class_abun_freq.png", dpi=300, width=4, height=6)
 ```
 
 ### Composition
@@ -1312,6 +1368,8 @@ ggplot(sm_diss, aes(x = baseline.Year2, y = baseline.jaccard_diss)) +
   labs(title = "small mammal Jaccard trends",
        color = NULL)  +
   ggpubr::stat_cor()
+
+ggsave("Figures/smammals_jacc_years.png", dpi=300, width=4, height=6)
 ```
 
 ```{r}
@@ -1343,6 +1401,7 @@ ggplot(sm_diss, aes(x = baseline.Year2, y = baseline.bray_diss)) +
        color = NULL)  +
   ggpubr::stat_cor()
 
+ggsave("Figures/smammals_bray_years.png", dpi=300, width=4, height=6)
 ```
 #TODO: START HERE, make composition plots like this for all taxa; will need to jump up to composition section and add lm models and writecsv to all other taxa too. 
 
