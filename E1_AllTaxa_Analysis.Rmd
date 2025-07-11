@@ -1530,7 +1530,7 @@ rich_p <- left_join(result$richness, result$model, by="Watershed_name") %>%
                                  ordered = TRUE)) %>%
   mutate(trend_dir = ifelse(slope >= 0, "positive", "negative"))
   
-# make panel plot of results
+# make panel plot of results (check that plants were the most recent richness result run)
 ggplot(rich_p, aes(x = Recyear, y = Richness)) + 
   geom_point(size=0.75) + 
   facet_wrap(.~Watershed_name, ncol=2) + 
@@ -1545,6 +1545,8 @@ ggplot(rich_p, aes(x = Recyear, y = Richness)) +
   labs(title = "Plant richness trends",
        color = NULL)  +
   ggpubr::stat_cor()
+
+ggsave("Figures/plants_richness_years.png", dpi=300, width=4, height=6)
 ```
 
 #leaving this here as an inspo note for E2 file data viz
