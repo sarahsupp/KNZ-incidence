@@ -685,8 +685,44 @@ sm_bray <- compute_dissimilarity(smammals_count_allyears, method="bray", baselin
 sm_baseline <- merge(sm_jacc[1], sm_bray[1])
 sm_watershed <- merge(sm_jacc[2], sm_bray[2])
 
+# for comparison to baseline year, add linear model trend results
+# Fit trend model across time for each watershed
+sm_jacc_diss_lm <- sm_baseline %>%
+  rename(Watershed_name = baseline.Watershed2) %>%
+  rename(value = baseline.jaccard_diss) %>% #make this generic so it works with the function
+  group_by(Watershed_name) %>%
+  mutate(n = row_number()) %>%
+  arrange(Watershed_name, n) %>%
+  nest() %>%
+  mutate(
+    model = map(data, fit_model),
+    slope = map_dbl(model, get_slope),
+    p_value = map_dbl(model, get_p_value),
+    rsquared = map_dbl(model, get_rsq)
+  )  %>%
+    dplyr::select(Watershed_name, slope, p_value, rsquared)
+
+
+sm_bray_diss_lm <- sm_baseline %>%
+  rename(Watershed_name = baseline.Watershed2) %>%
+  rename(value = baseline.bray_diss) %>% #make this generic so it works with the function
+  group_by(Watershed_name) %>%
+  mutate(n = row_number()) %>%
+  arrange(Watershed_name, n) %>%
+  nest() %>%
+  mutate(
+    model = map(data, fit_model),
+    slope = map_dbl(model, get_slope),
+    p_value = map_dbl(model, get_p_value),
+    rsquared = map_dbl(model, get_rsq)
+  ) %>%
+    dplyr::select(Watershed_name, slope, p_value, rsquared)
+
 ##Save to file
 write.csv(sm_baseline, "Datasets/E1_output_data/E1_smammals/E1_smammals_dissimilarity_year1toN.csv")
+
+write.csv(sm_jacc_diss_lm, "Datasets/E1_output_data/E1_smammals/E1_smammals_jacc_diss_lm.csv")
+write.csv(sm_bray_diss_lm, "Datasets/E1_output_data/E1_smammals/E1_smammals_bray_diss_lm.csv")
 
 write.csv(sm_watershed, "Datasets/E1_output_data/E1_smammals/E1_smammals_dissimilarity_watersheds.csv")
 ```
@@ -1218,16 +1254,97 @@ ggsave("Figures/plant_abundance_chisq_residuals.png", dpi=300, width=4, height=4
 # DATA VISUALIZATIONS
 
 Let's make some descriptive plots of the species classifications. We can make violin plots that will mirror the ones in Gotelli et al. 2022. 
-```{r}
 
+### Incidence Classification
+```{r}
+ggplot(all_class_counts, aes(x = Proportion, y = classification, fill = classification)) + 
+  geom_violin() +
+  theme_bw() +
+  theme(legend.position = "none") + 
+  labs(title = "Frequency across watersheds", y = "Incidence Classification") + 
+  facet_wrap(~taxa)
+
+ggsave("Figures/class_frequency_by_taxa.png", dpi=300, width=6, height=6)
 ```
 
+### Abundance Classification
+```{r}
+ggplot(all_class_abun, aes(x = Proportion, y = classification, fill = classification)) + 
+  geom_violin() +
+  theme_bw() +
+  theme(legend.position = "none") + 
+  labs(title = "Frequency across watersheds", y = "Abundance Classification") + 
+  facet_wrap(~taxa)
 
+ggsave("Figures/class_abun_frequency_by_taxa.png", dpi=300, width=6, height=6)
+```
+
+### Composition
 Since incidence change is necessarily impacted by species entering and exiting a community in different years, let's look at the underlying species composition patterns at the site. 
 ```{r}
+## SMAMMALS Jaccard
 
+# process relevant data frames
+sm_baseline <- sm_baseline %>% rename(Watershed_name=baseline.Watershed2)
+
+sm_diss <- left_join(sm_baseline, sm_jacc_diss_lm, by="Watershed_name") %>%
+  filter(!Watershed_name %in% c("4A", "N4A")) %>%
+  mutate(Watershed_name = factor(Watershed_name, 
+                                 levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"), 
+                                 ordered = TRUE)) %>%
+  mutate(trend_dir = ifelse(slope >= 0, "positive", "negative"))
+
+
+# make panel plot of results
+ggplot(sm_diss, aes(x = baseline.Year2, y = baseline.jaccard_diss)) + 
+  geom_point(size=0.75) + 
+  facet_wrap(.~Watershed_name, ncol=2) + 
+  geom_smooth(data=sm_diss %>% filter(p_value <= 0.05), 
+              aes(color = trend_dir),
+              method = "lm") +
+  scale_color_manual(values = c("positive" = "cadetblue4", "negative" = "indianred2")) +    
+  theme_bw() +
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1, size =10),
+        legend.position = "none") +
+  xlab("Year") +
+  ylab("Jaccard dissimilarity to Year 1") +
+  labs(title = "small mammal Jaccard trends",
+       color = NULL)  +
+  ggpubr::stat_cor()
 ```
 
+```{r}
+## SMAMMALS Bray
+
+# process relevant data frames
+sm_diss <- left_join(sm_baseline, sm_bray_diss_lm, by="Watershed_name") %>%
+  filter(!Watershed_name %in% c("4A", "N4A")) %>%
+  mutate(Watershed_name = factor(Watershed_name, 
+                                 levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"), 
+                                 ordered = TRUE)) %>%
+  mutate(trend_dir = ifelse(slope >= 0, "positive", "negative"))
+
+
+# make panel plot of results
+ggplot(sm_diss, aes(x = baseline.Year2, y = baseline.bray_diss)) + 
+  geom_point(size=0.75) + 
+  facet_wrap(.~Watershed_name, ncol=2) + 
+  geom_smooth(data=sm_diss %>% filter(p_value <= 0.05), 
+              aes(color = trend_dir),
+              method = "lm") +
+  scale_color_manual(values = c("positive" = "cadetblue4", "negative" = "indianred2")) +  theme_bw() +
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1, size =10),
+        legend.position = "none") +
+  xlab("Year") +
+  ylab("Bray-Curtis dissimilarity to Year 1") +
+  labs(title = "small mammal Bray trends",
+       color = NULL)  +
+  ggpubr::stat_cor()
+
+```
+#TODO: START HERE, make composition plots like this for all taxa; will need to jump up to composition section and add lm models and writecsv to all other taxa too. 
 
 
 #TODO: START HERE AGAIN

@@ -25,19 +25,39 @@ library(tidyverse)
 Read in all relevant datasets for plotting
 ```{r}
 # small mammal data and results
-E1_smammals_classified <- read_csv("Datasets/E1_output_data/E1_smammals/E1_smammals_classified.csv")
-E1_smammals_classified_abund <-
+E1_sm_class <- read_csv("Datasets/E1_output_data/E1_smammals/E1_smammals_classified.csv")
+E1_sm_class_abund <-
   read_csv("Datasets/E1_output_data/E1_smammals/E1_smammals_classified_abund.csv")
-E1_smammals_dissimilarity_year1toN <- 
-  ("read_csvDatasets/E1_output_data/E1_smammals/E1_smammals_dissimilarity_year1toN.csv")
-E1_smammals_richness <- 
+
+E1_sm_diss_year1toN <-
+  read_csv("Datasets/E1_output_data/E1_smammals/E1_smammals_dissimilarity_year1toN.csv")
+E1_sm_diss_watershed <- 
+    read_csv("Datasets/E1_output_data/E1_smammals/E1_smammals_dissimilarity_watersheds.csv")
+
+E1_sm_rich <- 
   read_csv("Datasets/E1_output_data/E1_smammals/E1_smammals_richness.csv")
-E1_smammals_abundance <- read.csv("Datasets/E1_output_data/E1_smammals/E1_smammals_abundance.csv")
-E1_smammals_abundance_lm <- read.csv("Datasets/E1_output_data/E1_smammals/E1_smammals_abundance_lm.csv")
+E1_sm_rich_lm <- read_csv("Datasets/E1_output_data/E1_smammals/E1_smammals_richness_lm.csv")
+
+E1_sm_abun <- read.csv("Datasets/E1_output_data/E1_smammals/E1_smammals_abundance.csv")
+E1_sm_abun_lm <- read.csv("Datasets/E1_output_data/E1_smammals/E1_smammals_abundance_lm.csv")
 
 # grasshopper data and results
 E1_grasshoppers_classified <-
   read_csv("Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers_classified.csv")
+E1_gh_class_abund <-
+  read_csv("Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers_classified_abund.csv")
+
+E1_gh_diss_year1toN <-
+  read_csv("Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers_dissimilarity_year1toN.csv")
+E1_gh_diss_watershed <- 
+    read_csv("Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers_dissimilarity_watersheds.csv")
+
+E1_gh_rich <- 
+  read_csv("Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers_richness.csv")
+E1_gh_rich_lm <- read_csv("Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers_richness_lm.csv")
+
+E1_gh_abun <- read.csv("Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers_abundance.csv")
+E1_gh_abun_lm <- read.csv("Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers_abundance_lm.csv")
 
 # bird data and results
 E1_birds_classified <- read_csv("Datasets/E1_output_data/E1_birds/E1_birds_classified.csv")
@@ -57,7 +77,7 @@ smammals_classified_long <- E1_smammals_classified %>%
   pivot_longer(cols = "1992":"2013", names_to = "Recyear", values_to = "Presence")
 
 smammals_graphing <- smammals_classified_long %>% 
-  dplyr::select(Recyear, Species, Common_name, 
+  dplyr::select(Recyear, Species, 
                 classification, Presence, Watershed_name)
 
 
@@ -143,7 +163,7 @@ ggsave("Figures/smammals_overall_classes.png", dpi=300, width=6, height=4)
 smammals_graphing %>% 
   ggplot(aes(x = Recyear, y = Presence, fill = classification)) + 
   geom_tile(width = .6, height = .6) + 
-  facet_grid(Common_name~Watershed_name, switch = "y") +
+  facet_grid(Species~Watershed_name, switch = "y") +
   theme(text = element_text(size=9),
         axis.text.x = element_text(angle=45, hjust=1, size =9),
         axis.text.y = element_text(size=12),
