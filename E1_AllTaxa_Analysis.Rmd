@@ -1446,6 +1446,24 @@ ggplot(pl_diss, aes(x = baseline.Year2, y = baseline.gower_diss)) +
 ggsave("Figures/plants_gower_years.png", dpi=300, width=4, height=6)
 ```
 
+Let's dig a bit deeper into the directed change category. 
+**Which plant species are being classified as directed change?**
+```{r}
+pl_directed <- plants_classification %>%
+  filter(classification %in% c("Decreasing", "Increasing"))
+```
+
+- Which species are increasing at all watersheds in which they occur?
+- Which species are decreasing at all watersheds in which they occur?
+- Which are increasing or decreasing only in the grazed watersheds, but not in the ungrazed?
+#TODO: ADD THIS CODE
+-- add a new column for change type, grazing type, and fire type, remove year cols
+```{r}
+
+```
+
+
+
 ```{r}
 ## SMAMMALS Jaccard
 
