@@ -820,8 +820,45 @@ pl_gower <- compute_dissimilarity(plants_count_allyears, method="gower", baselin
 pl_baseline <- merge(pl_jacc[1], pl_gower[1])
 pl_watershed <- merge(pl_jacc[2], pl_gower[2])
 
+# for comparison to baseline year, add linear model trend results
+# Fit trend model across time for each watershed
+pl_jacc_diss_lm <- pl_baseline %>%
+  rename(Watershed_name = baseline.Watershed2) %>%
+  rename(value = baseline.jaccard_diss) %>% #make this generic so it works with the function
+  group_by(Watershed_name) %>%
+  mutate(n = row_number()) %>%
+  arrange(Watershed_name, n) %>%
+  nest() %>%
+  mutate(
+    model = map(data, fit_model),
+    slope = map_dbl(model, get_slope),
+    p_value = map_dbl(model, get_p_value),
+    rsquared = map_dbl(model, get_rsq)
+  )  %>%
+    dplyr::select(Watershed_name, slope, p_value, rsquared)
+
+# for comparison to baseline year, add linear model trend results
+# Fit trend model across time for each watershed
+pl_gower_diss_lm <- pl_baseline %>%
+  rename(Watershed_name = baseline.Watershed2) %>%
+  rename(value = baseline.gower_diss) %>% #make this generic so it works with the function
+  group_by(Watershed_name) %>%
+  mutate(n = row_number()) %>%
+  arrange(Watershed_name, n) %>%
+  nest() %>%
+  mutate(
+    model = map(data, fit_model),
+    slope = map_dbl(model, get_slope),
+    p_value = map_dbl(model, get_p_value),
+    rsquared = map_dbl(model, get_rsq)
+  )  %>%
+    dplyr::select(Watershed_name, slope, p_value, rsquared)
+
+
 ##Save to file
 write.csv(pl_baseline, "Datasets/E1_output_data/E1_plants/E1_plants_dissimilarity_year1toN.csv")
+write.csv(pl_jacc_diss_lm, "Datasets/E1_output_data/E1_plants/E1_plants_jacc_diss_lm.csv")
+write.csv(pl_gower_diss_lm, "Datasets/E1_output_data/E1_plants/E1_plants_gower_diss_lm.csv")
 
 write.csv(pl_watershed, "Datasets/E1_output_data/E1_plants/E1_plants_dissimilarity_watersheds.csv")
 ```
@@ -1337,6 +1374,78 @@ ggsave("Figures/plant_class_abun_freq.png", dpi=300, width=4, height=6)
 
 ### Composition
 Since incidence change is necessarily impacted by species entering and exiting a community in different years, let's look at the underlying species composition patterns at the site. 
+
+Let's focus on plants, since that's where the incidence classes were most different
+```{r}
+## PLANTS Jaccard
+
+# process relevant data frames
+pl_baseline <- pl_baseline %>% rename(Watershed_name=baseline.Watershed2)
+
+pl_diss <- left_join(pl_baseline, pl_jacc_diss_lm, by="Watershed_name") %>%
+  filter(!Watershed_name %in% c("4A", "N4A")) %>%
+  mutate(Watershed_name = factor(Watershed_name, 
+                                 levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"), 
+                                 ordered = TRUE)) %>%
+  mutate(trend_dir = ifelse(slope >= 0, "positive", "negative"))
+
+
+# make panel plot of results
+ggplot(pl_diss, aes(x = baseline.Year2, y = baseline.jaccard_diss)) + 
+  geom_point(size=0.75) + 
+  facet_wrap(.~Watershed_name, ncol=2) + 
+  geom_smooth(data=pl_diss %>% filter(p_value <= 0.05), 
+              aes(color = trend_dir),
+              method = "lm") +
+  scale_color_manual(values = c("positive" = "cadetblue4", "negative" = "indianred2")) +    
+  theme_bw() +
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1, size =10),
+        legend.position = "none") +
+  xlab("Year") +
+  ylab("Jaccard dissimilarity to Year 1") +
+  labs(title = "plant Jaccard trends",
+       color = NULL)  +
+  ggpubr::stat_cor()
+
+ggsave("Figures/plants_jacc_years.png", dpi=300, width=4, height=6)
+```
+
+```{r}
+## PLANTS Gower
+
+# process relevant data frames
+pl_baseline <- pl_baseline %>% rename(Watershed_name=baseline.Watershed2)
+
+pl_diss <- left_join(pl_baseline, pl_gower_diss_lm, by="Watershed_name") %>%
+  filter(!Watershed_name %in% c("4A", "N4A")) %>%
+  mutate(Watershed_name = factor(Watershed_name, 
+                                 levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"), 
+                                 ordered = TRUE)) %>%
+  mutate(trend_dir = ifelse(slope >= 0, "positive", "negative"))
+
+
+# make panel plot of results
+ggplot(pl_diss, aes(x = baseline.Year2, y = baseline.gower_diss)) + 
+  geom_point(size=0.75) + 
+  facet_wrap(.~Watershed_name, ncol=2) + 
+  geom_smooth(data=pl_diss %>% filter(p_value <= 0.05), 
+              aes(color = trend_dir),
+              method = "lm") +
+  scale_color_manual(values = c("positive" = "cadetblue4", "negative" = "indianred2")) +    
+  theme_bw() +
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=45, hjust=1, size =10),
+        legend.position = "none") +
+  xlab("Year") +
+  ylab("Gower dissimilarity to Year 1") +
+  labs(title = "plant Gower trends",
+       color = NULL)  +
+  ggpubr::stat_cor()
+
+ggsave("Figures/plants_gower_years.png", dpi=300, width=4, height=6)
+```
+
 ```{r}
 ## SMAMMALS Jaccard
 
