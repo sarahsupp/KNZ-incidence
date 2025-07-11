@@ -18,8 +18,8 @@ fontsize: 12pt
 
 ```{r setup, include=FALSE}
 
-library(tidyverse)
 library(corrplot)
+library(tidyverse)
 ```
 
 Read in all relevant datasets for plotting

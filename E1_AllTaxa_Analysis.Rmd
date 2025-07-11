@@ -1004,7 +1004,6 @@ write.csv(pl_spabun_logit, "Datasets/E1_output_data/E1_plants/E1_plants_abundanc
 
 #-----------------------------------------------------------------------------------------
 # STATISTICAL COMPARISONS FOR INCIDENCE and ABUNDANCE CLASSIFICATION
-##    should stats be in a new file? E2_stats? then plots becomes E3? Why did we call them E?
 
 prepare INCIDENCE data for statistical comparison
 ```{r}
@@ -1012,21 +1011,25 @@ prepare INCIDENCE data for statistical comparison
 smammal_class_counts <- smammals_classification %>% 
   group_by(Watershed_name, classification) %>% 
   dplyr::summarise(total_count=n(),.groups = 'drop') %>%
+  mutate(Proportion = (total_count/length(unique(smammals_classification$Species)))) %>%
   mutate(taxa = "small mammals")
 
 grasshoppers_class_counts <- grasshoppers_classification %>% 
   group_by(Watershed_name, classification) %>% 
   dplyr::summarise(total_count=n(),.groups = 'drop') %>%
+  mutate(Proportion = (total_count/length(unique(grasshoppers_classification$Species)))) %>%
   mutate(taxa = "grasshoppers")
 
 birds_class_counts <- birds_classification %>% 
   group_by(Watershed_name, classification) %>% 
   dplyr::summarise(total_count=n(),.groups = 'drop')  %>%
+  mutate(Proportion = (total_count/length(unique(birds_classification$AOU_code)))) %>%
   mutate(taxa = "birds")
 
 plants_class_counts <- plants_classification %>% 
   group_by(Watershed_name, classification) %>% 
   dplyr::summarise(total_count=n(),.groups = 'drop')  %>%
+  mutate(Proportion = (total_count/length(unique(plants_classification$Genus_spp)))) %>%
   mutate(taxa = "plants")
 
 #rbind all the class summary datasets together
@@ -1056,21 +1059,25 @@ prepare ABUNDANCE data for statistical comparison
 smammal_class_abun <- smammals_abun_classification %>% 
   group_by(Watershed_name, classification) %>% 
   dplyr::summarise(total_count=n(),.groups = 'drop') %>%
+  mutate(Proportion = (total_count/length(unique(smammals_abun_classification$Species)))) %>%
   mutate(taxa = "small mammals")
 
 grasshoppers_class_abun <- grasshoppers_abun_classification %>% 
   group_by(Watershed_name, classification) %>% 
   dplyr::summarise(total_count=n(),.groups = 'drop') %>%
+  mutate(Proportion = (total_count/length(unique(grasshoppers_abun_classification$Species)))) %>%
   mutate(taxa = "grasshoppers")
 
 birds_class_abun <- birds_abun_classification %>% 
   group_by(Watershed_name, classification) %>% 
   dplyr::summarise(total_count=n(),.groups = 'drop')  %>%
+  mutate(Proportion = (total_count/length(unique(birds_abun_classification$AOU_code)))) %>%
   mutate(taxa = "birds")
 
 plants_class_abun <- plants_abun_classification %>% 
   group_by(Watershed_name, classification) %>% 
   dplyr::summarise(total_count=n(),.groups = 'drop')  %>%
+  mutate(Proportion = (total_count/length(unique(plants_abun_classification$Genus_spp)))) %>%
   mutate(taxa = "plants")
 
 #rbind all the class summary datasets together
@@ -1097,6 +1104,7 @@ Apply Chi-square INCIDENCE comparison across watersheds for each taxa
 ```{r}
 # run chi-square comparison across watersheds for each taxa 
 chisq_results <- all_class_counts %>%
+  dplyr::select(-Proportion) %>%
   group_by(taxa) %>%
   nest() %>%
   mutate(chisq = map(data, run_chisq_from_nested)) %>%
@@ -1113,6 +1121,7 @@ Apply Chi-square ABUNDANCE comparison across watersheds for each taxa
 ```{r}
 # run chi-square comparison across watersheds for each taxa 
 chisq_results_abun <- all_class_abun %>%
+  dplyr::select(-Proportion) %>%
   group_by(taxa) %>%
   nest() %>%
   mutate(chisq = map(data, run_chisq_from_nested)) %>%
@@ -1204,6 +1213,21 @@ ggplot(pl_resid_abun, aes(x = Watershed_name, y = classification, fill = Residua
 
 ggsave("Figures/plant_abundance_chisq_residuals.png", dpi=300, width=4, height=4)
 ```
+
+#-----------------------------------------------------------------------------------------
+# DATA VISUALIZATIONS
+
+Let's make some descriptive plots of the species classifications. We can make violin plots that will mirror the ones in Gotelli et al. 2022. 
+```{r}
+
+```
+
+
+Since incidence change is necessarily impacted by species entering and exiting a community in different years, let's look at the underlying species composition patterns at the site. 
+```{r}
+
+```
+
 
 
 #TODO: START HERE AGAIN
