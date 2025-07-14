@@ -1580,6 +1580,7 @@ pl_class %>%
                                  ordered = TRUE)) %>%
   ggplot(aes(x = classification, y = percyears)) +
   geom_jitter(width = 0.2, height = 0, color = "steelblue", alpha = 0.6) +
+  geom_violin(alpha=0.7, aes(fill=classification)) +
   labs(title = "Percent of Years by Classification",
        x = "Classification",
        y = "Percent of Years Present") +
@@ -1587,6 +1588,29 @@ pl_class %>%
   theme_minimal()
 
 ggsave("Figures/plants_class_percyears.png", dpi=300, width=4, height=4)
+```
+
+**how does proportion of years present relate to watershed?**
+```{r}
+pl_class %>%
+   dplyr::select(Watershed_name, Genus_spp, numyears, numpresent, percyears, classification) %>%
+    mutate(Watershed_name = factor(Watershed_name, 
+                                 levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"), 
+                                 ordered = TRUE),
+           classification = factor(classification, 
+                                 levels=c("No_change-present", "Rare","Increasing", "Decreasing",
+                                          "Recurrent", "Random"), 
+                                 ordered = TRUE)) %>%
+  ggplot(aes(x = Watershed_name, y = percyears, group=Watershed_name)) +
+  geom_violin(alpha=0.7) +
+  geom_jitter(aes(col=classification), width = 0.2, height = 0, alpha = 0.8) +
+  labs(title = "Percent of Years by Watershed",
+       x = "Watershed",
+       y = "Percent of Years Present") +
+  geom_hline(yintercept = c(0.33, 0.67), linetype="dashed") +
+  theme_minimal()
+
+ggsave("Figures/plants_watershed_percyears.png", dpi=300, width=4, height=4)
 ```
 
 #----------------------------------------------------------
