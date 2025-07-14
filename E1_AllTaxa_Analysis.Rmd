@@ -1457,6 +1457,8 @@ pl_directed <- pl_class %>%
   filter(classification %in% c("Decreasing", "Increasing")) %>%
   dplyr::select(Watershed_name, Genus_spp, numyears, numpresent, percyears, classification)
 
+directed_spp <- unique(pl_directed$Genus_spp)
+
 # How many species were increasing in at least one watershed?
 pl_directed %>%
   filter(classification == "Increasing") %>%
@@ -1480,9 +1482,11 @@ inc_species <- pl_class %>%
     .groups = "drop"
   )
 
-View(inc_species)
+#View(inc_species)
+all_inc = unique(inc_species$Genus_spp)
 
 nrow(inc_species)
+unique(inc_species$Genus_spp)
 ```
 There are 22 species that are increasing at all watersheds in which they occur. 15/22 of these only occur in grazed sites, indicating a colonization effect for these sites, potentially in response to the grazing treatment. 
 
@@ -1498,11 +1502,13 @@ dec_species <- pl_class %>%
     .groups = "drop"
   )
 
+all_dec = unique(dec_species$Genus_spp)
+
 dim(dec_species)
 ```
 Answer: There are NO species that were decreasing at all watersheds in which they occur. 
 
-- Which are increasing or decreasing only in the grazed watersheds, but not in the ungrazed?
+**Which are increasing or decreasing only in the grazed watersheds, but not in the ungrazed?**
 -- I also need to make a new subset of the data that includes the other classifications for comparison
 INCREASING
 ```{r}
@@ -1543,6 +1549,45 @@ dec_species <- pl_class %>%
 View(dec_species)
 ```
 
+**What else did they switch from in the watersheds where they were not in the directed change classes?**
+```{r}
+# Species increasing across grazed/ungrazed treatments
+dir_species <- pl_class %>%
+    mutate(treatment = case_when(
+    Watershed_name %in% c("N1B", "N4D", "N20B") ~ "grazed",
+    TRUE ~ "ungrazed")) %>%
+  filter(Genus_spp %in% directed_spp) %>%
+    filter(!Genus_spp %in% all_inc) %>%
+    dplyr::select(Watershed_name, Genus_spp, numyears, numpresent, percyears, classification) %>%
+    arrange(Genus_spp, Watershed_name)
+
+View(dir_species)
+
+```
+#FIXME: I am not sure what to do with the above results... How to summarize better without getting into the weeds?
+
+
+**how does classification relate to percentage of years present?**
+```{r}
+pl_class %>%
+   dplyr::select(Watershed_name, Genus_spp, numyears, numpresent, percyears, classification) %>%
+    mutate(Watershed_name = factor(Watershed_name, 
+                                 levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"), 
+                                 ordered = TRUE),
+           classification = factor(classification, 
+                                 levels=c("No_change-present", "Rare","Increasing", "Decreasing",
+                                          "Recurrent", "Random"), 
+                                 ordered = TRUE)) %>%
+  ggplot(aes(x = classification, y = percyears)) +
+  geom_jitter(width = 0.2, height = 0, color = "steelblue", alpha = 0.6) +
+  labs(title = "Percent of Years by Classification",
+       x = "Classification",
+       y = "Percent of Years Present") +
+  geom_hline(yintercept = c(0.33, 0.67), linetype="dashed") +
+  theme_minimal()
+
+ggsave("Figures/plants_class_percyears.png", dpi=300, width=4, height=4)
+```
 
 #----------------------------------------------------------
 
