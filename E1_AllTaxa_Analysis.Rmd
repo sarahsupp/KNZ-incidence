@@ -1449,20 +1449,102 @@ ggsave("Figures/plants_gower_years.png", dpi=300, width=4, height=6)
 Let's dig a bit deeper into the directed change category. 
 **Which plant species are being classified as directed change?**
 ```{r}
-pl_directed <- plants_classification %>%
-  filter(classification %in% c("Decreasing", "Increasing"))
+pl_class <- plants_classification %>%
+  #ensure just the watersheds for this study are kept
+    filter(Watershed_name %in% c("1D", "N1B", "4B", "N4D", "20B", "N20B"))
+
+pl_directed <- pl_class %>%
+  filter(classification %in% c("Decreasing", "Increasing")) %>%
+  dplyr::select(Watershed_name, Genus_spp, numyears, numpresent, percyears, classification)
+
+# How many species were increasing in at least one watershed?
+pl_directed %>%
+  filter(classification == "Increasing") %>%
+  summarize(n_distinct(Genus_spp))
+
+#How many species were decreasing in at least one watershed? 
+pl_directed %>%
+  filter(classification == "Decreasing") %>%
+  summarize(n_distinct(Genus_spp))
 ```
 
-- Which species are increasing at all watersheds in which they occur?
-- Which species are decreasing at all watersheds in which they occur?
-- Which are increasing or decreasing only in the grazed watersheds, but not in the ungrazed?
-#TODO: ADD THIS CODE
--- add a new column for change type, grazing type, and fire type, remove year cols
+**Which species are increasing at all watersheds in which they occur?**
 ```{r}
+# Species consistently increasing
+inc_species <- pl_class %>%
+  group_by(Genus_spp) %>%
+  filter(all(classification == "Increasing")) %>%
+  summarise(
+    Watersheds = paste(sort(unique(Watershed_name)), collapse = ", "),
+    Watershed_count = n_distinct(Watershed_name),
+    .groups = "drop"
+  )
 
+View(inc_species)
+
+nrow(inc_species)
+```
+There are 22 species that are increasing at all watersheds in which they occur. 15/22 of these only occur in grazed sites, indicating a colonization effect for these sites, potentially in response to the grazing treatment. 
+
+**Which species are decreasing at all watersheds in which they occur?**
+```{r}
+# Species consistently decreasing
+dec_species <- pl_class %>%
+  group_by(Genus_spp) %>%
+  filter(all(classification == "Decreasing")) %>%
+  summarise(
+    Watersheds = paste(sort(unique(Watershed_name)), collapse = ", "),
+    Watershed_count = n_distinct(Watershed_name),
+    .groups = "drop"
+  )
+
+dim(dec_species)
+```
+Answer: There are NO species that were decreasing at all watersheds in which they occur. 
+
+- Which are increasing or decreasing only in the grazed watersheds, but not in the ungrazed?
+-- I also need to make a new subset of the data that includes the other classifications for comparison
+INCREASING
+```{r}
+# Species increasing across grazed/ungrazed treatments
+inc_species <- pl_class %>%
+    mutate(treatment = case_when(
+    Watershed_name %in% c("N1B", "N4D", "N20B") ~ "grazed",
+    TRUE ~ "ungrazed")) %>%
+  group_by(Genus_spp) %>%
+  filter(classification == "Increasing") %>%
+  summarise(
+    Watersheds = paste(sort(unique(Watershed_name)), collapse = ", "),
+    trmts = paste(sort(unique(treatment)), collapse = ", "),
+    trmt_count = n_distinct(treatment),
+    .groups = "drop"
+  ) %>%
+  arrange(trmt_count)
+  
+View(inc_species)
+```
+DECREASING
+```{r}
+# Species decreasing across grazed/ungrazed treatments
+dec_species <- pl_class %>%
+    mutate(treatment = case_when(
+    Watershed_name %in% c("N1B", "N4D", "N20B") ~ "grazed",
+    TRUE ~ "ungrazed")) %>%
+  group_by(Genus_spp) %>%
+  filter(classification == "Decreasing") %>%
+  summarise(
+    Watersheds = paste(sort(unique(Watershed_name)), collapse = ", "),
+    trmts = paste(sort(unique(treatment)), collapse = ", "),
+    trmt_count = n_distinct(treatment),
+    .groups = "drop"
+  ) %>%
+  arrange(trmt_count)
+  
+View(dec_species)
 ```
 
 
+#----------------------------------------------------------
 
 ```{r}
 ## SMAMMALS Jaccard
