@@ -1586,8 +1586,6 @@ table(dir_spp_info$origin)
 table(dir_spp_info$`growth form`)
 table(dir_spp_info$`life form`)
 ```
-
-
 #FIXME: I am not sure what to do with the above results... How to summarize better without getting into the weeds?
 
 
@@ -1666,6 +1664,34 @@ pl_class %>%
   theme_minimal() 
 
 ggsave("Figures/plants_watershed_percyears.png", dpi=300, width=4, height=4)
+```
+
+**how does life form relate to percentage of years present?**
+#FIXME: This plot only shows those that are increasing or decreasing on at least some plots; not all species
+```{r}
+dir_species %>%
+    mutate(Watershed_name = factor(Watershed_name, 
+                                 levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"), 
+                                 ordered = TRUE),
+           classification = factor(classification, 
+                                 levels=c("No_change-present", "Rare","Increasing", "Decreasing",
+                                          "Recurrent", "Random"), 
+                                 ordered = TRUE),
+           growth_form = factor(`growth form`, 
+                                levels = c("a", "b", "p"),
+                                ordered = TRUE)) %>%
+  ggplot(aes(x = growth_form, y = percyears)) +
+  geom_jitter(width = 0.2, height = 0, alpha = 0.6) +
+  geom_boxplot(alpha=0.5, aes(fill=growth_form), notch=TRUE) +
+  labs(title = "Percent of Years by Growth Form",
+       x = "Life Form",
+       y = "Percent of Years Present") +
+  geom_hline(yintercept = c(0.33, 0.67), linetype="dashed") +
+  theme_minimal() + 
+  guides(fill="none") + 
+  theme(legend.position="none")
+
+ggsave("Figures/plants_dir-change-ann-per_percyears.png", dpi=300, width=4, height=4)
 ```
 
 #----------------------------------------------------------
