@@ -50,6 +50,9 @@ E0_smammals <- read_csv("Datasets/E0_cleaned_data/E0_smammals.csv")
 E0_grasshoppers <- read_csv("Datasets/E0_cleaned_data/E0_grasshoppers.csv")
 E0_birds<- read_csv("Datasets/E0_cleaned_data/E0_birds.csv")
 E0_plants <- read_csv("Datasets/E0_cleaned_data/E0_plants.csv")
+
+#read in plant species list
+pl_info <- read_csv("Datasets/Raw_data/Plants/plant_sp_list.csv")
 ```
 
 # Clean Data to Classified Incidence for All Taxa
@@ -1554,8 +1557,7 @@ View(dec_species)
 # Species increasing across grazed/ungrazed treatments
 dir_species <- pl_class %>%
     mutate(treatment = case_when(
-    Watershed_name %in% c("N1B", "N4D", "N20B") ~ "grazed",
-    TRUE ~ "ungrazed")) %>%
+      Watershed_name %in% c("N1B", "N4D", "N20B") ~ "grazed", TRUE ~ "ungrazed")) %>%
   filter(Genus_spp %in% directed_spp) %>%
     filter(!Genus_spp %in% all_inc) %>%
     dplyr::select(Watershed_name, Genus_spp, numyears, numpresent, percyears, classification) %>%
@@ -1564,6 +1566,28 @@ dir_species <- pl_class %>%
 View(dir_species)
 
 ```
+
+Can we annotate directed species with known traits like growth form, photosynthesis, and annual/perennial?
+```{r}
+# species info
+pl_info <- pl_info %>%
+  mutate(Genus_spp = paste(gen, spec, sep = "_")) %>%
+  distinct()
+
+#add details back in for plants that are directed change
+dir_species <- left_join(dir_species, pl_info, by="Genus_spp")
+
+dir_spp_info <- dir_species %>%
+  dplyr::select(Genus_spp, genus, species, family, `growth form`, `life form`, origin) %>%
+  distinct()
+
+#check out some summaries (note that if it doesn't add up to 146, is NA)
+table(dir_spp_info$origin)
+table(dir_spp_info$`growth form`)
+table(dir_spp_info$`life form`)
+```
+
+
 #FIXME: I am not sure what to do with the above results... How to summarize better without getting into the weeds?
 
 
@@ -1585,13 +1609,44 @@ pl_class %>%
        x = "Classification",
        y = "Percent of Years Present") +
   geom_hline(yintercept = c(0.33, 0.67), linetype="dashed") +
-  theme_minimal()
+  theme_minimal() + 
+  guides(fill="none") + 
+  theme(legend.position="none")
 
 ggsave("Figures/plants_class_percyears.png", dpi=300, width=4, height=4)
 ```
 
 **how does proportion of years present relate to watershed?**
 ```{r}
+#boxplot
+pl_class %>%
+   dplyr::select(Watershed_name, Genus_spp, numyears, numpresent, percyears, classification) %>%
+    mutate(Watershed_name = factor(Watershed_name, 
+                                 levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"), 
+                                 ordered = TRUE),
+           classification = factor(classification, 
+                                 levels=c("No_change-present", "Rare","Increasing", "Decreasing",
+                                          "Recurrent", "Random"), 
+                                 ordered = TRUE)) %>%
+  mutate(treatment = case_when(
+      Watershed_name %in% c("N1B", "N4D", "N20B") ~ "grazed", TRUE ~ "ungrazed")) %>%
+  ggplot(aes(x = Watershed_name, y = percyears, fill=Watershed_name)) +
+  geom_boxplot(alpha=0.7, notch=TRUE) +
+  scale_fill_manual(values = c("darkolivegreen", "sienna4", "darkolivegreen4", 
+                               "sienna3", "darkolivegreen3", "sienna2")) +
+  labs(title = "Percent of Years by Watershed",
+       x = "Watershed",
+       y = "Percent of Years Present") +
+  geom_hline(yintercept = c(0.33, 0.67), linetype="dashed") +
+  theme_minimal() +
+  guides(fill="none") +
+  theme(legend.position="none")
+
+ggsave("Figures/plants_watershed_percyears_bxp.png", dpi=300, width=4, height=4)
+```
+
+```{r}
+#violin + jitter plot
 pl_class %>%
    dplyr::select(Watershed_name, Genus_spp, numyears, numpresent, percyears, classification) %>%
     mutate(Watershed_name = factor(Watershed_name, 
@@ -1608,7 +1663,7 @@ pl_class %>%
        x = "Watershed",
        y = "Percent of Years Present") +
   geom_hline(yintercept = c(0.33, 0.67), linetype="dashed") +
-  theme_minimal()
+  theme_minimal() 
 
 ggsave("Figures/plants_watershed_percyears.png", dpi=300, width=4, height=4)
 ```
