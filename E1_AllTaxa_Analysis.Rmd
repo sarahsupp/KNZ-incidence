@@ -1800,6 +1800,8 @@ ggsave("Figures/smammals_bray_years.png", dpi=300, width=4, height=6)
 #     LINES ONLY SHOW WHEN THE PVALUE IS SIGNIFICANT, MAKES IT EASIER TO SCAN; 
 #     filter out extra watersheds
 #     add label for trend direction
+
+###Plant richness
 ```{r}
 # process relevant data frames
 rich_p <- left_join(result$richness, result$model, by="Watershed_name") %>%
@@ -1808,8 +1810,10 @@ rich_p <- left_join(result$richness, result$model, by="Watershed_name") %>%
                                  levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"), 
                                  ordered = TRUE)) %>%
   mutate(trend_dir = ifelse(slope >= 0, "positive", "negative"))
+
   
-# make panel plot of results (check that plants were the most recent richness result run)
+# make panel plot of results 
+(check that plants were the most recent richness result run)
 ggplot(rich_p, aes(x = Recyear, y = Richness)) + 
   geom_point(size=0.75) + 
   facet_wrap(.~Watershed_name, ncol=2) + 
@@ -1827,6 +1831,30 @@ ggplot(rich_p, aes(x = Recyear, y = Richness)) +
 
 ggsave("Figures/plants_richness_years.png", dpi=300, width=4, height=6)
 ```
+
+###Plant abundance
+```{r}
+# identify the plant species that had significant cover class trends, using pseudo pvalue
+#   and add trend direction (positive or negative)
+pl_spabun_logit_sig <- pl_spabun_logit %>% 
+  filter(psuedo_pval <= 0.05) %>%
+  mutate(trend_dir = ifelse(slope >= 0, "positive", "negative"))
+
+#show results divided by positive and negative significant trends
+table(pl_spabun_logit_sig$Watershed_name, pl_spabun_logit_sig$trend_dir)
+
+# process relevant data frames
+#TODO: NEED TO ADD WATERSHED BACK INTO ABUNDANCE DF
+pl_abun <- left_join(pl_spabund, pl_spabun_logit_sig, by="Watershed_name") %>%
+  filter(!Watershed_name %in% c("4A", "N4A")) %>%
+  mutate(Watershed_name = factor(Watershed_name, 
+                                 levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"), 
+                                 ordered = TRUE))
+  
+#TODO: NOT SURE BEST WAY TO SHOW THE RESULTS. MAYBE EACH WATERSHED WITH THE SPECIES LINES SHOWN IF SIGNIF INCREASING OR DECREASING.THEN IT'S STILL 6 PANELS, BUT MIGHT BE MESSY?Thee are 206 unique species :O
+```
+
+
 
 #leaving this here as an inspo note for E2 file data viz
 ```{r}
