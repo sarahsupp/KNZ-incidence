@@ -1684,7 +1684,7 @@ dir_species %>%
   geom_jitter(width = 0.2, height = 0, alpha = 0.6) +
   geom_boxplot(alpha=0.5, aes(fill=growth_form), notch=TRUE) +
   labs(title = "Percent of Years by Growth Form",
-       x = "Life Form",
+       x = "Growth Form",
        y = "Percent of Years Present") +
   geom_hline(yintercept = c(0.33, 0.67), linetype="dashed") +
   theme_minimal() + 
@@ -1692,6 +1692,35 @@ dir_species %>%
   theme(legend.position="none")
 
 ggsave("Figures/plants_dir-change-ann-per_percyears.png", dpi=300, width=4, height=4)
+```
+
+**for species that were directed change in a particular watershed, how are they divided out across watershed and across growth form?**
+```{r}
+dir_species %>%
+  filter(classification %in% c("Increasing", "Decreasing")) %>%
+    mutate(Watershed_name = factor(Watershed_name, 
+                                 levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"), 
+                                 ordered = TRUE),
+           classification = factor(classification, 
+                                 levels=c("Decreasing", "Increasing"), 
+                                 ordered = TRUE),
+           growth_form = factor(`growth form`, 
+                                levels = c("a", "b", "p"),
+                                ordered = TRUE)) %>%
+  ggplot(aes(x = growth_form, y = percyears)) +
+  geom_boxplot(alpha=0.5) +
+  #geom_violin() +
+  geom_jitter(width = 0.2, height = 0, alpha = 0.6, aes(col=classification)) +
+  labs(title = "Directed change populations",
+       x = "Growth Form",
+       y = "Percent of Years Present") +
+  geom_hline(yintercept = c(0.33, 0.67), linetype="dashed") +
+  facet_wrap(~Watershed_name, ncol=2) +
+  theme_bw()# + 
+  #guides(fill="none") + 
+  theme(legend.position="none")
+
+ggsave("Figures/plants_dir-change-ann-per__watershed_percyears.png", dpi=300, width=4, height=6)
 ```
 
 #----------------------------------------------------------
