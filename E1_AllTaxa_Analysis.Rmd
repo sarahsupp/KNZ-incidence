@@ -1254,8 +1254,69 @@ ggplot(pl_resid, aes(x = Watershed_name, y = classification, fill = Residual)) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-ggsave("Figures/plant_incidence_chisq_residuals.png", dpi=300, width=4, height=4)
+ggsave("Figures/plant_incidence_chisq_residuals.png", dpi=300, width=5, height=4, bg="white")
 ```
+
+The same plot for chisq residuals on comparing incidence classification, but using points instead of filled cells
+```{r}
+# plot of the residuals
+ggplot(pl_resid, aes(x = Watershed_name, y = classification)) +
+  geom_point(aes(size = abs(Residual), color = Residual)) +
+  scale_color_gradient2(
+    low = "red4", mid = "white", high = "navyblue", 
+    midpoint = 0,
+    limits = c(-max(abs(pl_resid$Residual)), max(abs(pl_resid$Residual))),
+    name = "Std Residual"
+  ) +
+  scale_size_continuous(range = c(1, 10), name = "Abs(Residual)") +
+  labs(
+    title = "Plant standardized residuals",
+    x = "Watershed", 
+    y = "Incidence Classification"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggsave("Figures/plant_incidence_chisq_residuals_points.png", dpi=300, width=5, height=4, bg="white")
+```
+
+We can also try a version that only shows the  more extreme residuals, >|2|
+```{r}
+ggplot(pl_resid, aes(x = Watershed_name, y = classification)) +
+  
+  # Main points: size by abs(Residual), color by Residual
+  geom_point(aes(size = abs(Residual), color = Residual)) +
+  
+  # Border points: only where abs(Residual) > 2
+  geom_point(
+    data = pl_resid %>% filter(abs(Residual) > 2),
+    shape = 21, stroke = 1, fill = NA, color = "black",
+    aes(size = abs(Residual))
+  ) +
+
+  scale_color_gradient2(
+    low = "red4", mid = "white", high = "navyblue",
+    midpoint = 0,
+    limits = c(-max(abs(pl_resid$Residual)), max(abs(pl_resid$Residual))),
+    name = "Std Residual"
+  ) +
+  scale_size_continuous(range = c(1, 10), name = "Abs(Residual)") +
+  
+  labs(
+    title = "Plant standardized residuals",
+    x = "Watershed",
+    y = "Incidence Classification"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+
+ggsave("Figures/plant_incidence_chisq_residuals_points_2plus.png", dpi=300, width=5, height=4, bg="white")
+
+```
+
+
 
 Look at the ABUNDANCE residuals
 ```{r}
