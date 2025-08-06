@@ -1364,9 +1364,9 @@ ggplot(all_class_counts, aes(x = Proportion, y = classification, fill = classifi
   theme_bw() +
   theme(legend.position = "none") + 
   labs(title = "Frequency across watersheds", y = "Incidence Classification") + 
-  facet_wrap(~taxa)
+  facet_wrap(~taxa, ncol=1)
 
-ggsave("Figures/all_taxa_class_incid_freq.png", dpi=300, width=6, height=6)
+ggsave("Figures/all_taxa_class_incid_freq.png", dpi=300, width=5, height=9)
 ```
 
 Just for plants, since they were the only ones that were significantly different across watersheds
