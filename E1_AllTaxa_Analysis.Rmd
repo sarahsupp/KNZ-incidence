@@ -33,6 +33,7 @@ library(MASS)
 library(multcomp)
 library(purrr)
 library(readxl)
+library(reshape2)
 library(tseries)
 library(vegan)
 
@@ -1628,13 +1629,152 @@ View(dir_species)
 
 ```
 
-Can we annotate directed species with known traits like growth form, photosynthesis, and annual/perennial?
+
+**Let's look a little deeper at the plant species traits across categories**
+How do growth form(a,b,p), life form (g,f,m), and photosynthesis (c3, c4) vary across the categories?
 ```{r}
-# species info
+# prepare the species info
 pl_info <- pl_info %>%
   mutate(Genus_spp = paste(gen, spec, sep = "_")) %>%
   distinct()
 
+#add traits back into the plant classification dataset
+pl_class <- left_join(pl_class, pl_info, by="Genus_spp")
+```
+
+**Does growth form (annual, biannual, perennial) differ across the classifications?**
+```{r}
+# make a contingency table of growth form and classification
+table_cf <- table(pl_class$classification, pl_class$`growth form`)
+
+chisq_result <- chisq.test(table_cf)
+
+#look at residuals
+chisq_result$stdres
+
+corrplot(chisq_result$stdres, is.cor = FALSE, tl.col = "black")
+
+#post hoc test to see what is differing; Pairwise Fishers exact tests
+# Get all unique pairs of classification categories
+categories <- rownames(table_cf)
+pair_comparisons <- combn(categories, 2, simplify = FALSE)
+
+# Run Fisher's exact test for each pairwise row comparison
+posthoc_results <- map_dfr(pair_comparisons, function(pair) {
+  sub_table <- table_cf[pair, ]  # 2xN table
+  test <- fisher.test(sub_table)
+  
+  tibble(
+    group1 = pair[1],
+    group2 = pair[2],
+    p_value = test$p.value
+  )
+})
+
+# adjust for multiple tests
+posthoc_results <- posthoc_results %>%
+  mutate(p_adj = p.adjust(p_value, method = "bonferroni")) %>%
+  filter(p_adj < 0.05) %>%
+  arrange(p_adj)
+```
+
+Plot the residuals for the growth form comparison across classifications
+```{r}
+#plot a different way
+resid_df <- melt(chisq_result$stdres, varnames = c("classification", "GrowthForm"), value.name = "Residual") %>%
+  mutate(classification = factor(classification, 
+                                 levels=c("No_change-present", "Rare","Increasing", "Decreasing",
+                                          "Recurrent", "Random"), 
+                                 ordered = TRUE))
+
+ggplot(resid_df, aes(x = GrowthForm, y = classification)) +
+  # Main points: size and color based on residual
+  geom_point(aes(size = abs(Residual), color = Residual)) +
+    # Color scale for positive/negative residuals
+  scale_color_gradient2(low = "red4", mid = "white", high = "navyblue", midpoint = 0,
+    limits = c(-max(abs(resid_df$Residual)), max(abs(resid_df$Residual))),
+    name = "Std Residual") +
+  # Black border for large residuals (>2)
+  geom_point(data = resid_df %>% filter(abs(Residual) > 2),
+    aes(size = abs(Residual)),
+    shape = 21, stroke = 1, fill = NA, color = "black") +
+  # Size scale
+  scale_size_continuous(range = c(1, 10), name = "Abs(Residual)") +
+  # Labels and theme
+  labs(title = "Plant standardized residuals",
+    x = "Growth Form", y = "") +
+  theme_minimal() #+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggsave("Figures/plants_incidence_growth-form-resid.png", dpi=300, width=4, height=4, bg="white")
+```
+
+**Does growth form differ across the watersheds by classification?**
+```{r}
+watersheds <- unique(pl_class$Watershed_name)
+
+# Run chi-squared + post hoc test per watershed
+results_by_watershed <- map(watersheds, function(ws) {
+  # Subset data
+  df_ws <- pl_class %>% filter(Watershed_name == ws)
+  
+  # Create contingency table
+  tab <- table(df_ws$classification, df_ws$`growth form`)
+  
+  # Skip if table is too small
+  if (nrow(tab) < 2 || ncol(tab) < 2) return(NULL)
+  
+  # Chi-squared test
+  chi <- chisq.test(tab)
+  
+  # Pairwise Fisher tests
+  classes <- rownames(tab)
+  pairs <- combn(classes, 2, simplify = FALSE)
+  
+  posthoc <- map_dfr(pairs, function(pair) {
+    test <- fisher.test(tab[pair, ])
+    tibble(
+      group1 = pair[1],
+      group2 = pair[2],
+      p_value = test$p.value
+    )
+  }) %>%
+    mutate(p_adj = p.adjust(p_value, method = "bonferroni")) %>%
+    arrange(p_adj)
+  
+  # Store results
+  list(
+    watershed = ws,
+    chisq_p = chi$p.value,
+    chisq_resid = chi$stdres,
+    posthoc = posthoc
+  )
+})
+
+#view top significant post hoc comparisons
+map_dfr(results_by_watershed, function(res) {
+  if (is.null(res)) return(NULL)
+  res$posthoc %>%
+    filter(p_adj < 0.05) %>%
+    mutate(watershed = res$watershed)
+})
+
+#view residuals
+for (res in results_by_watershed) {
+  if (is.null(res)) next
+  corrplot(res$chisq_resid, is.cor = FALSE,
+           tl.col = "black",
+           title = paste("Std Residuals:", res$watershed),
+           mar = c(0, 0, 2, 0))
+}
+```
+
+
+
+
+
+Can we annotate directed species with known traits like growth form, photosynthesis, and annual/perennial?
+```{r}
 #add details back in for plants that are directed change
 dir_species <- left_join(dir_species, pl_info, by="Genus_spp")
 
