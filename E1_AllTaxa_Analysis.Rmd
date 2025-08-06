@@ -1874,7 +1874,7 @@ rich_p <- left_join(result$richness, result$model, by="Watershed_name") %>%
 
   
 # make panel plot of results 
-(check that plants were the most recent richness result run)
+#(check that plants were the most recent richness result run)
 ggplot(rich_p, aes(x = Recyear, y = Richness)) + 
   geom_point(size=0.75) + 
   facet_wrap(.~Watershed_name, ncol=2) + 
@@ -1904,87 +1904,64 @@ pl_spabun_logit_sig <- pl_spabun_logit %>%
 #show results divided by positive and negative significant trends
 table(pl_spabun_logit_sig$Watershed_name, pl_spabun_logit_sig$trend_dir)
 
-# process relevant data frames
-#TODO: NEED TO ADD WATERSHED BACK INTO ABUNDANCE DF
-pl_abun <- left_join(pl_spabund, pl_spabun_logit_sig, by="Watershed_name") %>%
+# count number of significant increasing and decreasing trends per watershed
+trend_counts <- pl_spabun_logit_sig %>%
+  filter(!Watershed_name %in% c("4A", "N4A")) %>%
+  mutate(Watershed_name = factor(Watershed_name, 
+                                 levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"), 
+                                 ordered = TRUE)) %>%
+  count(Watershed_name, trend_dir) %>%
+  pivot_wider(
+    names_from = trend_dir,
+    values_from = n,
+    values_fill = 0
+  ) %>%
+  mutate(label = paste0("↑ ", positive, "  ↓ ", negative))
+
+#annotate abundance df with logit model results for significant species-watersheds
+pl_abun <- left_join(pl_spabun_logit_sig, plants_years_wide, 
+                     by=c("Species" = "Genus_spp", "Watershed_name" = "Watershed_name")) %>%
   filter(!Watershed_name %in% c("4A", "N4A")) %>%
   mutate(Watershed_name = factor(Watershed_name, 
                                  levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"), 
                                  ordered = TRUE))
-  
-#TODO: NOT SURE BEST WAY TO SHOW THE RESULTS. MAYBE EACH WATERSHED WITH THE SPECIES LINES SHOWN IF SIGNIF INCREASING OR DECREASING.THEN IT'S STILL 6 PANELS, BUT MIGHT BE MESSY?Thee are 206 unique species :O
-```
+
+#pivot longer for plotting
+# Pivot all year columns into long format
+pl_abun_sig_long <- pl_abun %>%
+  pivot_longer(
+    cols = matches("^\\d{4}$"),  # columns named like 1992, 1993...
+    names_to = "Year",
+    values_to = "Cover_class"
+  ) %>%
+  mutate(Year = as.numeric(Year))  # make Year numeric if needed
+
+#add the trend info in for plotting
+pl_abun_sig_long <- pl_abun_sig_long %>%
+  left_join(trend_counts, by = "Watershed_name")
 
 
-
-#leaving this here as an inspo note for E2 file data viz
-```{r}
-## Creating a plot to show how dissimilarity in species presence compared to the baseline year for watershed 4F in the small mammals dataset
-plants_jaccdiss_4A_plot <- 
-  plants_jaccdiss_4A_df[-(1), ] %>% 
-  ggplot(aes(x = Year2, y = Jacc_diss)) + 
-  geom_point(alpha = 0.5, size = 4, color = "#4A148C") +
-  geom_smooth(method = "lm") +
-  ggpubr::stat_cor() +
+#make plot of data
+ggplot(pl_abun_sig_long, aes(x = Year, y = Cover_class, group = Species, color = trend_dir)) +
+  geom_smooth(method = "lm", se = FALSE, size = 0.4, alpha=0.5) +  # no points, just lines
+    # Add annotation per facet
+  geom_text(data = trend_counts, aes(x = -Inf, y = Inf, label = label),
+    inherit.aes = FALSE, hjust = -0.1, vjust = 1.1, size = 3) +
+  facet_wrap(~Watershed_name, ncol=2) +
+  scale_color_manual(values = c("positive" = "cadetblue4", "negative" = "indianred2")) +
+  labs(
+    title = "Significant species Cover class Trends",
+    x = "Year",
+    y = "Cover Class",
+    color = "Trend") +
   theme_bw() +
-  geom_label(label="4A", 
-    x=30,
-    y=1.00,
-    label.padding = unit(0.55, "lines"), # Rectangle size around label
-    label.size = 0.6,
-    color = "white",
-    fill="#4A148C") +
-    ylim(0, 1) + 
-  labs(y = "Jaccard's Dissimilarity", x = "Year from Baseline")
+  theme(strip.text = element_text(size = 10),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "none")
 
-#Putting all the plots together (used to be other plots, just here for quick reminder for now...)
-plot_grid(
-  plants_jaccdiss_1D_plot, 
-  #plants_jaccdiss_4A_plot, #not included for other taxa
-  plants_jaccdiss_4B_plot,
-  plants_jaccdiss_20B_plot, 
-  plants_jaccdiss_N1B_plot,
-  #plants_jaccdiss_N4A_plot, #not included for other taxa
-  plants_jaccdiss_N4D_plot,
-  plants_jaccdiss_N20B_plot,
-nrow = 2,
-ncol = 3
-)
+ggsave("Figures/plants_signif_abundance_years.png", bg="white", dpi=300, width=4, height=6)
 
-ggsave("Figures/plant_jaccard-diss_3xfire.png", dpi=300, width=10, height=6)
 ```
 
 
-#FIXME: delete when ready, old code from 2024 poster plots
-Chi square tests for significance
-```{r}
-#---------plants
-# set up each taxa as a contingency table
-p_chsq <- plants_class_counts %>%
-  filter(classification != "No_change-absent") %>%
-  filter(Watershed_name %in% c("1D", "N1B", "4B", "N4D", "20B", "N20B")) %>%
-  dplyr::select(Watershed_name, classification, total_count) %>%
-  pivot_wider(names_from = Watershed_name, values_from = total_count) %>% 
-  replace(is.na(.), 0)
 
-#make it be a matrix for the ChiSquare test
-p_chsq2 <- as.matrix(p_chsq[,2:7])
-  
-plant_chisq <- chisq.test(p_chsq2) #Categories ARE SIG DIFF for plants
-
-#calculate and round Pearson residuals from Observed & Expected values
-round(plant_chisq$residuals, 3)
-  # Positive residuals specify an attraction (positive association) between the corresponding row and column variables.
-  # Negative residuals imply a repulsion (negative association)
-
-#show as a corrplot
-rownames(plant_chisq$residuals) <- c("Rare", "No change", "recurrent", "random", "increasing", "decreasing")
-corrplot(plant_chisq$residuals, is.cor = FALSE)
-
-# Contibution in percentage (%)
-contrib <- 100*plant_chisq$residuals^2/plant_chisq$statistic
-round(contrib, 3)
-
-# Visualize the contribution
-corrplot(contrib, is.cor = FALSE)
-```
