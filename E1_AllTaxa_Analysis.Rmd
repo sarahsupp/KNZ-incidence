@@ -1672,7 +1672,7 @@ pl_class %>%
   guides(fill="none") + 
   theme(legend.position="none")
 
-ggsave("Figures/plants_class_percyears.png", dpi=300, width=4, height=4)
+ggsave("Figures/plants_class_percyears.png", dpi=300, width=4, height=4, bg="white")
 ```
 
 **how does proportion of years present relate to watershed?**
@@ -1701,7 +1701,7 @@ pl_class %>%
   guides(fill="none") +
   theme(legend.position="none")
 
-ggsave("Figures/plants_watershed_percyears_bxp.png", dpi=300, width=4, height=4)
+ggsave("Figures/plants_watershed_percyears_bxp.png", dpi=300, width=4, height=4, bg="white")
 ```
 
 ```{r}
@@ -1724,7 +1724,7 @@ pl_class %>%
   geom_hline(yintercept = c(0.33, 0.67), linetype="dashed") +
   theme_minimal() 
 
-ggsave("Figures/plants_watershed_percyears.png", dpi=300, width=4, height=4)
+ggsave("Figures/plants_watershed_percyears.png", dpi=300, width=4, height=4, bg="white")
 ```
 
 **how does life form relate to percentage of years present?**
@@ -1752,7 +1752,7 @@ dir_species %>%
   guides(fill="none") + 
   theme(legend.position="none")
 
-ggsave("Figures/plants_dir-change-ann-per_percyears.png", dpi=300, width=4, height=4)
+ggsave("Figures/plants_dir-change-ann-per_percyears.png", dpi=300, width=4, height=4, bg="white")
 ```
 
 **for species that were directed change in a particular watershed, how are they divided out across watershed and across growth form?**
