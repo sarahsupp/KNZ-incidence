@@ -1642,6 +1642,73 @@ pl_info <- pl_info %>%
 pl_class <- left_join(pl_class, pl_info, by="Genus_spp")
 ```
 
+**Does origin (native, invasive) differ across the classifications?**
+```{r}
+# make a contingency table of growth form and classification
+table_or <- table(pl_class$classification, pl_class$origin)
+
+chisq_result <- chisq.test(table_or)
+
+#look at residuals
+chisq_result$stdres
+
+corrplot(chisq_result$stdres, is.cor = FALSE, tl.col = "black")
+
+#post hoc test to see what is differing; Pairwise Fishers exact tests
+# Get all unique pairs of classification categories
+categories <- rownames(table_or)
+pair_comparisons <- combn(categories, 2, simplify = FALSE)
+
+# Run Fisher's exact test for each pairwise row comparison
+posthoc_results <- map_dfr(pair_comparisons, function(pair) {
+  sub_table <- table_or[pair, ]  # 2xN table
+  test <- fisher.test(sub_table)
+  
+  tibble(
+    group1 = pair[1],
+    group2 = pair[2],
+    p_value = test$p.value
+  )
+})
+
+# adjust for multiple tests
+posthoc_results <- posthoc_results %>%
+  mutate(p_adj = p.adjust(p_value, method = "bonferroni")) %>%
+  filter(p_adj < 0.05) %>%
+  arrange(p_adj)
+```
+
+Plot the residuals for the growth form comparison across classifications
+```{r}
+#plot a different way
+resid_df <- melt(chisq_result$stdres, varnames = c("classification", "Origin"), value.name = "Residual") %>%
+  mutate(classification = factor(classification, 
+                                 levels=c("No_change-present", "Rare","Increasing", "Decreasing",
+                                          "Recurrent", "Random"), 
+                                 ordered = TRUE))
+
+ggplot(resid_df, aes(x = Origin, y = classification)) +
+  # Main points: size and color based on residual
+  geom_point(aes(size = abs(Residual), color = Residual)) +
+    # Color scale for positive/negative residuals
+  scale_color_gradient2(low = "red4", mid = "white", high = "navyblue", midpoint = 0,
+    limits = c(-max(abs(resid_df$Residual)), max(abs(resid_df$Residual))),
+    name = "Std Residual") +
+  # Black border for large residuals (>2)
+  geom_point(data = resid_df %>% filter(abs(Residual) > 2),
+    aes(size = abs(Residual)),
+    shape = 21, stroke = 1, fill = NA, color = "black") +
+  # Size scale
+  scale_size_continuous(range = c(1, 10), name = "Abs(Residual)") +
+  # Labels and theme
+  labs(title = "Plant standardized residuals",
+    x = "Origin", y = "") +
+  theme_minimal() #+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggsave("Figures/plants_incidence_origin-resid.png", dpi=300, width=4, height=4, bg="white")
+```
+
 **Does growth form (annual, biannual, perennial) differ across the classifications?**
 ```{r}
 # make a contingency table of growth form and classification
