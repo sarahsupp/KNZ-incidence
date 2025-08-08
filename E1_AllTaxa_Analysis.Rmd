@@ -1644,8 +1644,12 @@ pl_class <- left_join(pl_class, pl_info, by="Genus_spp")
 
 **Does origin (native, invasive) differ across the classifications?**
 ```{r}
-# make a contingency table of growth form and classification
+# make a contingency table of origin and classification
 table_or <- table(pl_class$classification, pl_class$origin)
+
+#also look at the results separate by watershed -- 
+#     probably grazed 4-year and grazed 20-year burns most invaded w/ rare and increasing i spp
+table_or_w <- table(pl_class$classification, pl_class$origin, pl_class$Watershed_name)
 
 chisq_result <- chisq.test(table_or)
 
