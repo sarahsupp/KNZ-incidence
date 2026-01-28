@@ -390,7 +390,7 @@ apply(smammals_pa_matrix, 1, FUN = getTrends2.5)
 ```
 
 
-```{r getTrends2.5}
+```{r getTrends3.0}
   #input (x) is a single row of a matrix where the species are rows and the columns are each year with 1/0 values (1=present, 0=absent). 
   #So you need to iterate each row separately to get the results
   # Output is a list with 6 items, that represents the classification results for a single species
@@ -597,7 +597,6 @@ getTrends3.0_test<- function(x) {
       }
     } #end else for ns chisq
   }
-
   
   # for each species, record the summary statistics
 statSumm <- tibble("numyears" = tslen, 
@@ -1059,7 +1058,8 @@ Summary of changes:
 In this section, I read in the small-mammal data, check the data for errors, rename some columns and entries, choose the watersheds I want to further analyze, and separate the data from 1992 and onwards. 
 ```{r smammals cleaning}
 #Seasonal summaries of small mammals on LTER traplines 
-smammals_raw <- read_csv("Datasets_EAGER/Small_mammals/knb-lter-knz.88.9_FourteenTraplines/CSM011.csv")
+smammals_raw <- read_csv(
+  "Datasets_EAGER/Small_mammals/knb-lter-knz.88.9_FourteenTraplines/CSM011.csv")
 
 #Table including the watershed info for all watersheds - this table will be used in subsequent taxa data
 watershed_info <- read_excel("Datasets_EAGER/Other/Watershed Info.xlsx")

@@ -20,8 +20,8 @@ fontsize: 12pt
 ## Clear environment 
 rm(list=ls())
 
-read.delim()
-read_exce
+#read.delim()
+#read_excel()
 
 ""
 ##Libraries
