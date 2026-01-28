@@ -155,14 +155,15 @@ getTrends3.0 <- function(x) {
 
 label_abundance <- function(x) {
   # this function acts on each row of a species count matrix (x)
-  # 0 = below average abundance
-  # 1 = equal to or greater than average abundance
+  # 0 = below average (median) abundance
+  # 1 = equal to or greater than average (median) abundance
   # label is added to indicate classification if it is absent or too rare
   
   # Create a new vector with labels
   convert_x <- numeric(length(x))
   # Calculate average of population time series
-  average = mean(x)
+  #   Use *median* as a non-parametric measure of central tendency (a lot of 0s and some very high abundance) 
+  average = median(x)
   # Calculate the proportion of zeros in the time series (how many years absent?)
   tsabs <- round(mean(x==0), 2)
   #iterate and replace values with abundance conversion
