@@ -120,7 +120,7 @@ getTrends3.0 <- function(x) {
       if((p_val > 0.05) & (runsTestPV < 0.05) & (v > 2)) {
         cat="Recurrent"
       }
-      if ((p_val > 0.05) & (runsTestPV < 0.05)) {
+      if ((p_val > 0.05) & (runsTestPV < 0.05) & (v < 2)) {
         cat="Clumped"
       }
       else if(((p_val > 0.05) & (runsTestPV > 0.05))|((runsTestPV < 0.05) & (v <= 2))) {
@@ -307,7 +307,7 @@ getAbundTrends <- function(x) {
       if((p_val > 0.05) & (runsTestPV < 0.05) & (v > 2)) {
         cat="Recurrent"
       } 
-      else if((p_val > 0.05) & (runsTestPV < 0.05)) {
+      else if((p_val > 0.05) & (runsTestPV < 0.05) & (v < 2)) {
         cat="Clumped"
       }
       else if((p_val > 0.05) & (runsTestPV > 0.05)) {
