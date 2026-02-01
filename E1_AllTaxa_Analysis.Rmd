@@ -563,7 +563,7 @@ birds_class.switch1 %>% ggplot(aes(x = count)) +
   #geom_histogram(binwidth = 0.5) + 
   geom_bar() +
   theme_bw() +
-  geom_text(x=3.5, y=7, label= 
+  geom_text(x=3.5, y=20, label= 
               paste0("Switch class = ", 
               switchsp, "/", numsp, " (", round(switchsp/numsp, 2)*100, "%)")) +
   labs(x = "Number of classifications per species", 
@@ -634,7 +634,7 @@ plants_class.switch1 %>% ggplot(aes(x = count)) +
   #geom_histogram(binwidth = 0.5) + 
   geom_bar() +
   theme_bw() +
-  geom_text(x=3.5, y=7, label= 
+  geom_text(x=3.5, y=90, label= 
               paste0("Switch class = ", 
               switchsp, "/", numsp, " (", round(switchsp/numsp, 2)*100, "%)")) +
   labs(x = "Number of classifications per species", 
@@ -1144,7 +1144,7 @@ all_class_counts <- all_class_counts %>%
          classification = factor(classification, 
                                  levels = c("No_change-present", "Rare",
                                             "Increasing", "Decreasing",
-                                            "Recurrent", "Random"), 
+                                            "Recurrent", "Clumped", "Random"), 
                                  ordered = TRUE))
 ```
 
@@ -1189,7 +1189,7 @@ all_class_abun <- all_class_abun %>%
                        ordered = TRUE),
          classification = factor(classification, 
                                  levels=c("Invariant", "Rare","Increasing", "Decreasing",
-                                          "Recurrent", "Random"), 
+                                          "Recurrent", "Clumped", "Random"), 
                                  ordered = TRUE))
 ```
 
@@ -1233,9 +1233,9 @@ write_csv(chisq_results_abun, "Datasets/E1_output_data/chisq_abun_results_by_tax
 
 Plants do show some changes in classification frequency across treatments. 
 
-The hypothesis regarding if recurrent classification is more represented in 4-year burns is not supported. Does the recurrent category represent what we hope it does, or is it too simplistic? Or are recurrent cycles not really apparent at this site/treatment?
+The hypothesis regarding if recurrent/clumped classification is more represented in 4-year burns is not supported. Does the recurrent category represent what we hope it does, or is it too simplistic? Or are recurrent cycles not really apparent at this site/treatment?
 
-The hypothesis regarding if press disturbance (grazing) results in more increasing/decreasing species is somewhat supported. Sites where native grazers are absent always are underrepresented by increasing taxa and over-represented by decreasing taxa compared to sites where native grazers have been added (press treatment). The direct effect of bison is on the "directed change" category, supporting a press disturbance impact showing up in these classifications.
+The hypothesis regarding if press disturbance (grazing) results in more directed change (increasing or decreasing) species is somewhat supported. Sites where native grazers are absent always are underrepresented by increasing taxa and over-represented by decreasing taxa compared to sites where native grazers have been added (press treatment). The direct effect of bison is on the "directed change" category, supporting a press disturbance impact showing up in these classifications.
 
 
 ### 1a. For taxa that showed significant shifts in classification frequency, what is driving that change?
@@ -1256,7 +1256,7 @@ pl_resid <- chisq_results %>%
                                  ordered = TRUE),
          classification = factor(classification, 
                                  levels=c("No_change-present", "Rare","Increasing", "Decreasing",
-                                          "Recurrent", "Random"), 
+                                          "Recurrent", "Clumped", "Random"), 
                                  ordered = TRUE))
 
 # heatmap of the residuals
@@ -1276,30 +1276,7 @@ ggplot(pl_resid, aes(x = Watershed_name, y = classification, fill = Residual)) +
 ggsave("Figures/plant_incidence_chisq_residuals.png", dpi=300, width=5, height=4, bg="white")
 ```
 
-The same plot for chisq residuals on comparing incidence classification, but using points instead of filled cells
-```{r}
-# plot of the residuals
-ggplot(pl_resid, aes(x = Watershed_name, y = classification)) +
-  geom_point(aes(size = abs(Residual), color = Residual)) +
-  scale_color_gradient2(
-    low = "red4", mid = "white", high = "navyblue", 
-    midpoint = 0,
-    limits = c(-max(abs(pl_resid$Residual)), max(abs(pl_resid$Residual))),
-    name = "Std Residual"
-  ) +
-  scale_size_continuous(range = c(1, 10), name = "Abs(Residual)") +
-  labs(
-    title = "Plant standardized residuals",
-    x = "Watershed", 
-    y = "Incidence Classification"
-  ) +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
-ggsave("Figures/plant_incidence_chisq_residuals_points.png", dpi=300, width=5, height=4, bg="white")
-```
-
-We can also try a version that only shows the  more extreme residuals, >|2|
+The same plot for chisq residuals on comparing incidence classification, but using points instead of filled cells. More extreme residuals >|2| are shown with a black outline to help them stand out. 
 ```{r}
 ggplot(pl_resid, aes(x = Watershed_name, y = classification)) +
   
@@ -1350,7 +1327,7 @@ pl_resid_abun <- chisq_results_abun %>%
                                  ordered = TRUE),
          classification = factor(classification, 
                                  levels=c("Invariant", "Rare","Increasing", "Decreasing",
-                                          "Recurrent", "Random"), 
+                                          "Recurrent", "Clumped", "Random"), 
                                  ordered = TRUE))
 
 # heatmap of the residuals
@@ -1384,7 +1361,7 @@ ggplot(all_class_counts, aes(x = Proportion, y = classification, fill = classifi
   labs(title = "Frequency across watersheds", y = "Incidence Classification") + 
   facet_wrap(~taxa, ncol=1)
 
-ggsave("Figures/all_taxa_class_incid_freq.png", dpi=300, width=5, height=9)
+ggsave("Figures/all_taxa_class_incid_freq.png", dpi=300, width=5, height=10)
 ```
 
 Just for plants, since they were the only ones that were significantly different across watersheds
@@ -1392,20 +1369,20 @@ Just for plants, since they were the only ones that were significantly different
 pl <- all_class_counts %>%
   filter(taxa == "plants")
 
-#lollipop chart
-ggplot(pl, aes(x = Proportion, y = classification)) +
-  geom_segment(aes(x = 0, xend = Proportion, 
-                   y = classification, yend = classification),
-               color = "grey50", linewidth = 0.8) +
-  geom_point(aes(color=classification), size = 3) +
-  facet_wrap(~Watershed_name, ncol=2) +
-  labs(title = "Plant incidence",
-       x = "Proportion of species",
-       y = "Classification") +
-  theme_minimal() +
-  theme(strip.text = element_text(face = "bold"),
-        axis.text.y = element_text(size = 10),
-        legend.position = "none")
+#lollipop chart (probably won't use this one in favor of bar chart)
+# ggplot(pl, aes(x = Proportion, y = classification)) +
+#   geom_segment(aes(x = 0, xend = Proportion, 
+#                    y = classification, yend = classification),
+#                color = "grey50", linewidth = 0.8) +
+#   geom_point(aes(color=classification), size = 3) +
+#   facet_wrap(~Watershed_name, ncol=2) +
+#   labs(title = "Plant incidence",
+#        x = "Proportion of species",
+#        y = "Classification") +
+#   theme_minimal() +
+#   theme(strip.text = element_text(face = "bold"),
+#         axis.text.y = element_text(size = 10),
+#         legend.position = "none")
 
 #bar graph
 ggplot(pl, aes(x = Proportion, y = classification)) +
@@ -1430,9 +1407,9 @@ ggplot(all_class_abun, aes(x = Proportion, y = classification, fill = classifica
   theme_bw() +
   theme(legend.position = "none") + 
   labs(title = "Frequency across watersheds", y = "Abundance Classification") + 
-  facet_wrap(~taxa)
+  facet_wrap(~taxa, ncol=1)
 
-ggsave("Figures/all_taxa_class_abun_freq.png", dpi=300, width=6, height=6)
+ggsave("Figures/all_taxa_class_abun_freq.png", dpi=300, width=5, height=10)
 ```
 
 Just for plants, since they were the only ones that were significantly different across watersheds
