@@ -415,13 +415,17 @@ smammals_class.switch1 <- smammals_classification %>%
   group_by(Species) %>%
   summarize(count = n_distinct(classification))
 
+numsp = nrow(smammals_class.switch1)
+switchsp = nrow(smammals_class.switch1[smammals_class.switch1$count>1,])
+
 # plot as a bar graph
 smammals_class.switch1 %>% ggplot(aes(x = count)) + 
   #geom_histogram(binwidth = 0.5) + 
   geom_bar() +
   theme_bw() +
   geom_text(x=3.5, y=7, label= 
-              "Switch classification at least once = 12/14 (86%)") +
+              paste0("Switch class = ", 
+              switchsp, "/", numsp, " (", round(switchsp/numsp, 2)*100, "%)")) +
   labs(x = "Number of classifications per species", 
        title = "Small-mammals: incidence classification switches")
 ```
@@ -480,13 +484,17 @@ grasshoppers_class.switch1 <- grasshoppers_classification %>%
   group_by(Species) %>%
   summarize(count = n_distinct(classification))
 
+numsp = nrow(grasshoppers_class.switch1)
+switchsp = nrow(grasshoppers_class.switch1[grasshoppers_class.switch1$count>1,])
+
 # plot as a bar graph
 grasshoppers_class.switch1 %>% ggplot(aes(x = count)) + 
   #geom_histogram(binwidth = 0.5) + 
   geom_bar() +
   theme_bw() +
   geom_text(x=3.5, y=7, label= 
-              "Switch classification at least once = 30/44 (68%)") +
+              paste0("Switch class = ", 
+              switchsp, "/", numsp, " (", round(switchsp/numsp, 2)*100, "%)")) +
   labs(x = "Number of classifications per species", 
        title = "Grasshoppers: incidence classification switches")
 ```
@@ -547,13 +555,17 @@ birds_class.switch1 <- birds_classification %>%
   group_by(AOU_code) %>%
   summarize(count = n_distinct(classification))
 
+numsp = nrow(birds_class.switch1)
+switchsp = nrow(birds_class.switch1[birds_class.switch1$count>1,])
+
 # plot as a bar graph
 birds_class.switch1 %>% ggplot(aes(x = count)) + 
   #geom_histogram(binwidth = 0.5) + 
   geom_bar() +
   theme_bw() +
   geom_text(x=3.5, y=7, label= 
-              "Switch classification at least once = 44/81 (54%)") +
+              paste0("Switch class = ", 
+              switchsp, "/", numsp, " (", round(switchsp/numsp, 2)*100, "%)")) +
   labs(x = "Number of classifications per species", 
        title = "Birds: incidence classification switches")
 ```
@@ -614,13 +626,17 @@ plants_class.switch1 <- plants_classification %>%
   group_by(Genus_spp) %>%
   summarize(count = n_distinct(classification))
 
+numsp = nrow(plants_class.switch1)
+switchsp = nrow(plants_class.switch1[plants_class.switch1$count>1,])
+
 # plot as a bar graph
 plants_class.switch1 %>% ggplot(aes(x = count)) + 
   #geom_histogram(binwidth = 0.5) + 
   geom_bar() +
   theme_bw() +
   geom_text(x=3.5, y=7, label= 
-              "Switch classification at least once = 207/325 (64%)") +
+              paste0("Switch class = ", 
+              switchsp, "/", numsp, " (", round(switchsp/numsp, 2)*100, "%)")) +
   labs(x = "Number of classifications per species", 
        title = "Plants: incidence classification switches")
 ```
