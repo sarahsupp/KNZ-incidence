@@ -68,9 +68,10 @@ Incidence Classification categories include:
 -   **"Rare"** \<- Species was present at specified watershed for between 1-10% of years in the duration of the time series.
 -   **"No_change-present"** \<- Species at watershed is present in \>=90% of years in which data was collected.
 -   **"Increasing"** \<- The presence of the species increases throughout the duration of the study (it is absent during the beginning of the study, but appears towards the end of the study)
--   **"Decreasing"** \<- The presence of the species decreases throughout the duration of the study (it is present during the beginning of the study, but then disappears towards the end of the study)
+-   **"Decreasing"** \<- The presence of the species decreases throughout the duration of the study (it is present during the beginning of the study, but then disappears towards the end of the study).
 -   **"Recurrent"** \<- Species is detected in consecutive years and is followed by the absence of the species for a period of time, in a distinct pattern. Species must at least two instances of presences followed by absences.
--   **"Random"** \<- Species is detected sporadically for the duration of the study at watershed
+-   **"Clumped"** \<- Species is detected in a single group of consecutive years, a cluster of incidences.
+-   **"Random"** \<- Species is detected sporadically for the duration of the study at watershed.
 
 Abundance Classification categories include:
 
@@ -81,7 +82,8 @@ Abundance Classification categories include:
 -   **"No_change-decreasing"** \<- Species at watershed is below average abundance in \>=90% of years in which data was collected. #CHECKME: is this even possible?
 -   **"Increasing"** \<- The second half of the study contains most of the above average records of the species (it is mostly below average during the beginning of the study)
 -   **"Decreasing"** \<- The second half of the study contains most of the below average records of the species (it is mostly above average during the beginning of the study)
--   **"Recurrent"** \<- Species abundance fluctuations appear to be clumped into consecutive years, with distinct periods of above average and below average abundances.
+-   **"Recurrent"** \<- Species abundance fluctuations appear to be clumped into consecutive years, with multiple distinct periods of at or above average abundance.
+-   **"Clumped"** \<- Species abundance fluctuations appear to have one distinct cluster of at or above average abundances.
 -   **"Random"** \<- Species abundance fluctuates in an unpredictable pattern of above vs below average for the duration of the study.
 
 #----------------------------------------------------------------------------------
