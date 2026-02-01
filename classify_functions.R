@@ -159,8 +159,8 @@ getTrends3.0 <- function(x) {
 
 label_abundance <- function(x) {
   # this function acts on each row of a species count matrix (x)
-  # 0 = below average (median) abundance
-  # 1 = equal to or greater than average (median) abundance
+  # 0 = equal to or below average (median) abundance
+  # 1 = greater than average (median) abundance
   # label is added to indicate classification if it is absent or too rare
   
   # Create a new vector with labels
@@ -172,7 +172,7 @@ label_abundance <- function(x) {
   tsabs <- round(mean(x==0), 2)
   #iterate and replace values with abundance conversion
   for (i in 1:length(x)) {
-    if (x[i] >= average) {
+    if (x[i] > average) {
       convert_x[i] <- 1
     } else {
       convert_x[i] <- 0
