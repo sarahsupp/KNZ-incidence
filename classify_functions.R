@@ -21,6 +21,7 @@ require(vegan)
 #   - **"Increasing"** <- the presence of the species increases throughout the duration of the study (it is absent during the beginning of the study, but appears towards the end of the study)
 #   - **"Decreasing"** <- the presence of the species decreases throughout the duration of the study (it is present during the beginning of the study, but then disappears towards the end of the study)
 #   - **"Recurrent"** <- species is detected in consecutive years and is followed by the absence of the species for a period of time, in a distinct pattern. Species must at least two instances of presences followed by absences. 
+#   - **"Clumped"** <- species is detected in a single cluster of consecutive years
 #   - **"Random"** <- species is detected sporadically for the duration of the study at watershed
 
 getTrends3.0 <- function(x) {
@@ -118,7 +119,10 @@ getTrends3.0 <- function(x) {
       # if Chi-sq test insignif. and the runs test was significant AND it was present in at least TWO blocks of time
       if((p_val > 0.05) & (runsTestPV < 0.05) & (v > 2)) {
         cat="Recurrent"
-      } 
+      }
+      if ((p_val > 0.05) & (runsTestPV < 0.05)) {
+        cat="Clumped"
+      }
       else if(((p_val > 0.05) & (runsTestPV > 0.05))|((runsTestPV < 0.05) & (v <= 2))) {
         cat="Random"
       }
@@ -189,7 +193,8 @@ label_abundance <- function(x) {
 #     - **"No_change-decreasing"** <- species at watershed is below average abundance in >=90% of years in which data was collected. #CHECKME: is this even possible?
 #     - **"Increasing"** <- the second half of the study contains most of the above average records of the species (it is mostly below average during the beginning of the study)
 #     - **"Decreasing"** <- the second half of the study contains most of the below average records of the species (it is mostly above average during the beginning of the study)
-#     - **"Recurrent"** <- species abundance fluctuations appear to be clumped into consecutive years, with distinct periods of above average and below average abundances.
+#     - **"Recurrent"** <- species abundance fluctuations appear to be clumped into consecutive years, with multiple distinct periods of above average abundances.
+#     - **"Clumped"** <- species abundance contains one distinct cluster of at or above average years (1)
 #     - **"Random"** <- species abundance fluctuates in an unpredictable pattern for the duration of the study.
 
 # Define a custom function to label each time step according to its abundance trend.
@@ -299,9 +304,12 @@ getAbundTrends <- function(x) {
       if(is.nan(runsTestPV)) {
         runsTestPV <- 2 }
       # if Chi-sq test insignif. and the runs test was significant
-      if((p_val > 0.05) & (runsTestPV < 0.05)) {
+      if((p_val > 0.05) & (runsTestPV < 0.05) & (v > 2)) {
         cat="Recurrent"
       } 
+      else if((p_val > 0.05) & (runsTestPV < 0.05)) {
+        cat="Clumped"
+      }
       else if((p_val > 0.05) & (runsTestPV > 0.05)) {
         cat="Random"
       }
