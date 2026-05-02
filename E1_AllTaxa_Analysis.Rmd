@@ -49,7 +49,7 @@ watershed_info <- read_excel("Datasets/Watershed_data/Watershed_info.xlsx")
 #Reading in the cleaned taxa data sets
 E0_smammals <- read_csv("Datasets/E0_cleaned_data/E0_smammals.csv")
 E0_grasshoppers <- read_csv("Datasets/E0_cleaned_data/E0_grasshoppers.csv")
-E0_birds<- read_csv("Datasets/E0_cleaned_data/E0_birds.csv")
+E0_birds <- read_csv("Datasets/E0_cleaned_data/E0_birds.csv")
 E0_plants <- read_csv("Datasets/E0_cleaned_data/E0_plants.csv")
 
 #read in plant species list
@@ -71,7 +71,8 @@ Incidence Classification categories include:
 -   **"Decreasing"** \<- The presence of the species decreases throughout the duration of the study (it is present during the beginning of the study, but then disappears towards the end of the study).
 -   **"Recurrent"** \<- Species is detected in consecutive years and is followed by the absence of the species for a period of time, in a distinct pattern. Species must at least two instances of presences followed by absences.
 -   **"Clumped"** \<- Species is detected in a single group of consecutive years, a cluster of incidences.
--   **"Random"** \<- Species is detected sporadically for the duration of the study at watershed.
+-   **"Random"** \<- Species is present in an intermediate number of years (11%-89%) and detected sporadically (statistically randomly) for the duration of the study at watershed.
+
 
 Abundance Classification categories include:
 
@@ -366,6 +367,7 @@ write_csv(plants_classification, "Datasets/E1_output_data/E1_plants/E1_plants_cl
 
 Conduct the **abundance classification** method
 *Note: Here, the column named 'Count' represents median Cover class (range 1-7) for plants*
+#FIXME: Does it make sense for ordinal cover class to use mean instead of median? Think about it...?
 ```{r plants abundance classification}
 #use the wide format count data as input; convert to matrix format and remove labels
 plants_years_matrix <- as.matrix(plants_years_wide[, -(1:3)])
@@ -1028,6 +1030,7 @@ write.csv(gh_spabun_lm, "Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers
 
 #### Birds; count data
 
+#FIXME: no applicable method for 'unite' applied to object of class character (fix variable type?)
 ```{r birds abundance}
 #make a version of the wide dataset without the extra columns, for the linear model analysis
 bd_spabund <- birds_years_wide %>% 
@@ -1471,6 +1474,7 @@ ggplot(pl_diss, aes(x = baseline.Year2, y = baseline.jaccard_diss)) +
 ggsave("Figures/plants_jacc_years.png", dpi=300, width=4, height=6)
 ```
 
+#FIXME: baseline.Watershed2 doesn't exist. fix
 ```{r}
 ## PLANTS Gower
 

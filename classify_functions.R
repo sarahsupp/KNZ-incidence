@@ -91,6 +91,8 @@ getTrends3.0 <- function(x) {
     # get p value for the chi-squared test
     p_val <- chisq.test(z_x)$p.val
     
+    #FIXME: make dichotomous splits for better readability and safety (not dual criteria)
+    
     # get early and late fractions
     # for each the early and the late parts of the time series:
     #    the number of years it was present divided by the number of years
@@ -114,16 +116,21 @@ getTrends3.0 <- function(x) {
       #conduct a runs test on the time-series
       runsPV <- tseries::runs.test(as.factor(x), alternative = "less")
       runsTestPV <- runsPV$p.value
+      
+      #FIXME: Is this a defensive check? Is it needed? Does it ever happen? If it does, add a flag so I can figure it out
       if(is.nan(runsTestPV)) {
         runsTestPV <- 2 }
+      
       # if Chi-sq test insignif. and the runs test was significant AND it was present in at least TWO blocks of time
       if((p_val > 0.05) & (runsTestPV < 0.05) & (v > 2)) {
         cat="Recurrent"
       }
-      if ((p_val > 0.05) & (runsTestPV < 0.05) & (v <= 2)) {
+      # if Chi-sq test insignif. and the runs test was significant AND it was present in only ONE block of time
+      else if ((p_val > 0.05) & (runsTestPV < 0.05) & (v <= 2)) {
         cat="Clumped"
       }
-      else if(((p_val > 0.05) & (runsTestPV > 0.05))|((runsTestPV < 0.05) & (v <= 2))) {
+      # Chi-sq test insignif. and the runs test was insignif.
+      else (((p_val > 0.05) & (runsTestPV > 0.05))) {
         cat="Random"
       }
     } #end else for ns chisq
@@ -207,6 +214,8 @@ getAbundTrends <- function(x) {
   #input (x) is a single row of a matrix where the species are rows and the columns are each year with 1/0 values (1=equal to or above avg abund, 0=below avg abund). 
   #So you need to iterate each row separately to get the results
   # Output is a list with 10 items, that represents the classification results for a single species
+  
+  #FIXME: check logic and order of ifelse statements and make parallel changes
   
   #proportion of years absent; select the final element in the vector
   tsabs <- tail(x, n=1)
