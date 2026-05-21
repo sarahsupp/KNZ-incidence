@@ -21,6 +21,14 @@ Creates tabs in the HTML document
 # Raw to Clean Code for All Taxa
 This Rmarkdown file is for cleaning the raw taxa datasets for the NSF-EAGER species classification project. We read in the raw data for all 4 taxa we are assessing (small-mammals, grasshoppers, birds, and plants) and clean them to be ready for analysis.
 
+**Column name conventions for E1:**
+All four cleaned datasets are written with the following standardized columns so that E1 can treat taxa consistently:
+- `Watershed_name` — watershed identifier (short code, e.g. "1D", "N20B")
+- `Recyear` — recording year (numeric)
+- `Species` — species identifier. For smammals/grasshoppers this is the binomial name; for birds this is the AOU code (the original `AOU_code` column is kept alongside it); for plants this is `Genus_spp` (the original `Genus_spp` column is kept alongside it).
+- `Count` — the abundance value per row. For smammals, birds, and grasshoppers this is an individual count; for plants this is the cover class value (ordered 1–7). The original column names (`Total` for grasshoppers, `Cover` for plants) are kept alongside `Count` for reference.
+
+
 ```{r setup, include=FALSE}
 #Clear environment
 rm(list=ls())
@@ -43,10 +51,8 @@ In the following section, I read in the small-mammal data, check the data for er
 #Seasonal summaries of small mammals on LTER traplines 
 raw_smammals <- read_csv("Datasets/Raw_data/Small_mammals/CSM011.csv")
 
-
 #Separating the watershed/line column into two separate columns and creating a new dataset
 smammals_all <- separate(raw_smammals, `WATERSHED/LINE`, into = c("WATERSHED", "LINE"), sep = "-")
-
 
 #Renaming columns just so that they're not all capitalized
 smammals_all <- smammals_all %>% rename("Watershed_name" = "WATERSHED", 
@@ -91,30 +97,43 @@ smammals$Species <- dplyr::recode(smammals$Species,
 #Separate the dataset from 1992 onwards since bison weren't introduced until then.
 smammals <- smammals %>% subset(.$Recyear >= 1992)
 
-
-
 # Removing the 4F watershed to make sampling between all fire/grazing treatments equal (the 4 year fire interval with no grazing combination of disturbances has two watersheds represented, while all other combinations have just one).
 smammals <- smammals %>% subset(Watershed_name != "4F")
 
-
 #Creating a table with the small mammal common names, to join to the main dataset and make referencing easier in plots
-smammals_commonnames <- tibble(Species = c("Blarina_hylophaga", "Chaetodipus_hispidus",
-                                           "Cryptotis_parva", "Microtus_ochrogaster",
-                                           "Mus_musculus", "Neotoma_floridana",
-                                           "Peromyscus_leucopus", "Peromyscus_maniculatus",
-                                           "Reithrodontomys_megalotis", "Reithrodontomys_montanus",
-                                           "Sigmodon_hispidus", "Spermophilus_tridecemlineatus",
-                                           "Synaptomys_cooperi", "Zapus_hudsonius"), 
-                               Common_name = c("Elliot's short-tailed shrew", "Hispid pocket mouse", 
-                                               "North American least shrew", "Prairie vole", 
-                                               "House mouse", "Eastern woodrat", 
-                                               "White-footed mouse", "Deer mouse", 
-                                               "Western harvest mouse", "Plains harvest mouse", 
-                                               "Hispid cotton rat", "Thirteen-lined ground squirrel",
-                                               "Southern bog lemming", "Meadow jumping mouse"))
+smammals_commonnames <- tibble(Species = c("Blarina_hylophaga", 
+                                           "Chaetodipus_hispidus",
+                                           "Cryptotis_parva", 
+                                           "Microtus_ochrogaster",
+                                           "Mus_musculus", 
+                                           "Neotoma_floridana",
+                                           "Peromyscus_leucopus", 
+                                           "Peromyscus_maniculatus",
+                                           "Reithrodontomys_megalotis",
+                                           "Reithrodontomys_montanus",
+                                           "Sigmodon_hispidus",
+                                           "Spermophilus_tridecemlineatus",
+                                           "Synaptomys_cooperi", 
+                                           "Zapus_hudsonius"), 
+                               Common_name = c("Elliot's short-tailed shrew", 
+                                               "Hispid pocket mouse", 
+                                               "North American least shrew", 
+                                               "Prairie vole", 
+                                               "House mouse", 
+                                               "Eastern woodrat", 
+                                               "White-footed mouse", 
+                                               "Deer mouse", 
+                                               "Western harvest mouse", 
+                                               "Plains harvest mouse", 
+                                               "Hispid cotton rat", 
+                                               "Thirteen-lined ground squirrel",
+                                               "Southern bog lemming", 
+                                               "Meadow jumping mouse"))
 
 #Joining the common names data table to the main dataset
 smammals <- left_join(smammals, smammals_commonnames, by = "Species")
+
+# Smammals already uses Species and Count as column names — no renaming needed for E1 standardization.
 
 #Writing the cleaned smammals dataset to the 'Cleaned_data' folder in the project directory
 write_csv(smammals, "Datasets/E0_cleaned_data/E0_smammals.csv")
