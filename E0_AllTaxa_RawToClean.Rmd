@@ -335,7 +335,6 @@ grasshoppers <- grasshoppers %>% mutate(Count = Total)
 #Write the cleaned grasshoppers dataset to the 'Cleaned_data' folder in the project directory
 write_csv(grasshoppers, "Datasets/E0_cleaned_data/E0_grasshoppers.csv")
 
-
 ```
 ## Birds (1992 - 2009) {.tabset}
 
@@ -348,8 +347,7 @@ In the following section, I read in the bird data, check the data for errors, re
 #Read in raw bird data; each individual bird is its own row (so the count is always only one)
 raw_birds <- read_csv("Datasets/Raw_data/Birds/CBP011.csv", show_col_types = FALSE)
 
-
-#Changing classifications and names of columns
+#Change classifications and names of columns
 birds_all <- raw_birds %>% mutate(RECMONTH = factor(RECMONTH),
                           RECDAY = factor(RECDAY),
                           SEASON = factor(SEASON),
@@ -363,7 +361,7 @@ birds_all <- raw_birds %>% mutate(RECMONTH = factor(RECMONTH),
                           STATUS = factor(STATUS),
                           COMMENTS = as.character(COMMENTS))
 
-#Renaming the columns so they're not all capitalized
+#Rename the columns 
 birds_all <- birds_all %>% rename("Watershed_name" = "WATERSHED",
                           "Datacode" = "DATACODE",
                           "Recyear" = "RECYEAR",
@@ -372,8 +370,8 @@ birds_all <- birds_all %>% rename("Watershed_name" = "WATERSHED",
                           "Season" = "SEASON",
                           "Transect" = "TRANSNUM",
                           "Observation_number" = "OBSNUM",
-                          "Species" = "SPECNAME",
-                          "AOU_code" = "AOUCODE",
+                          "Sci_name" = "SPECNAME",
+                          "Species" = "AOUCODE",
                           "Common_name" = "COMMONNAME",
                           "Distance" = "DISTANCE",
                           "Count" = "COUNT",
@@ -384,7 +382,8 @@ birds_all <- birds_all %>% rename("Watershed_name" = "WATERSHED",
                           "Duration" = "DURATION",
                           "Observer" = "OBSERVER")
 
-#Renaming the watersheds to make the names shorter
+
+#Rename watersheds to make it consistent
 birds_all$Watershed_name <- dplyr::recode(birds_all$Watershed_name,
                                        "N04D" = "N4D",
                                        "N04B" = "N4B",
@@ -402,12 +401,10 @@ birds_all$Watershed_name <- dplyr::recode(birds_all$Watershed_name,
                                        "G00A" = "GA",
                                        "N20B" = "N20B")
 
-
-#I need to separate the dataset from 1992 onwards. 
+#Separate the dataset from 1992 onwards. 
 birds <- birds_all %>% subset(.$Recyear >= 1992)
 
-
-#Selecting only the watersheds I want for further analysis
+#Select only the watersheds I want for further analysis
 birds <- birds %>% subset(Watershed_name %in% c("1D", "4A", "4B", 
                                                 "20B", "N1B", "N4B", 
                                                 "N4D", "N20B"))
@@ -416,21 +413,22 @@ birds <- birds %>% subset(Watershed_name %in% c("1D", "4A", "4B",
 ###I did do a Bray-Curtis dissimilarity test on the two different transects to make sure they were similar enough, and it looks like they are about 23% dissimilar (~77% similar)
 birds <-  birds %>% subset(Transect != "10")
 
-#Checking the lengths of the species (the 'species' variable has a lot more entries, but they are duplicates with naming variations when looking at the matching common names. So I'll use the AOU code instead.)
+#Check the lengths of the species (the 'species' variable has a lot more entries, but they are duplicates with naming variations when looking at the matching common names. So I'll use the AOU code instead.)
 length(unique(birds$Species))
 length(unique(birds$AOU_code))
 
-#Also removing observations that are unspecified
+#Remove observations that are unspecified
 birds <- subset(birds, !(AOU_code %in% c("NONE", "VOID", "UNSP", "UNEM", "RSTO")))
 
-#Renaming this one all lowercase entry since all other entries are all uppercase
-birds$AOU_code <- dplyr::recode(birds$AOU_code,
-                                "eawp" = "EAWP")
+#Rename this one lowercase entry to be consistent with other uppercase entries
+birds$AOU_code <- dplyr::recode(birds$AOU_code, "eawp" = "EAWP")
 
-#Writing the cleaned birds dataset to the 'Cleaned_data' folder in the project directory
+# Note for E1: Species now holds the AOU code (the reliable species identifier).
+# Sci_name holds the original scientific name (SPECNAME) for reference.
+# Count is already the individual observation count.
+
+#Write the cleaned birds dataset to the 'Cleaned_data' folder in the project directory
 write_csv(birds, "Datasets/E0_cleaned_data/E0_birds.csv")
-
-
 ```
 
 ## Plants (1992 - 2022) {.tabset}
@@ -443,16 +441,16 @@ In the following section, I read in the plant data, check the data for errors, r
 #Read in the raw plant composition data
 raw_plants <- read_csv("Datasets/Raw_data/Plants/PVC021.csv")
 
-
+#Change classifications
 plants_all <- raw_plants %>% mutate(WaterShed = factor(WaterShed),
                                 Transect = factor(Transect),
                                 Plot = factor(Plot),
                                 SpeCode = factor(SpeCode))
 
-#Combining the genus and species column and creating a new column, but also keeping the separate Genus and Spp columns
+#Combine genus and species into a new column, but keep Genus and Spp columns
 plants_all <- unite(plants_all, "Genus_spp", AB_genus:AB_species, sep = "_", remove = FALSE)
 
-#Renaming the watersheds to make everything consistent
+#Rename the watersheds to make everything consistent
 plants_all$WaterShed <- dplyr::recode(plants_all$WaterShed,
                                 "001c" = "1C",
                                 "001d" = "1D",
@@ -486,29 +484,37 @@ plants_all$WaterShed <- dplyr::recode(plants_all$WaterShed,
                                 "n02a" = "N2A",
                                 "n02b" = "N2B")
 
-#Renaming some variables so there aren't weird capitalizations in the middle of the words
+#Rename variables
 plants_all <- plants_all %>% rename("Watershed_name" = "WaterShed",
                                     "Recyear" = "RecYear",
                                     "Recmonth" = "RecMonth",
                                     "Recday" = "RecDay")
 
-#Removing data pre-1992 since bison weren't introduced until then
+#Remove data pre-1992 since bison weren't introduced until then
 plants <- plants_all %>% subset(.$Recyear >= 1992)
 
-#Selecting only the watersheds and I will use for further analysis
+#Select only the watersheds and I will use for further analysis
 plants <- plants %>%
   subset(Watershed_name %in% c("1D", "4A", "4B", 
                                "20B", "N1B", "N4A", 
                                "N4D", "N20B")) 
 
-#Removing the observations that aren't identified down to species
-plants <- subset(plants,!(Genus_spp %in% c("annual_forb", "carex_spp.", 
-                                           "cyperu_spp.", "euphor_spp.", 
+#Remove the observations that aren't identified down to species
+plants <- subset(plants,!(Genus_spp %in% c("annual_forb", 
+                                           "carex_spp.", 
+                                           "cyperu_spp.", 
+                                           "euphor_spp.", 
                                            "symphy_spp.")))
 
-#There is one entry in Genus_spp that is capitalized, so I am changing it to match everything else
-plants$Genus_spp<- dplyr::recode(plants$Genus_spp,
-                                 "Lithos_occid" = "lithos_occid")
+#There is one capitalized entry in Genus_spp; change it to match everything else
+plants$Genus_spp<- dplyr::recode(plants$Genus_spp, "Lithos_occid" = "lithos_occid")
+
+# Standardize for E1: plants uses Genus_spp as the species identifier and Cover (ordered
+# class 1-7) as the abundance measure, unlike the count-based taxa. Add Species as a copy
+# of Genus_spp, and Count as a copy of Cover, so all taxa share the same column names in E1.
+# The original Genus_spp and Cover columns are both kept for reference.
+plants <- plants %>% mutate(Species = Genus_spp,
+                            Count = Cover)
 
 #Writing the cleaned plants dataset to the 'Cleaned_data' folder in the project directory
 write_csv(plants, "Datasets/E0_cleaned_data/E0_plants.csv")
