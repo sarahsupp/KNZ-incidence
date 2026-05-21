@@ -1,4 +1,4 @@
-Datacode,Rectype,Recyear,Recmonth,Recday,Season,Transect,Watershed_name,Observation_number,Species,AOU_code,Common_name,Distance,Count,Sex,Status,Comments,Time,Duration,Observer
+Datacode,Rectype,Recyear,Recmonth,Recday,Season,Transect,Watershed_name,Observation_number,Specname,Species,Common_name,Distance,Count,Sex,Status,Comments,Time,Duration,Observer
 CBP01,1,1992,1,10,1992-1,1,N4D,1,TRES,ATSP,American Tree Sparrow,30,1,U,U,NA,Start=0955 CT: End=???? CT,30.39999962,J.L. Zimmerman
 CBP01,1,1992,1,10,1992-1,1,N4D,2,GHOW,GHOW,Great Horned Owl,15,1,U,U,NA,NA,NA,NA
 CBP01,1,1992,1,3,1992-1,2,N4B,1,DOWN,DOWO,Downy Woodpecker,60,1,U,U,NA,Start=1015 CT: End=1035 CT,20,J.L. Zimmerman

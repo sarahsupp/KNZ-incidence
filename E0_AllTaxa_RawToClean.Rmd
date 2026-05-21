@@ -1,6 +1,6 @@
 ---
 title: "E0_AllTaxa_RawToClean"
-author: "Maya Parker-Smith"
+author: "Maya Parker-Smith and Sarah R. Supp"
 date: "2023-11-13"
 output:
   html_document:
@@ -370,7 +370,7 @@ birds_all <- birds_all %>% rename("Watershed_name" = "WATERSHED",
                           "Season" = "SEASON",
                           "Transect" = "TRANSNUM",
                           "Observation_number" = "OBSNUM",
-                          "Sci_name" = "SPECNAME",
+                          "Specname" = "SPECNAME",
                           "Species" = "AOUCODE",
                           "Common_name" = "COMMONNAME",
                           "Distance" = "DISTANCE",
@@ -413,15 +413,15 @@ birds <- birds %>% subset(Watershed_name %in% c("1D", "4A", "4B",
 ###I did do a Bray-Curtis dissimilarity test on the two different transects to make sure they were similar enough, and it looks like they are about 23% dissimilar (~77% similar)
 birds <-  birds %>% subset(Transect != "10")
 
-#Check the lengths of the species (the 'species' variable has a lot more entries, but they are duplicates with naming variations when looking at the matching common names. So I'll use the AOU code instead.)
+#Check the lengths of the species (the 'specname' variable has a lot more entries, but they are duplicates with naming variations when looking at the matching common names. So I'll use the 'Species' column [AOU code] instead.)
+length(unique(birds$Specname))
 length(unique(birds$Species))
-length(unique(birds$AOU_code))
 
 #Remove observations that are unspecified
-birds <- subset(birds, !(AOU_code %in% c("NONE", "VOID", "UNSP", "UNEM", "RSTO")))
+birds <- subset(birds, !(Species %in% c("NONE", "VOID", "UNSP", "UNEM", "RSTO")))
 
 #Rename this one lowercase entry to be consistent with other uppercase entries
-birds$AOU_code <- dplyr::recode(birds$AOU_code, "eawp" = "EAWP")
+birds$Species <- dplyr::recode(birds$Species, "eawp" = "EAWP")
 
 # Note for E1: Species now holds the AOU code (the reliable species identifier).
 # Sci_name holds the original scientific name (SPECNAME) for reference.
