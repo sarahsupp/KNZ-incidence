@@ -129,8 +129,8 @@ getTrends3.0 <- function(x) {
       else if ((p_val > 0.05) & (runsTestPV < 0.05) & (v <= 2)) {
         cat="Clumped"
       }
-      # Chi-sq test insignif. and the runs test was insignif.
-      else (((p_val > 0.05) & (runsTestPV > 0.05))) {
+      # Chi-sq test insignif. (p_val > 0.05) and the runs test was insignif. (runsTestPV > 0.05)
+      else {
         cat="Random"
       }
     } #end else for ns chisq
