@@ -14,6 +14,7 @@ mainfont: Arial
 mathfont: Arial
 fontsize: 12pt
 ---
+
 Creates tabs in the HTML document
 #  {.tabset .tabset-pills .tabset-fade}
 
@@ -26,9 +27,10 @@ rm(list=ls())
 
 #Read in necessary libraries
 library(tidyverse)
+library(readxl)
 
 #Table including the watershed info for all watersheds - this table will be used in subsequent taxa data
-watershed_info <- read_excel("Datasets/Other/Watershed_info.xlsx")
+watershed_info <- read_excel("Datasets/Watershed_data/Watershed_info.xlsx")
 ```
 
 ## Small-mammals (1992 - 2013) {.tabset}
