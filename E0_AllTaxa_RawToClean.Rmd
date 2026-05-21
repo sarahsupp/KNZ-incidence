@@ -51,10 +51,10 @@ In the following section, I read in the small-mammal data, check the data for er
 #Seasonal summaries of small mammals on LTER traplines 
 raw_smammals <- read_csv("Datasets/Raw_data/Small_mammals/CSM011.csv")
 
-#Separating the watershed/line column into two separate columns and creating a new dataset
+#Separate the watershed/line column into two separate columns and create a new dataset
 smammals_all <- separate(raw_smammals, `WATERSHED/LINE`, into = c("WATERSHED", "LINE"), sep = "-")
 
-#Renaming columns just so that they're not all capitalized
+#Rename columns just so that they're not all capitalized
 smammals_all <- smammals_all %>% rename("Watershed_name" = "WATERSHED", 
                                 "Datacode" = "DATACODE",
                                 "Rectype" = "RECTYPE", 
@@ -62,7 +62,7 @@ smammals_all <- smammals_all %>% rename("Watershed_name" = "WATERSHED",
                                 "Season" = "SEASON", 
                                 "Line" = "LINE")
 
-#Shortening the names of the watersheds
+#Shorten the names of the watersheds
 smammals_all$Watershed_name <- dplyr::recode(smammals_all$Watershed_name,
                                        "004F" = "4F",
                                        "004B" = "4B",
@@ -72,12 +72,12 @@ smammals_all$Watershed_name <- dplyr::recode(smammals_all$Watershed_name,
                                        "N01B" = "N1B",
                                        "N04D" = "N4D")
 
-#Pivoting the table so that each species per year and watershed is a different row
+#Pivot the table so that each species per year and watershed is a different row
 smammals <- pivot_longer(smammals_all, cols = 8:21, 
                               names_to = "Species", 
                               values_to = "Count")
 
-#Renaming the species into their full names
+#Rename the species into their full names
 smammals$Species <- dplyr::recode(smammals$Species,
                                      "Pm" = "Peromyscus_maniculatus",
                                      "Rmeg" = "Reithrodontomys_megalotis",
@@ -97,10 +97,10 @@ smammals$Species <- dplyr::recode(smammals$Species,
 #Separate the dataset from 1992 onwards since bison weren't introduced until then.
 smammals <- smammals %>% subset(.$Recyear >= 1992)
 
-# Removing the 4F watershed to make sampling between all fire/grazing treatments equal (the 4 year fire interval with no grazing combination of disturbances has two watersheds represented, while all other combinations have just one).
+# Remove the 4F watershed to make sampling between all fire/grazing treatments equal (the 4 year fire interval with no grazing combination of disturbances has two watersheds represented, while all other combinations have just one).
 smammals <- smammals %>% subset(Watershed_name != "4F")
 
-#Creating a table with the small mammal common names, to join to the main dataset and make referencing easier in plots
+#Create table with small mammal common names, to join to the main dataset and make referencing easier in plots
 smammals_commonnames <- tibble(Species = c("Blarina_hylophaga", 
                                            "Chaetodipus_hispidus",
                                            "Cryptotis_parva", 
@@ -130,12 +130,12 @@ smammals_commonnames <- tibble(Species = c("Blarina_hylophaga",
                                                "Southern bog lemming", 
                                                "Meadow jumping mouse"))
 
-#Joining the common names data table to the main dataset
+#Join the common names data table to the main dataset
 smammals <- left_join(smammals, smammals_commonnames, by = "Species")
 
 # Smammals already uses Species and Count as column names — no renaming needed for E1 standardization.
 
-#Writing the cleaned smammals dataset to the 'Cleaned_data' folder in the project directory
+#Write the cleaned smammals dataset to the 'Cleaned_data' folder in the project directory
 write_csv(smammals, "Datasets/E0_cleaned_data/E0_smammals.csv")
 
 ```
@@ -148,22 +148,23 @@ In the following section, I read in the grasshopper data, check the data for err
 
 ```{r grasshoppers cleaning}
 
-#Reading in the raw data; this dataset is the grasshopper species counts from each set of sweeps
+#Read in the raw data; this dataset is the grasshopper species counts from each set of sweeps
 raw_grasshoppers <- read_csv("Datasets/Raw_data/Grasshoppers/CGR022.csv", show_col_types = FALSE) 
 
-grasshopper_families <- read_excel("Datasets/Raw_data/Grasshoppers/Grasshopper_families.xlsx") #Dataset I created that records the families and suborders for each grasshopper genus in the dataset; I am going to only look at grasshoppers from the suborder Caelifera because those from the suborder Ensifera (family/genus: Oecanthinae, Gryllidae, and Tettigoniidae) were not counted until 2013.
+#Dataset Maya created that records the families and suborders for each grasshopper genus in the dataset; I am going to only look at grasshoppers from the suborder Caelifera because those from the suborder Ensifera (family/genus: Oecanthinae, Gryllidae, and Tettigoniidae) were not counted until 2013.
+grasshopper_families <- read_excel("Datasets/Raw_data/Grasshoppers/Grasshopper_families.xlsx") 
 
-#Changing the classifcations of the some of the variables for later analysis and creating a new dataset
+#Change the classifications of the some of the variables for later analysis and create a new dataset
 grasshoppers_all <- raw_grasshoppers %>% mutate(WATERSHED = factor(WATERSHED),
                                                 SPECIES = factor(SPECIES),
                                                 SPCODE = factor(SPCODE),
                                                 RECYEAR = as.numeric(RECYEAR))
 
-#Checking the number of unique names for the species to check for misspellings
+#Check the number of unique names for the species to check for misspellings
 sort(unique(grasshoppers_all$SPECIES))
 ##There are capitalizations in some but not others and there are some unknowns. I'll have to rename many of these to have them be consistent.
 
-#Recoding some of the species to make it consistent
+#Recode some of the species to make it consistent
 grasshoppers_all$SPECIES <- dplyr::recode(grasshoppers_all$SPECIES,
                                 "ageneotett deorum" = "Ageneotettix deorum",
                                 "arphia conspersa" = "Arphia conspersa",
@@ -232,11 +233,11 @@ grasshoppers_all$SPECIES <- dplyr::recode(grasshoppers_all$SPECIES,
                                       "Hippiscus rugosus" = "Hippiscus ocelote")
 
 
-#Checking the watershed names to look for misspellings 
+#Check the watershed names to look for misspellings 
 sort(unique(grasshoppers_all$WATERSHED))
 ##There are weird capitalizations for these too... I'll have to go through and clean and also consolidate based on the metadata
 
-#Renaming watersheds to make it consistent
+#Rename watersheds to make it consistent
 grasshoppers_all$WATERSHED <- dplyr::recode(grasshoppers_all$WATERSHED,
                                   "001d" = "1D",
                                   "004b" = "4B",
@@ -272,7 +273,7 @@ grasshoppers_all$WATERSHED <- dplyr::recode(grasshoppers_all$WATERSHED,
                                   "N04A" = "N4A",
                                   "N20A" = "N20A")
 
-##Then consolidating watersheds based on the metadata
+##Consolidate watersheds based on the metadata
 grasshoppers_all$WATERSHED <- dplyr::recode(grasshoppers_all$WATERSHED,
                                    "B" = "20B",
                                    "NB" = "N20B",
@@ -281,7 +282,7 @@ grasshoppers_all$WATERSHED <- dplyr::recode(grasshoppers_all$WATERSHED,
                                    "10D" = "SuB",
                                    "4G" = "WB")
 
-###Also, some of the species names aren't correctly matched with their spp code, so I will fix that
+###Some species names aren't correctly matched with their spp code, so I will fix that
  for(i in 1:nrow(grasshoppers_all)){
    if (grasshoppers_all$SPECIES[i] == "Oecanthinae spp."){grasshoppers_all$SPCODE[i] <- "56"}
    if (grasshoppers_all$SPECIES[i] == "Tettigoniidae spp."){grasshoppers_all$SPCODE[i] <- "59"}
@@ -293,7 +294,7 @@ grasshoppers_all$WATERSHED <- dplyr::recode(grasshoppers_all$WATERSHED,
 ##Since the bison grazed plots weren't sampled until 2002, I am removing all data pre-2002
 grasshoppers <- grasshoppers_all %>% subset(.$RECYEAR >= 2002)
 
-#Renaming the columns so they're not all capitalized
+#Rename the columns so they're not all capitalized
 grasshoppers <- grasshoppers %>% rename("Watershed_name" = "WATERSHED",
                               "Recyear" = "RECYEAR",
                               "Recmonth" = "RECMONTH",
@@ -305,29 +306,33 @@ grasshoppers <- grasshoppers %>% rename("Watershed_name" = "WATERSHED",
                               "Spp_code" = "SPCODE")
 
 
-#Only selecting the watersheds I will use for further analysis
+#Select only the watersheds I will use for further analysis
 grasshoppers <- grasshoppers %>%
   subset(Watershed_name %in% c("1D", "20B", "4B", 
                                "4F", "N1B", "N4A", 
                                "N4D", "N20B")) 
 
-#Separating the genus and spp and creating new columns. This is to add in the family and suborder info and also to easily remove entries that are not identified down to species.
+#Separate the genus and spp and creating new columns. This is to add in the family and suborder info and also to easily remove entries that are not identified down to species.
 grasshoppers <- grasshoppers %>% 
   separate(Species, c("Genus", "Spp"), sep = " ", remove = FALSE)
 
 
-##This is where I am adding in the other dataset that has the family and suborder info and then only selecting those from the suborder Caelifera since suborder Ensifera are katydids and crickets and most were not counted until 2013
+## Add in dataset that has the family and suborder info
+##  Then only select those from the suborder Caelifera since suborder Ensifera are katydids and crickets and most were not counted until 2013
 grasshoppers <- left_join(grasshoppers, grasshopper_families, by = "Genus")
 grasshoppers <- grasshoppers %>% subset(Suborder == "Caelifera")
 
-##Removing unknowns from the dataset
+##Remove unknowns from the dataset
 grasshoppers <- grasshoppers %>% subset(Genus != "Unknown")
 
-##Removing the entries that aren't identified to species 
+##Remove entries that aren't identified to species 
 grasshoppers <- grasshoppers %>% subset(Spp != "spp.")
 
+# Standardize for E1: add Count as a copy of Total so all taxa share the same abundance column name.
+# The original Total column is kept for reference.
+grasshoppers <- grasshoppers %>% mutate(Count = Total)
 
-#Writing the cleaned grasshoppers dataset to the 'Cleaned_data' folder in the project directory
+#Write the cleaned grasshoppers dataset to the 'Cleaned_data' folder in the project directory
 write_csv(grasshoppers, "Datasets/E0_cleaned_data/E0_grasshoppers.csv")
 
 
