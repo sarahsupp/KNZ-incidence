@@ -795,35 +795,60 @@ write.csv(pl_spabun_logit, "Datasets/E1_output_data/E1_plants/E1_plants_abundanc
 #-----------------------------------------------------------------------------------------
 # STATISTICAL COMPARISONS FOR INCIDENCE and ABUNDANCE CLASSIFICATION
 
-prepare INCIDENCE data for statistical comparison
-```{r}
-#prepare the INCIDENCE data for analysis
-smammal_class_counts <- smammals_classification %>% 
-  group_by(Watershed_name, classification) %>% 
-  dplyr::summarise(total_count=n(),.groups = 'drop') %>%
-  mutate(Proportion = (total_count/length(unique(smammals_classification$Species)))) %>%
-  mutate(taxa = "small mammals")
+prepare INCIDENCE and ABUNDANCE data for statistical comparison
+```{r chisq_prep}
+# The four taxa now share a standardized Species column, so both prep blocks
+# (incidence and abundance) are identical in structure across taxa.
+# This loop replaces the original 4x repeated group_by/summarise blocks.
+# Output objects are named identically to the originals:
+#   smammal_class_counts, grasshoppers_class_counts, birds_class_counts, plants_class_counts
+#   smammal_class_abun,   grasshoppers_class_abun,   birds_class_abun,   plants_class_abun
 
-grasshoppers_class_counts <- grasshoppers_classification %>% 
-  group_by(Watershed_name, classification) %>% 
-  dplyr::summarise(total_count=n(),.groups = 'drop') %>%
-  mutate(Proportion = (total_count/length(unique(grasshoppers_classification$Species)))) %>%
-  mutate(taxa = "grasshoppers")
+taxa_labels <- list(
+  smammals     = list(inc  = smammals_classification,
+                      abun = smammals_abun_classification,
+                      label = "small mammals"),
+  grasshoppers = list(inc  = grasshoppers_classification,
+                      abun = grasshoppers_abun_classification,
+                      label = "grasshoppers"),
+  birds        = list(inc  = birds_classification,
+                      abun = birds_abun_classification,
+                      label = "birds"),
+  plants       = list(inc  = plants_classification,
+                      abun = plants_abun_classification,
+                      label = "plants")
+)
 
-birds_class_counts <- birds_classification %>% 
-  group_by(Watershed_name, classification) %>% 
-  dplyr::summarise(total_count=n(),.groups = 'drop')  %>%
-  mutate(Proportion = (total_count/length(unique(birds_classification$AOU_code)))) %>%
-  mutate(taxa = "birds")
+# Compute incidence and abundance count tables for each taxon
+inc_list  <- list()
+abun_list <- list()
 
-plants_class_counts <- plants_classification %>% 
-  group_by(Watershed_name, classification) %>% 
-  dplyr::summarise(total_count=n(),.groups = 'drop')  %>%
-  mutate(Proportion = (total_count/length(unique(plants_classification$Genus_spp)))) %>%
-  mutate(taxa = "plants")
+for (tx in names(taxa_labels)) {
+  tx_data   <- taxa_labels[[tx]]
+  n_species <- length(unique(tx_data$inc$Species))
+
+  # INCIDENCE counts
+  inc_counts <- tx_data$inc %>%
+    group_by(Watershed_name, classification) %>%
+    dplyr::summarise(total_count = n(), .groups = 'drop') %>%
+    mutate(Proportion = total_count / n_species,
+           taxa = tx_data$label)
+  assign(paste0(ifelse(tx == "smammals", "smammal", tx), "_class_counts"), inc_counts)
+  inc_list[[tx]] <- inc_counts
+
+  # ABUNDANCE counts
+  abun_counts <- tx_data$abun %>%
+    group_by(Watershed_name, classification) %>%
+    dplyr::summarise(total_count = n(), .groups = 'drop') %>%
+    mutate(Proportion = total_count / n_species,
+           taxa = tx_data$label)
+  assign(paste0(ifelse(tx == "smammals", "smammal", tx), "_class_abun"), abun_counts)
+  abun_list[[tx]] <- abun_counts
+}
 
 #rbind all the class summary datasets together
-all_class_counts <- rbind(smammal_class_counts, grasshoppers_class_counts, birds_class_counts, plants_class_counts)
+all_class_counts <- bind_rows(inc_list)
+all_class_abun   <- bind_rows(abun_list)
 
 # make classification, watershed, and taxa ordered factors
 # remove non-repeated watersheds
@@ -837,41 +862,25 @@ all_class_counts <- all_class_counts %>%
          taxa = factor(taxa, levels = c("plants", "grasshoppers", "small mammals", "birds"),
                        ordered = TRUE),
          classification = factor(classification, 
-                                 levels = c("No_change-present", "Rare",
+                                 levels = c("Common", "Rare",
                                             "Increasing", "Decreasing",
                                             "Recurrent", "Clumped", "Random"), 
-                                 ordered = TRUE))
-```
-
-prepare ABUNDANCE data for statistical comparison
-```{r}
-#prepare the INCIDENCE data for analysis
-smammal_class_abun <- smammals_abun_classification %>% 
-  group_by(Watershed_name, classification) %>% 
-  dplyr::summarise(total_count=n(),.groups = 'drop') %>%
-  mutate(Proportion = (total_count/length(unique(smammals_abun_classification$Species)))) %>%
-  mutate(taxa = "small mammals")
-
-grasshoppers_class_abun <- grasshoppers_abun_classification %>% 
-  group_by(Watershed_name, classification) %>% 
-  dplyr::summarise(total_count=n(),.groups = 'drop') %>%
-  mutate(Proportion = (total_count/length(unique(grasshoppers_abun_classification$Species)))) %>%
-  mutate(taxa = "grasshoppers")
-
-birds_class_abun <- birds_abun_classification %>% 
-  group_by(Watershed_name, classification) %>% 
-  dplyr::summarise(total_count=n(),.groups = 'drop')  %>%
-  mutate(Proportion = (total_count/length(unique(birds_abun_classification$AOU_code)))) %>%
-  mutate(taxa = "birds")
-
-plants_class_abun <- plants_abun_classification %>% 
-  group_by(Watershed_name, classification) %>% 
-  dplyr::summarise(total_count=n(),.groups = 'drop')  %>%
-  mutate(Proportion = (total_count/length(unique(plants_abun_classification$Genus_spp)))) %>%
-  mutate(taxa = "plants")
-
-#rbind all the class summary datasets together
-all_class_abun <- rbind(smammal_class_abun, grasshoppers_class_abun, birds_class_abun, plants_class_abun)
+                                 ordered = TRUE),
+          # Grazing treatment: watersheds starting with N are grazed (bison present)
+         grazing = factor(ifelse(startsWith(as.character(Watershed_name), "N"),
+                                 "grazed", "ungrazed")),
+         # Fire return interval: extract the leading number from the watershed name
+         fire_freq = factor(as.numeric(gsub("^N?(\\d+).*", "\\1", 
+                                            as.character(Watershed_name)))),
+         # Change type: group classifications into directed, undirected, undetectable
+         change_type = factor(case_when(
+           classification %in% c("Increasing", "Decreasing")      ~ "directed",
+           classification %in% c("Recurrent", "Clumped")          ~ "undirected",
+           classification %in% c("Random", "Rare", "Common")       ~ "undetectable",
+           TRUE                                                   ~ NA_character_
+           ))
+         )
+      
 
 # make classification, watershed, and taxa ordered factors
 all_class_abun <- all_class_abun %>%
@@ -885,7 +894,21 @@ all_class_abun <- all_class_abun %>%
          classification = factor(classification, 
                                  levels=c("Invariant", "Rare","Increasing", "Decreasing",
                                           "Recurrent", "Clumped", "Random"), 
-                                 ordered = TRUE))
+                                 ordered = TRUE),
+                   # Grazing treatment: watersheds starting with N are grazed (bison present)
+         grazing = factor(ifelse(startsWith(as.character(Watershed_name), "N"),
+                                 "grazed", "ungrazed")),
+         # Fire return interval: extract the leading number from the watershed name
+         fire_freq = factor(as.numeric(gsub("^N?(\\d+).*", "\\1", 
+                                            as.character(Watershed_name)))),
+         # Change type: group classifications into directed, undirected, undetectable
+         change_type = factor(case_when(
+           classification %in% c("Increasing", "Decreasing")      ~ "directed",
+           classification %in% c("Recurrent", "Clumped")          ~ "undirected",
+           classification %in% c("Random", "Rare", "Invariant")       ~ "undetectable",
+           TRUE                                                   ~ NA_character_
+           ))
+         )
 ```
 
 ### 1. Are classifications significantly different across the watershed treatments?
