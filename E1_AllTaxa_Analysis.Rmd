@@ -271,9 +271,9 @@ Conduct the **incidence classification** method
 # Here, we won't differentiate the data based on the trap lines or season
 # NOTE: Count=median(cover) here, but it can be converted into pres/abs later
 plants <- E0_plants %>% 
-  group_by(Recyear, Watershed_name, Genus_spp) %>% 
+  group_by(Recyear, Watershed_name, Species) %>% 
   reframe(Count = median(Cover)) %>%
-  unite("Species.watershed", Genus_spp:Watershed_name, sep=".", remove=FALSE)
+  unite("Species.watershed", Species:Watershed_name, sep=".", remove=FALSE)
 
 #Pivot the table so that each year is a column and each row is the 'species.watershed' variable
 # years where the species was not detected should appear as NA, and are converted to zero
@@ -336,289 +336,99 @@ write_csv(plants_abun_classification,
 ```
 
 
-
 #----------------------------------------------------------------------------------------------
 ## Summary statistics on classification (all taxa) {.tabset}
 This section makes some basic summaries of the incidence classification results.
 
-#### Small mammals
 
-**Compare the incidence classification results across species and watersheds**
+```{r summstat_all_taxa}
 
-How often did species "switch" their classifications versus stay consistent across sites?
-```{r smammals_summstat}
+# Named list: taxon label -> classification and abun_classification objects
+##  inc stands for incidence classes
+##  abun stands for abundance classes
+taxa_class <- list(
+  smammals     = list(inc  = smammals_classification,
+                      abun = smammals_abun_classification,
+                      ymax_switch = 7),    # y position for geom_text on switch plot
+  grasshoppers = list(inc  = grasshoppers_classification,
+                      abun = grasshoppers_abun_classification,
+                      ymax_switch = 7),
+  birds        = list(inc  = birds_classification,
+                      abun = birds_abun_classification,
+                      ymax_switch = 20),
+  plants       = list(inc  = plants_classification,
+                      abun = plants_abun_classification,
+                      ymax_switch = 90)
+)
 
-# Make a table that counts how many times each species was classified  particular way
-smammals_abun_class_summary <- smammals_abun_classification %>% 
-  group_by(Species, classification) %>% 
-  summarize(total_count=n(),.groups = 'drop')
+for (tx in names(taxa_class)) {
+  inc  <- taxa_class[[tx]]$inc
+  abun <- taxa_class[[tx]]$abun
+  ymax <- taxa_class[[tx]]$ymax_switch
 
-# Make a table that counts how many classifications each species had (across 6 watersheds) 
-smammals_class.switch1 <- smammals_classification %>% 
-  group_by(Species) %>%
-  summarize(count = n_distinct(classification))
+  # Make a table that counts how many times each species was classified a particular way
+  abun_class_summary <- abun %>%
+    group_by(Species, classification) %>%
+    summarize(total_count = n(), .groups = 'drop')
+  assign(paste0(tx, "_abun_class_summary"), abun_class_summary)
 
-numsp = nrow(smammals_class.switch1)
-switchsp = nrow(smammals_class.switch1[smammals_class.switch1$count>1,])
+  # Make a table that counts how many classifications each species had (across 6 watersheds)
+  # first, remove classification for no-change-absent (only count classifications when present)
+  switch1 <- inc %>%
+    filter(classification != "No_change-absent") %>%
+    group_by(Species) %>%
+    summarize(count = n_distinct(classification))
+  assign(paste0(tx, "_class.switch1"), switch1)
 
-# plot as a bar graph
-smammals_class.switch1 %>% ggplot(aes(x = count)) + 
-  #geom_histogram(binwidth = 0.5) + 
-  geom_bar() +
-  theme_bw() +
-  geom_text(x=3.5, y=7, label= 
-              paste0("Switch class = ", 
-              switchsp, "/", numsp, " (", round(switchsp/numsp, 2)*100, "%)")) +
-  labs(x = "Number of classifications per species", 
-       title = "Small-mammals: incidence classification switches")
-```
+  numsp    <- nrow(switch1)
+  switchsp <- nrow(switch1[switch1$count > 1, ])
 
-Were species classified differently across the 6 watersheds?
-```{r}
-# Make a table that shows how each species was categorized, and how many times (across 6 watersheds) 
-smammals_class.switch2 <- smammals_classification %>%
-  group_by(Species, classification) %>%
-  summarize(count = n_distinct(Watershed_name))
-#view(smammals_class.switch2)
+  # plot as a bar graph
+  print(
+    switch1 %>% ggplot(aes(x = count)) +
+      geom_bar() +
+      theme_bw() +
+      geom_text(x = 3.5, y = ymax,
+                label = paste0("Switch class = ",
+                               switchsp, "/", numsp,
+                               " (", round(switchsp/numsp, 2)*100, "%)")) +
+      labs(x = "Number of classifications per species",
+           title = paste0(tx, ": incidence classification switches"))
+  )
 
-smammals_class.switch2_wide <- smammals_class.switch2 %>% pivot_wider(names_from = classification, values_from = count)
-#view(smammals_class.switch2_wide)
-```
+  # Make a table that shows how each species was categorized, and how many times
+  # first, remove classification for no-change-absent (only count classifications when present)
+  switch2 <- inc %>%
+    filter(classification != "No_change-absent") %>%
+    group_by(Species, classification) %>%
+    summarize(count = n_distinct(Watershed_name))
+  switch2_wide <- switch2 %>% pivot_wider(names_from = classification, values_from = count)
+  assign(paste0(tx, "_class.switch2"),      switch2)
+  assign(paste0(tx, "_class.switch2_wide"), switch2_wide)
 
-How frequent were the each of the incidence classifications across the watersheds?
-```{r}
-# Make a table that shows how many species were in each classification, by watershed 
-smammals_class.switch3 <- smammals_classification %>%
-  group_by(Watershed_name, classification) %>%
-  summarize(count = n_distinct(Species))
-#view(smammals_class.switch3)
+  # Make a table that shows how many species were in each incidence classification, by watershed
+  # first, remove classification for no-change-absent (only count classifications when present)
+  switch3 <- inc %>%
+    filter(classification != "No_change-absent") %>%
+    group_by(Watershed_name, classification) %>%
+    summarize(count = n_distinct(Species))
+  switch3_wide <- switch3 %>% pivot_wider(names_from = classification, values_from = count)
+  assign(paste0(tx, "_class.switch3"),      switch3)
+  assign(paste0(tx, "_class.switch3_wide"), switch3_wide)
+  #view(switch3_wide)
 
-smammals_class.switch3_wide <- smammals_class.switch3 %>% pivot_wider(names_from = classification, values_from = count)
-view(smammals_class.switch3_wide)
-```
-
-How frequent were the each of the abundance classifications across the watersheds?
-```{r}
-# Make a table that shows how many species were in each classification, by watershed 
-smammals_class.switch4 <- smammals_abun_classification %>%
-  group_by(Watershed_name, classification) %>%
-  summarize(count = n_distinct(Species))
-#view(smammals_class.switch3)
-
-smammals_class.switch4_wide <- smammals_class.switch4 %>% 
-  pivot_wider(names_from = classification, values_from = count)
-view(smammals_class.switch4_wide)
-```
-
-#### Grasshoppers
-
-**Compare the incidence classification results across species and watersheds**
-
-How often did species "switch" their classifications versus stay consistent across sites?
-```{r grasshoppers_summstat}
-
-# Make a table that counts how many times each species was classified  particular way
-grasshoppers_abun_class_summary <- grasshoppers_abun_classification %>% 
-  group_by(Species, classification) %>% 
-  summarize(total_count=n(),.groups = 'drop')
-
-# Make a table that counts how many classifications each species had (across 6 watersheds) 
-grasshoppers_class.switch1 <- grasshoppers_classification %>% 
-  group_by(Species) %>%
-  summarize(count = n_distinct(classification))
-
-numsp = nrow(grasshoppers_class.switch1)
-switchsp = nrow(grasshoppers_class.switch1[grasshoppers_class.switch1$count>1,])
-
-# plot as a bar graph
-grasshoppers_class.switch1 %>% ggplot(aes(x = count)) + 
-  #geom_histogram(binwidth = 0.5) + 
-  geom_bar() +
-  theme_bw() +
-  geom_text(x=3.5, y=7, label= 
-              paste0("Switch class = ", 
-              switchsp, "/", numsp, " (", round(switchsp/numsp, 2)*100, "%)")) +
-  labs(x = "Number of classifications per species", 
-       title = "Grasshoppers: incidence classification switches")
-```
-
-Were species classified differently across the 6 watersheds?
-```{r}
-# Make a table that shows how each species was categorized, and how many times (across 6 watersheds) 
-grasshoppers_class.switch2 <- grasshoppers_classification %>%
-  group_by(Species, classification) %>%
-  summarize(count = n_distinct(Watershed_name))
-#view(grasshoppers_class.switch2)
-
-grasshoppers_class.switch2_wide <- grasshoppers_class.switch2 %>% 
-  pivot_wider(names_from = classification, values_from = count)
-#view(grasshoppers_class.switch2_wide)
-```
-
-How frequent were the each of the incidence classifications across the watersheds?
-```{r}
-# Make a table that shows how many species were in each classification, by watershed 
-grasshoppers_class.switch3 <- grasshoppers_classification %>%
-  group_by(Watershed_name, classification) %>%
-  summarize(count = n_distinct(Species))
-#view(grasshoppers_class.switch3)
-
-grasshoppers_class.switch3_wide <- grasshoppers_class.switch3 %>% 
-  pivot_wider(names_from = classification, values_from = count)
-view(grasshoppers_class.switch3_wide)
-```
-
-How frequent were the each of the abundance classifications across the watersheds?
-```{r}
-# Make a table that shows how many species were in each classification, by watershed 
-grasshoppers_class.switch4 <- grasshoppers_abun_classification %>%
-  group_by(Watershed_name, classification) %>%
-  summarize(count = n_distinct(Species))
-
-grasshoppers_class.switch4_wide <- grasshoppers_class.switch4 %>% 
-  pivot_wider(names_from = classification, values_from = count)
-view(grasshoppers_class.switch4_wide)
+  # Make a table that shows how many species were in each abundance classification, by watershed
+  switch4 <- abun %>%
+    group_by(Watershed_name, classification) %>%
+    summarize(count = n_distinct(Species))
+  switch4_wide <- switch4 %>% pivot_wider(names_from = classification, values_from = count)
+  assign(paste0(tx, "_class.switch4"),      switch4)
+  assign(paste0(tx, "_class.switch4_wide"), switch4_wide)
+  #view(switch4_wide)
+}
 ```
 
 
-#### Birds
-
-**Compare the incidence classification results across species and watersheds**
-
-How often did species "switch" their classifications versus stay consistent across sites?
-```{r birds_summstat}
-
-# Make a table that counts how many times each species was classified a particular way
-birds_abun_class_summary <- birds_abun_classification %>% 
-  group_by(AOU_code, classification) %>% 
-  summarize(total_count=n(),.groups = 'drop')
-
-# Make a table that counts how many classifications each species had (across 6 watersheds) 
-birds_class.switch1 <- birds_classification %>% 
-  group_by(AOU_code) %>%
-  summarize(count = n_distinct(classification))
-
-numsp = nrow(birds_class.switch1)
-switchsp = nrow(birds_class.switch1[birds_class.switch1$count>1,])
-
-# plot as a bar graph
-birds_class.switch1 %>% ggplot(aes(x = count)) + 
-  #geom_histogram(binwidth = 0.5) + 
-  geom_bar() +
-  theme_bw() +
-  geom_text(x=3.5, y=20, label= 
-              paste0("Switch class = ", 
-              switchsp, "/", numsp, " (", round(switchsp/numsp, 2)*100, "%)")) +
-  labs(x = "Number of classifications per species", 
-       title = "Birds: incidence classification switches")
-```
-
-Were species classified differently across the 6 watersheds?
-```{r}
-# Make a table that shows how each species was categorized, and how many times (across 6 watersheds) 
-birds_class.switch2 <- birds_classification %>%
-  group_by(AOU_code, classification) %>%
-  summarize(count = n_distinct(Watershed_name))
-#view(grasshoppers_class.switch2)
-
-birds_class.switch2_wide <- birds_class.switch2 %>% 
-  pivot_wider(names_from = classification, values_from = count)
-#view(grasshoppers_class.switch2_wide)
-```
-
-How frequent were the each of the incidence classifications across the watersheds?
-```{r}
-# Make a table that shows how many species were in each classification, by watershed 
-birds_class.switch3 <- birds_classification %>%
-  group_by(Watershed_name, classification) %>%
-  summarize(count = n_distinct(AOU_code))
-#view(grasshoppers_class.switch3)
-
-birds_class.switch3_wide <- birds_class.switch3 %>% 
-  pivot_wider(names_from = classification, values_from = count)
-view(birds_class.switch3_wide)
-```
-
-How frequent were the each of the abundance classifications across the watersheds?
-```{r}
-# Make a table that shows how many species were in each classification, by watershed 
-birds_class.switch4 <- birds_abun_classification %>%
-  group_by(Watershed_name, classification) %>%
-  summarize(count = n_distinct(AOU_code))
-
-birds_class.switch4_wide <- birds_class.switch4 %>% 
-  pivot_wider(names_from = classification, values_from = count)
-view(birds_class.switch4_wide)
-```
-
-
-#### Plants
-
-**Compare the incidence classification results across species and watersheds**
-
-How often did species "switch" their classifications versus stay consistent across sites?
-```{r plants_summstat}
-
-# Make a table that counts how many times each species was classified a particular way
-plants_abun_class_summary <- plants_abun_classification %>% 
-  group_by(Genus_spp, classification) %>% 
-  summarize(total_count=n(),.groups = 'drop')
-
-# Make a table that counts how many classifications each species had (across 6 watersheds) 
-plants_class.switch1 <- plants_classification %>% 
-  group_by(Genus_spp) %>%
-  summarize(count = n_distinct(classification))
-
-numsp = nrow(plants_class.switch1)
-switchsp = nrow(plants_class.switch1[plants_class.switch1$count>1,])
-
-# plot as a bar graph
-plants_class.switch1 %>% ggplot(aes(x = count)) + 
-  #geom_histogram(binwidth = 0.5) + 
-  geom_bar() +
-  theme_bw() +
-  geom_text(x=3.5, y=90, label= 
-              paste0("Switch class = ", 
-              switchsp, "/", numsp, " (", round(switchsp/numsp, 2)*100, "%)")) +
-  labs(x = "Number of classifications per species", 
-       title = "Plants: incidence classification switches")
-```
-
-Were species classified differently across the 6 watersheds?
-```{r}
-# Make a table that shows how each species was categorized, and how many times (across 6 watersheds) 
-plants_class.switch2 <- plants_classification %>%
-  group_by(Genus_spp, classification) %>%
-  summarize(count = n_distinct(Watershed_name))
-
-plants_class.switch2_wide <- plants_class.switch2 %>% 
-  pivot_wider(names_from = classification, values_from = count)
-```
-
-How frequent were the each of the classifications across the watersheds?
-```{r}
-# Make a table that shows how many species were in each classification, by watershed 
-plants_class.switch3 <- plants_classification %>%
-  group_by(Watershed_name, classification) %>%
-  summarize(count = n_distinct(Genus_spp))
-#view(plants_class.switch3)
-
-plants_class.switch3_wide <- plants_class.switch3 %>% 
-  pivot_wider(names_from = classification, values_from = count)
-view(plants_class.switch3_wide)
-```
-
-How frequent were the each of the abundance classifications across the watersheds?
-```{r}
-# Make a table that shows how many species were in each classification, by watershed 
-plants_class.switch4 <- plants_abun_classification %>%
-  group_by(Watershed_name, classification) %>%
-  summarize(count = n_distinct(Genus_spp))
-
-plants_class.switch4_wide <- plants_class.switch4 %>% 
-  pivot_wider(names_from = classification, values_from = count)
-view(plants_class.switch4_wide)
-```
 
 #----------------------------------------------------------------------------------------------
 ## Dissimilarity from baseline year and between watersheds (all taxa) {.tabset}
