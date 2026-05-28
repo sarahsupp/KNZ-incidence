@@ -667,125 +667,103 @@ write.csv(result$richness, "Datasets/E1_output_data/E1_plants/E1_plants_richness
 write.csv(result$model, "Datasets/E1_output_data/E1_plants/E1_plants_richness_lm.csv")
 ```
 
-
+#----------------------------------------------------------------------------------------
 
 ## Abundance change over time (all taxa) {.tabset}
-This section determines if abundance is changing directionally over time using a simple linear model, using the count data for each taxonomic. While abundance fluctuates in a non-linar fashion for most species, this is meant to suggest which species have more apparent trends in increasing or decreasing abundance (i.e. it will not detect random or cyclical changes or particular extremes.
+This section determines if abundance is changing directionally over time using a simple linear model, using the count data for each taxon. While abundance fluctuates in a non-linear fashion for most species, this is meant to suggest which species have more apparent trends in increasing or decreasing abundance (i.e. it will not detect random or cyclical changes or particular extremes).
 
-**For plant taxa** We applied an ordinal logistic regression instead. This model works with ordinal abundance instead, where we can't assume the intervals between classes are all equal. The result models the probability of being in a higher or lower cover class as a function of year. "As year increases, is the plant more likely to be in a higher cover class?"
+**For plant taxa** We applied an ordinal logistic regression instead (see separate chunk below). This model works with ordinal abundance, where we can't assume the intervals between classes are all equal. The result models the probability of being in a higher or lower cover class as a function of year. "As year increases, is the plant more likely to be in a higher cover class?"
 
 Each section writes a csv file summarizing the abundance information and model results.
 
-#### Small-mammals; count data
+#### Small-mammals, Grasshoppers, Birds; count data
 
-```{r small mammals abundance}
-#make a version of the wide dataset without the extra columns, for the linear model analysis
-sm_spabund <- smammals_years_wide %>% 
-  dplyr::select(-Watershed_name, -Species)
+All three taxa now share the same pipeline:
+- Remove env columns, gather year columns long, fit lm per Species.watershed
+- `separate(Species.watershed, c("Species", "Watershed_name"))` — works for all three
+  because Species.watershed is now built as `Genus_species.Watershed_name` (one `.`
+  separator) for smammals/grasshoppers, and `AOUCODE.Watershed_name` for birds
+- The original smammals/grasshoppers chunks used `separate` into three parts
+  (`Genus`, `Spp`, `Watershed_name`) followed by `unite("Species", Genus:Spp)`.
+  That was written when the species column had a space separator. Now that
+  `Species = Genus_species` (underscore joined in E0), the two-part separate is
+  correct and produces identical Species values.
+- The original birds chunk had two bugs: `dplyr::select(-AOU_code)` (column renamed
+  to Species in E0) and a dangling `unite("Species", Genus:Spp)` after a `#` comment
+  that would error if uncommented. Both are fixed here.
 
-#Use 'purr' to run the model. The gather function get the values we need, and the group_by function makes sure the values are grouped by 'Watershed_name'. 
-#   'n' is the row number, which translates to the year (1992 = 1, 1993 = 2... 2022 = 31). 
-#   The arrange function orders the data by 'Watershed_name' and row number. 
-#   The nest function nests all the data (year/row number, and richness) into a single column, while each row is a watershed. 
-#   The rest of the code runs the linear models for each row, and creates new columns with the outputs.
-sm_spabun_lm <- sm_spabund %>%
-  gather('year', 'value', -Species.watershed) %>%
-  group_by(Species.watershed) %>%
-  mutate(n = row_number()) %>%
-  arrange(Species.watershed, n) %>%
-  nest() %>%
-  mutate(model = map(data, fit_model)) %>%
-  mutate(slope = map_dbl(model, get_slope)) %>%
-  mutate(p_value = map_dbl(model, get_p_value)) %>%
-  mutate(rsquared = map_dbl(model, get_rsq)) %>%
-  # remove detailed model results before writing to file
-  dplyr::select(Species.watershed, slope, p_value, rsquared) %>%
-  separate(Species.watershed, c("Genus", "Spp", "Watershed_name")) %>%
-  unite("Species", Genus:Spp, sep = "_") 
+```{r abund_lm_smammals_grasshoppers_birds}
 
-#Save abundance data 
-write.csv(smammals_years_wide, "Datasets/E1_output_data/E1_smammals/E1_smammals_abundance.csv")
+taxa_abund <- list(
+  sm = list(
+    years_wide = smammals_years_wide,
+    out        = "Datasets/E1_output_data/E1_smammals/E1_smammals",
+    lm_obj     = "sm_spabun_lm"
+  ),
+  gh = list(
+    years_wide = grasshoppers_years_wide,
+    out        = "Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers",
+    lm_obj     = "gh_spabun_lm"
+  ),
+  bd = list(
+    years_wide = birds_years_wide,
+    out        = "Datasets/E1_output_data/E1_birds/E1_birds",
+    lm_obj     = "bd_spabun_lm"
+  )
+)
 
-#Save abundance model results
-write.csv(sm_spabun_lm, "Datasets/E1_output_data/E1_smammals/E1_smammals_abundance_lm.csv")
-```
+for (tx in names(taxa_abund)) {
+  d <- taxa_abund[[tx]]
 
-#### Grasshoppers; count data
+  #make a version of the wide dataset without the extra env columns
+  spabund <- d$years_wide %>%
+    dplyr::select(-Watershed_name, -Species)
 
-```{r grasshoppers abundance}
-#make a version of the wide dataset without the extra columns, for the linear model analysis
-gh_spabund <- grasshoppers_years_wide %>% 
-  dplyr::select(-Watershed_name, -Species)
+  #Use 'purrr' to run the model. The gather function gets the values we need, and
+  #   group_by ensures values are grouped by Species.watershed.
+  #   'n' is the row number, which translates to the year (year1 = 1, year2 = 2...).
+  #   arrange orders the data by Species.watershed and row number.
+  #   nest nests all the data (year/row number, and count) into a single column,
+  #   while each row is a species-watershed combination.
+  #   The rest of the code runs the linear models for each row and extracts outputs.
+  spabun_lm <- spabund %>%
+    gather('year', 'value', -Species.watershed) %>%
+    group_by(Species.watershed) %>%
+    mutate(n = row_number()) %>%
+    arrange(Species.watershed, n) %>%
+    nest() %>%
+    mutate(model    = map(data, fit_model)) %>%
+    mutate(slope    = map_dbl(model, get_slope)) %>%
+    mutate(p_value  = map_dbl(model, get_p_value)) %>%
+    mutate(rsquared = map_dbl(model, get_rsq)) %>%
+    # remove detailed model results before writing to file
+    dplyr::select(Species.watershed, slope, p_value, rsquared) %>%
+    separate(Species.watershed, c("Species", "Watershed_name"), sep = "\\.")
 
-# Run linear models for each row (species-watershed) and save the results
-gh_spabun_lm <- gh_spabund %>%
-  gather('year', 'value', -Species.watershed) %>%
-  group_by(Species.watershed) %>%
-  mutate(n = row_number()) %>%
-  arrange(Species.watershed, n) %>%
-  nest() %>%
-  mutate(model = map(data, fit_model)) %>%
-  mutate(slope = map_dbl(model, get_slope)) %>%
-  mutate(p_value = map_dbl(model, get_p_value)) %>%
-  mutate(rsquared = map_dbl(model, get_rsq)) %>%
-  # remove detailed model results before writing to file
-  dplyr::select(Species.watershed, slope, p_value, rsquared) %>%
-  separate(Species.watershed, c("Genus", "Spp", "Watershed_name")) %>%
-  unite("Species", Genus:Spp, sep = "_") 
+  # Save abundance data and model results
+  write.csv(d$years_wide, paste0(d$out, "_abundance.csv"))
+  write.csv(spabun_lm,    paste0(d$out, "_abundance_lm.csv"))
 
-#Save abundance data 
-write.csv(grasshoppers_years_wide, "Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers_abundance.csv")
-
-#Save abundance model results
-write.csv(gh_spabun_lm, "Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers_abundance_lm.csv")
-```
-
-
-#### Birds; count data
-
-#FIXME: no applicable method for 'unite' applied to object of class character (fix variable type?)
-```{r birds abundance}
-#make a version of the wide dataset without the extra columns, for the linear model analysis
-bd_spabund <- birds_years_wide %>% 
-  dplyr::select(-Watershed_name, -AOU_code)
-
-# Run linear models for each row (Species-watershed) and save the results
-bd_spabun_lm <- bd_spabund %>%
-  gather('year', 'value', -Species.watershed) %>%
-  group_by(Species.watershed) %>%
-  mutate(n = row_number()) %>%
-  arrange(Species.watershed, n) %>%
-  nest() %>%
-  mutate(model = map(data, fit_model)) %>%
-  mutate(slope = map_dbl(model, get_slope)) %>%
-  mutate(p_value = map_dbl(model, get_p_value)) %>%
-  mutate(rsquared = map_dbl(model, get_rsq)) %>%
-  # remove detailed model results before writing to file
-  dplyr::select(Species.watershed, slope, p_value, rsquared) %>%
-  separate(Species.watershed, c("AOU_code", "Watershed_name")) # %>%
-  unite("Species", Genus:Spp, sep = "_") 
-
-#Save abundance data 
-write.csv(birds_years_wide, "Datasets/E1_output_data/E1_birds/E1_birds_abundance.csv")
-
-#Save abundance model results
-write.csv(bd_spabun_lm, "Datasets/E1_output_data/E1_birds/E1_birds_abundance_lm.csv")
+  # assign named object for downstream use
+  assign(d$lm_obj, spabun_lm)
+}
 ```
 
 
 #### Plants; percent cover data
-Here, we use the `polr` function for ordinal logistic regression instead of a linear model. Some key notes: 
-* psuedo pvalue calculated
-* McFadden's psuedo R2 calculated from null model comparison
+Here, we use the `polr` function for ordinal logistic regression instead of a linear
+model. Some key notes: 
+* pseudo p-value calculated from t-value of the year coefficient
+* McFadden's pseudo R2 calculated from null model comparison
 * model convergence failure is somewhat common; handled through NULL and NA values
 * low variation or no variation in ordinal response values is sometimes a problem
 * if n perfectly predicts class it is a problem
 * overfitting could be an issue
 
 ```{r plants abundance}
-#make a version of the wide dataset without the extra columns, for the linear model analysis
+#make a version of the wide dataset without the extra columns, for the logistic model
 pl_spabund <- plants_years_wide %>% 
-  dplyr::select(-Watershed_name, -Genus_spp)
+  dplyr::select(-Watershed_name, -Species)
 
 # Run ordinal logistic regression models for each row (Species-watershed) and save the results
 pl_spabun_logit <- pl_spabund %>%
@@ -812,6 +790,7 @@ write.csv(plants_years_wide, "Datasets/E1_output_data/E1_plants/E1_plants_abunda
 #Save abundance model results
 write.csv(pl_spabun_logit, "Datasets/E1_output_data/E1_plants/E1_plants_abundance_logit.csv")
 ```
+
 
 #-----------------------------------------------------------------------------------------
 # STATISTICAL COMPARISONS FOR INCIDENCE and ABUNDANCE CLASSIFICATION
