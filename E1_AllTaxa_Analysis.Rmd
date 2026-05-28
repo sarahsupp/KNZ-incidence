@@ -429,216 +429,178 @@ for (tx in names(taxa_class)) {
 ```
 
 
-
 #----------------------------------------------------------------------------------------------
 ## Dissimilarity from baseline year and between watersheds (all taxa) {.tabset}
 
-This section is for conducting dissimilarity tests between watersheds for the small-mammal dataset.
+This section is for conducting dissimilarity tests between watersheds for all four taxa.
 
-These dissimilarity tests will include Jaccard's and Bray comparison for: - the first year to each subsequent year of the time series, within watersheds - across watersheds, within each year separately
+These dissimilarity tests include Jaccard and Bray-Curtis (or Gower for plants) for:
+- the first year to each subsequent year of the time series, within watersheds
+- across watersheds, within each year separately
 
-Is dissimilarity increasing through time? Is the rate of composition change different according to treatment?
+Is dissimilarity increasing through time? Is the rate of composition change different
+according to treatment?
 
-#### Small mammal Composition
+**Note on plants:** Cover class is ordinal, so Bray-Curtis is not appropriate (it assumes
+counts). Gower's distance is used instead as the second dissimilarity metric for plants,
+because it treats variables as ordinal without assuming equal intervals between classes
+(which the cover classes are not; see cover class definitions above).
+Gower 0 == identical; Gower 1 == completely different.
 
-Save results for **Small mammal composition dissimilarity**
-```{r}
-# prepare the count data into wide format with merged column for watershed_year;
-# Adds NAs for missing species since they aren't all present on every watershed
-smammals_count_allyears <- smammals %>% 
-  group_by(Watershed_name, Species, Recyear) %>% 
-  reframe(Total = (Count)) %>% 
-  pivot_wider(names_from = "Species", values_from = "Total", 
+
+### Step 1: Prepare per-taxon wide count/cover tables
+
+These prep blocks remain separate because the species column differs by taxon:
+Species for smammals/grasshoppers/birds; Genus_spp for plants (required for downstream
+joins to pl_info).
+
+```{r dissim_prep}
+# SMAMMALS: NAs left as-is (all years sampled on all watersheds)
+smammals_count_allyears <- smammals %>%
+  group_by(Watershed_name, Species, Recyear) %>%
+  reframe(Total = Count) %>%
+  pivot_wider(names_from = "Species", values_from = "Total",
               values_fn = function(x) paste(sum(x))) %>%
   unite("Watershed_year", Watershed_name:Recyear, sep = "_")
 
-# small mammal dissimilarity estimates
-sm_jacc <- compute_dissimilarity(smammals_count_allyears, method="jaccard", baseline_year = 1992)
-sm_bray <- compute_dissimilarity(smammals_count_allyears, method="bray", baseline_year = 1992)
-
-# merge and write results
-sm_baseline <- merge(sm_jacc[1], sm_bray[1])
-sm_watershed <- merge(sm_jacc[2], sm_bray[2])
-
-# for comparison to baseline year, add linear model trend results
-# Fit trend model across time for each watershed
-sm_jacc_diss_lm <- sm_baseline %>%
-  rename(Watershed_name = baseline.Watershed2) %>%
-  rename(value = baseline.jaccard_diss) %>% #make this generic so it works with the function
-  group_by(Watershed_name) %>%
-  mutate(n = row_number()) %>%
-  arrange(Watershed_name, n) %>%
-  nest() %>%
-  mutate(
-    model = map(data, fit_model),
-    slope = map_dbl(model, get_slope),
-    p_value = map_dbl(model, get_p_value),
-    rsquared = map_dbl(model, get_rsq)
-  )  %>%
-    dplyr::select(Watershed_name, slope, p_value, rsquared)
-
-
-sm_bray_diss_lm <- sm_baseline %>%
-  rename(Watershed_name = baseline.Watershed2) %>%
-  rename(value = baseline.bray_diss) %>% #make this generic so it works with the function
-  group_by(Watershed_name) %>%
-  mutate(n = row_number()) %>%
-  arrange(Watershed_name, n) %>%
-  nest() %>%
-  mutate(
-    model = map(data, fit_model),
-    slope = map_dbl(model, get_slope),
-    p_value = map_dbl(model, get_p_value),
-    rsquared = map_dbl(model, get_rsq)
-  ) %>%
-    dplyr::select(Watershed_name, slope, p_value, rsquared)
-
-##Save to file
-write.csv(sm_baseline, "Datasets/E1_output_data/E1_smammals/E1_smammals_dissimilarity_year1toN.csv")
-
-write.csv(sm_jacc_diss_lm, "Datasets/E1_output_data/E1_smammals/E1_smammals_jacc_diss_lm.csv")
-write.csv(sm_bray_diss_lm, "Datasets/E1_output_data/E1_smammals/E1_smammals_bray_diss_lm.csv")
-
-write.csv(sm_watershed, "Datasets/E1_output_data/E1_smammals/E1_smammals_dissimilarity_watersheds.csv")
-```
-
-#### Grasshopper Composition
-
-Save results for **Grasshopper composition dissimilarity**
-```{r}
-# prepare the count data into wide format with merged column for watershed_year
-grasshoppers_count_allyears <- grasshoppers %>% 
-  group_by(Watershed_name, Species, Recyear) %>% 
-  reframe(Total = (Count)) %>% 
-  pivot_wider(names_from = "Species", values_from = "Total", 
+# GRASSHOPPERS: replace NA with "0" (species absent in a year have no row)
+grasshoppers_count_allyears <- grasshoppers %>%
+  group_by(Watershed_name, Species, Recyear) %>%
+  reframe(Total = Count) %>%
+  pivot_wider(names_from = "Species", values_from = "Total",
               values_fn = function(x) paste(sum(x))) %>%
   unite("Watershed_year", Watershed_name:Recyear, sep = "_") %>%
   replace(is.na(.), "0")
 
-# find the first year of the study
-year1 <- min(grasshoppers$Recyear)
-
-# grasshopper dissimilarity estimates
-gh_jacc <- compute_dissimilarity(grasshoppers_count_allyears, method="jaccard", baseline_year = year1)
-gh_bray <- compute_dissimilarity(grasshoppers_count_allyears, method="bray", baseline_year = year1)
-
-# merge and write results
-gh_baseline <- merge(gh_jacc[1], gh_bray[1])
-gh_watershed <- merge(gh_jacc[2], gh_bray[2])
-
-##Save to file
-write.csv(gh_baseline, "Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers_dissimilarity_year1toN.csv")
-
-write.csv(gh_watershed, "Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers_dissimilarity_watersheds.csv")
-```
-
-#### Bird Composition
-
-Save results for **Bird composition dissimilarity**
-```{r}
-# prepare the count data into wide format with merged column for watershed_year
-birds_count_allyears <- birds %>% 
-  group_by(Watershed_name, AOU_code, Recyear) %>% 
-  reframe(Total = (Count)) %>% 
-  pivot_wider(names_from = "AOU_code", values_from = "Total",
+# BIRDS: replace NA with "0" (same reason as grasshoppers)
+# NOTE: Species column holds AOU code (standardized in E0)
+birds_count_allyears <- birds %>%
+  group_by(Watershed_name, Species, Recyear) %>%
+  reframe(Total = Count) %>%
+  pivot_wider(names_from = "Species", values_from = "Total",
               values_fn = function(x) paste(sum(x))) %>%
-  unite("Watershed_year", Watershed_name:Recyear, sep="_") %>%
-  replace(is.na(.),"0")
+  unite("Watershed_year", Watershed_name:Recyear, sep = "_") %>%
+  replace(is.na(.), "0")
 
-# find the first year of the study
-year1 <- min(birds$Recyear)
-
-# bird dissimilarity estimates
-bd_jacc <- compute_dissimilarity(birds_count_allyears, method="jaccard", baseline_year = year1)
-bd_bray <- compute_dissimilarity(birds_count_allyears, method="bray", baseline_year = year1)
-
-# merge and write results
-bd_baseline <- merge(bd_jacc[1], bd_bray[1])
-bd_watershed <- merge(bd_jacc[2], bd_bray[2])
-
-##Save to file
-write.csv(bd_baseline, "Datasets/E1_output_data/E1_birds/E1_birds_dissimilarity_year1toN.csv")
-
-write.csv(bd_watershed, "Datasets/E1_output_data/E1_birds/E1_birds_dissimilarity_watersheds.csv")
-```
-
-#### Plant Composition
-
-**Note:** The plant dataset uses an ordinal variable for cover class instead of abundance, or count. This is fine to covert to presence absence for Jaccard dissimilarity but would be flawed to use in Bray-Curtis directly, in place of abundance. There are two potential options, and we can calculate both: 
-
-1. Convert cover class to midpoints (this still would represent percent cover, not abundance)
-2. Use an alternative method that works with ordinal variables, like Gower's distance
-
-I have a preference for using Gower's distance here because we can treat the variables as ordinal, without assuming equal intervals between the classes (they aren't; see label descriptions above). The first option of converting to midpoints implicitly suggests continuous or equal interval data, which it isn't really. Gower 0 == the same; Gower 1 == completely different.
-
-Save results for **Plant composition dissimilarity**
-```{r}
-# prepare the cover data into wide format with merged column for watershed_year
-plants_count_allyears <- plants %>% 
-  #add a line to ensure Count is an ordered factor (plant cover class)
-#  mutate(Count = factor(Count, levels = 1:7, ordered = TRUE)) %>%
-  group_by(Watershed_name, Genus_spp, Recyear) %>% 
-  reframe(Total = (Count)) %>% 
-  pivot_wider(names_from = "Genus_spp", values_from = "Total",
+# PLANTS: uses Genus_spp (not Species) as names_from so output columns match pl_info joins.
+# values_fn = paste (not sum) because cover class is not additive across plots.
+# mutate(Count = factor(Count, levels = 1:7, ordered = TRUE)) %>%  # optional; see FIXME
+plants_count_allyears <- plants %>%
+  group_by(Watershed_name, Species, Recyear) %>%
+  reframe(Total = Count) %>%
+  pivot_wider(names_from = "Species", values_from = "Total",
               values_fn = function(x) paste(x)) %>%
-  unite("Watershed_year", Watershed_name:Recyear, sep="_") %>%
-  replace(is.na(.),"0")
-
-# find the first year of the study
-year1 <- min(plants$Recyear)
-
-# bird dissimilarity estimates
-pl_jacc <- compute_dissimilarity(plants_count_allyears, method="jaccard", baseline_year = year1)
-pl_gower <- compute_dissimilarity(plants_count_allyears, method="gower", baseline_year = year1)
-
-# merge and write results
-pl_baseline <- merge(pl_jacc[1], pl_gower[1])
-pl_watershed <- merge(pl_jacc[2], pl_gower[2])
-
-# for comparison to baseline year, add linear model trend results
-# Fit trend model across time for each watershed
-pl_jacc_diss_lm <- pl_baseline %>%
-  rename(Watershed_name = baseline.Watershed2) %>%
-  rename(value = baseline.jaccard_diss) %>% #make this generic so it works with the function
-  group_by(Watershed_name) %>%
-  mutate(n = row_number()) %>%
-  arrange(Watershed_name, n) %>%
-  nest() %>%
-  mutate(
-    model = map(data, fit_model),
-    slope = map_dbl(model, get_slope),
-    p_value = map_dbl(model, get_p_value),
-    rsquared = map_dbl(model, get_rsq)
-  )  %>%
-    dplyr::select(Watershed_name, slope, p_value, rsquared)
-
-# for comparison to baseline year, add linear model trend results
-# Fit trend model across time for each watershed
-pl_gower_diss_lm <- pl_baseline %>%
-  rename(Watershed_name = baseline.Watershed2) %>%
-  rename(value = baseline.gower_diss) %>% #make this generic so it works with the function
-  group_by(Watershed_name) %>%
-  mutate(n = row_number()) %>%
-  arrange(Watershed_name, n) %>%
-  nest() %>%
-  mutate(
-    model = map(data, fit_model),
-    slope = map_dbl(model, get_slope),
-    p_value = map_dbl(model, get_p_value),
-    rsquared = map_dbl(model, get_rsq)
-  )  %>%
-    dplyr::select(Watershed_name, slope, p_value, rsquared)
-
-
-##Save to file
-write.csv(pl_baseline, "Datasets/E1_output_data/E1_plants/E1_plants_dissimilarity_year1toN.csv")
-write.csv(pl_jacc_diss_lm, "Datasets/E1_output_data/E1_plants/E1_plants_jacc_diss_lm.csv")
-write.csv(pl_gower_diss_lm, "Datasets/E1_output_data/E1_plants/E1_plants_gower_diss_lm.csv")
-
-write.csv(pl_watershed, "Datasets/E1_output_data/E1_plants/E1_plants_dissimilarity_watersheds.csv")
+  unite("Watershed_year", Watershed_name:Recyear, sep = "_") %>%
+  replace(is.na(.), "0")
 ```
 
+### Step 2: Compute dissimilarity, fit LMs, write results (shared loop)
 
+All four taxa run through the same pipeline. The only per-taxon differences are:
+- `method2`: Bray-Curtis for smammals (sm), grasshoppers (gh), birds (bd); Gower for plants (pl)
+- `baseline_year`: 1992 for smammals (hardcoded); min(Recyear) for the other three
+
+The loop produces the several named objects for downstream plotting: `sm_baseline`, `sm_jacc_diss_lm`, `sm_bray_diss_lm`, `sm_watershed`,
+`gh_baseline`, `gh_bray_diss_lm`, `gh_watershed`,
+`bd_baseline`, `bd_bray_diss_lm`, `bd_watershed`,
+`pl_baseline`, `pl_jacc_diss_lm`, `pl_gower_diss_lm`, `pl_watershed`.
+
+Baseline tables are renamed from `baseline.Watershed2` to `Watershed_name` so downstream code is cleaner.
+
+```{r dissim_loop}
+
+taxa_diss <- list(
+  sm = list(
+    data          = smammals_count_allyears,
+    baseline_year = 1992,                    # smammals: bison present from 1992
+    method2       = "bray",
+    method2_col   = "baseline.bray_diss",
+    prefix        = "sm",
+    out           = "Datasets/E1_output_data/E1_smammals/E1_smammals"
+  ),
+  gh = list(
+    data          = grasshoppers_count_allyears,
+    baseline_year = min(grasshoppers$Recyear),
+    method2       = "bray",
+    method2_col   = "baseline.bray_diss",
+    prefix        = "gh",
+    out           = "Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers"
+  ),
+  bd = list(
+    data          = birds_count_allyears,
+    baseline_year = min(birds$Recyear),
+    method2       = "bray",
+    method2_col   = "baseline.bray_diss",
+    prefix        = "bd",
+    out           = "Datasets/E1_output_data/E1_birds/E1_birds"
+  ),
+  pl = list(
+    data          = plants_count_allyears,
+    baseline_year = min(plants$Recyear),
+    method2       = "gower",                 # plants: Gower instead of Bray (ordinal cover)
+    method2_col   = "baseline.gower_diss",
+    prefix        = "pl",
+    out           = "Datasets/E1_output_data/E1_plants/E1_plants"
+  )
+)
+
+for (tx in names(taxa_diss)) {
+  d <- taxa_diss[[tx]]
+
+  # compute Jaccard and method2 dissimilarity
+  jacc    <- compute_dissimilarity(d$data, method = "jaccard", baseline_year = d$baseline_year)
+  method2 <- compute_dissimilarity(d$data, method = d$method2, baseline_year = d$baseline_year)
+
+  # merge baseline (year1-to-N) and watershed (pairwise within year) tables
+  # rename baseline.Watershed2 -> Watershed_name here for cleaner downstream use
+  baseline  <- merge(jacc[1], method2[1]) %>%
+    rename(Watershed_name = baseline.Watershed2)
+  watershed <- merge(jacc[2], method2[2])
+
+  # fit linear model to Jaccard baseline dissimilarity vs time, per watershed
+  # "Is Jaccard dissimilarity from year 1 increasing over time?"
+  jacc_lm <- baseline %>%
+    rename(value = baseline.jaccard_diss) %>%  # make generic for fit_model
+    group_by(Watershed_name) %>%
+    mutate(n = row_number()) %>%
+    arrange(Watershed_name, n) %>%
+    nest() %>%
+    mutate(
+      model    = map(data, fit_model),
+      slope    = map_dbl(model, get_slope),
+      p_value  = map_dbl(model, get_p_value),
+      rsquared = map_dbl(model, get_rsq)
+    ) %>%
+    dplyr::select(Watershed_name, slope, p_value, rsquared)
+
+  # fit linear model to method2 (Bray or Gower) baseline dissimilarity vs time
+  method2_lm <- baseline %>%
+    rename(value = !!d$method2_col) %>%  # make generic for fit_model
+    group_by(Watershed_name) %>%
+    mutate(n = row_number()) %>%
+    arrange(Watershed_name, n) %>%
+    nest() %>%
+    mutate(
+      model    = map(data, fit_model),
+      slope    = map_dbl(model, get_slope),
+      p_value  = map_dbl(model, get_p_value),
+      rsquared = map_dbl(model, get_rsq)
+    ) %>%
+    dplyr::select(Watershed_name, slope, p_value, rsquared)
+
+  # write results to file
+  write.csv(baseline,   paste0(d$out, "_dissimilarity_year1toN.csv"))
+  write.csv(watershed,  paste0(d$out, "_dissimilarity_watersheds.csv"))
+  write.csv(jacc_lm,    paste0(d$out, "_jacc_diss_lm.csv"))
+  write.csv(method2_lm, paste0(d$out, "_", d$method2, "_diss_lm.csv"))
+
+  # assign named objects for downstream plotting code
+  assign(paste0(d$prefix, "_baseline"),                    baseline)
+  assign(paste0(d$prefix, "_watershed"),                   watershed)
+  assign(paste0(d$prefix, "_jacc_diss_lm"),                jacc_lm)
+  assign(paste0(d$prefix, "_", d$method2, "_diss_lm"),     method2_lm)
+}
+```
 
 #----------------------------------------------------------------------------------------
 
