@@ -1091,7 +1091,7 @@ pl <- all_class_counts %>%
 
 #lollipop chart (probably won't use this one in favor of bar chart)
 # ggplot(pl, aes(x = Proportion, y = classification)) +
-#   geom_segment(aes(x = 0, xend = Proportion, 
+#   geom_segment(aes(x = 0, xend = Proportion,
 #                    y = classification, yend = classification),
 #                color = "grey50", linewidth = 0.8) +
 #   geom_point(aes(color=classification), size = 3) +
@@ -1155,77 +1155,113 @@ ggsave("Figures/plant_class_abun_freq.png", dpi=300, width=4, height=6)
 ### Composition
 Since incidence change is necessarily impacted by species entering and exiting a community in different years, let's look at the underlying species composition patterns at the site. 
 
-Let's focus on plants, since that's where the incidence classes were most different
-```{r}
-## PLANTS Jaccard
+Dissimilarity trend plots for all four taxa. Each panel shows dissimilarity from the first
+year to each subsequent year within a watershed. A trend line is shown only where the linear
+model p-value <= 0.05, colored by direction (blue = increasing dissimilarity over time,
+red = decreasing). stat_cor() adds Pearson r and p-value per facet.
 
-# process relevant data frames
-pl_baseline <- pl_baseline %>% rename(Watershed_name=baseline.Watershed2)
+```{r viz_composition_all_taxa}
 
-pl_diss <- left_join(pl_baseline, pl_jacc_diss_lm, by="Watershed_name") %>%
-  filter(!Watershed_name %in% c("4A", "N4A")) %>%
-  mutate(Watershed_name = factor(Watershed_name, 
-                                 levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"), 
-                                 ordered = TRUE)) %>%
-  mutate(trend_dir = ifelse(slope >= 0, "positive", "negative"))
+# taxa_comp_plots: one entry per taxon, each with a list of metric-specific plot specs.
+# smammals / grasshoppers / birds: Jaccard + Bray-Curtis
+# plants: Jaccard + Gower (Bray-Curtis not appropriate for ordinal cover class data)
 
+taxa_comp_plots <- list(
+  list(label   = "small mammals",
+       baseline = sm_baseline,
+       plots = list(
+         list(lm_df    = sm_jacc_diss_lm,
+              diss_col = "baseline.jaccard_diss",
+              ylab     = "Jaccard dissimilarity to Year 1",
+              title    = "Small mammal Jaccard trends",
+              outfile  = "Figures/smammals_jacc_years.png"),
+         list(lm_df    = sm_bray_diss_lm,
+              diss_col = "baseline.bray_diss",
+              ylab     = "Bray-Curtis dissimilarity to Year 1",
+              title    = "Small mammal Bray-Curtis trends",
+              outfile  = "Figures/smammals_bray_years.png")
+       )),
+  list(label   = "grasshoppers",
+       baseline = gh_baseline,
+       plots = list(
+         list(lm_df    = gh_jacc_diss_lm,
+              diss_col = "baseline.jaccard_diss",
+              ylab     = "Jaccard dissimilarity to Year 1",
+              title    = "Grasshopper Jaccard trends",
+              outfile  = "Figures/grasshoppers_jacc_years.png"),
+         list(lm_df    = gh_bray_diss_lm,
+              diss_col = "baseline.bray_diss",
+              ylab     = "Bray-Curtis dissimilarity to Year 1",
+              title    = "Grasshopper Bray-Curtis trends",
+              outfile  = "Figures/grasshoppers_bray_years.png")
+       )),
+  list(label   = "birds",
+       baseline = bd_baseline,
+       plots = list(
+         list(lm_df    = bd_jacc_diss_lm,
+              diss_col = "baseline.jaccard_diss",
+              ylab     = "Jaccard dissimilarity to Year 1",
+              title    = "Bird Jaccard trends",
+              outfile  = "Figures/birds_jacc_years.png"),
+         list(lm_df    = bd_bray_diss_lm,
+              diss_col = "baseline.bray_diss",
+              ylab     = "Bray-Curtis dissimilarity to Year 1",
+              title    = "Bird Bray-Curtis trends",
+              outfile  = "Figures/birds_bray_years.png")
+       )),
+  list(label   = "plants",
+       baseline = pl_baseline,
+       plots = list(
+         list(lm_df    = pl_jacc_diss_lm,
+              diss_col = "baseline.jaccard_diss",
+              ylab     = "Jaccard dissimilarity to Year 1",
+              title    = "Plant Jaccard trends",
+              outfile  = "Figures/plants_jacc_years.png"),
+         list(lm_df    = pl_gower_diss_lm,
+              diss_col = "baseline.gower_diss",
+              ylab     = "Gower dissimilarity to Year 1",
+              title    = "Plant Gower trends",
+              outfile  = "Figures/plants_gower_years.png")
+       ))
+)
 
-# make panel plot of results
-ggplot(pl_diss, aes(x = baseline.Year2, y = baseline.jaccard_diss)) + 
-  geom_point(size=0.75) + 
-  facet_wrap(.~Watershed_name, ncol=2) + 
-  geom_smooth(data=pl_diss %>% filter(p_value <= 0.05), 
-              aes(color = trend_dir),
-              method = "lm") +
-  scale_color_manual(values = c("positive" = "cadetblue4", "negative" = "indianred2")) +    
-  theme_bw() +
-  theme(text = element_text(size=10),
-        axis.text.x = element_text(angle=45, hjust=1, size =10),
-        legend.position = "none") +
-  xlab("Year") +
-  ylab("Jaccard dissimilarity to Year 1") +
-  labs(title = "plant Jaccard trends",
-       color = NULL)  +
-  ggpubr::stat_cor()
+ws_levels <- c("1D", "N1B", "4B", "N4D", "20B", "N20B")
 
-ggsave("Figures/plants_jacc_years.png", dpi=300, width=4, height=6)
+for (tx in taxa_comp_plots) {
+  for (p in tx$plots) {
+
+    # join baseline dissimilarity to lm results; add trend direction
+    diss_df <- left_join(tx$baseline, p$lm_df, by = "Watershed_name") %>%
+      filter(Watershed_name %in% c("1D", "N1B", "4B", "N4D", "20B", "N20B")) %>%
+      mutate(Watershed_name = factor(Watershed_name,
+                                     levels = ws_levels, ordered = TRUE),
+             trend_dir = ifelse(slope >= 0, "positive", "negative"))
+
+    # panel plot: points for all years; lm line only where p <= 0.05
+    print(
+      ggplot(diss_df, aes(x = baseline.Year2, y = .data[[p$diss_col]])) +
+        geom_point(size = 0.75) +
+        facet_wrap(. ~ Watershed_name, ncol = 2) +
+        geom_smooth(data = diss_df %>% filter(p_value <= 0.05),
+                    aes(color = trend_dir), method = "lm") +
+        scale_color_manual(values = c("positive" = "cadetblue4",
+                                      "negative" = "indianred2")) +
+        theme_bw() +
+        theme(text = element_text(size = 10),
+              axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+              legend.position = "none") +
+        xlab("Year") + ylab(p$ylab) +
+        labs(title = p$title, color = NULL) +
+        ggpubr::stat_cor()
+    )
+    ggsave(p$outfile, dpi = 300, width = 4, height = 6, bg = "white")
+  }
+}
 ```
 
-#FIXME: baseline.Watershed2 doesn't exist. fix
-```{r}
-## PLANTS Gower
-
-# process relevant data frames
-pl_baseline <- pl_baseline %>% rename(Watershed_name=baseline.Watershed2)
-
-pl_diss <- left_join(pl_baseline, pl_gower_diss_lm, by="Watershed_name") %>%
-  filter(!Watershed_name %in% c("4A", "N4A")) %>%
-  mutate(Watershed_name = factor(Watershed_name, 
-                                 levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"), 
-                                 ordered = TRUE)) %>%
-  mutate(trend_dir = ifelse(slope >= 0, "positive", "negative"))
 
 
-# make panel plot of results
-ggplot(pl_diss, aes(x = baseline.Year2, y = baseline.gower_diss)) + 
-  geom_point(size=0.75) + 
-  facet_wrap(.~Watershed_name, ncol=2) + 
-  geom_smooth(data=pl_diss %>% filter(p_value <= 0.05), 
-              aes(color = trend_dir),
-              method = "lm") +
-  scale_color_manual(values = c("positive" = "cadetblue4", "negative" = "indianred2")) +    
-  theme_bw() +
-  theme(text = element_text(size=10),
-        axis.text.x = element_text(angle=45, hjust=1, size =10),
-        legend.position = "none") +
-  xlab("Year") +
-  ylab("Gower dissimilarity to Year 1") +
-  labs(title = "plant Gower trends",
-       color = NULL)  +
-  ggpubr::stat_cor()
 
-ggsave("Figures/plants_gower_years.png", dpi=300, width=4, height=6)
-```
 
 Let's dig a bit deeper into the directed change category. 
 **Which plant species are being classified as directed change?**
