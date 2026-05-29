@@ -1260,9 +1260,6 @@ for (tx in taxa_comp_plots) {
 ```
 
 
-
-
-
 Let's dig a bit deeper into the directed change category. 
 **Which plant species are being classified as directed change?**
 ```{r}
@@ -1272,26 +1269,26 @@ pl_class <- plants_classification %>%
 
 pl_directed <- pl_class %>%
   filter(classification %in% c("Decreasing", "Increasing")) %>%
-  dplyr::select(Watershed_name, Genus_spp, numyears, numpresent, percyears, classification)
+  dplyr::select(Watershed_name, Species, numyears, numpresent, percyears, classification)
 
-directed_spp <- unique(pl_directed$Genus_spp)
+directed_spp <- unique(pl_directed$Species)
 
 # How many species were increasing in at least one watershed?
 pl_directed %>%
   filter(classification == "Increasing") %>%
-  summarize(n_distinct(Genus_spp))
+  summarize(n_distinct(Species))
 
 #How many species were decreasing in at least one watershed? 
 pl_directed %>%
   filter(classification == "Decreasing") %>%
-  summarize(n_distinct(Genus_spp))
+  summarize(n_distinct(Species))
 ```
 
 **Which species are increasing at all watersheds in which they occur?**
 ```{r}
 # Species consistently increasing
 inc_species <- pl_class %>%
-  group_by(Genus_spp) %>%
+  group_by(Species) %>%
   filter(all(classification == "Increasing")) %>%
   summarise(
     Watersheds = paste(sort(unique(Watershed_name)), collapse = ", "),
@@ -1300,10 +1297,10 @@ inc_species <- pl_class %>%
   )
 
 #View(inc_species)
-all_inc = unique(inc_species$Genus_spp)
+all_inc = unique(inc_species$Species)
 
 nrow(inc_species)
-unique(inc_species$Genus_spp)
+unique(inc_species$Species)
 ```
 There are 22 species that are increasing at all watersheds in which they occur. 15/22 of these only occur in grazed sites, indicating a colonization effect for these sites, potentially in response to the grazing treatment. 
 
@@ -1311,7 +1308,7 @@ There are 22 species that are increasing at all watersheds in which they occur. 
 ```{r}
 # Species consistently decreasing
 dec_species <- pl_class %>%
-  group_by(Genus_spp) %>%
+  group_by(Species) %>%
   filter(all(classification == "Decreasing")) %>%
   summarise(
     Watersheds = paste(sort(unique(Watershed_name)), collapse = ", "),
@@ -1319,7 +1316,7 @@ dec_species <- pl_class %>%
     .groups = "drop"
   )
 
-all_dec = unique(dec_species$Genus_spp)
+all_dec = unique(dec_species$Species)
 
 dim(dec_species)
 ```
@@ -1334,7 +1331,7 @@ inc_species <- pl_class %>%
     mutate(treatment = case_when(
     Watershed_name %in% c("N1B", "N4D", "N20B") ~ "grazed",
     TRUE ~ "ungrazed")) %>%
-  group_by(Genus_spp) %>%
+  group_by(Species) %>%
   filter(classification == "Increasing") %>%
   summarise(
     Watersheds = paste(sort(unique(Watershed_name)), collapse = ", "),
@@ -1351,9 +1348,9 @@ DECREASING
 # Species decreasing across grazed/ungrazed treatments
 dec_species <- pl_class %>%
     mutate(treatment = case_when(
-    Watershed_name %in% c("N1B", "N4D", "N20B") ~ "grazed",
-    TRUE ~ "ungrazed")) %>%
-  group_by(Genus_spp) %>%
+      Watershed_name %in% c("N1B", "N4D", "N20B") ~ "grazed",
+      TRUE                                        ~ "ungrazed")) %>%
+  group_by(Species) %>%
   filter(classification == "Decreasing") %>%
   summarise(
     Watersheds = paste(sort(unique(Watershed_name)), collapse = ", "),
@@ -1372,10 +1369,10 @@ View(dec_species)
 dir_species <- pl_class %>%
     mutate(treatment = case_when(
       Watershed_name %in% c("N1B", "N4D", "N20B") ~ "grazed", TRUE ~ "ungrazed")) %>%
-  filter(Genus_spp %in% directed_spp) %>%
-    filter(!Genus_spp %in% all_inc) %>%
-    dplyr::select(Watershed_name, Genus_spp, numyears, numpresent, percyears, classification) %>%
-    arrange(Genus_spp, Watershed_name)
+  filter(Species %in% directed_spp) %>%
+    filter(!Species %in% all_inc) %>%
+    dplyr::select(Watershed_name, Species, numyears, numpresent, percyears, classification) %>%
+    arrange(Species, Watershed_name)
 
 View(dir_species)
 
@@ -1387,11 +1384,11 @@ How do growth form(a,b,p), life form (g,f,m), and photosynthesis (c3, c4) vary a
 ```{r}
 # prepare the species info
 pl_info <- pl_info %>%
-  mutate(Genus_spp = paste(gen, spec, sep = "_")) %>%
+  mutate(Species = paste(gen, spec, sep = "_")) %>%
   distinct()
 
 #add traits back into the plant classification dataset
-pl_class <- left_join(pl_class, pl_info, by="Genus_spp")
+pl_class <- left_join(pl_class, pl_info, by="Species")
 ```
 
 **Does origin (native, invasive) differ across the classifications?**
@@ -1434,13 +1431,14 @@ posthoc_results <- posthoc_results %>%
   arrange(p_adj)
 ```
 
-Plot the residuals for the growth form comparison across classifications
+Plot the residuals for the origin (n=native, i=introduced) across classifications
 ```{r}
 #plot a different way
 resid_df <- melt(chisq_result$stdres, varnames = c("classification", "Origin"), value.name = "Residual") %>%
   mutate(classification = factor(classification, 
-                                 levels=c("No_change-present", "Rare","Increasing", "Decreasing",
-                                          "Recurrent", "Random"), 
+                                 levels=c("Common", "Rare", "Random", 
+                                          "Recurrent", "Clumped",
+                                          "Increasing", "Decreasing"), 
                                  ordered = TRUE))
 
 ggplot(resid_df, aes(x = Origin, y = classification)) +
@@ -1506,8 +1504,9 @@ Plot the residuals for the growth form comparison across classifications
 #plot a different way
 resid_df <- melt(chisq_result$stdres, varnames = c("classification", "GrowthForm"), value.name = "Residual") %>%
   mutate(classification = factor(classification, 
-                                 levels=c("No_change-present", "Rare","Increasing", "Decreasing",
-                                          "Recurrent", "Random"), 
+                                 levels=c("Common", "Rare", "Random", 
+                                          "Recurrent", "Clumped",
+                                          "Increasing", "Decreasing"), 
                                  ordered = TRUE))
 
 ggplot(resid_df, aes(x = GrowthForm, y = classification)) +
@@ -1593,16 +1592,13 @@ for (res in results_by_watershed) {
 ```
 
 
-
-
-
 Can we annotate directed species with known traits like growth form, photosynthesis, and annual/perennial?
 ```{r}
 #add details back in for plants that are directed change
-dir_species <- left_join(dir_species, pl_info, by="Genus_spp")
+dir_species <- left_join(dir_species, pl_info, by="Species")
 
 dir_spp_info <- dir_species %>%
-  dplyr::select(Genus_spp, genus, species, family, `growth form`, `life form`, origin) %>%
+  dplyr::select(Species, genus, species, family, `growth form`, `life form`, origin) %>%
   distinct()
 
 #check out some summaries (note that if it doesn't add up to 146, is NA)
@@ -1616,13 +1612,14 @@ table(dir_spp_info$`life form`)
 **how does classification relate to percentage of years present?**
 ```{r}
 pl_class %>%
-   dplyr::select(Watershed_name, Genus_spp, numyears, numpresent, percyears, classification) %>%
+   dplyr::select(Watershed_name, Species, numyears, numpresent, percyears, classification) %>%
     mutate(Watershed_name = factor(Watershed_name, 
                                  levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"), 
                                  ordered = TRUE),
            classification = factor(classification, 
-                                 levels=c("No_change-present", "Rare","Increasing", "Decreasing",
-                                          "Recurrent", "Random"), 
+                                 levels=c("Common", "Rare", "Random",
+                                           "Recurrent", "Clumped",
+                                           "Increasing", "Decreasing"), 
                                  ordered = TRUE)) %>%
   ggplot(aes(x = classification, y = percyears)) +
   geom_jitter(width = 0.2, height = 0, color = "steelblue", alpha = 0.6) +
@@ -1642,13 +1639,14 @@ ggsave("Figures/plants_class_percyears.png", dpi=300, width=4, height=4, bg="whi
 ```{r}
 #boxplot
 pl_class %>%
-   dplyr::select(Watershed_name, Genus_spp, numyears, numpresent, percyears, classification) %>%
+   dplyr::select(Watershed_name, Species, numyears, numpresent, percyears, classification) %>%
     mutate(Watershed_name = factor(Watershed_name, 
                                  levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"), 
                                  ordered = TRUE),
            classification = factor(classification, 
-                                 levels=c("No_change-present", "Rare","Increasing", "Decreasing",
-                                          "Recurrent", "Random"), 
+                                 levels=c("Common", "Rare", "Random",
+                                           "Recurrent", "Clumped",
+                                           "Increasing", "Decreasing"), 
                                  ordered = TRUE)) %>%
   mutate(treatment = case_when(
       Watershed_name %in% c("N1B", "N4D", "N20B") ~ "grazed", TRUE ~ "ungrazed")) %>%
@@ -1670,14 +1668,17 @@ ggsave("Figures/plants_watershed_percyears_bxp.png", dpi=300, width=4, height=4,
 ```{r}
 #violin + jitter plot
 pl_class %>%
-   dplyr::select(Watershed_name, Genus_spp, numyears, numpresent, percyears, classification) %>%
+   dplyr::select(Watershed_name, Species, numyears, numpresent, percyears, classification) %>%
     mutate(Watershed_name = factor(Watershed_name, 
                                  levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"), 
                                  ordered = TRUE),
            classification = factor(classification, 
-                                 levels=c("No_change-present", "Rare","Increasing", "Decreasing",
-                                          "Recurrent", "Random"), 
+                                 levels=c("Common", "Rare", "Random",
+                                           "Recurrent", "Clumped",
+                                           "Increasing", "Decreasing"),  
                                  ordered = TRUE)) %>%
+    mutate(treatment = case_when(
+      Watershed_name %in% c("N1B", "N4D", "N20B") ~ "grazed", TRUE ~ "ungrazed")) %>%
   ggplot(aes(x = Watershed_name, y = percyears, group=Watershed_name)) +
   geom_violin(alpha=0.7) +
   geom_jitter(aes(col=classification), width = 0.2, height = 0, alpha = 0.8) +
@@ -1698,8 +1699,9 @@ dir_species %>%
                                  levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"), 
                                  ordered = TRUE),
            classification = factor(classification, 
-                                 levels=c("No_change-present", "Rare","Increasing", "Decreasing",
-                                          "Recurrent", "Random"), 
+                                 levels=c("Common", "Rare", "Random",
+                                           "Recurrent", "Clumped",
+                                           "Increasing", "Decreasing"), 
                                  ordered = TRUE),
            growth_form = factor(`growth form`, 
                                 levels = c("a", "b", "p"),
@@ -1749,73 +1751,201 @@ ggsave("Figures/plants_dir-change-ann-per__watershed_percyears.png", dpi=300, wi
 
 #----------------------------------------------------------
 
-```{r}
-## SMAMMALS Jaccard
+### Richness trends (all taxa)
+Species richness per watershed per year, with lm trend line shown only where p <= 0.05.
+The richness_trend() function was already called for all four taxa in the richness section
+above; results are stored in result_sm, result_gh, result_bd, result_pl.
 
-# process relevant data frames
-sm_baseline <- sm_baseline %>% rename(Watershed_name=baseline.Watershed2)
+```{r viz_richness_all_taxa}
 
-sm_diss <- left_join(sm_baseline, sm_jacc_diss_lm, by="Watershed_name") %>%
-  filter(!Watershed_name %in% c("4A", "N4A")) %>%
-  mutate(Watershed_name = factor(Watershed_name, 
-                                 levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"), 
-                                 ordered = TRUE)) %>%
+taxa_richness <- list(
+  list(result  = result_sm,
+       title   = "Small mammal richness trends",
+       outfile = "Figures/smammals_richness_years.png"),
+  list(result  = result_gh,
+       title   = "Grasshopper richness trends",
+       outfile = "Figures/grasshoppers_richness_years.png"),
+  list(result  = result_bd,
+       title   = "Bird richness trends",
+       outfile = "Figures/birds_richness_years.png"),
+  list(result  = result_pl,
+       title   = "Plant richness trends",
+       outfile = "Figures/plants_richness_years.png")
+)
+
+for (tx in taxa_richness) {
+
+  rich_df <- left_join(tx$result$richness, tx$result$model, by = "Watershed_name") %>%
+    filter(!Watershed_name %in% c("4A", "N4A")) %>%
+    mutate(Watershed_name = factor(Watershed_name,
+                                   levels = ws_levels, ordered = TRUE),
+           trend_dir = ifelse(slope >= 0, "positive", "negative"))
+
+  print(
+    ggplot(rich_df, aes(x = Recyear, y = Richness)) +
+      geom_point(size = 0.75) +
+      facet_wrap(. ~ Watershed_name, ncol = 2) +
+      geom_smooth(data = rich_df %>% filter(p_value <= 0.05),
+                  aes(color = trend_dir), method = "lm") +
+      scale_color_manual(values = c("positive" = "cadetblue4",
+                                    "negative" = "indianred2")) +
+      theme_bw() +
+      theme(text = element_text(size = 10),
+            axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+            legend.position = "none") +
+      labs(title = tx$title, color = NULL) +
+      ggpubr::stat_cor()
+  )
+  ggsave(tx$outfile, dpi = 300, width = 4, height = 6, bg = "white")
+}
+```
+
+### Abundance trends (all taxa)
+
+#### Small mammals, grasshoppers, birds: count data (linear model)
+For count-based taxa, show species with significant lm trends (p <= 0.05) as one line
+per species per watershed, colored by trend direction. An annotation per facet shows
+the count of significant increasing and decreasing species.
+
+#FIXME: showing some NA plots that should not be there. Would like to keep empty plots and label with zero.
+```{r viz_abund_lm_all_taxa}
+
+taxa_abund_lm <- list(
+  list(lm_df     = sm_spabun_lm,
+       years_wide = smammals_years_wide,
+       title      = "Small mammal significant abundance trends",
+       ylab       = "Count",
+       outfile    = "Figures/smammals_signif_abundance_years.png"),
+  list(lm_df     = gh_spabun_lm,
+       years_wide = grasshoppers_years_wide,
+       title      = "Grasshopper significant abundance trends",
+       ylab       = "Count",
+       outfile    = "Figures/grasshoppers_signif_abundance_years.png"),
+  list(lm_df     = bd_spabun_lm,
+       years_wide = birds_years_wide,
+       title      = "Bird significant abundance trends",
+       ylab       = "Count",
+       outfile    = "Figures/birds_signif_abundance_years.png")
+)
+
+for (tx in taxa_abund_lm) {
+
+  # identify significant species-watersheds and add trend direction
+  sig <- tx$lm_df %>%
+    filter(p_value <= 0.05) %>%
+    mutate(trend_dir = ifelse(slope >= 0, "positive", "negative"))
+
+  # count increasing and decreasing per watershed for annotation
+  trend_counts <- sig %>%
+    mutate(Watershed_name = factor(Watershed_name,
+                                   levels = ws_levels, ordered = TRUE)) %>%
+    filter(Watershed_name %in% c("1D", "N1B", "4B", "N4D", "20B", "N20B")) %>%
+    count(Watershed_name, trend_dir) %>%
+    pivot_wider(names_from = trend_dir, values_from = n, values_fill = 0) %>%
+    mutate(label = paste0("↑ ", positive, "  ↓ ", negative))
+
+  # join significant species back to wide data for year columns, then pivot long
+  sig_long <- left_join(sig, tx$years_wide,
+                        by = c("Species", "Watershed_name")) %>%
+    filter(!Watershed_name %in% c("4A", "N4A")) %>%
+    mutate(Watershed_name = factor(Watershed_name,
+                                   levels = ws_levels, ordered = TRUE)) %>%
+    pivot_longer(cols = matches("^\\d{4}$"),
+                 names_to = "Year", values_to = "Abundance") %>%
+    mutate(Year = as.numeric(Year)) %>%
+    left_join(trend_counts, by = "Watershed_name")
+
+  print(
+    ggplot(sig_long, aes(x = Year, y = Abundance,
+                         group = Species, color = trend_dir)) +
+      geom_smooth(method = "lm", se = FALSE, size = 0.4, alpha = 0.5) +
+      geom_text(data = trend_counts,
+                aes(x = -Inf, y = Inf, label = label),
+                inherit.aes = FALSE, hjust = -0.1, vjust = 1.1, size = 3) +
+      facet_wrap(~ Watershed_name, ncol = 2) +
+      scale_color_manual(values = c("positive" = "cadetblue4",
+                                    "negative" = "indianred2")) +
+      labs(title = tx$title, x = "Year", y = tx$ylab, color = "Trend") +
+      theme_bw() +
+      theme(strip.text = element_text(size = 10),
+            axis.text.x = element_text(angle = 45, hjust = 1),
+            legend.position = "none")
+  )
+  ggsave(tx$outfile, bg = "white", dpi = 300, width = 4, height = 6)
+}
+```
+
+#### Plants: cover class data (ordinal logistic regression)
+Plants use the polr pseudo p-value to identify significant trends. The plot structure
+is the same as the count-based taxa above: one line per species per watershed, colored
+by trend direction, with a per-facet annotation of significant increasing/decreasing counts.
+
+```{r viz_abund_plants}
+# identify the plant species that had significant cover class trends, using pseudo pvalue
+#   and add trend direction (positive or negative)
+pl_spabun_logit_sig <- pl_spabun_logit %>%
+  filter(psuedo_pval <= 0.05) %>%
   mutate(trend_dir = ifelse(slope >= 0, "positive", "negative"))
 
+# show results divided by positive and negative significant trends
+table(pl_spabun_logit_sig$Watershed_name, pl_spabun_logit_sig$trend_dir)
 
-# make panel plot of results
-ggplot(sm_diss, aes(x = baseline.Year2, y = baseline.jaccard_diss)) + 
-  geom_point(size=0.75) + 
-  facet_wrap(.~Watershed_name, ncol=2) + 
-  geom_smooth(data=sm_diss %>% filter(p_value <= 0.05), 
-              aes(color = trend_dir),
-              method = "lm") +
-  scale_color_manual(values = c("positive" = "cadetblue4", "negative" = "indianred2")) +    
+# count number of significant increasing and decreasing trends per watershed
+trend_counts <- pl_spabun_logit_sig %>%
+  filter(!Watershed_name %in% c("4A", "N4A")) %>%
+  mutate(Watershed_name = factor(Watershed_name,
+                                 levels = ws_levels, ordered = TRUE)) %>%
+  count(Watershed_name, trend_dir) %>%
+  pivot_wider(names_from = trend_dir, values_from = n, values_fill = 0) %>%
+  mutate(label = paste0("↑ ", positive, "  ↓ ", negative))
+
+# annotate abundance df with logit model results for significant species-watersheds
+pl_abun <- left_join(pl_spabun_logit_sig, plants_years_wide,
+                     by = c("Species" = "Species",
+                            "Watershed_name" = "Watershed_name")) %>%
+  filter(!Watershed_name %in% c("4A", "N4A")) %>%
+  mutate(Watershed_name = factor(Watershed_name,
+                                 levels = ws_levels, ordered = TRUE))
+
+# pivot all year columns into long format for plotting
+pl_abun_sig_long <- pl_abun %>%
+  pivot_longer(cols = matches("^\\d{4}$"),
+               names_to = "Year", values_to = "Cover_class") %>%
+  mutate(Year = as.numeric(Year)) %>%
+  left_join(trend_counts, by = "Watershed_name")
+
+ggplot(pl_abun_sig_long,
+       aes(x = Year, y = Cover_class, group = Species, color = trend_dir)) +
+  geom_smooth(method = "lm", se = FALSE, size = 0.4, alpha = 0.5) +
+  geom_text(data = trend_counts,
+            aes(x = -Inf, y = Inf, label = label),
+            inherit.aes = FALSE, hjust = -0.1, vjust = 1.1, size = 3) +
+  facet_wrap(~ Watershed_name, ncol = 2) +
+  scale_color_manual(values = c("positive" = "cadetblue4",
+                                "negative" = "indianred2")) +
+  labs(title = "Plant significant cover class trends",
+       x = "Year", y = "Cover Class", color = "Trend") +
   theme_bw() +
-  theme(text = element_text(size=10),
-        axis.text.x = element_text(angle=45, hjust=1, size =10),
-        legend.position = "none") +
-  xlab("Year") +
-  ylab("Jaccard dissimilarity to Year 1") +
-  labs(title = "small mammal Jaccard trends",
-       color = NULL)  +
-  ggpubr::stat_cor()
+  theme(strip.text = element_text(size = 10),
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "none")
 
-ggsave("Figures/smammals_jacc_years.png", dpi=300, width=4, height=6)
+ggsave("Figures/plants_signif_abundance_years.png", bg = "white",
+       dpi = 300, width = 4, height = 6)
 ```
 
-```{r}
-## SMAMMALS Bray
-
-# process relevant data frames
-sm_diss <- left_join(sm_baseline, sm_bray_diss_lm, by="Watershed_name") %>%
-  filter(!Watershed_name %in% c("4A", "N4A")) %>%
-  mutate(Watershed_name = factor(Watershed_name, 
-                                 levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"), 
-                                 ordered = TRUE)) %>%
-  mutate(trend_dir = ifelse(slope >= 0, "positive", "negative"))
 
 
-# make panel plot of results
-ggplot(sm_diss, aes(x = baseline.Year2, y = baseline.bray_diss)) + 
-  geom_point(size=0.75) + 
-  facet_wrap(.~Watershed_name, ncol=2) + 
-  geom_smooth(data=sm_diss %>% filter(p_value <= 0.05), 
-              aes(color = trend_dir),
-              method = "lm") +
-  scale_color_manual(values = c("positive" = "cadetblue4", "negative" = "indianred2")) +  theme_bw() +
-  theme(text = element_text(size=10),
-        axis.text.x = element_text(angle=45, hjust=1, size =10),
-        legend.position = "none") +
-  xlab("Year") +
-  ylab("Bray-Curtis dissimilarity to Year 1") +
-  labs(title = "small mammal Bray trends",
-       color = NULL)  +
-  ggpubr::stat_cor()
 
-ggsave("Figures/smammals_bray_years.png", dpi=300, width=4, height=6)
-```
-#TODO: START HERE, make composition plots like this for all taxa; will need to jump up to composition section and add lm models and writecsv to all other taxa too. 
+
+
+
+
+
+
+
+
+
 
 
 #TODO: START HERE AGAIN
