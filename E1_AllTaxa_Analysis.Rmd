@@ -862,9 +862,9 @@ all_class_counts <- all_class_counts %>%
          taxa = factor(taxa, levels = c("plants", "grasshoppers", "small mammals", "birds"),
                        ordered = TRUE),
          classification = factor(classification, 
-                                 levels = c("Common", "Rare",
-                                            "Increasing", "Decreasing",
-                                            "Recurrent", "Clumped", "Random"), 
+                                 levels = c("Common", "Rare", "Random",
+                                            "Recurrent", "Clumped",
+                                            "Increasing", "Decreasing"), 
                                  ordered = TRUE),
           # Grazing treatment: watersheds starting with N are grazed (bison present)
          grazing = factor(ifelse(startsWith(as.character(Watershed_name), "N"),
@@ -876,7 +876,7 @@ all_class_counts <- all_class_counts %>%
          change_type = factor(case_when(
            classification %in% c("Increasing", "Decreasing")      ~ "directed",
            classification %in% c("Recurrent", "Clumped")          ~ "undirected",
-           classification %in% c("Random", "Rare", "Common")       ~ "undetectable",
+           classification %in% c("Random", "Rare", "Common")      ~ "undetectable",
            TRUE                                                   ~ NA_character_
            ))
          )
@@ -892,8 +892,9 @@ all_class_abun <- all_class_abun %>%
                        levels = c("plants", "grasshoppers", "small mammals", "birds"),
                        ordered = TRUE),
          classification = factor(classification, 
-                                 levels=c("Invariant", "Rare","Increasing", "Decreasing",
-                                          "Recurrent", "Clumped", "Random"), 
+                                 levels=c("Invariant", "Rare", "Random", 
+                                          "Recurrent", "Clumped",
+                                          "Increasing", "Decreasing"), 
                                  ordered = TRUE),
                    # Grazing treatment: watersheds starting with N are grazed (bison present)
          grazing = factor(ifelse(startsWith(as.character(Watershed_name), "N"),
@@ -905,7 +906,7 @@ all_class_abun <- all_class_abun %>%
          change_type = factor(case_when(
            classification %in% c("Increasing", "Decreasing")      ~ "directed",
            classification %in% c("Recurrent", "Clumped")          ~ "undirected",
-           classification %in% c("Random", "Rare", "Invariant")       ~ "undetectable",
+           classification %in% c("Random", "Rare", "Invariant")   ~ "undetectable",
            TRUE                                                   ~ NA_character_
            ))
          )
@@ -973,8 +974,9 @@ pl_resid <- chisq_results %>%
                                  levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"), 
                                  ordered = TRUE),
          classification = factor(classification, 
-                                 levels=c("No_change-present", "Rare","Increasing", "Decreasing",
-                                          "Recurrent", "Clumped", "Random"), 
+                                 levels=c("Common", "Rare", "Random", 
+                                          "Recurrent", "Clumped",
+                                          "Increasing", "Decreasing"), 
                                  ordered = TRUE))
 
 # heatmap of the residuals
@@ -1031,7 +1033,6 @@ ggsave("Figures/plant_incidence_chisq_residuals_points_2plus.png", dpi=300, widt
 ```
 
 
-
 Look at the ABUNDANCE residuals
 ```{r}
 # prepare data for plant residuals
@@ -1044,8 +1045,9 @@ pl_resid_abun <- chisq_results_abun %>%
                                  levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"), 
                                  ordered = TRUE),
          classification = factor(classification, 
-                                 levels=c("Invariant", "Rare","Increasing", "Decreasing",
-                                          "Recurrent", "Clumped", "Random"), 
+                                 levels=c("Invariant", "Rare", "Random",
+                                          "Recurrent", "Clumped",
+                                          "Increasing", "Decreasing"), 
                                  ordered = TRUE))
 
 # heatmap of the residuals
