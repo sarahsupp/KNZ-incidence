@@ -616,13 +616,13 @@ It then determines if richness is changing directionally over time using a simpl
 ```{r smammals richness}
 
 # Apply function to calculate species richness per watershed and per year
-result <- richness_trend(decostand_smammals_pa, smammals_env)
+result_sm <- richness_trend(decostand_smammals_pa, smammals_env)
 
 #Save richness data 
-write.csv(result$richness, "Datasets/E1_output_data/E1_smammals/E1_smammals_richness.csv")
+write.csv(result_sm$richness, "Datasets/E1_output_data/E1_smammals/E1_smammals_richness.csv")
 
 #Save richness model results
-write.csv(result$model, "Datasets/E1_output_data/E1_smammals/E1_smammals_richness_lm.csv")
+write.csv(result_sm$model, "Datasets/E1_output_data/E1_smammals/E1_smammals_richness_lm.csv")
 ```
 
 #### Grasshoppers
@@ -630,13 +630,13 @@ write.csv(result$model, "Datasets/E1_output_data/E1_smammals/E1_smammals_richnes
 ```{r grasshopper richness}
 
 # Apply function to calculate species richness per watershed and per year
-result <- richness_trend(decostand_grasshoppers_pa, grasshoppers_env)
+result_gh <- richness_trend(decostand_grasshoppers_pa, grasshoppers_env)
 
 #Save richness data 
-write.csv(result$richness, "Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers_richness.csv")
+write.csv(result_gh$richness, "Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers_richness.csv")
 
 #Save richness model results
-write.csv(result$model, "Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers_richness_lm.csv")
+write.csv(result_gh$model, "Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers_richness_lm.csv")
 ```
 
 #### Birds
@@ -644,13 +644,13 @@ write.csv(result$model, "Datasets/E1_output_data/E1_grasshoppers/E1_grasshoppers
 ```{r bird richness}
 
 # Apply function to calculate species richness per watershed and per year
-result <- richness_trend(decostand_birds_pa, birds_env)
+result_bd <- richness_trend(decostand_birds_pa, birds_env)
 
 #Save richness data 
-write.csv(result$richness, "Datasets/E1_output_data/E1_birds/E1_birds_richness.csv")
+write.csv(result_bd$richness, "Datasets/E1_output_data/E1_birds/E1_birds_richness.csv")
 
 #Save richness model results
-write.csv(result$model, "Datasets/E1_output_data/E1_birds/E1_birds_richness_lm.csv")
+write.csv(result_bd$model, "Datasets/E1_output_data/E1_birds/E1_birds_richness_lm.csv")
 ```
 
 #### Plants
@@ -658,13 +658,13 @@ write.csv(result$model, "Datasets/E1_output_data/E1_birds/E1_birds_richness_lm.c
 ```{r plants richness}
 
 # Apply function to calculate species richness per watershed and per year
-result <- richness_trend(decostand_plants_pa, plants_env)
+result_pl <- richness_trend(decostand_plants_pa, plants_env)
 
 #Save richness data 
-write.csv(result$richness, "Datasets/E1_output_data/E1_plants/E1_plants_richness.csv")
+write.csv(result_pl$richness, "Datasets/E1_output_data/E1_plants/E1_plants_richness.csv")
 
 #Save richness model results
-write.csv(result$model, "Datasets/E1_output_data/E1_plants/E1_plants_richness_lm.csv")
+write.csv(result_pl$model, "Datasets/E1_output_data/E1_plants/E1_plants_richness_lm.csv")
 ```
 
 #----------------------------------------------------------------------------------------
