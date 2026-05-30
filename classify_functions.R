@@ -13,11 +13,11 @@ require(vegan)
 
 #---------------------------------------------------------------------------------
 ### getTrends3.0
-# The "getTrends3.0" function will classify species within each taxa, from each watershed, into distinct categories, using only presence-absence data. This version of the function has the stipulations for 'No_change-present' >=90% years present, 'Rare' present but for only <=10% of years, 'No_change-absent' 0 years present, and for recurrent category requires at least 2 blocks of time when it is present. I also renamed some variables for clarity. The categories include: 
+# The "getTrends3.0" function will classify species within each taxa, from each watershed, into distinct categories, using only presence-absence data. This version of the function has the stipulations for 'Common' >=90% years present, 'Rare' present but for only <=10% of years, 'No_change-absent' 0 years present, and for recurrent category requires at least 2 blocks of time when it is present. I also renamed some variables for clarity. The categories include: 
 #   
 #   - **"No_change-absent"** <- though species was detected at other surrounding watersheds, it was absent at specified watershed for the duration of the time series.
 #   - **"Rare"** <- Species was present at specified watershed for between 1-10% of years in the duration of the time series.
-#   - **"No_change-present"** <- species at watershed is present in >=90% of years in which data was collected.
+#   - **"Common"** <- species at watershed is present in >=90% of years in which data was collected.
 #   - **"Increasing"** <- the presence of the species increases throughout the duration of the study (it is absent during the beginning of the study, but appears towards the end of the study)
 #   - **"Decreasing"** <- the presence of the species decreases throughout the duration of the study (it is present during the beginning of the study, but then disappears towards the end of the study)
 #   - **"Recurrent"** <- species is detected in consecutive years and is followed by the absence of the species for a period of time, in a distinct pattern. Species must at least two instances of presences followed by absences. 
@@ -82,7 +82,7 @@ getTrends3.0 <- function(x) {
     runsTestPV <- NA
     trend <- NA
     trendPlus <- NA
-    cat <- "No_change-present"
+    cat <- "Common"
   } else {
     #If the time series contains changes, then we do a chi-sq test to detect directed change
     #adds rownames to the z_x table
@@ -319,7 +319,7 @@ getAbundTrends <- function(x) {
       else if((p_val > 0.05) & (runsTestPV < 0.05) & (v <= 2)) {
         cat="Clumped"
       }
-      else if((p_val > 0.05) & (runsTestPV > 0.05)) {
+      else {
         cat="Random"
       }
     } #end else for ns chisq
