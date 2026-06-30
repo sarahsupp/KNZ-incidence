@@ -165,7 +165,7 @@ getTrends3.0 <- function(x) {
                      "numtransitions" = v, 
                      "trend" = trend, 
                      "classification" = factor(cat, levels = classification_levels, ordered = TRUE),
-                     "group" = as.factor(group, levels = group_levels, ordered = TRUE))
+                     "group" = factor(group, levels = group_levels, ordered = TRUE))
  
   return(statSumm)
 }
