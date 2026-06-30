@@ -144,6 +144,16 @@ getTrends3.0 <- function(x) {
     } #end else for ns chisq
   }
   
+  # set levels and order for classification and group
+  classification_levels <- c(
+    "Common", "Rare", "Random", "No_change-absent",
+    "Clumped", "Recurrent", "Increasing", "Decreasing"
+  )
+  
+  group_levels <- c(
+    "Undetermined", "Non-directional", "Directional"
+  )
+  
   # for each species, record the summary statistics
   statSumm <- tibble("numyears" = tslen, 
                      "numpresent" = tssum,
@@ -154,8 +164,9 @@ getTrends3.0 <- function(x) {
                      "runsPval" = runsTestPV, 
                      "numtransitions" = v, 
                      "trend" = trend, 
-                     "classification" = as.factor(cat),
-                     "group" = as.factor(group))
+                     "classification" = factor(cat, levels = classification_levels, ordered = TRUE),
+                     "group" = as.factor(group, levels = group_levels, ordered = TRUE))
+ 
   return(statSumm)
 }
 
