@@ -1,0 +1,12 @@
+---
+title: "E3_Test_Method"
+author: "Sarah Supp"
+date: "2026-06-30"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This code tests the incidence classification method, by simulating different incidence time series comprised of 0 (not present) and 1 (present). We test different total time series lengths (20, 30, 40), different numbers of incidences.  For each different number of incidences, we resample 300 random orderings of the 0s and 1s within the timeseries.
