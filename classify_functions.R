@@ -65,6 +65,7 @@ getTrends3.0 <- function(x) {
     trend <- NA
     trendPlus <- NA
     cat <- "No_change-absent"
+    group <- "Undetermined"
   } else if ((tsprop > 0) & (tsprop <= 0.10)) {
     # if most of the values are 1 (<=10% of all years), it is "rare"
     p_val <- NA
@@ -74,6 +75,7 @@ getTrends3.0 <- function(x) {
     trend <- NA
     trendPlus <- NA
     cat <- "Rare"
+    group <- "Undetermined"
   } else if (tsprop >= 0.90) {
     # if most of the values are 1 (>=90% of all years), it is "no change" present
     p_val <- NA
@@ -83,6 +85,7 @@ getTrends3.0 <- function(x) {
     trend <- NA
     trendPlus <- NA
     cat <- "Common"
+    group <- "Undetermined"
   } else {
     #If the time series contains changes, then we do a chi-sq test to detect directed change
     #adds rownames to the z_x table
@@ -102,11 +105,13 @@ getTrends3.0 <- function(x) {
     if((f_early > f_late) & (p_val <= 0.05)) {
       trend <- -1
       cat = "Decreasing"
+      group = "Directional"
       runsTestPV <- NA
     } 
     else if((f_early < f_late) & (p_val <= 0.05)) {
       trend <- 1
       cat = "Increasing"
+      group = "Directional"
       runsTestPV <- NA
     } 
     else {
@@ -123,15 +128,18 @@ getTrends3.0 <- function(x) {
       
       # if Chi-sq test insignif. and the runs test was significant AND it was present in at least TWO blocks of time
       if((p_val > 0.05) & (runsTestPV < 0.05) & (v > 2)) {
-        cat="Recurrent"
+        cat = "Recurrent"
+        group = "Non-directional"
       }
       # if Chi-sq test insignif. and the runs test was significant AND it was present in only ONE block of time
       else if ((p_val > 0.05) & (runsTestPV < 0.05) & (v <= 2)) {
         cat="Clumped"
+        group = "Non-directional"
       }
       # Chi-sq test insignif. (p_val > 0.05) and the runs test was insignif. (runsTestPV > 0.05)
       else {
         cat="Random"
+        group = "Undetermined"
       }
     } #end else for ns chisq
   }
@@ -146,7 +154,8 @@ getTrends3.0 <- function(x) {
                      "runsPval" = runsTestPV, 
                      "numtransitions" = v, 
                      "trend" = trend, 
-                     "classification" = as.factor(cat))
+                     "classification" = as.factor(cat),
+                     "group" = as.factor(group))
   return(statSumm)
 }
 
