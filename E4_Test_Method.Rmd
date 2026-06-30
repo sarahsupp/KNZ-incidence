@@ -5,8 +5,189 @@ date: "2026-06-30"
 output: html_document
 ---
 
+This code tests the incidence classification method, by simulating different incidence time series comprised of 0 (not present) and 1 (present). We test different total time series lengths (20, 30, 40), different numbers of incidences (minimum present at least once).  For each different number of incidences, we resample 300 random orderings of the 0s and 1s within the timeseries.
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(tseries)
+
+#Call our custom functions for classification and analysis
+source("classify_functions.R")
 ```
 
-This code tests the incidence classification method, by simulating different incidence time series comprised of 0 (not present) and 1 (present). We test different total time series lengths (20, 30, 40), different numbers of incidences.  For each different number of incidences, we resample 300 random orderings of the 0s and 1s within the timeseries.
+For a given time series length and number of incidences, we generate random orderings to show what the distribution of classifications looks like for different combinations.
+
+Function to generate random arrangements of 0s and 1s
+```{r simulation-functions}
+# generate a random arrangement of 'npresent' 1's among 'tslen' slots
+make_random <- function(tslen, npresent) {
+  x <- rep(0, tslen)
+  if (npresent > 0) x[sample(1:tslen, npresent)] <- 1
+  x
+}
+
+# runs one simulation
+run_one <- function(tslen, npresent, arrangement) {
+  x <- switch(arrangement,
+    random       = make_random(tslen, npresent),
+    clumped      = make_clumped(tslen, npresent),
+    front_loaded = make_front_loaded(tslen, npresent),
+    back_loaded  = make_back_loaded(tslen, npresent)
+  )
+  getTrends3.0(x)
+}
+
+```
+
+```{r run-simulation}
+#set seed so results are repeatable
+set.seed(41) 
+
+# set values to test 
+lengths    <- c(20, 30, 40)
+n_runs     <- 300   # random orderings per (length, npresent) combo
+arrangement_types <- c("random")
+
+# make a simulation grid that will be used to hold results
+sim_grid <- expand_grid(
+  tslen       = lengths,
+  npresent    = NA,           # filled in below per tslen
+  arrangement = arrangement_types,
+  run         = 1:n_runs
+)
+
+# expand npresent properly per length (0:tslen)
+sim_grid <- map_dfr(lengths, function(L) {
+  expand_grid(
+    tslen       = L,
+    npresent    = 1:L,
+    arrangement = arrangement_types,
+    run         = 1:n_runs
+  )
+})
+
+# run the test and record the results
+results <- sim_grid %>%
+  mutate(res = pmap(list(tslen, npresent, arrangement), run_one)) %>%
+  unnest(res, names_repair = "minimal")
+```
+
+Add colors for plotting. Group colors reflect three main groupings:
+   - Undetermined (stable or uninformative): Common, Rare, Random, No_change-absent
+   - Directional trend: Increasing, Decreasing
+   - Non-directional trend (episodic or patchy presence): Clumped, Recurrent
+
+These colors match a flowchart designed in Canva for the manuscript.
+
+```{r color-palette}
+#colors for the overall groups
+group_colors <- c(
+  "Undetermined"      = "#705e63",
+  "Directional"       = "#e1be6a",
+  "Non-directional"   = "#40b0a6"
+)
+
+# colors for the classifications using shading
+classification_colors <- c(
+  "Common"           = "#493D40",
+  "Random"           = "#816F74",
+  "Rare"             = "#A49297",
+  "No_change-absent" = "#615457",
+  "Increasing"       = "#947603",
+  "Decreasing"       = "#F7D381",
+  "Clumped"          = "#197169",
+  "Recurrent"        = "#6BD1C7"
+)
+```
+
+
+Summarize the results by classification proportion
+```{r}
+# summarize using the raw values for number of presences
+summary_tbl <- results %>%
+  count(tslen, npresent, arrangement, group, classification) %>%
+  group_by(tslen, npresent, arrangement) %>%
+  mutate(prop = n / sum(n)) %>%
+  ungroup()
+
+summary_tbl
+
+# Binned summary: collapse presence proportion into 10 bins (deciles) per
+# series length, so plots show ~10 bars/bands instead of one per possible
+# npresent value. This is much easier to read and the underlying pattern
+# doesn't meaningfully change at this resolution.
+summary_binned <- results %>%
+  mutate(
+    prop_present = npresent / tslen,
+    prop_bin = cut(prop_present, breaks = seq(0, 1, by = 0.1),
+                   include.lowest = TRUE, right = TRUE)
+  ) %>%
+  count(tslen, prop_bin, arrangement, group, classification) %>%
+  group_by(tslen, prop_bin, arrangement) %>%
+  mutate(prop = n / sum(n)) %>%
+  ungroup()
+
+summary_binned
+```
+
+
+Now, let's show the results by classification and presence level
+```{r plot-random-binned, fig.width=9, fig.height=6}
+summary_binned %>%
+  filter(arrangement == "random") %>%
+  ggplot(aes(x = prop_bin, y = prop, fill = classification)) +
+  geom_col(position = "stack") +
+  facet_wrap(~ tslen, labeller = label_both) +
+  scale_fill_manual(values = classification_colors) +
+  labs(
+    x = "Proportion of years present (binned)",
+    y = "Proportion of runs classified as category",
+    title = "Classification outcomes under random ordering of presences"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(legend.position = "bottom") # Places the legend below the plot
+
+
+ggsave("Figures/simulation-figs/barplot-random-ordering.png", dpi=300, width=9, height=6, bg="white")
+```
+
+
+```{r violin-presence-proportion, fig.width=10, fig.height=6}
+results %>%
+  mutate(prop_present = npresent / tslen) %>%
+  ggplot(aes(x = classification, y = prop_present, fill = group)) +
+  geom_violin(trim = TRUE, alpha = 0.6, scale = "width") +
+  geom_jitter(width = 0.15, height = 0, alpha = 0.05, size = 0.6) +
+  facet_wrap(~ tslen, labeller = label_both) +
+  scale_fill_manual(values = group_colors) +
+  labs(
+    x = NULL, y = "Proportion of years present",
+    title = "Presence proportion by assigned classification"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none")
+
+ggsave("Figures/simulation-figs/violin-random-prop-years.png", dpi=300, width=9, height=5, bg="white")
+```
+
+```{r violin-transitions, fig.width=10, fig.height=6}
+results %>%
+  ggplot(aes(x = classification, y = numtransitions, fill = group)) +
+  geom_violin(trim = TRUE, alpha = 0.6, scale = "width") +
+  geom_jitter(width = 0.15, height = 0, alpha = 0.05, size = 0.6) +
+  geom_hline(yintercept = 2, linetype = "dashed", color = "hotpink") +
+  facet_wrap(~ tslen, labeller = label_both) +
+  scale_fill_manual(values = group_colors) +
+  labs(
+    x = NULL, y = "Number of 0/1 transitions",
+    title = "Transition count by assigned classification",
+    subtitle = "Dashed line marks the Recurrent vs Clumped cutoff (v > 2)"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none")
+
+ggsave("Figures/simulation-figs/violin-random-num-transitions.png", dpi=300, width=9, height=5, bg="white")
+```
