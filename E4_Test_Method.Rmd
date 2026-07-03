@@ -240,3 +240,76 @@ ggsave("Figures/simulation-figs/random_class_incid_bar.png", dpi=300, width=9, h
 ```
 
 
+Example incidence pattern plots
+```{r}
+# Define example presence/absence sequences for each classification
+# 1 = present (shaded), 0 = absent (empty), 20 years each
+classification_examples <- list(
+  "Common"           = c(1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1),
+  "Rare"             = c(0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0),
+  "Random"           = c(0,1,0,0,1,0,1,0,0,1,1,0,0,0,1,0,0,1,1,0),
+  "No_change-absent" = c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
+  "Clumped"          = c(0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0),
+  "Recurrent"        = c(1,1,1,0,0,0,1,1,1,0,0,0,1,1,0,0,0,1,1,0),
+  "Increasing"       = c(0,0,0,0,0,0,0,1,0,0,1,1,0,1,1,1,1,1,1,1),
+  "Decreasing"       = c(1,1,1,1,1,1,1,0,1,1,0,0,1,0,0,0,0,0,0,0)
+)
+
+
+# build a long dataframe: one row per year per classification
+ts_data <- map_dfr(names(classification_examples), function(cls) {
+  tibble(
+    classification = cls,
+    year           = 1:20,
+    present        = classification_examples[[cls]]
+  )
+}) %>%
+  mutate(
+    classification = factor(classification,
+                            levels = classification_levels,
+                            ordered = TRUE),
+    # shade color: use classification color when present, white when absent
+    fill_color = ifelse(present == 1, classification, "absent")
+  )
+
+# use your existing classification_colors palette,
+# adding a color for absent boxes
+box_colors <- c(classification_colors, "absent" = "white")
+
+ggplot(ts_data, aes(x = year, y = 1)) +
+  geom_tile(aes(fill = classification, alpha = factor(present)),
+            color = "grey40", linewidth = 0.4,
+            width = 0.9, height = 0.7) +
+  facet_wrap(~ classification, ncol = 1,
+             strip.position = "left") +
+  scale_fill_manual(values = classification_colors, guide = "none") +
+  scale_alpha_manual(
+    values = c("0" = 0,      # absent = fully transparent (white box)
+               "1" = 0.85),  # present = colored
+    guide  = "none"
+  ) +
+  labs(
+    title = "Incidence classification patterns",
+    x     = NULL,
+    y     = NULL
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.y       = element_blank(),
+    axis.ticks.y      = element_blank(),
+    panel.grid        = element_blank(),
+    strip.text.y.left = element_text(angle = 0, hjust = 1,
+                                     size = 10, face = "bold"),
+    strip.placement   = "outside",
+    plot.title        = element_text(size = 12, face = "bold"),
+    axis.text.x       = element_text(size = 8, color = "grey40"),
+    panel.spacing.y   = unit(0.2, "lines"),
+    panel.background  = element_rect(fill = "white", color = NA),
+    plot.background   = element_rect(fill = "white", color = NA)
+  )
+
+ggsave("Figures/simulation-figs/example-classification_timeseries.png",
+       dpi = 300, width = 8, height = 4, bg = "white")
+```
+
+
