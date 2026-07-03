@@ -836,6 +836,8 @@ model. Some key notes:
 * if n perfectly predicts class it is a problem
 * overfitting could be an issue
 
+Species classified as "Common" or "Rare" by the incidence method were excluded from the abundance slope comparison for two mutually reinforcing reasons: first, the incidence classification explicitly designates these species as uninformative with respect to temporal pattern; second, ordinal logistic regression produces numerically unstable slope estimates for near-invariant time series due to quasi-complete separation, making the resulting slopes unreliable regardless of their magnitude.
+
 ```{r plants abundance}
 #make a version of the wide dataset without the extra columns, for the logistic model
 pl_spabund <- plants_years_wide %>% 
@@ -1668,6 +1670,87 @@ ggplot(resid_df, aes(x = GrowthForm, y = classification)) +
 ggsave("Figures/plants_incidence_growth-form-resid.png", dpi=300, width=4, height=4, bg="white")
 ```
 
+Compare the growth forms across classifications in the different watersheds
+```{r}
+# Step 1: compute proportions within each watershed × growth form combination
+pl_gf_summary <- pl_class %>%
+  filter(Watershed_name %in% c("1D", "N1B", "4B", "N4D", "20B", "N20B")) %>%
+  mutate(
+    Watershed_name = factor(Watershed_name,
+                            levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"),
+                            ordered = TRUE),
+    growthform = factor(`growth form`)
+  ) %>%
+  count(Watershed_name, growthform, classification) %>%
+  group_by(Watershed_name, growthform) %>%
+  mutate(proportion = n / sum(n)) %>%
+  ungroup()
+
+# stacked bar that shows within each growth form (annual, biannual, and perennial), 
+#   what fraction of species fell into each classification
+ggplot(pl_gf_summary,
+       aes(x = growthform, y = proportion, fill = classification)) +
+  geom_col(position = "stack") +
+  facet_wrap(~ Watershed_name, ncol = 2) +
+  scale_fill_manual(values = classification_colors) +
+  labs(
+    x = "Growth form",
+    y = "Proportion of species",
+    title = "Incidence classification by growth form and watershed",
+    fill  = "Classification"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x  = element_text(angle = 45, hjust = 1),
+    strip.text   = element_text(face = "bold"),
+    legend.position = "bottom"
+  )
+
+ggsave("Figures/plants_classification_by_growthform.png", dpi = 300, width = 7, height = 10, bg = "white")
+
+```
+
+Compare the native vs invasive origin across classifications in the different watersheds
+```{r}
+# Step 1: compute proportions within each watershed × growth form combination
+pl_orig_summary <- pl_class %>%
+  filter(Watershed_name %in% c("1D", "N1B", "4B", "N4D", "20B", "N20B")) %>%
+  mutate(
+    Watershed_name = factor(Watershed_name,
+                            levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"),
+                            ordered = TRUE)
+  ) %>%
+  count(Watershed_name, origin, classification) %>%
+  group_by(Watershed_name, origin) %>%
+  mutate(proportion = n / sum(n)) %>%
+  ungroup()
+
+# stacked bar that shows within each growth form (annual, biannual, and perennial), 
+#   what fraction of species fell into each classification
+ggplot(pl_orig_summary,
+       aes(x = origin, y = proportion, fill = classification)) +
+  geom_col(position = "stack") +
+  facet_wrap(~ Watershed_name, ncol = 2) +
+  scale_fill_manual(values = classification_colors) +
+  labs(
+    x = "Origin",
+    y = "Proportion of species",
+    title = "Incidence classification by origin and watershed",
+    fill  = "Classification"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x  = element_text(angle = 45, hjust = 1),
+    strip.text   = element_text(face = "bold"),
+    legend.position = "bottom"
+  )
+
+ggsave("Figures/plants_classification_by_origin.png", dpi = 300, width = 7, height = 10, bg = "white")
+
+```
+
+
+#FIXME: This part appears not to work right now
 **Does growth form differ across the watersheds by classification?**
 ```{r}
 watersheds <- unique(pl_class$Watershed_name)
@@ -1752,15 +1835,11 @@ pl_class %>%
    dplyr::select(Watershed_name, Species, numyears, numpresent, percyears, classification) %>%
     mutate(Watershed_name = factor(Watershed_name, 
                                  levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"), 
-                                 ordered = TRUE),
-           classification = factor(classification, 
-                                 levels=c("Common", "Rare", "Random",
-                                           "Recurrent", "Clumped",
-                                           "Increasing", "Decreasing"), 
                                  ordered = TRUE)) %>%
   ggplot(aes(x = classification, y = percyears)) +
-  geom_jitter(width = 0.2, height = 0, color = "steelblue", alpha = 0.6) +
+  geom_jitter(width = 0.2, height = 0, alpha = 0.6, size=0.5) +
   geom_violin(alpha=0.7, aes(fill=classification)) +
+  scale_fill_manual(values = classification_colors) +
   labs(title = "Percent of Years by Classification",
        x = "Classification",
        y = "Percent of Years Present") +
@@ -1779,11 +1858,6 @@ pl_class %>%
    dplyr::select(Watershed_name, Species, numyears, numpresent, percyears, classification) %>%
     mutate(Watershed_name = factor(Watershed_name, 
                                  levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"), 
-                                 ordered = TRUE),
-           classification = factor(classification, 
-                                 levels=c("Common", "Rare", "Random",
-                                           "Recurrent", "Clumped",
-                                           "Increasing", "Decreasing"), 
                                  ordered = TRUE)) %>%
   mutate(treatment = case_when(
       Watershed_name %in% c("N1B", "N4D", "N20B") ~ "grazed", TRUE ~ "ungrazed")) %>%
@@ -1808,11 +1882,6 @@ pl_class %>%
    dplyr::select(Watershed_name, Species, numyears, numpresent, percyears, classification) %>%
     mutate(Watershed_name = factor(Watershed_name, 
                                  levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"), 
-                                 ordered = TRUE),
-           classification = factor(classification, 
-                                 levels=c("Common", "Rare", "Random",
-                                           "Recurrent", "Clumped",
-                                           "Increasing", "Decreasing"),  
                                  ordered = TRUE)) %>%
     mutate(treatment = case_when(
       Watershed_name %in% c("N1B", "N4D", "N20B") ~ "grazed", TRUE ~ "ungrazed")) %>%
@@ -1823,6 +1892,7 @@ pl_class %>%
        x = "Watershed",
        y = "Percent of Years Present") +
   geom_hline(yintercept = c(0.33, 0.67), linetype="dashed") +
+  scale_color_manual(values = classification_colors) +
   theme_minimal() 
 
 ggsave("Figures/plants_watershed_percyears.png", dpi=300, width=4, height=4, bg="white")
@@ -1995,7 +2065,7 @@ for (tx in taxa_abund_lm) {
   print(
     ggplot(sig_long, aes(x = Year, y = Abundance,
                          group = Species, color = trend_dir)) +
-      geom_smooth(method = "lm", se = FALSE, size = 0.4, alpha = 0.5) +
+      geom_smooth(method = "lm", se = FALSE, linewidth = 0.4, alpha = 0.5) +
       geom_text(data = trend_counts,
                 aes(x = -Inf, y = Inf, label = label),
                 inherit.aes = FALSE, hjust = -0.1, vjust = 1.1, size = 3) +
@@ -2016,6 +2086,8 @@ for (tx in taxa_abund_lm) {
 Plants use the polr pseudo p-value to identify significant trends. The plot structure
 is the same as the count-based taxa above: one line per species per watershed, colored
 by trend direction, with a per-facet annotation of significant increasing/decreasing counts.
+
+Species classified as "Common" or "Rare" by the incidence method were excluded from the abundance slope comparison for two mutually reinforcing reasons: first, the incidence classification explicitly designates these species as uninformative with respect to temporal pattern; second, ordinal logistic regression produces numerically unstable slope estimates for near-invariant time series due to quasi-complete separation, making the resulting slopes unreliable regardless of their magnitude.
 
 ```{r viz_abund_plants}
 # identify the plant species that had significant cover class trends, using pseudo pvalue
@@ -2072,6 +2144,89 @@ ggsave("Figures/plants_signif_abundance_years.png", bg = "white",
 ```
 
 
+For plants, let's compare the slopes across the different classifications (lump watersheds together for now). Since we don't have a true p-value, we will keep all the slopes for analysis.
+```{r}
+
+# join abundance slopes to incidence classification
+# one row per Species × Watershed_name combination
+pl_abund_class <- pl_spabun_logit %>%
+  left_join(
+    pl_class %>% dplyr::select(Species, Watershed_name, classification, group),
+    by = c("Species", "Watershed_name")
+  ) %>%
+  filter(!is.na(classification)) %>%   # drop any that didn't match
+  filter(!classification %in% c("Common", "Rare")) # shouldn't trust the values in these categories
+
+# Kruskal-Wallis test — do slopes differ across classification?
+kruskal_result <- kruskal.test(slope ~ classification, data = pl_abund_class)
+print(kruskal_result)
+
+# conduct pairwise Wilcoxon tests: do pairs of groups differ in their slope distributions?
+pairwise_result <- pairwise.wilcox.test(
+  x               = pl_abund_class$slope,
+  g               = pl_abund_class$classification,
+  p.adjust.method = "bonferroni"
+)
+
+# convert to a tidy tibble for easier reading
+pairwise_tbl <- as.data.frame(pairwise_result$p.value) %>%
+  rownames_to_column("group1") %>%
+  pivot_longer(-group1, names_to = "group2", values_to = "p.adj") %>%
+  filter(!is.na(p.adj)) %>%
+  arrange(p.adj)
+
+# significant pairs only
+pairwise_tbl %>% filter(p.adj < 0.05)
+
+# build plot data with significance flag
+plot_data <- pl_abund_class %>%
+  filter(!is.na(classification), !is.na(slope)) %>%
+  mutate(
+    sig = ifelse(psuedo_pval <= 0.05, "p \u2264 0.05", "p > 0.05"),
+    sig = factor(sig, levels = c("p \u2264 0.05", "p > 0.05"))
+  )
+
+# build subtitle string outside the ggplot call to keep it readable
+kw_subtitle <- paste0(
+  "Kruskal-Wallis: \u03c7\u00b2 = ", round(kruskal_result$statistic, 2),
+  ",  df = ",                          kruskal_result$parameter,
+  ",  p = ",                           signif(kruskal_result$p.value, 3)
+)
+
+ggplot(plot_data, aes(x = classification, y = slope)) +
+  geom_violin(aes(fill = classification),
+              alpha = 0.5, trim = TRUE, scale = "width") +
+  geom_jitter(aes(color = sig, shape = sig),
+              width = 0.15, height = 0, alpha = 0.7, size = 1.5) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey40") +
+  scale_fill_manual(values = classification_colors, guide = "none") +
+  scale_color_manual(
+    values = c("p \u2264 0.05" = "black", "p > 0.05" = "grey70"),
+    name   = "Abundance trend"
+  ) +
+  scale_shape_manual(
+    values = c("p \u2264 0.05" = 16, "p > 0.05" = 1),
+    name   = "Abundance trend"
+  ) +
+  labs(
+    x        = NULL,
+    y        = "Abundance trend slope (ordinal logistic)",
+    title    = "Abundance slopes by incidence classification",
+    subtitle = kw_subtitle
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x     = element_text(angle = 45, hjust = 1, size = 9),
+    axis.text.y     = element_text(size = 9),
+    legend.position = "bottom",
+    legend.title    = element_text(size = 9),
+    legend.text     = element_text(size = 9),
+    plot.subtitle   = element_text(size = 9, color = "grey40"),
+    plot.title      = element_text(size = 11, face = "bold")
+  )
+
+ggsave("Figures/plants_abundance_slope_by_incidence_class.png", dpi = 300, width = 8, height = 6, bg = "white")
+```
 
 
 
