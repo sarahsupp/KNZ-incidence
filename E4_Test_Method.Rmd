@@ -190,10 +190,10 @@ ggsave("Figures/simulation-figs/violin-random-prop-years.png", dpi=300, width=9,
 
 ```{r violin-transitions, fig.width=10, fig.height=6}
 results %>%
-  ggplot(aes(x = classification, y = numtransitions, fill = group)) +
+  ggplot(aes(x = classification, y = countblocks, fill = group)) +
   geom_violin(trim = TRUE, alpha = 0.6, scale = "width") +
   geom_jitter(width = 0.15, height = 0, alpha = 0.05, size = 0.6) +
-  geom_hline(yintercept = 2, linetype = "dashed", color = "hotpink") +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "hotpink") +
   facet_wrap(~ tslen, labeller = label_both) +
   scale_fill_manual(values = group_colors) +
   labs(
