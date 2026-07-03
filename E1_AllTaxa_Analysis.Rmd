@@ -89,6 +89,51 @@ Abundance Classification categories include:
 
 #----------------------------------------------------------------------------------
 
+### Define colors to be used for consistent plotting 
+
+Add colors for plotting. Group colors reflect three main groupings:
+   - Undetermined (stable or uninformative): Common, Rare, Random, No_change-absent
+   - Directional trend: Increasing, Decreasing
+   - Non-directional trend (episodic or patchy presence): Clumped, Recurrent
+
+These colors match a flowchart designed in Canva for the manuscript.
+
+```{r color-palette}
+#colors for the overall groups
+group_colors <- c(
+  "Undetermined"      = "#705e63",
+  "Directional"       = "#e1be6a",
+  "Non-directional"   = "#40b0a6"
+)
+
+# colors for the classifications using shading
+classification_colors <- c(
+  "Common"           = "#493D40",
+  "Random"           = "#816F74",
+  "Rare"             = "#A49297",
+  "No_change-absent" = "#615457",
+  "Increasing"       = "#947603",
+  "Decreasing"       = "#F7D381",
+  "Clumped"          = "#197169",
+  "Recurrent"        = "#6BD1C7"
+)
+
+# colors for the classifications using shading
+abun_classification_colors <- c(
+  "Invariant"        = "#493D40",
+  "Random"           = "#816F74",
+  "Rare"             = "#A49297",
+  "No_change-absent" = "#615457",
+  "Increasing"       = "#947603",
+  "Decreasing"       = "#F7D381",
+  "Clumped"          = "#197169",
+  "Recurrent"        = "#6BD1C7"
+)
+
+```
+
+#----------------------------------------------------------------------------------
+
 # Determining Species Incidence Classification
 
 ## Small-mammals, Grasshoppers, and Birds {.tabset}
