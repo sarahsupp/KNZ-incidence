@@ -130,6 +130,22 @@ abun_classification_colors <- c(
   "Recurrent"        = "#6BD1C7"
 )
 
+# set levels and order for classification
+  classification_levels <- c(
+    "Common", "Rare", "Random", "No_change-absent",
+    "Clumped", "Recurrent", "Increasing", "Decreasing"
+  )
+  
+# set levels and order for abund classification
+  abun_classification_levels <- c(
+    "Invariant", "Rare", "Random", "No_change-absent",
+    "Clumped", "Recurrent", "Increasing", "Decreasing"
+  )
+  
+# set levels and order for group
+  group_levels <- c(
+    "Undetermined", "Non-directional", "Directional"
+  )
 ```
 
 #----------------------------------------------------------------------------------
@@ -543,7 +559,8 @@ birds_count_allyears <- birds %>%
 
 # PLANTS: uses Genus_spp (not Species) as names_from so output columns match pl_info joins.
 # values_fn = paste (not sum) because cover class is not additive across plots.
-# mutate(Count = factor(Count, levels = 1:7, ordered = TRUE)) %>%  # optional; see FIXME
+# mutate(Count = factor(Count, levels = 1:7, ordered = TRUE)) %>%  
+# optional; see FIXME
 plants_count_allyears <- plants %>%
   group_by(Watershed_name, Species, Recyear) %>%
   reframe(Total = Count) %>%
@@ -888,7 +905,7 @@ for (tx in names(taxa_labels)) {
 
   # INCIDENCE counts
   inc_counts <- tx_data$inc %>%
-    group_by(Watershed_name, classification) %>%
+    group_by(Watershed_name, group, classification) %>%
     dplyr::summarise(total_count = n(), .groups = 'drop') %>%
     mutate(Proportion = total_count / n_species,
            taxa = tx_data$label)
@@ -897,7 +914,7 @@ for (tx in names(taxa_labels)) {
 
   # ABUNDANCE counts
   abun_counts <- tx_data$abun %>%
-    group_by(Watershed_name, classification) %>%
+    group_by(Watershed_name, group, classification) %>%
     dplyr::summarise(total_count = n(), .groups = 'drop') %>%
     mutate(Proportion = total_count / n_species,
            taxa = tx_data$label)
@@ -920,24 +937,12 @@ all_class_counts <- all_class_counts %>%
                                  ordered = TRUE),
          taxa = factor(taxa, levels = c("plants", "grasshoppers", "small mammals", "birds"),
                        ordered = TRUE),
-         classification = factor(classification, 
-                                 levels = c("Common", "Rare", "Random",
-                                            "Recurrent", "Clumped",
-                                            "Increasing", "Decreasing"), 
-                                 ordered = TRUE),
           # Grazing treatment: watersheds starting with N are grazed (bison present)
          grazing = factor(ifelse(startsWith(as.character(Watershed_name), "N"),
                                  "grazed", "ungrazed")),
          # Fire return interval: extract the leading number from the watershed name
          fire_freq = factor(as.numeric(gsub("^N?(\\d+).*", "\\1", 
-                                            as.character(Watershed_name)))),
-         # Change type: group classifications into directed, undirected, undetectable
-         change_type = factor(case_when(
-           classification %in% c("Increasing", "Decreasing")      ~ "directed",
-           classification %in% c("Recurrent", "Clumped")          ~ "undirected",
-           classification %in% c("Random", "Rare", "Common")      ~ "undetectable",
-           TRUE                                                   ~ NA_character_
-           ))
+                                            as.character(Watershed_name))))
          )
       
 
@@ -950,24 +955,12 @@ all_class_abun <- all_class_abun %>%
          taxa = factor(taxa, 
                        levels = c("plants", "grasshoppers", "small mammals", "birds"),
                        ordered = TRUE),
-         classification = factor(classification, 
-                                 levels=c("Invariant", "Rare", "Random", 
-                                          "Recurrent", "Clumped",
-                                          "Increasing", "Decreasing"), 
-                                 ordered = TRUE),
                    # Grazing treatment: watersheds starting with N are grazed (bison present)
          grazing = factor(ifelse(startsWith(as.character(Watershed_name), "N"),
                                  "grazed", "ungrazed")),
          # Fire return interval: extract the leading number from the watershed name
          fire_freq = factor(as.numeric(gsub("^N?(\\d+).*", "\\1", 
-                                            as.character(Watershed_name)))),
-         # Change type: group classifications into directed, undirected, undetectable
-         change_type = factor(case_when(
-           classification %in% c("Increasing", "Decreasing")      ~ "directed",
-           classification %in% c("Recurrent", "Clumped")          ~ "undirected",
-           classification %in% c("Random", "Rare", "Invariant")   ~ "undetectable",
-           TRUE                                                   ~ NA_character_
-           ))
+                                            as.character(Watershed_name))))
          )
 ```
 
@@ -1032,11 +1025,8 @@ pl_resid <- chisq_results %>%
   mutate(Watershed_name = factor(Watershed_name, 
                                  levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"), 
                                  ordered = TRUE),
-         classification = factor(classification, 
-                                 levels=c("Common", "Rare", "Random", 
-                                          "Recurrent", "Clumped",
-                                          "Increasing", "Decreasing"), 
-                                 ordered = TRUE))
+         classification = factor(classification, levels = classification_levels, ordered = TRUE)
+         )
 
 # heatmap of the residuals
 ggplot(pl_resid, aes(x = Watershed_name, y = classification, fill = Residual)) +
@@ -1104,10 +1094,8 @@ pl_resid_abun <- chisq_results_abun %>%
                                  levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"), 
                                  ordered = TRUE),
          classification = factor(classification, 
-                                 levels=c("Invariant", "Rare", "Random",
-                                          "Recurrent", "Clumped",
-                                          "Increasing", "Decreasing"), 
-                                 ordered = TRUE))
+                                 levels = abun_classification_levels, ordered = TRUE)
+         )
 
 # heatmap of the residuals
 ggplot(pl_resid_abun, aes(x = Watershed_name, y = classification, fill = Residual)) +
