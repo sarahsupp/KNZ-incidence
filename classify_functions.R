@@ -56,6 +56,10 @@ getTrends3.0 <- function(x) {
     v <- sum(abs(l))
   }
   
+  # count number of incidence blocks (blocks of 1s) in the timeseries
+    r <- rle(x)
+    count_blocks = sum(r$values == 1)
+  
   # If all the values are 0, it is always absent
   if (tsprop == 0) {
     p_val <- NA
@@ -77,7 +81,7 @@ getTrends3.0 <- function(x) {
     cat <- "Rare"
     group <- "Undetermined"
   } else if (tsprop >= 0.90) {
-    # if most of the values are 1 (>=90% of all years), it is "no change" present
+    # if most of the values are 1 (>=90% of all years), it is "common"
     p_val <- NA
     f_early <- NA
     f_late <- NA
@@ -127,12 +131,12 @@ getTrends3.0 <- function(x) {
         runsTestPV <- 2 }
       
       # if Chi-sq test insignif. and the runs test was significant AND it was present in at least TWO blocks of time
-      if((p_val > 0.05) & (runsTestPV < 0.05) & (v > 2)) {
+      if((p_val > 0.05) & (runsTestPV < 0.05) & (count_blocks > 1)) {
         cat = "Recurrent"
         group = "Non-directional"
       }
       # if Chi-sq test insignif. and the runs test was significant AND it was present in only ONE block of time
-      else if ((p_val > 0.05) & (runsTestPV < 0.05) & (v <= 2)) {
+      else if ((p_val > 0.05) & (runsTestPV < 0.05) & (count_blocks == 1)) {
         cat="Clumped"
         group = "Non-directional"
       }
@@ -163,6 +167,7 @@ getTrends3.0 <- function(x) {
                      "chi_flate" = f_late, 
                      "runsPval" = runsTestPV, 
                      "numtransitions" = v, 
+                     "countblocks" = count_blocks,
                      "trend" = trend, 
                      "classification" = factor(cat, levels = classification_levels, ordered = TRUE),
                      "group" = factor(group, levels = group_levels, ordered = TRUE))
