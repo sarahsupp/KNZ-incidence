@@ -1218,6 +1218,32 @@ ggsave("Figures/plants-stack-barplot-proportion.png", dpi=300, width=6, height=9
 
 ```
 
+For plants only, number of incidence blocks recorded
+```{r violin-blocks, fig.width=10, fig.height=6}
+plants_classification %>%
+  filter(Watershed_name %in% c("1D", "N1B", "4B", "N4D", "20B", "N20B")) %>%
+  mutate(Watershed_name = factor(Watershed_name, 
+                                 levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"), 
+                                 ordered = TRUE)) %>%
+  ggplot(aes(x = classification, y = countblocks, fill = classification)) +
+  geom_violin(trim = TRUE, alpha = 0.6, scale = "width") +
+  geom_jitter(width = 0.15, height = 0, alpha = 0.05, size = 0.6) +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "hotpink") +
+  facet_wrap(~ Watershed_name, ncol=2) +
+  scale_fill_manual(values = classification_colors) +
+  scale_y_continuous(breaks = function(x) seq(0, max(x), by = 1)) +
+  labs(
+    x = NULL, y = "Number of incidence blocks",
+    title = "Incidence blocks by assigned classification",
+    subtitle = "Dashed line marks the Recurrent vs Clumped cutoff"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none")
+
+ggsave("Figures/plants-violin-nblocks.png", dpi=300, width=6, height=9, bg="white")
+```
+
+
 
 ### Abundance Classification
 ```{r}
@@ -1226,7 +1252,9 @@ ggplot(all_class_abun, aes(x = Proportion, y = classification, fill = classifica
   theme_bw() +
   theme(legend.position = "none") + 
   labs(title = "Frequency across watersheds", y = "Abundance Classification") + 
-  facet_wrap(~taxa, ncol=1)
+  facet_wrap(~taxa, ncol=1) +
+  scale_fill_manual(values = abun_classification_colors)
+
 
 ggsave("Figures/all_taxa_class_abun_freq.png", dpi=300, width=5, height=10)
 ```
@@ -1240,6 +1268,7 @@ pl_abun <- all_class_abun %>%
 ggplot(pl_abun, aes(x = Proportion, y = classification)) +
   geom_col(aes(fill = classification)) + 
   facet_wrap(~Watershed_name, ncol=2) +
+  scale_fill_manual(values = abun_classification_colors) + 
   labs(title = "Plant abundance class",
        x = "Proportion of species",
        y = "Classification") +
@@ -1441,6 +1470,11 @@ inc_species <- pl_class %>%
   arrange(trmt_count)
   
 View(inc_species)
+
+inc_species %>%
+  group_by(trmts) %>%
+  summarize(n())
+
 ```
 DECREASING
 ```{r}
@@ -1460,6 +1494,10 @@ dec_species <- pl_class %>%
   arrange(trmt_count)
   
 View(dec_species)
+
+dec_species %>%
+  group_by(trmts) %>%
+  summarize(n())
 ```
 
 **What else did they switch from in the watersheds where they were not in the directed change classes?**
@@ -1470,7 +1508,7 @@ dir_species <- pl_class %>%
       Watershed_name %in% c("N1B", "N4D", "N20B") ~ "grazed", TRUE ~ "ungrazed")) %>%
   filter(Species %in% directed_spp) %>%
     filter(!Species %in% all_inc) %>%
-    dplyr::select(Watershed_name, Species, numyears, numpresent, percyears, classification) %>%
+    dplyr::select(Watershed_name, treatment, Species, numyears, numpresent, percyears, classification) %>%
     arrange(Species, Watershed_name)
 
 View(dir_species)
