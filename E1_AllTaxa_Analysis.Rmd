@@ -287,14 +287,14 @@ for (tx in names(taxa_list)) {
   )
 
   #Create table with the getAbundTrends results annotated with species & watershed labels
-  abun_classification <- bind_cols(tx_data$env, abun_trends)
+  abund_classification <- bind_cols(tx_data$env, abund_trends)
 
   # Write to file
-  write_csv(abun_classification, paste0(tx_data$out, "_classified_abund.csv"))
+  write_csv(abund_classification, paste0(tx_data$out, "_classified_abund.csv"))
 
   # Assign results back to named objects so all downstream code works unchanged
   assign(paste0(tx, "_classification"),      classification)
-  assign(paste0(tx, "_abun_classification"), abun_classification)
+  assign(paste0(tx, "_abund_classification"), abund_classification)
 }
 ```
 
@@ -379,17 +379,17 @@ rownames(abund_matrix) <- rownames(plants_years_matrix)
 
 #input abund_matrix into getAbundTrends function, apply to each row of the converted matrix
 #   map_dfr() is used here to preserve column types such as factors
-plants_abun_trends <- map_dfr(
+plants_abund_trends <- map_dfr(
   1:nrow(abund_matrix),
   function(i) getAbundTrends(as.numeric(abund_matrix[i, ]))
 )
 
 #Bind species/watershed metadata from plants_env to the classification results
 #   labels from plants_env, created earlier
-plants_abun_classification <- bind_cols(plants_env, plants_abun_trends)
+plants_abund_classification <- bind_cols(plants_env, plants_abund_trends)
 
 # Write to file
-write_csv(plants_abun_classification,
+write_csv(plants_abund_classification,
           "Datasets/E1_output_data/E1_plants/E1_plants_classified_abund.csv")
 
 ```
