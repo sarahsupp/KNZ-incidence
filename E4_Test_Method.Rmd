@@ -41,6 +41,7 @@ run_one <- function(tslen, npresent, arrangement) {
 
 ```
 
+Now, run the random simulation
 ```{r run-simulation}
 #set seed so results are repeatable
 set.seed(41) 
@@ -131,6 +132,7 @@ summary_binned <- results %>%
 
 summary_binned
 ```
+
 One more summary, to look at the total proportions for those present an intermediate amount of time (10%-90%).
 ```{r}
 # keep only those who are not absent, common, or rare
@@ -203,3 +205,38 @@ results %>%
   theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none")
 
 ggsave("Figures/simulation-figs/violin-random-nblocks.png", dpi=300, width=9, height=5, bg="white")
+```
+
+
+Now calculate and show the overall proportion of each classification across the different runs
+```{r}
+
+prop_by_tslen <- results %>%
+  group_by(tslen) %>%
+  mutate(total_runs = n()) %>%
+  ungroup() %>%
+  group_by(tslen, group, classification) %>%
+  summarise(
+    count      = n(),
+    total_runs = first(total_runs),
+    .groups    = "drop"
+  ) %>%
+  mutate(Proportion = count / total_runs)
+
+#bar graph
+ggplot(prop_by_tslen, aes(x = Proportion, y = classification)) +
+  geom_col(aes(fill = classification)) + 
+  facet_wrap(~tslen, labeller = label_both) +
+  labs(title = "Random incidence",
+       x = "Proportion of timeseries",
+       y = "Classification") +
+  scale_fill_manual(values = classification_colors) +
+  theme_minimal() +
+  theme(strip.text = element_text(face = "bold"),
+        axis.text.y = element_text(size = 10),
+        legend.position = "none")
+
+ggsave("Figures/simulation-figs/random_class_incid_bar.png", dpi=300, width=9, height=5, bg="white")
+```
+
+
