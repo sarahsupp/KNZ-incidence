@@ -277,8 +277,12 @@ getAbundTrends <- function(x) {
     v <- sum(abs(l))
   }
   
+  # count number of above average abundance blocks (blocks of 1s) in the timeseries
+  r <- rle(x)
+  count_blocks = sum(r$values == 1)
+  
   if (v==0) {
-    # If the species was invariant in all years (i.e., all values are 1), then we don't need to continue
+    # If the species was invariant in all years (i.e., all values are 1 or all are 0), then we don't need to continue
     p_val <- NA
     f_early <- NA
     f_late <- NA
@@ -286,6 +290,8 @@ getAbundTrends <- function(x) {
     trend <- NA
     trendPlus <- NA
     cat <- "Invariant"
+    group <- "Undetermined"
+    
   } else if (tsabs == 1) {
     # If the species was absent in all years (tsabs=1), then we don't need to continue
     p_val <- NA
@@ -295,6 +301,8 @@ getAbundTrends <- function(x) {
     trend <- NA
     trendPlus <- NA
     cat <- "No_change-absent"
+    group <- "Undetermined"
+    
   } else if ((tsabs >= 0.90) & (tsabs < 1)) {
     # if the species was absent *most* years (tsabs >=0.90), we don't need to continue
     p_val <- NA
@@ -304,6 +312,8 @@ getAbundTrends <- function(x) {
     trend <- NA
     trendPlus <- NA
     cat <- "Rare"
+    group <- "Undetermined"
+    
   } else {
     #If not labeled invariant, absent, or rare, then we proceed with a chi-sq test to detect directed change
      #adds rownames to the z_x table
@@ -321,11 +331,13 @@ getAbundTrends <- function(x) {
     if((f_early > f_late) & (p_val <= 0.05)) {
       trend <- -1
       cat = "Decreasing"
+      group <- "Directional"
       runsTestPV <- NA
     } 
     else if((f_early < f_late) & (p_val <= 0.05)) {
       trend <- 1
       cat = "Increasing"
+      group <- "Directional"
       runsTestPV <- NA
     } 
     else {
@@ -337,18 +349,31 @@ getAbundTrends <- function(x) {
       runsTestPV <- runsPV$p.value
       if(is.nan(runsTestPV)) {
         runsTestPV <- 2 }
-      # if Chi-sq test insignif. and the runs test was significant
-      if((p_val > 0.05) & (runsTestPV < 0.05) & (v > 2)) {
+      # if Chi-sq test insignif. and the runs test was significant and above average abundance in more than one block
+      if((p_val > 0.05) & (runsTestPV < 0.05) & (count_blocks > 1)) {
         cat="Recurrent"
+        group <- "Non-directional"
       } 
-      else if((p_val > 0.05) & (runsTestPV < 0.05) & (v <= 2)) {
+      else if((p_val > 0.05) & (runsTestPV < 0.05) & (count_blocks == 1)) {
         cat="Clumped"
+        group <- "Non-directional"
       }
       else {
         cat="Random"
+        group <- "Undetermined"
       }
     } #end else for ns chisq
   }
+  
+  # set levels and order for classification and group
+  classification_levels <- c(
+    "Invariant", "Rare", "Random", "No_change-absent",
+    "Clumped", "Recurrent", "Increasing", "Decreasing"
+  )
+  
+  group_levels <- c(
+    "Undetermined", "Non-directional", "Directional"
+  )
   
   # for each species, record the summary statistics
   statSumm <- tibble("numyears" = tslen, 
@@ -358,8 +383,10 @@ getAbundTrends <- function(x) {
                      "chi_flate" = f_late, 
                      "runsPval" = runsTestPV, 
                      "numtransitions" = v, 
+                     "countblocks" = count_blocks,
                      "trend" = trend, 
-                     "classification" = as.factor(cat))
+                     "classification" = factor(cat, levels = classification_levels, ordered = TRUE),
+                     "group" = factor(group, levels = group_levels, ordered = TRUE))
   return(statSumm)
 }
 
