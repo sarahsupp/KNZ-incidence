@@ -217,7 +217,7 @@ label_abundance <- function(x) {
       convert_x[i] <- 0
     }
   }
-  convert_x <- append(convert_x, tsabs)
+  convert_x <- append(convert_x, tsabs=tsabs)
   return(convert_x)
 }
 
