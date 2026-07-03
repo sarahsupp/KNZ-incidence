@@ -142,7 +142,7 @@ summary_intermed <- results %>%
   mutate(prop = n / sum(n)) %>%
   ungroup()
 
-
+summary_intermed
 ```
 
 
@@ -195,12 +195,11 @@ results %>%
   facet_wrap(~ tslen, labeller = label_both) +
   scale_fill_manual(values = group_colors) +
   labs(
-    x = NULL, y = "Number of 0/1 transitions",
-    title = "Transition count by assigned classification",
-    subtitle = "Dashed line marks the Recurrent vs Clumped cutoff (v > 2)"
+    x = NULL, y = "Number of incidence blocks",
+    title = "Incidence blocks by assigned classification",
+    subtitle = "Dashed line marks the Recurrent vs Clumped cutoff"
   ) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none")
 
-ggsave("Figures/simulation-figs/violin-random-num-transitions.png", dpi=300, width=9, height=5, bg="white")
-```
+ggsave("Figures/simulation-figs/violin-random-nblocks.png", dpi=300, width=9, height=5, bg="white")
