@@ -195,13 +195,20 @@ label_abundance <- function(x) {
   # 1 = greater than average (median) abundance
   # label is added to indicate classification if it is absent or too rare
   
-  # Create a new vector with labels
-  convert_x <- numeric(length(x))
+
   # Calculate average of population time series
   #   Use *median* as a non-parametric measure of central tendency (a lot of 0s and some very high abundance) 
   average = median(x)
+  
   # Calculate the proportion of zeros in the time series (how many years absent?)
   tsabs <- round(mean(x==0), 2)
+  
+  # Create a new vector with labels
+  convert_x <- numeric(length(x))
+  
+  # preserve year names from input vector to retain column labels
+  names(convert_x) <- names(x)
+  
   #iterate and replace values with abundance conversion
   for (i in 1:length(x)) {
     if (x[i] > average) {
