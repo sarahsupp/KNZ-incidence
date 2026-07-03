@@ -373,7 +373,7 @@ getAbundTrends <- function(x) {
   }
   
   # set levels and order for classification and group
-  classification_levels <- c(
+  abun_classification_levels <- c(
     "Invariant", "Rare", "Random", "No_change-absent",
     "Clumped", "Recurrent", "Increasing", "Decreasing"
   )
@@ -392,7 +392,7 @@ getAbundTrends <- function(x) {
                      "numtransitions" = v, 
                      "countblocks" = count_blocks,
                      "trend" = trend, 
-                     "classification" = factor(cat, levels = classification_levels, ordered = TRUE),
+                     "classification" = factor(cat, levels = abun_classification_levels, ordered = TRUE),
                      "group" = factor(group, levels = group_levels, ordered = TRUE))
   return(statSumm)
 }
