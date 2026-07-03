@@ -2225,7 +2225,7 @@ ggplot(plot_data, aes(x = classification, y = slope)) +
     plot.title      = element_text(size = 11, face = "bold")
   )
 
-ggsave("Figures/plants_abundance_slope_by_incidence_class.png", dpi = 300, width = 8, height = 6, bg = "white")
+ggsave("Figures/plants_abundance_slope_by_incidence_class.png", dpi = 300, width = 6, height = 8, bg = "white")
 ```
 
 
