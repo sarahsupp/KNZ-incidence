@@ -131,6 +131,19 @@ summary_binned <- results %>%
 
 summary_binned
 ```
+One more summary, to look at the total proportions for those present an intermediate amount of time (10%-90%).
+```{r}
+# keep only those who are not absent, common, or rare
+# calculate proportion of total
+summary_intermed <- results %>%
+  filter(!classification %in% c("Common", "Rare", "No_change-absent")) %>%
+  count(tslen, arrangement, group, classification) %>%   # creates the n column
+  group_by(tslen, arrangement) %>%
+  mutate(prop = n / sum(n)) %>%
+  ungroup()
+
+
+```
 
 
 Now, let's show the results by classification and presence level
