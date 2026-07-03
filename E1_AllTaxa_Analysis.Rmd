@@ -1123,10 +1123,12 @@ Let's make some descriptive plots of the species classifications. We can make vi
 ```{r}
 ggplot(all_class_counts, aes(x = Proportion, y = classification, fill = classification)) + 
   geom_violin() +
-  theme_bw() +
-  theme(legend.position = "none") + 
   labs(title = "Frequency across watersheds", y = "Incidence Classification") + 
-  facet_wrap(~taxa, ncol=1)
+  facet_wrap(~taxa, ncol=1) +
+  scale_fill_manual(values = classification_colors) +
+  theme_bw() +
+  theme(legend.position = "none")
+
 
 ggsave("Figures/all_taxa_class_incid_freq.png", dpi=300, width=5, height=10)
 ```
@@ -1158,12 +1160,62 @@ ggplot(pl, aes(x = Proportion, y = classification)) +
   labs(title = "Plant incidence",
        x = "Proportion of species",
        y = "Classification") +
+  scale_fill_manual(values = classification_colors) +
   theme_minimal() +
   theme(strip.text = element_text(face = "bold"),
         axis.text.y = element_text(size = 10),
         legend.position = "none")
 
-ggsave("Figures/plant_class_incid_freq.png", dpi=300, width=4, height=6)
+ggsave("Figures/plant_class_incid_freq_bar.png", dpi=300, width=4, height=6)
+```
+
+Still just for plants, a vertical violin plot
+```{r}
+ggplot(pl, aes(x = Proportion, y = classification, fill = classification)) + 
+  geom_violin(trim = TRUE, alpha = 0.6, scale = "width") +
+  geom_jitter(width = 0.15, height = 0, alpha = 0.05, size = 0.6) +
+  labs(title = "Frequency across watersheds", y = "Incidence Classification") + 
+  facet_wrap(~taxa, ncol=1) +
+  scale_fill_manual(values = classification_colors) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none") + 
+  coord_flip()
+
+
+ggsave("Figures/plant_class_incid_freq_violin.png", dpi=300, width=6, height=6)
+```
+
+and just for plants, a stacked barplot that can be compared with the random results
+```{r}
+plants_binned <- plants_classification %>%
+  filter(Watershed_name %in% c("1D", "N1B", "4B", "N4D", "20B", "N20B")) %>%
+  mutate(prop_bin = cut(percyears,
+                        breaks = seq(0, 1, by = 0.1),
+                        include.lowest = TRUE,
+                        right = TRUE),
+         Watershed_name = factor(Watershed_name, 
+                                 levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"), 
+                                 ordered = TRUE)) %>%
+  count(Watershed_name, prop_bin, group, classification) %>%
+  group_by(Watershed_name, prop_bin) %>%
+  mutate(proportion = n / sum(n)) %>%
+  ungroup()
+
+ggplot(plants_binned, aes(x = prop_bin, y = proportion, fill = classification)) +
+  geom_col(position = "stack") +
+  facet_wrap(~ Watershed_name, ncol=2) +
+  scale_fill_manual(values = classification_colors) +
+  labs(
+    x = "Proportion of years present (binned)",
+    y = "Proportion of species per bin",
+    title = "Plant incidence class by watershed"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(legend.position = "bottom") # Places the legend below the plot
+
+ggsave("Figures/plants-stack-barplot-proportion.png", dpi=300, width=6, height=9, bg="white")
+
 ```
 
 
