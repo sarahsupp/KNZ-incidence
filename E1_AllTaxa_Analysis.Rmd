@@ -1956,6 +1956,12 @@ dir_species %>%
 ggsave("Figures/plants_dir-change-ann-per__watershed_percyears.png", dpi=300, width=4, height=6)
 ```
 
+For each group, annual, biannual, and perennial, how do they divided out proportionally across the classifications?
+```{r}
+
+```
+
+
 #----------------------------------------------------------
 
 ### Richness trends (all taxa)
@@ -2006,6 +2012,95 @@ for (tx in taxa_richness) {
   ggsave(tx$outfile, dpi = 300, width = 4, height = 6, bg = "white")
 }
 ```
+
+Interpret with caution: lacks statistical power.
+```{r}
+# get richness slope per watershed from the model results
+# result_pl$model should have Watershed_name and slope columns
+richness_slopes <- result_pl$model %>%
+  dplyr::select(Watershed_name, slope) %>%
+  rename(richness_slope = slope) %>%
+  filter(Watershed_name %in% c("1D", "N1B", "4B", "N4D", "20B", "N20B"))  %>%
+  mutate(Watershed_name = factor(Watershed_name,
+                                   levels = ws_levels, ordered = TRUE))
+
+# get proportion of species in each classification per watershed
+# pivot wide so each classification is its own column
+# using pl from all_class_counts (plants only, already filtered to 6 watersheds)
+class_props_wide <- pl %>%
+  dplyr::select(Watershed_name, classification, Proportion) %>%
+  pivot_wider(names_from = classification, values_from = Proportion,
+              values_fill = 0)
+
+# join richness slopes to classification proportions
+ws_summary <- richness_slopes %>%
+  left_join(class_props_wide, by = "Watershed_name") %>%
+  mutate(
+    grazing = ifelse(startsWith(as.character(Watershed_name), "N"),
+                     "grazed", "ungrazed")
+  )
+
+# scatter plot for each classification vs richness slope
+# pivot back to long for faceting
+ws_long <- ws_summary %>%
+  pivot_longer(
+    cols      = -c(Watershed_name, richness_slope, grazing),
+    names_to  = "classification",
+    values_to = "proportion"
+  ) %>%
+  mutate(classification = factor(classification, levels = classification_levels, ordered = TRUE))
+
+# compute Spearman correlations per classification
+# for annotation only — treat with caution given n=6
+spearman_tbl <- ws_long %>%
+  group_by(classification) %>%
+  summarise(
+    r = cor(richness_slope, proportion, method = "spearman"),
+    p = cor.test(richness_slope, proportion, method = "spearman")$p.value,
+    .groups = "drop"
+  ) %>%
+  mutate(
+    label = paste0("r = ",  round(r, 2),
+                   "\np = ", round(p, 3),
+                   if_else(p < 0.05, "*", ""))
+  )
+
+# faceted scatter with watershed labels and Spearman annotation
+ggplot(ws_long, aes(x = proportion, y = richness_slope)) +
+  geom_point(aes(color = classification, shape = grazing), size = 3) +
+  geom_smooth(method = "lm", se = FALSE,
+              color = "grey50", linetype = "dashed", linewidth = 0.5) +
+  geom_text(aes(label = Watershed_name),
+            hjust = -0.2, vjust = 0.5, size = 2.5) +
+  geom_text(data = spearman_tbl,
+            aes(label = label),
+            x = -Inf, y = Inf,
+            hjust = -0.1, vjust = 1.2,
+            size = 2.5, color = "grey30",
+            inherit.aes = FALSE) +
+  facet_wrap(~ fct_rev(classification), scales = "free_x", ncol=4) +
+  scale_color_manual(values = classification_colors, guide="none") +
+  scale_shape_manual(values = c("grazed" = 16, "ungrazed" = 9)) +
+  labs(
+    x        = "Proportion of species in classification",
+    y        = "Richness trend slope",
+    title    = "Watershed-level richness trend vs incidence classification proportions",
+    subtitle = "n = 6 watersheds; Spearman r shown for pattern description only, not formal inference",
+    color    = "Grazing",
+    shape    = "Grazing"
+  ) +
+  theme_bw() +
+  theme(
+    strip.text      = element_text(face = "bold", size = 9),
+    axis.text       = element_text(size = 8),
+    plot.subtitle   = element_text(size = 8, color = "grey40"),
+    legend.position = "bottom"
+  )
+
+ggsave("Figures/plants_richness_slope_vs_classification_props_spearman.png",
+       dpi = 300, width = 9, height = 6, bg = "white")
+```
+
 
 ### Abundance trends (all taxa)
 
