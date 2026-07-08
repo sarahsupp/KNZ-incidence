@@ -1956,9 +1956,73 @@ dir_species %>%
 ggsave("Figures/plants_dir-change-ann-per__watershed_percyears.png", dpi=300, width=4, height=6)
 ```
 
-For each group, annual, biannual, and perennial, how do they divided out proportionally across the classifications?
+For each group, annual, biannual, and perennial, how do they divide out proportionally across the classifications?
 ```{r}
+pl_gf_plot <- pl_class %>%
+  filter(Watershed_name %in% c("1D", "N1B", "4B", "N4D", "20B", "N20B")) %>%
+  filter(!is.na(`growth form`)) %>%
+  mutate(
+    Watershed_name = factor(Watershed_name,
+                            levels = c("1D", "N1B", "4B", "N4D", "20B", "N20B"),
+                            ordered = TRUE),
+    `growth form` = factor(`growth form`)
+  ) %>%
+  # count species in each watershed × growth form × classification combination
+  count(Watershed_name, `growth form`, classification) %>%
+  # proportion denominator = total species in each watershed × growth form combo
+  group_by(Watershed_name, `growth form`) %>%
+  mutate(
+    total_in_group = sum(n),
+    proportion     = n / total_in_group
+  ) %>%
+  ungroup()
 
+# optional: check counts look right before plotting
+pl_gf_plot %>%
+  dplyr::select(Watershed_name, `growth form`, total_in_group) %>%
+  distinct() %>%
+  arrange(Watershed_name, `growth form`)
+
+ggplot(pl_gf_plot,
+       aes(x = `growth form`, y = proportion, fill = classification)) +
+  geom_col(position = "stack") +
+  # add total n as a label below each bar
+  geom_text(
+    aes(x = `growth form`, label = paste("n = ", total_in_group), y = -0.04),
+    data        = pl_gf_plot %>% distinct(Watershed_name, `growth form`, total_in_group),
+    color       = "grey40",
+    size        = 2.5,
+    inherit.aes = FALSE
+  ) +
+  facet_wrap(~ Watershed_name, ncol = 2) +
+  scale_fill_manual(values = classification_colors) +
+  scale_y_continuous(
+    labels  = scales::percent_format(accuracy = 1),
+    limits  = c(-0.08, 1.01),       # make room for the n label below bars
+    breaks  = seq(0, 1, by = 0.25)
+  ) +
+  labs(
+    x        = "Growth form",
+    y        = "Proportion of species",
+    fill     = "Classification",
+    title    = "Incidence classification by growth form and watershed",
+    subtitle = "n shown below each bar = total species in that growth form × watershed combination"
+  ) +
+  theme_minimal() +
+  theme(
+    strip.text      = element_text(face = "bold", size = 10),
+    axis.text.x     = element_text(size = 9),
+    axis.text.y     = element_text(size = 8),
+    legend.position = "bottom",
+    legend.title    = element_text(size = 9),
+    legend.text     = element_text(size = 8),
+    plot.subtitle   = element_text(size = 8, color = "grey40"),
+    panel.grid.major.x = element_blank()
+  ) +
+  guides(fill = guide_legend(nrow = 2))
+
+ggsave("Figures/plants_classification_by_growthform_watershed.png",
+       dpi = 300, width = 6, height = 9, bg = "white")
 ```
 
 
